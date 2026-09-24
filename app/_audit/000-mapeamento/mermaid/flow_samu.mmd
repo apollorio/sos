@@ -1,0 +1,97 @@
+flowchart TD
+  START(["▶ Resgate · Urgência"]) --> samu_instant_rescue
+  samu_a1{"<b>a1</b><br/>Tô aqui. Primeiro.. qual é a situação?"}
+  class samu_a1 choice,orphan
+  samu_action_192{{"<b>action_192</b><br/>Liga agora. O SAMU e Bombeiros são treinados para isso.. sem julgamen…<br/>📞 SAMU — 192<br/>📞 Bombeiros — 193"}}
+  class samu_action_192 action,orphan
+  samu_a2_mental{{"<b>a2_mental</b><br/>Para crise emocional severa.. o CVV atende 24h com pessoas reais e tr…<br/>📞 CVV — 188 (gratuito, agora)"}}
+  class samu_a2_mental action,orphan
+  samu_a2_unsure("<b>a2_unsure</b><br/>Se você está em dúvida se é emergência.. ligue. O SAMU é treinado par…")
+  class samu_a2_unsure info,orphan
+  samu_m1("<b>m1</b><br/>Você ligou. Isso importa. Agora.. ficar calmo ao lado da pessoa e não…")
+  class samu_m1 info
+  samu_m2[["<b>m2</b><br/>Enquanto aguarda.. ações essenciais:<br/>☐ Fica ao lado da pessoa.. não a de…<br/>☐ Mantém o espaço desobstruído"]]
+  class samu_m2 task
+  samu_m2_emotional("<b>m2_emotional</b><br/>Você está seguro por enquanto.. e isso é o que importa agora. Vamos f…")
+  class samu_m2_emotional info,orphan
+  samu_m3{"<b>m3</b><br/>Qual é a situação da pessoa?"}
+  class samu_m3 choice
+  samu_m3_overdose("<b>m3_overdose</b><br/>Posição de recuperação.. crucial: Deita ela de lado (lado esquerdo se…")
+  class samu_m3_overdose info
+  samu_m3_fall("<b>m3_fall</b><br/>Não move a pessoa. Suspita de lesão na coluna? Não mova de jeito nenh…")
+  class samu_m3_fall info
+  samu_m3_breathing("<b>m3_breathing</b><br/>Se ela parou de respirar e você sabe RCP.. comece agora enquanto cham…")
+  class samu_m3_breathing info
+  samu_m3_emotional("<b>m3_emotional</b><br/>Fica com ela. Fala com calma e com presença. 'Estou aqui com você. Nã…")
+  class samu_m3_emotional info
+  samu_m4[["<b>m4</b><br/>Informações para quando o socorro chegar:<br/>☐ Anota ou lembra: nome e idade da …<br/>☐ Endereço exato ou ponto de referê…"]]
+  class samu_m4 task
+  samu_m5("<b>m5</b><br/>Você está aqui. Isso importa. Cuidar de alguém em crise é muito.. e v…")
+  class samu_m5 info
+  samu_m6("<b>m6</b><br/>Enquanto aguarda.. você também precisa respirar: Inspira lenta e prof…")
+  class samu_m6 info
+  samu_m7("<b>m7</b><br/>O SAMU pode ficar na linha com você enquanto não chega. Pede isso ao …")
+  class samu_m7 info
+  samu_m8[["<b>m8</b><br/>Preparando para receber o socorro:<br/>☐ Vai até a entrada do local para e…"]]
+  class samu_m8 task
+  samu_m9("<b>m9</b><br/>Depois que o socorro chegar e a situação estiver sob controle.. você …")
+  class samu_m9 info
+  samu_m10{{"<b>m10</b><br/>Recursos adicionais se precisar de apoio depois:<br/>📞 CVV — 188 (para você também)<br/>📞 CAPS III Rio (7 unidades 24h)"}}
+  class samu_m10 action,orphan
+  samu_m11("<b>m11</b><br/>Você não precisava estar aqui.. e escolheu estar. Isso é amor.")
+  class samu_m11 info
+  samu_m12("<b>m12</b><br/>Se essa situação acontece com frequência na sua vida.. com você ou co…")
+  class samu_m12 info
+  samu_m13[["<b>m13</b><br/>Um gesto de cuidado com você agora:<br/>☐ Respire 3 vezes bem devagar"]]
+  class samu_m13 task
+  samu_m14("<b>m14</b><br/>Você esteve aqui quando precisava. Isso importa. Você importa.")
+  class samu_m14 info
+  samu_m15(["<b>m15</b><br/>Este espaço estará aqui toda vez que você precisar. Cuida de você. 💙"])
+  class samu_m15 info,endn
+  samu_instant_rescue{{"<b>instant_rescue</b><br/>O SAMU e Bombeiros são focados em salvar a vida. Eles prestam socorro…<br/>📞 Ligar para o SAMU (192)<br/>📞 Ligar para os Bombeiros (193)"}}
+  class samu_instant_rescue action
+  samu_caps_link{{"<b>caps_link</b><br/>Crise emocional após urgência médica.. CAPS III 24h:<br/>📞 Ver CAPS III Rio<br/>📞 CVV — 188"}}
+  class samu_caps_link action
+  samu_a1 -->|"Urgência médica.. preciso de socorro …"| samu_action_192
+  samu_a1 -->|"Alguém ao meu redor está em perigo"| samu_action_192
+  samu_a1 -->|"Crise emocional grave, não é física"| samu_a2_mental
+  samu_a1 -->|"Não sei se é emergência"| samu_a2_unsure
+  samu_action_192 -.->|continuar| samu_m1
+  samu_a2_mental -.->|continuar| samu_m2_emotional
+  samu_a2_unsure -.->|continuar| samu_action_192
+  samu_m1 -.->|continuar| samu_m2
+  samu_m2 ==>|"estou preparado."| samu_m3
+  samu_m2_emotional -.->|continuar| samu_m3_emotional
+  samu_m3 -->|"Pode ter overdose ou intoxicação"| samu_m3_overdose
+  samu_m3 -->|"Caiu de altura ou teve acidente"| samu_m3_fall
+  samu_m3 -->|"Dificuldade respiratória ou parou"| samu_m3_breathing
+  samu_m3 -->|"Crise emocional ou tentativa"| samu_m3_emotional
+  samu_m3_overdose -.->|continuar| samu_m4
+  samu_m3_fall -.->|continuar| samu_m4
+  samu_m3_breathing -.->|continuar| samu_m4
+  samu_m3_emotional -.->|continuar| samu_m4
+  samu_m4 ==>|"tenho as informações."| samu_m5
+  samu_m5 -.->|continuar| samu_m6
+  samu_m6 -.->|continuar| samu_m7
+  samu_m7 -.->|continuar| samu_m8
+  samu_m8 ==>|"pronto para receber."| samu_m9
+  samu_m9 -.->|continuar| samu_caps_link
+  samu_m10 -.->|continuar| samu_m11
+  samu_m11 -.->|continuar| samu_m12
+  samu_m12 -.->|continuar| samu_m13
+  samu_m13 ==>|"respirei."| samu_m14
+  samu_m14 -.->|continuar| samu_m15
+  samu_m15 -.->|continuar| EXIT
+  samu_instant_rescue -.->|continuar| samu_m1
+  samu_caps_link -.->|continuar| samu_m11
+  EXIT(["fecha · volta à Home"])
+  class EXIT ext
+  classDef choice fill:#1b1030,stroke:#a855f7,color:#eee
+  classDef info fill:#0f1a24,stroke:#38bdf8,color:#ddd
+  classDef task fill:#0f2419,stroke:#34d399,color:#ddd
+  classDef action fill:#2a0f12,stroke:#ef4444,color:#fff,stroke-width:2px
+  classDef redirect fill:#241a0a,stroke:#f59e0b,color:#eee
+  classDef endn fill:#111,stroke:#fff,color:#fff,stroke-width:3px
+  classDef orphan stroke-dasharray:6 4,opacity:0.55
+  classDef risk stroke:#ff0055,stroke-width:4px
+  classDef ext fill:#333,stroke:#999,color:#fff

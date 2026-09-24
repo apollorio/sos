@@ -1,0 +1,1166 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <script src="https://cdn.apollo.rio.br/v1.0.0/core.js?true" fetchpriority="high"></script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="color-scheme" content="light" />
+  <meta name="theme-color" content="#ffffff" />
+  <title>SOS · Apollo</title>
+  <meta name="description" content="Ajuda agora — para qualquer momento difícil — ou um respiro de consciência, no seu tempo." />
+
+  <style>
+    /*
+      Apollo SOS Gateway v2
+      Calm-first, mobile-first. Core.js owns global tokens/runtime.
+      This page only composes those tokens into a low-stimulus first screen.
+    */
+
+    :root {
+      --gate-pad: clamp(1.15rem, 4.2vw, 2.2rem);
+      --gate-white: #fff;
+      --gate-black: #0a0a0a;
+      --gate-soft: rgba(10,10,10,.46);
+    }
+
+    html,
+    body {
+      width: 100%;
+      max-height: 100%;
+      background: var(--gate-white);
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+
+    body {
+      color: var(--gate-black);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .gateway {
+      /* Keep this gateway visually stable even if the account theme is dark. */
+      --rgb-theme: 255,255,255;
+      --rgb-diff: 10,10,10;
+
+      position: relative;
+      width: 100%;
+      min-height: 100dvh;
+      display: grid;
+      /* PC: help 65% width · education 35% */
+      grid-template-columns: minmax(0,65fr) minmax(0,35fr);
+      background: var(--gate-white);
+      isolation: isolate;
+    }
+
+    .panel {
+      position: relative;
+      min-width: 0;
+      min-height: 100dvh;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    /* ───────────────────────── HELP / WHITE SKY ───────────────────────── */
+    .help {
+      background:
+        radial-gradient(80% 54% at 50% -6%, rgba(var(--rgb-primary,237,172,65),.08) 0%, transparent 72%),
+        radial-gradient(72% 64% at 18% 5%, rgba(182,218,255,.17) 0%, transparent 65%),
+        radial-gradient(72% 64% at 82% 6%, rgba(222,236,255,.20) 0%, transparent 65%),
+        linear-gradient(180deg, #fff 0%, #fff 57%, #fbfbfb 100%);
+      color: var(--gate-black);
+      z-index: 2;
+    }
+
+    .help::before {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      left: 50%;
+      top: -18vmin;
+      width: min(68vmin, 38rem);
+      aspect-ratio: 1;
+      translate: -50% 0;
+      border-radius: 50%;
+      background: radial-gradient(circle,
+        rgba(255,255,255,1) 0 24%,
+        rgba(255,255,255,.86) 34%,
+        rgba(var(--rgb-primary,237,172,65),.08) 52%,
+        transparent 73%);
+      filter: blur(12px);
+      pointer-events: none;
+    }
+
+    .cloud {
+      position: absolute;
+      z-index: 0;
+      pointer-events: none;
+      border-radius: 999px;
+      background: rgba(255,255,255,.92);
+      filter: blur(34px);
+      opacity: .9;
+      will-change: transform;
+    }
+
+    .cloud--a {
+      width: 48%;
+      height: 17%;
+      left: -8%;
+      top: 26%;
+    }
+
+    .cloud--b {
+      width: 46%;
+      height: 16%;
+      right: -9%;
+      top: 36%;
+      opacity: .78;
+    }
+
+    .cloud--c {
+      width: 62%;
+      height: 14%;
+      left: 19%;
+      top: 51%;
+      opacity: .58;
+    }
+
+    .help-hit,
+    .dose-hit {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      color: inherit;
+      text-decoration: none;
+      display: grid;
+      place-items: center;
+      padding:
+        max(var(--gate-pad), var(--safe-top, 0px))
+        max(var(--gate-pad), var(--safe-right, 0px))
+        max(var(--gate-pad), var(--safe-bottom, 0px))
+        max(var(--gate-pad), var(--safe-left, 0px));
+      outline: none;
+      touch-action: manipulation;
+    }
+
+    .choice {
+      position: relative;
+      z-index: 2;
+      width: min(100%, 38rem);
+      display: grid;
+      justify-items: center;
+      text-align: center;
+      gap: clamp(.85rem, 2vh, 1.35rem);
+    }
+
+    .choice__mini {
+      font-family: var(--ff-mono, ui-monospace, monospace);
+      font-size: calc( var(--fs-p4) * .92) !important;
+      letter-spacing: .17em;
+      text-transform: uppercase;
+      opacity: .25;
+    }
+
+    .choice__title {
+      margin: 0;
+      max-width: 11ch;
+      font-family: var(--ff-heading, system-ui, sans-serif);
+      font-size: clamp(2.55rem, 5.2vw, 6.5rem);
+      line-height: .92;
+      letter-spacing: -.055em;
+      font-weight: 520;
+      text-wrap: balance;
+      color: inherit;
+    }
+
+    .help .choice__title {
+      max-width: 12ch;
+    }
+
+    .calm-now {
+      /* inline formatting context = true shared baseline (not flex center) */
+      display: inline-block;
+      text-align: center;
+      padding: .68rem 1rem;
+      border-radius: var(--r-pill, 999px);
+      background: rgba(255,255,255,.74);
+      border: 1px solid rgba(10,10,10,.055);
+      box-shadow: 0 12px 34px rgba(10,10,10,.035), inset 0 1px 0 rgba(255,255,255,.95);
+      backdrop-filter: blur(18px);
+      color: var(--gray-16);
+      font-size: var(--fs-p4)!important;
+	  font-family: system-ui!important;
+	  font-weight: 300;.
+      line-height: 1.2;
+      letter-spacing: -.015em;
+      white-space: nowrap;
+      transition:
+        padding .8s cubic-bezier(.22, 1, .36, 1),
+        max-width .8s cubic-bezier(.22, 1, .36, 1),
+        box-shadow .7s ease;
+      max-width: min(96vw, 34rem);
+    }
+
+    .calm-now .calm-part,
+    .calm-now .calm-sep,
+    .calm-now .calm-word,
+    .calm-now #calm2safe {
+      display: inline;
+      vertical-align: baseline;
+      line-height: inherit;
+      font-size: inherit;
+      letter-spacing: inherit;
+    }
+
+    .calm-now .calm-part,
+    .calm-now .calm-word {
+      color: inherit;
+      font-weight: 480;
+      opacity: .42;
+      transition:
+        color .8s cubic-bezier(.22, 1, .36, 1),
+        opacity .8s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    /* Soft highlight — ink + opacity only (no weight = no width jump) */
+    .calm-now b,
+    .calm-now .calm-part.is-hot,
+    .calm-now .calm-part.is-hot .calm-word,
+    .calm-now .calm-part.is-hot #calm2safe,
+    .calm-now .calm-part.is-hot #calm2safe .text-rotating__el {
+      color: rgba(10,10,10,.68);
+      font-weight: 480;
+      opacity: 1;
+    }
+
+    .calm-now .calm-sep {
+      opacity: .35;
+      margin: 0 .42rem;
+      pointer-events: none;
+    }
+
+    /*
+      #calm2safe TextRotating — strip card chrome, lock to phrase baseline.
+      Library defaults (center align, pad, font-weight 600, word padding-bottom)
+      are what shoved the rotating word off the row.
+    */
+    .calm-now #calm2safe,
+    .calm-now #calm2safe.text-rotating,
+    .calm-now .text-rotating#calm2safe {
+      display: inline-flex !important;
+      align-items: baseline !important;
+      justify-content: flex-start !important;
+      vertical-align: baseline !important;
+      position: relative;
+      top: 0;
+      margin: 0;
+      padding: 0 !important;
+      border-radius: 0 !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      overflow: visible !important;
+      font-weight: 480 !important;
+      font-size: inherit !important;
+      line-height: inherit !important;
+      letter-spacing: inherit !important;
+      color: inherit !important;
+      min-width: var(--calm-word-min, 0px);
+      max-width: none;
+      transition:
+        opacity .8s cubic-bezier(.22, 1, .36, 1),
+        min-width .8s cubic-bezier(.22, 1, .36, 1),
+        color .8s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    .calm-now #calm2safe .text-rotating__sr {
+      /* keep a11y node out of layout/baseline calc */
+      position: absolute !important;
+    }
+
+    .calm-now #calm2safe .text-rotating__stage {
+      display: inline-flex !important;
+      align-items: baseline !important;
+      justify-content: flex-start !important;
+      vertical-align: baseline;
+      position: relative;
+      overflow: hidden;
+      line-height: inherit !important;
+      /* width morph only — height lock pulls glyph off baseline */
+      height: auto !important;
+      min-height: 0 !important;
+      max-height: none !important;
+      transition: width .8s cubic-bezier(.22, 1, .36, 1);
+    }
+
+    .calm-now #calm2safe .text-rotating__layer {
+      display: inline-flex !important;
+      align-items: baseline !important;
+      flex-wrap: nowrap !important;
+      white-space: nowrap !important;
+      line-height: inherit !important;
+      position: relative;
+    }
+
+    .calm-now #calm2safe .text-rotating__word {
+      display: inline !important;
+      padding: 0 !important;
+      padding-bottom: 0 !important;
+      margin: 0 !important;
+      overflow: visible !important;
+      vertical-align: baseline !important;
+      line-height: inherit !important;
+    }
+
+    .calm-now #calm2safe[data-fade-only] .text-rotating__el,
+    .calm-now #calm2safe .text-rotating__el {
+      display: inline !important;
+      vertical-align: baseline !important;
+      line-height: inherit !important;
+      font-weight: inherit !important;
+      color: inherit !important;
+      transform: none !important;
+      will-change: opacity;
+    }
+
+    /* Fade-only path: never slide — keep on the same baseline as “ache um lugar” */
+    .calm-now #calm2safe[data-engine="vanilla"] .text-rotating__el {
+      transform: none !important;
+    }
+    .calm-now #calm2safe[data-engine="vanilla"] .text-rotating__el.is-out {
+      transform: none !important;
+      opacity: 0;
+    }
+    .calm-now #calm2safe[data-engine="vanilla"] .text-rotating__el.is-in {
+      transform: none !important;
+      opacity: 1;
+    }
+
+    .choice__go {
+      display: grid;
+      place-items: center;
+      width: 3.35rem;
+      aspect-ratio: 1;
+      margin-top: .2rem;
+      border-radius: var(--r-pill, 999px);
+      background: var(--black, #0a0a0a);
+      color: #fff;
+      box-shadow: 0 18px 42px rgba(10,10,10,.12);
+      font-size: 1.22rem;
+      transition: transform var(--t-ui, .25s var(--ease, ease));
+    }
+
+    .help-hit:active .choice__go,
+    .dose-hit:active .choice__go {
+        transform: scale(.95);
+    }
+    
+    /* ── Emergency row: flex-start, wide column-gap, equal text-row metrics ── */
+    .urgent-numbers {
+      --em-fs: .625rem;
+      --em-lh: 1.3;
+      --em-row: calc(var(--em-fs) * var(--em-lh));
+      --em-num: 1.1rem;
+      --em-gap: clamp(2.75rem, 6.5vw, 4.75rem);
+
+      position: absolute;
+      z-index: 7;
+      left: max(var(--gate-pad), var(--safe-left, 0px));
+      bottom: max(var(--gate-pad), var(--safe-bottom, 0px));
+      display: flex;
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: flex-start;
+      column-gap: var(--em-gap);
+      row-gap: 0;
+      width: auto;
+      max-width: calc(100% - 2 * var(--gate-pad));
+      margin: 0;
+      padding: 0;
+      overflow: visible;
+      pointer-events: auto;
+      font-size: var(--em-fs);
+      line-height: var(--em-lh);
+    }
+
+    .urg-cont {
+      display: flex;
+      align-items: flex-end;
+      min-width: 0;
+      min-height: 0;
+    }
+
+    .emergency {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-end;
+      gap: 0;
+      margin: 0;
+      padding: 0;
+      color: var(--white-14);
+      text-decoration: none;
+      font-family: var(--ff-mono, ui-monospace, monospace);
+      font-size: var(--em-fs);
+      font-weight: 450;
+      letter-spacing: .01em;
+      line-height: var(--em-lh);
+      touch-action: manipulation;
+      white-space: nowrap;
+    }
+
+    /* Reserve a digit lane to the RIGHT of both text rows (not beside the short label only) */
+    .emergency:has(.emergency__num) {
+      padding-right: calc(var(--em-num) * 2.55);
+    }
+
+    /* Both text rows share the SAME box height — with or without a number */
+    .emergency__head,
+    .emergency__base {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      box-sizing: border-box;
+      height: var(--em-row);
+      min-height: var(--em-row);
+      max-height: var(--em-row);
+      margin: 0;
+      padding: 0;
+      line-height: var(--em-lh);
+      font-size: var(--em-fs);
+      color: var(--white-14);
+      overflow: visible;
+    }
+
+    .emergency__head {
+      gap: .35rem;
+    }
+
+    /* Icon lane — lighter than title (white-12 < white-14 opacity on light bg) */
+    .emergency__head i,
+    .emergency__head svg,
+    .emergency__icon {
+      color: var(--white-12);
+      fill: currentColor;
+      width: 23px;
+      height: 23px;
+      font-size: 23px;
+      font-weight: 100;
+      line-height: 1;
+      margin: -5px 0 4px 0px;
+      flex: 0 0 auto;
+      display: block;
+      flex-shrink: 0;
+      overflow: visible;
+    }
+
+    .emergency__head svg {
+      /* optical match to mono caption; avoid bold glyph weight */
+      shape-rendering: geometricPrecision;
+    }
+
+    .emergency__base {
+      gap: .4rem;
+      align-items: center;
+    }
+
+    .emergency__label {
+      display: inline-block;
+      line-height: var(--em-lh);
+      font-size: var(--em-fs);
+      color: var(--white-14);
+    }
+
+    /*
+      Digit lane: absolute to .emergency, right/bottom.
+      Never affects __head/__base height; never sits under longer first-line copy.
+    */
+    .emergency__num {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      margin: 0;
+      padding: 0;
+      color: var(--white-15);
+      font-size: var(--em-num);
+      font-weight: 650;
+      line-height: 1;
+      letter-spacing: -.02em;
+      white-space: nowrap;
+      pointer-events: none;
+      transform: none;
+    }
+
+    .emergency__jump {
+      font-size: 12px;
+      font-weight: 100;
+      line-height: 1;
+      color: var(--white-14);
+      opacity: .75;
+      margin: 0 0 0 .15rem;
+      flex: 0 0 auto;
+    }
+
+    @media (min-width: 990px) {
+      .urgent-numbers {
+        --em-gap: clamp(3.25rem, 5.5vw, 5.5rem);
+        --em-num: 1.15rem;
+        bottom: max(1.35rem, var(--safe-bottom, 0px));
+      }
+    }
+
+    /* ───────────────────────── OK / BLACK + HEAVEN RAYS ───────────────── */
+    .dose {
+      background: var(--black, #0a0a0a);
+      color: #fff;
+      z-index: 1;
+    }
+
+    .dose::before {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      left: 50%;
+      top: -13rem;
+      width: min(34rem, 92%);
+      height: 24rem;
+      translate: -50% 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(255,255,255,.28), rgba(255,255,255,.08) 28%, transparent 69%);
+      filter: blur(18px);
+      pointer-events: none;
+    }
+
+    .heaven-rays {
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+      opacity: .9;
+      transform: translateZ(0);
+    }
+
+    .ray {
+      position: absolute;
+      top: -20%;
+      left: 50%;
+      width: clamp(4.6rem, 10vw, 11rem);
+      height: 132%;
+      transform-origin: 50% 0%;
+      background: linear-gradient(180deg,
+        rgba(255,255,255,.44) 0%,
+        rgba(255,255,255,.16) 19%,
+        rgba(var(--rgb-primary,237,172,65),.065) 45%,
+        transparent 82%);
+      clip-path: polygon(44% 0, 56% 0, 100% 100%, 0 100%);
+      filter: blur(11px);
+      mix-blend-mode: screen;
+      will-change: transform, opacity;
+    }
+
+    .ray:nth-child(1) { margin-left: -39%; rotate: 12deg; opacity: .36; }
+    .ray:nth-child(2) { margin-left: -27%; rotate: 8deg;  opacity: .52; }
+    .ray:nth-child(3) { margin-left: -13%; rotate: 3deg;  opacity: .38; }
+    .ray:nth-child(4) { margin-left: -3%;  rotate: -1deg; opacity: .60; }
+    .ray:nth-child(5) { margin-left: 11%;  rotate: -5deg; opacity: .46; }
+    .ray:nth-child(6) { margin-left: 25%;  rotate: -9deg; opacity: .32; }
+    .ray:nth-child(7) { margin-left: 35%;  rotate: -13deg; opacity: .22; }
+
+    .dose-vignette {
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      background:
+        linear-gradient(180deg, transparent 0%, rgba(10,10,10,.04) 38%, rgba(10,10,10,.48) 100%),
+        radial-gradient(90% 100% at 50% 18%, transparent 0%, rgba(10,10,10,.18) 70%, rgba(10,10,10,.38) 100%);
+      pointer-events: none;
+    }
+
+    .dose .choice {
+      gap: .3rem;
+    }
+
+    .dose .choice__mini {
+      opacity: .37;
+    }
+
+    .dose .choice__title {
+      max-width: 14ch;
+      font-weight: 460;
+    }
+
+    .heart {
+      color: var(--alert-success, #2BA84A);
+      text-shadow: 0 0 24px color-mix(in srgb, var(--alert-success, #2BA84A) 52%, transparent);
+      font-family: var(--ff-main, system-ui, sans-serif);
+      font-size: .72em;
+      vertical-align: .11em;
+    }
+
+    .dose .choice__go {
+      background: rgba(255,255,255,.10);
+      border: 1px solid rgba(255,255,255,.18);
+      color: #fff;
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 18px 54px rgba(0,0,0,.32);
+      backdrop-filter: blur(16px);
+    }
+
+    .dose-label {
+      color: rgba(255,255,255,.4);
+	  font-family: system-ui!important;
+      font-size: var(--fs-p4)!important;
+	  font-weight: 300!important;
+      line-height: 1;
+      letter-spacing: .1em;
+	  word-spacing: 0.1rem;
+    }
+
+    .brand {
+      position: absolute;
+      z-index: 8;
+      top: max(var(--gate-pad), var(--safe-top, 0px));
+      left: max(var(--gate-pad), var(--safe-left, 0px));
+      display: inline-flex;
+      align-items: center;
+      gap: .52rem;
+      pointer-events: none;
+      font-family: var(--ff-mono, ui-monospace, monospace);
+      font-size: var(--fs-p5, .625rem);
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: rgba(10,10,10,.38);
+    }
+
+    .brand__mark {
+      width: .42rem;
+      aspect-ratio: 1;
+      border: 1px solid currentColor;
+      transform: rotate(45deg);
+    }
+
+    .split-line {
+      /* Seam between help (65) and dose (35) — NOT viewport center.
+         left:50% was drawing a hairline through the white help panel. */
+      position: absolute;
+      z-index: 6;
+      left: 65%;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(180deg,
+        transparent,
+        rgba(10,10,10,.04) 18%,
+        rgba(255,255,255,.10) 50%,
+        rgba(255,255,255,.06) 82%,
+        transparent);
+      pointer-events: none;
+    }
+
+    .help-hit:focus-visible,
+    .dose-hit:focus-visible,
+    .emergency:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 3px var(--primary, #EDAC41), inset 0 0 0 8px rgba(var(--rgb-primary,237,172,65),.16);
+    }
+
+    @media (hover:hover) and (pointer:fine) {
+      .help-hit:hover .choice__go,
+      .dose-hit:hover .choice__go {
+        transform: translateY(-3px);
+      }
+
+      .emergency:hover {
+        color: rgba(10, 10, 10, .78);
+      }
+
+      .emergency:hover .emergency__num {
+        color: rgba(10, 10, 10, .46);
+      }
+    }
+
+    /* Mobile = app-first: crisis 65% above, education 35% below. */
+    @media (max-width: 780px) {
+      .gateway {
+        grid-template-columns: 1fr;
+        grid-template-rows: 65dvh 35dvh;
+        height: 100dvh;
+        min-height: 100dvh;
+        max-height: 100dvh;
+      }
+
+      .panel {
+        min-height: 0;
+      }
+
+      .help,
+      .dose {
+        min-height: 0;
+      }
+
+      .help-hit,
+      .dose-hit {
+        padding:
+          max(.9rem, var(--safe-top, 0px))
+          max(1rem, var(--safe-right, 0px))
+          max(.9rem, var(--safe-bottom, 0px))
+          max(1rem, var(--safe-left, 0px));
+      }
+
+      .choice {
+        gap: .55rem;
+      }
+
+      .choice__title {
+        font-size: clamp(1.85rem, 8.4vw, 3.1rem);
+      }
+
+      .help .choice {
+        transform: translateY(-1.1rem);
+      }
+
+      .dose .choice {
+        gap: .45rem;
+        transform: none;
+      }
+
+      .dose .choice__title {
+        max-width: 12ch;
+        font-size: clamp(1.55rem, 7.2vw, 2.35rem);
+      }
+
+      .calm-now {
+        padding: .55rem .78rem;
+        font-size: clamp(.68rem, 2.8vw, .82rem);
+      }
+
+      .choice__go {
+        width: 2.75rem;
+        margin-top: 0;
+      }
+
+      .urgent-numbers {
+        --em-fs: .5625rem;
+        --em-num: 1.05rem;
+        --em-gap: clamp(1.85rem, 7vw, 2.75rem);
+        left: max(.75rem, var(--safe-left, 0px));
+        bottom: max(.55rem, var(--safe-bottom, 0px));
+        max-width: calc(100% - 1.2rem);
+        font-size: var(--em-fs);
+        justify-content: flex-start;
+      }
+
+      .emergency__head i,
+      .emergency__head svg {
+        width: 12px;
+        height: 12px;
+        font-size: 12px;
+      }
+
+      .brand {
+        top: max(.9rem, var(--safe-top, 0px));
+        left: 50%;
+        transform: translateX(-50%);
+      }
+
+      .split-line {
+        left: 0;
+        right: 0;
+        top: 65dvh;
+        bottom: auto;
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,.10) 22%, rgba(255,255,255,.16) 50%, rgba(255,255,255,.10) 78%, transparent);
+      }
+
+      .dose::before {
+        top: -10rem;
+        width: 96%;
+        height: 21rem;
+      }
+
+      .ray {
+        width: clamp(3.4rem, 18vw, 6.8rem);
+        height: 145%;
+        top: -30%;
+        filter: blur(9px);
+      }
+
+      .ray:nth-child(1) { margin-left: -47%; }
+      .ray:nth-child(2) { margin-left: -34%; }
+      .ray:nth-child(3) { margin-left: -20%; }
+      .ray:nth-child(4) { margin-left: -5%; }
+      .ray:nth-child(5) { margin-left: 11%; }
+      .ray:nth-child(6) { margin-left: 27%; }
+      .ray:nth-child(7) { margin-left: 41%; }
+
+      .dose-label {
+        font-size: clamp(.68rem, 3.1vw, .82rem);
+        line-height: 1.25;
+        max-width: 28ch;
+        white-space: normal;
+      }
+    }
+
+    @media (max-height: 620px) and (max-width: 780px) {
+      .gateway { grid-template-rows: 62dvh 38dvh; }
+      .split-line { top: 62dvh; }
+      .choice__title { font-size: clamp(1.55rem, 7.2vw, 2.4rem); }
+      .dose .choice__title { font-size: clamp(1.35rem, 6.2vw, 2rem); }
+      .choice__go { width: 2.45rem; }
+      .calm-now { font-size: .66rem; padding: .42rem .62rem; white-space: normal; }
+      .urgent-numbers { bottom: max(.4rem, var(--safe-bottom, 0px)); }
+    }
+	
+	@media (min-width:999px) {
+	.dose .choice { transform: translateY(100px) !important; }
+	}
+	
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: .001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .001ms !important;
+        scroll-behavior: auto !important;
+      }
+      .cloud,
+      .ray,
+      .heaven-rays { transform: none !important; }
+    }
+	
+	.calm-now, .dose-label { margin: 25px auto 35px !important; }
+  </style>
+</head>
+<body>
+  <main class="gateway" aria-label="SOS Apollo">
+
+    <section class="panel help" data-panel="help">
+      <div class="cloud cloud--a" aria-hidden="true"></div>
+      <div class="cloud cloud--b" aria-hidden="true"></div>
+      <div class="cloud cloud--c" aria-hidden="true"></div>
+
+      <a class="help-hit" id="help-link" href="./app/" aria-label="Preciso de ajuda agora — para qualquer momento difícil">
+        <div class="choice">
+          <span class="choice__mini">Sem julgamento · para qualquer dor</span>
+          <h1 class="choice__title">Preciso de ajuda agora</h1>
+          <div class="calm-now" id="calmNow" aria-label="Primeiros passos: sente, respire e ache um lugar calmo">
+            <span class="calm-part is-hot" data-part="0">Sente</span>
+            <span class="calm-sep" aria-hidden="true">·</span>
+            <span class="calm-part" data-part="1">respire devagar</span>
+            <span class="calm-sep" aria-hidden="true">·</span>
+            <span class="calm-part" data-part="2">ache um lugar <span class="calm-word" id="calm2safe" data-listed='["calmo","seguro","gentil","leve","quieto"]'>calmo</span></span>
+          </div>
+          <span class="choice__go" aria-hidden="true"><i class="ri-arrow-right-line"></i></span>
+        </div>
+      </a>
+      <div class="urgent-numbers" role="navigation" aria-label="Contatos de emergência">
+        <div class="urg-cont uc1">
+          <a class="emergency" href="tel:192" aria-label="Ligar para o SAMU no número 192">
+            <span class="emergency__head">
+              <svg class="emergency__icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="14" height="14" aria-hidden="true"><path d="M 18.2624 16.8383 C 17.4235 16.8383 16.8992 17.7465 17.3186 18.473 C 17.5133 18.8101 17.873 19.0178 18.2624 19.0178 C 19.1012 19.0178 19.6256 18.1097 19.2061 17.3832 C 19.0115 17.046 18.6517 16.8383 18.2624 16.8383 Z M 5.22281 16.8186 C 4.38412 16.8183 3.86002 17.7259 4.27862 18.4525 C 4.47302 18.7897 4.83261 18.9975 5.22192 18.9976 C 6.06062 18.998 6.58512 18.0903 6.16611 17.3638 C 5.97161 17.0266 5.61202 16.8188 5.22281 16.8186 Z M 10.8344 7.2251 L 8.29382 7.2251 L 8.29382 9.7657 L 5.75282 9.7657 L 5.75282 12.3068 L 8.29382 12.3068 L 8.29382 14.8469 L 10.8344 14.8469 L 10.8344 12.3068 L 13.375 12.3068 L 13.375 9.7657 L 10.8344 9.7657 L 10.8344 7.2251 Z M 16.507322 5.72142 L 16.507322 5.41272 C 16.507322 4.86372 16.987222 4.41942 17.581022 4.41942 C 18.173822 4.41942 18.653222 4.86372 18.653222 5.41272 L 18.653222 5.72142 L 16.507322 5.72142 Z M 5.21802 20.1833 C 3.96012 20.1833 2.94001 19.1636 2.94001 17.9057 C 2.94102 16.6478 3.96012 15.628 5.21802 15.6272 C 6.97171 15.6272 8.06771 17.5256 7.19092 19.0443 C 6.78392 19.7491 6.03191 20.1833 5.21802 20.1833 Z M 18.2628 20.2064 C 16.509 20.1622 15.4606 18.2361 16.3758 16.7393 C 16.7792 16.0795 17.4897 15.6692 18.2628 15.6498 C 19.5202 15.6498 20.5395 16.6696 20.5395 17.9278 C 20.5395 19.1861 19.5206 20.2064 18.2628 20.2064 Z M 22.8901 17.9317 L 21.2208 17.9317 C 21.2208 16.2974 19.8966 14.9675 18.2624 14.9675 C 16.6276 14.9675 15.3025 16.2974 15.3025 17.9317 L 8.16872 17.9317 C 8.16872 16.2974 6.84412 14.9675 5.20981 14.9675 C 3.57502 14.9675 2.25001 16.2974 2.25001 17.9317 L 0.86601 17.9317 C 0.37901 17.9317 0.00002 17.5629 0.00002 17.0869 L 0.00002 7.1202 C 0.00002 6.5774 0.42801 6.1408 0.95401 6.1408 L 18.8639 6.1408 C 19.5447 6.1408 20.0423 6.4788 20.288 7.0707 L 22.0862 11.4484 C 22.7666 11.5812 23.1743 11.8749 23.4815 13.5544 L 23.9675 16.5854 C 24.1425 17.572 23.5854 17.9317 22.8901 17.9317 Z M 16.117 7.1572 L 16.117 11.2975 L 20.9044 11.2975 L 19.2254 7.1572 L 16.117 7.1572 Z"></path></svg>
+              Emergência ou
+            </span>
+            <span class="emergency__base">
+              <span class="emergency__label">Resgate</span>
+              <b class="emergency__num">192</b>
+            </span>
+          </a>
+        </div>
+        <div class="urg-cont uc2">
+          <a class="emergency" href="tel:188" aria-label="Ligar para o CVV no número 188">
+            <span class="emergency__head">
+              <i class="ri-psychotherapy-fill" aria-hidden="true" style="margin: -2px 0 2px 0px !important;"></i>
+              Falar com
+            </span>
+            <span class="emergency__base">
+              <span class="emergency__label">alguém</span>
+              <b class="emergency__num">188</b>
+            </span>
+          </a>
+        </div>
+        <div class="urg-cont uc3">
+          <a class="emergency emergency--sus" href="#popup" aria-label="Encontrar hospital ou CAPS público de urgência psiquiátrica mais perto">
+            <span class="emergency__head">
+              <i class="ri-hospital-fill" style="font-size:20px!important; margin:-2px 0 1px 0!important" aria-hidden="true"></i>
+              Ajuda Médica
+            </span>
+            <span class="emergency__base">
+              <span class="emergency__label">SUS Urgente</span>
+              <i class="ri-arrow-right-up-line emergency__jump" aria-hidden="true"></i>
+            </span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel dose" data-panel="dose">
+      <div class="heaven-rays" aria-hidden="true">
+        <span class="ray"></span>
+        <span class="ray"></span>
+        <span class="ray"></span>
+        <span class="ray"></span>
+        <span class="ray"></span>
+        <span class="ray"></span>
+        <span class="ray"></span>
+      </div>
+      <div class="dose-vignette" aria-hidden="true"></div>
+
+      <a class="dose-hit" id="dose-link" href="./somar/" aria-label="Estou bem agora e quero cuidar de mim com calma">
+        <div class="choice">
+          <span class="choice__mini">conhecimento que salva</span>
+          <h2 class="choice__title">Dose de<br>consciência</h2>
+          <span class="dose-label">Quero mais Equilíbrio, Paz, Auto-Controle<br> cuidar de mim e de quem eu amo</span>
+          <span class="choice__go" aria-hidden="true"><i class="ri-arrow-right-line"></i></span>
+        </div>
+      </a>
+    </section>
+
+    <div class="brand" aria-hidden="true"><span class="brand__mark"></span>Apollo</div>
+    <div class="split-line" aria-hidden="true"></div>
+  </main>
+
+  <script src="../../_lib/AI-TEXT-THINKING-THOUGHTS/ai-thinking-thouhjts.js" defer></script>
+  <script src="../../_lib/TEXT-ROTATING/text-rotating.js"></script>
+
+  <script>
+    window.APOLLO_GATEWAY_ROUTES = window.APOLLO_GATEWAY_ROUTES || {
+      help: './app/',
+      dose: './somar/',
+      somar: './somar/'
+    };
+  </script>
+
+  <!-- core.js executes this only after its async GSAP/runtime boot is ready. -->
+  <script type="text/apollo-defer" data-apollo-when="ready">
+    (function apolloGatewayCalmMotion() {
+      var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var routes = window.APOLLO_GATEWAY_ROUTES || {};
+      var helpLink = document.getElementById('help-link');
+      var doseLink = document.getElementById('dose-link');
+      var dose = document.querySelector('[data-panel="dose"]');
+      var rays = gsap.utils.toArray('.ray');
+      var clouds = gsap.utils.toArray('.cloud');
+
+      if (routes.help) helpLink.href = routes.help;
+      if (routes.somar || routes.dose) doseLink.href = routes.somar || routes.dose;
+
+      /* ── calm-now: long hold, soft highlight, morphing place-word — crisis-safe ── */
+      (function calmNowCycle() {
+        var root = document.getElementById('calmNow');
+        var wordEl = document.getElementById('calm2safe');
+        if (!root || !wordEl) return;
+        var parts = Array.prototype.slice.call(root.querySelectorAll('.calm-part'));
+        var words = ['calmo', 'seguro', 'gentil', 'leve', 'quieto'];
+        try {
+          var listed = wordEl.getAttribute('data-listed');
+          if (listed) words = JSON.parse(listed);
+        } catch (e) {}
+        /* Calm but not sleepy — soft pace, still crisis-safe */
+        var stepHold = 4800;
+        var wordHold = 6200;
+        var partIdx = 0;
+        var wordIdx = 0;
+        var wordLoop = null;
+        var morphApi = null;
+        var timers = [];
+
+        function clearTimers() {
+          timers.forEach(function (t) { clearTimeout(t); });
+          timers = [];
+          if (wordLoop && wordLoop.stop) wordLoop.stop();
+          wordLoop = null;
+          if (morphApi && typeof morphApi.destroy === 'function') {
+            try { morphApi.destroy(); } catch (err) {}
+          }
+          morphApi = null;
+        }
+
+        function setHot(i) {
+          parts.forEach(function (p, n) {
+            p.classList.toggle('is-hot', n === i);
+          });
+        }
+
+        /* Reserve max word width so the pill never snaps when the place-word grows */
+        function reserveWordWidth() {
+          var probe = document.createElement('span');
+          var cs = window.getComputedStyle(wordEl);
+          probe.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap;pointer-events:none;font:' + cs.font + ';letter-spacing:' + cs.letterSpacing + ';';
+          document.body.appendChild(probe);
+          var max = 0;
+          words.forEach(function (w) {
+            probe.textContent = w;
+            max = Math.max(max, probe.offsetWidth);
+          });
+          document.body.removeChild(probe);
+          if (max > 0) {
+            wordEl.style.setProperty('--calm-word-min', max + 'px');
+            wordEl.style.minWidth = max + 'px';
+          }
+        }
+
+        function paintWordSoft(i) {
+          var next = words[i % words.length];
+          if (reduce) {
+            wordEl.textContent = next;
+            return;
+          }
+          wordEl.style.opacity = '0';
+          timers.push(setTimeout(function () {
+            wordEl.textContent = next;
+            wordEl.style.opacity = '1';
+          }, 320));
+        }
+
+        function startWordLoop() {
+          reserveWordWidth();
+          wordIdx = 0;
+
+          if (window.TextRotating && typeof TextRotating.init === 'function') {
+            morphApi = TextRotating.init(wordEl, {
+              texts: words,
+              rotationInterval: wordHold,
+              duration: 0.92,
+              morphDuration: 0.78,
+              reserveMaxWidth: true,
+              morphHeight: false,
+              fadeOnly: true,
+              staggerDuration: 0,
+              staggerFrom: 'center',
+              splitBy: 'words',
+              auto: true,
+              loop: true,
+              background: 'transparent',
+              color: 'inherit',
+              radius: 0,
+              shadow: 0,
+              boxShadow: 'none',
+              paddingX: 0,
+              paddingY: 0,
+              ease: 'sine.inOut'
+            });
+            timers.push(setTimeout(function () {
+              if (morphApi && typeof morphApi.destroy === 'function') {
+                try { morphApi.destroy(); } catch (err) {}
+              }
+              morphApi = null;
+              wordEl.textContent = words[0];
+              wordEl.style.opacity = '1';
+              wordIdx = 0;
+              partIdx = 0;
+              runStep();
+            }, wordHold * words.length));
+            return;
+          }
+
+          /* Fallback: soft opacity crossfade + reserved width */
+          paintWordSoft(0);
+          wordLoop = {
+            _t: setInterval(function () {
+              wordIdx = (wordIdx + 1) % words.length;
+              paintWordSoft(wordIdx);
+            }, wordHold),
+            stop: function () { clearInterval(this._t); }
+          };
+
+          timers.push(setTimeout(function () {
+            if (wordLoop && wordLoop.stop) wordLoop.stop();
+            wordLoop = null;
+            wordIdx = 0;
+            paintWordSoft(0);
+            partIdx = 0;
+            runStep();
+          }, wordHold * words.length));
+        }
+
+        function runStep() {
+          if (reduce) {
+            setHot(0);
+            wordEl.textContent = words[0];
+            reserveWordWidth();
+            return;
+          }
+          setHot(partIdx);
+          if (partIdx < 2) {
+            timers.push(setTimeout(function () {
+              partIdx += 1;
+              runStep();
+            }, stepHold));
+          } else {
+            startWordLoop();
+          }
+        }
+
+        clearTimers();
+        reserveWordWidth();
+        wordEl.textContent = words[0];
+        wordEl.style.opacity = '1';
+        runStep();
+      })();
+
+      if (reduce) return;
+
+      /* Nothing snaps or flashes. One soft arrival, then almost-static ambience. */
+      gsap.set('.choice', { opacity: 0, y: 9 });
+      gsap.set('.emergency, .brand', { opacity: 0 });
+      gsap.set(rays, { opacity: 0 });
+
+      gsap.timeline({ defaults: { ease: 'sine.out' } })
+        .to('.choice', { opacity: 1, y: 0, duration: 1.05, stagger: .12 }, .08)
+        .to('.emergency, .brand', { opacity: 1, duration: 1.1, stagger: .08 }, .38)
+        .to(rays, {
+          opacity: function(i) { return [.36,.52,.38,.60,.46,.32,.22][i] || .3; },
+          duration: 2.1,
+          stagger: .08
+        }, .25);
+
+      /* White sky: drifting clouds, barely perceptible. */
+      clouds.forEach(function(cloud, i) {
+        gsap.to(cloud, {
+          xPercent: i % 2 ? -4 : 4,
+          yPercent: i === 2 ? -5 : 3,
+          scale: i === 1 ? 1.04 : 1.025,
+          duration: 18 + (i * 4),
+          repeat: -1,
+          yoyo: true,
+          ease: 'sine.inOut'
+        });
+      });
+
+      /* Array of light from above: slow, soft, no flashing. */
+      rays.forEach(function(ray, i) {
+        gsap.to(ray, {
+          rotation: (i - 3) * .42,
+          xPercent: i % 2 ? 2.5 : -2.5,
+          scaleX: i % 3 === 0 ? 1.06 : .96,
+          opacity: '+=' + (i % 2 ? .055 : .035),
+          duration: 14 + (i * 1.7),
+          repeat: -1,
+          yoyo: true,
+          ease: 'sine.inOut'
+        });
+      });
+
+      /* Mouse influence is intentionally tiny; mobile gets no reactive motion. */
+      if (window.matchMedia('(hover:hover) and (pointer:fine)').matches) {
+        var rayWrap = document.querySelector('.heaven-rays');
+        var qx = gsap.quickTo(rayWrap, 'x', { duration: 1.8, ease: 'power2.out' });
+        var qy = gsap.quickTo(rayWrap, 'y', { duration: 1.8, ease: 'power2.out' });
+
+        dose.addEventListener('pointermove', function(e) {
+          var r = dose.getBoundingClientRect();
+          var nx = ((e.clientX - r.left) / r.width) - .5;
+          var ny = ((e.clientY - r.top) / r.height) - .5;
+          qx(nx * 6);
+          qy(ny * 4);
+        }, { passive: true });
+
+        dose.addEventListener('pointerleave', function() {
+          qx(0); qy(0);
+        }, { passive: true });
+      }
+
+      /* Lenis is already available through core.js, but this gateway has no scroll by design. */
+    })();
+  </script>
+</body>
+</html>

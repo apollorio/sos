@@ -1,0 +1,87 @@
+flowchart TD
+  START(["▶ Triagem C-SSRS (oculta)"]) --> cssrs_c1
+  cssrs_c1{"<b>c1</b><br/>Preciso fazer algumas perguntas rápidas.. uma de cada vez. Nos último…"}
+  class cssrs_c1 choice,risk
+  cssrs_c1_yes[["<b>c1_yes</b><br/>Obrigado por responder. Antes da próxima pergunta.. uma respiração cu…<br/>☐ Respiração 4-6 (3 vezes) ⟨breath_guide⟩"]]
+  class cssrs_c1_yes task
+  cssrs_c2{"<b>c2</b><br/>Você teve pensamentos de acabar com a vida?"}
+  class cssrs_c2 choice
+  cssrs_c2_yes("<b>c2_yes</b><br/>Pensamentos pesados são sérios.. e você não precisa carregar sozinho.…")
+  class cssrs_c2_yes info
+  cssrs_c3{"<b>c3</b><br/>Você pensou como faria isso?"}
+  class cssrs_c3 choice
+  cssrs_c3_yes[["<b>c3_yes</b><br/>Antes de continuar.. choque térmico suave:<br/>☐ Água fria no rosto"]]
+  class cssrs_c3_yes task
+  cssrs_c4{"<b>c4</b><br/>Você teve esses pensamentos e intenção de agir?"}
+  class cssrs_c4 choice
+  cssrs_c4_yes[["<b>c4_yes</b><br/>Intenção ativa pede desacelerar o corpo agora.. box breathing:<br/>☐ Box breathing 4×4 (4 ciclos) ⟨breath_guide⟩"]]
+  class cssrs_c4_yes task
+  cssrs_c5{"<b>c5</b><br/>Você tem um plano elaborado ou intenção de cumprir?"}
+  class cssrs_c5 choice
+  cssrs_c6{"<b>c6</b><br/>Nos últimos 3 meses, você fez ou preparou algo para se machucar?"}
+  class cssrs_c6 choice
+  cssrs_c6_past{{"<b>c6_past</b><br/>Histórico passado ainda importa. Reforço de apoio humano agora:<br/>📞 CVV — 188 (gratuito, 24h)"}}
+  class cssrs_c6_past action
+  cssrs_emergent_panel{{"<b>emergent_panel</b><br/>Isso é urgente. Você merece ajuda humana agora.. ligue ou peça para a…<br/>📞 CVV — 188 (agora)<br/>📞 SAMU — 192"}}
+  class cssrs_emergent_panel action,risk
+  cssrs_lethal_means[["<b>lethal_means</b><br/>Segurança física agora.. meios letais precisam de distância:<br/>☐ Comprimidos / remédios<br/>☐ Armas / objetos cortantes<br/>☐ Altura / locais de risco"]]
+  class cssrs_lethal_means task,risk
+  cssrs_caps_nearby{{"<b>caps_nearby</b><br/>CAPS III no Rio.. atendimento 24h pelo SUS:<br/>📞 Ver CAPS III Rio (7 unidades)<br/>📞 CVV — 188"}}
+  class cssrs_caps_nearby action
+  cssrs_coping_entry{"<b>coping_entry</b><br/>Continuo aqui. O que mais ajuda agora?"}
+  class cssrs_coping_entry choice
+  cssrs_triggers_map{"<b>triggers_map</b><br/>O que disparou ou intensificou isso agora?"}
+  class cssrs_triggers_map choice
+  cssrs_hope_box[["<b>hope_box</b><br/>Caixa de esperança.. uma coisa de cada vez:<br/>☐ Abre 1–2 fotos que te acalmem<br/>☐ Escreve 3 razões para ficar hoje<br/>☐ Relê uma mensagem antiga boa"]]
+  class cssrs_hope_box task
+  cssrs_redirect_falar[/"<b>redirect_falar</b><br/>Vamos continuar o apoio emocional com passos práticos.<br/>↪ Continuar no fluxo Tô sozinho?"/]
+  class cssrs_redirect_falar redirect
+  cssrs_redirect_torto[/"<b>redirect_torto</b><br/>Substâncias podem intensificar pensamentos pesados.. temos suporte es…<br/>↪ Ir para Bateu Forte?"/]
+  class cssrs_redirect_torto redirect
+  cssrs_c1 -->|"Sim ⚠LOW"| cssrs_c1_yes
+  cssrs_c1 -->|"Não"| cssrs_c2
+  cssrs_c1_yes ==>|"continuo aqui"| cssrs_c2
+  cssrs_c2 -->|"Sim ⚠MODERATE"| cssrs_c2_yes
+  cssrs_c2 -->|"Não"| cssrs_coping_entry
+  cssrs_c2_yes -.->|continuar| cssrs_c3
+  cssrs_c3 -->|"Sim ⚠MODERATE"| cssrs_c3_yes
+  cssrs_c3 -->|"Não"| cssrs_c4
+  cssrs_c3_yes ==>|"feito"| cssrs_c4
+  cssrs_c4 -->|"Sim ⚠HIGH"| cssrs_c4_yes
+  cssrs_c4 -->|"Não"| cssrs_c5
+  cssrs_c4_yes ==>|"respirei"| cssrs_c5
+  cssrs_c5 -->|"Sim ⚠HIGH"| cssrs_lethal_means
+  cssrs_c5 -->|"Não"| cssrs_c6
+  cssrs_c6 -->|"Sim, recentemente ⚠EMERGENT"| cssrs_emergent_panel
+  cssrs_c6 -->|"Sim, mas faz tempo ⚠MODERATE"| cssrs_c6_past
+  cssrs_c6 -->|"Não"| cssrs_coping_entry
+  cssrs_c6_past -.->|continuar| cssrs_coping_entry
+  cssrs_emergent_panel -.->|continuar| cssrs_lethal_means
+  cssrs_lethal_means ==>|"mais seguro"| cssrs_caps_nearby
+  cssrs_caps_nearby -.->|continuar| cssrs_coping_entry
+  cssrs_coping_entry -->|"Entender o que disparou isso"| cssrs_triggers_map
+  cssrs_coping_entry -->|"Ver fotos / razões para ficar"| cssrs_hope_box
+  cssrs_coping_entry -->|"Voltar ao fluxo de apoio"| cssrs_redirect_falar
+  cssrs_triggers_map -->|"Imagem ou pensamento intrusivo"| cssrs_redirect_falar
+  cssrs_triggers_map -->|"Loop de pensamentos"| cssrs_redirect_falar
+  cssrs_triggers_map -->|"Perda ou luto"| cssrs_redirect_falar
+  cssrs_triggers_map -->|"Substância ou álcool"| cssrs_redirect_torto
+  cssrs_triggers_map -->|"Não sei"| cssrs_redirect_falar
+  cssrs_hope_box ==>|"guardei"| cssrs_redirect_falar
+  cssrs_redirect_falar -->|ficar aqui| cssrs_coping_entry
+  cssrs_redirect_falar -->|"ir para falar"| FLOW_falar
+  cssrs_redirect_torto -->|ficar aqui| cssrs_coping_entry
+  cssrs_redirect_torto -->|"ir para torto"| FLOW_torto
+  FLOW_falar(["→ fluxo falar"])
+  class FLOW_falar ext
+  FLOW_torto(["→ fluxo torto"])
+  class FLOW_torto ext
+  classDef choice fill:#1b1030,stroke:#a855f7,color:#eee
+  classDef info fill:#0f1a24,stroke:#38bdf8,color:#ddd
+  classDef task fill:#0f2419,stroke:#34d399,color:#ddd
+  classDef action fill:#2a0f12,stroke:#ef4444,color:#fff,stroke-width:2px
+  classDef redirect fill:#241a0a,stroke:#f59e0b,color:#eee
+  classDef endn fill:#111,stroke:#fff,color:#fff,stroke-width:3px
+  classDef orphan stroke-dasharray:6 4,opacity:0.55
+  classDef risk stroke:#ff0055,stroke-width:4px
+  classDef ext fill:#333,stroke:#999,color:#fff

@@ -1,0 +1,36 @@
+flowchart TD
+  HOME(["🏠 Home · Orb respiração 4-2-6 + 6 opções"])
+  torto["Bateu Forte · Usei algo<br/>31 nós · start=a1"]
+  HOME --> torto
+  panico["Pânico · Ansiedade<br/>28 nós · start=a1"]
+  HOME --> panico
+  realidade["Onde eu tô? · Irrealidade<br/>25 nós · start=a1"]
+  HOME --> realidade
+  trava["Paranoia · Medo constante<br/>27 nós · start=a1"]
+  HOME --> trava
+  falar["Solidão · Desespero<br/>35 nós · start=a1"]
+  HOME --> falar
+  samu["Resgate · Urgência<br/>26 nós · start=instant_rescue"]
+  HOME --> samu
+  cssrs["Triagem C-SSRS (oculta)<br/>19 nós · start=c1"]
+  torto -->|"redirect_panico"| panico
+  torto -->|"redirect_trava"| trava
+  panico -->|"redirect_torto"| torto
+  realidade -->|"a2_substance"| torto
+  realidade -->|"redirect_panico"| panico
+  trava -->|"redirect_panico"| panico
+  trava -->|"redirect_realidade"| realidade
+  falar -->|"a3_unsure"| samu
+  falar -->|"redirect_torto"| torto
+  falar -->|"cssrs_entry"| cssrs
+  cssrs -->|"redirect_falar"| falar
+  cssrs -->|"redirect_torto"| torto
+  EXIT(["recolher · fico por perto (fecha sheet)"])
+  torto -.-> EXIT
+  panico -.-> EXIT
+  realidade -.-> EXIT
+  trava -.-> EXIT
+  falar -.-> EXIT
+  samu -.-> EXIT
+  cssrs -.-> EXIT
+  EXIT -.-> HOME
