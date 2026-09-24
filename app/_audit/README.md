@@ -11,7 +11,8 @@ This folder is the permanent record of each audit phase. Every phase gets its ow
 | C3 | n/a | ✅ resolved | 2026-09-23 | Removed the debug `fetch` to `127.0.0.1:7796` from `plogAudio` in `script.js` (now a no-op; the GSAP-ticker call site listed in `000-mapa-do-projeto.md` §C3 was already gone). No other localhost fetches remain. Cache-bust `script.js?v=1.1.2`. Backups in `.superseeded/*pre-C3 2026-09-23*`. |
 | 002 | `002-continuidade/` | ✅ plan + foundations | 2026-09-24 | Blueprint v0.2 (two planes: acute core + 180-day pseudonymous continuity vault), laws L13–L20, invariants INV-019–026, journal/snapshot/priors/summaries/capsules + crypto with tests; toolchain files restored to `_system` root. See `002-continuidade/002-plano-continuidade.md` |
 | 002-c | `002-conteudo/` | 🔜 | n/a | Flows and content vs. frequency (motivational / techniques / therapy / regulation) |
-| 003 | `003-melhorias/` | 🔜 | n/a | Improvements built on 001 + 002 |
+| 003 | `003-auditoria-adversarial/` | ✅ audit (no code changed) | 2026-09-24 | Independent hostile audit of engine + production: verdict STRUCTURALLY MISALIGNED (production serves legacy flows, `core.js`, no CSP) / PARTIALLY COMPLIANT (engine) with one UNSAFE data defect (`breath_pacer` eligible with breathing=abnormal), stale-bundle deploy risk, continuity plane dead in production, false claims listed. See `003-auditoria-adversarial/003-adversarial-audit.md` |
+| 003-m | `003-melhorias/` | 🔜 | n/a | Improvements built on 001 + 002 |
 | 004–008 | n/a | off-computer | n/a | Hospitals, government, partnerships |
 
 ## Rules for this trail
