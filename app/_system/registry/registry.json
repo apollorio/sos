@@ -1,0 +1,1620 @@
+{
+  "$schema": "./registry.schema.json",
+  "meta": {
+    "app": "sos.apollo.rio.br",
+    "name": "SOS Apollo — Harm Control Runtime",
+    "registryVersion": "0.1.0",
+    "engineContract": 1,
+    "defaultLocale": "pt-BR",
+    "region": "BR",
+    "status": "draft",
+    "notes": "Single source of truth. Every ID used anywhere in code, locale or tests must be declared here. Changing this file requires: npm run registry:check (codegen + lint) and clinical review for any rule/card touching P0 or P1."
+  },
+  "conventions": {
+    "idPatterns": {
+      "signal": "^[a-z][a-zA-Z]+$",
+      "hardRule": "^HR-\\d{3}$",
+      "bandRule": "^BR-P[0-3]-\\d{2}$",
+      "policyRule": "^P[1-3]-\\d{3}$",
+      "question": "^Q_[A-Z_]+$",
+      "card": "^CARD_[A-Z0-9_]+$",
+      "skill": "^[a-z]+(_[a-z]+)*$",
+      "strategy": "^[a-z]+(_[a-z0-9]+)*$",
+      "commitment": "^[A-Z]+(_[A-Z]+)*$",
+      "textTrigger": "^TT-\\d{3}$",
+      "invalidation": "^INVAL-\\d{3}$",
+      "invariant": "^INV-\\d{3}$",
+      "law": "^L\\d{2}$",
+      "chip": "^CHIP_[A-Z_]+$"
+    },
+    "rules": [
+      "IDs are append-only. Never reuse a retired ID; mark it deprecated instead.",
+      "Numeric suffixes leave gaps of 10 in policy tables so rules can be inserted without renumbering.",
+      "Predicates are data (JSON DSL), never code. The explanation log is generated from the same predicate tree, so logic and 'why' can never drift apart.",
+      "Every card copy lives in registry/locales/<locale>.json and carries a review status."
+    ]
+  },
+  "laws": [
+    {
+      "id": "L01",
+      "text": "Event is fact. The app only records what it actually observed (a tap is a tap, not a completed call)."
+    },
+    { "id": "L02", "text": "State is temporary. Explicit event beats TTL; TTL beats stale data." },
+    { "id": "L03", "text": "Escalate fast, de-escalate slow. Time never lowers severity; only explicit events do." },
+    { "id": "L04", "text": "Hard rules beat everything. One P0 has exactly one commander (first matching rule wins)." },
+    { "id": "L05", "text": "P0 does not optimize, it executes. Nothing is asked before the emergency action." },
+    { "id": "L06", "text": "Silence raises uncertainty; it never invents a symptom. Background is not silence." },
+    {
+      "id": "L07",
+      "text": "One foreground action, N background effects. The higher the criticality, the smaller the interface."
+    },
+    { "id": "L08", "text": "Ask only what can change what happens next (value of information)." },
+    { "id": "L09", "text": "'Não consigo' invalidates the strategy, never the person." },
+    { "id": "L10", "text": "Actor defines perspective, never identity. No login, no names, no phone numbers stored." },
+    { "id": "L11", "text": "Emergency access does not depend on JavaScript staying alive. The app fails to the shell." },
+    { "id": "L12", "text": "The real world beats the app. Nothing (captcha, network, onboarding) ever gates help." }
+  ],
+  "regions": {
+    "BR": {
+      "numbers": {
+        "emergency": { "tel": "192", "display": "192", "service": "SAMU" },
+        "crisis_line": { "tel": "188", "display": "188", "service": "CVV" },
+        "poison": {
+          "tel": "08007226001",
+          "display": "0800 722 6001",
+          "service": "Disque-Intoxicação (Anvisa/Renaciat)"
+        },
+        "police": { "tel": "190", "display": "190", "service": "Polícia Militar" },
+        "fire": { "tel": "193", "display": "193", "service": "Bombeiros" }
+      }
+    }
+  },
+  "bands": [
+    { "id": "P0", "rank": 0, "meaning": "Possible immediate emergency. Bypass everything. Execute." },
+    { "id": "P1", "rank": 1, "meaning": "Safety or company must be stabilized first." },
+    { "id": "P2", "rank": 2, "meaning": "Significant distress, but interactive." },
+    { "id": "P3", "rank": 3, "meaning": "Stable. Light support and check-ins." }
+  ],
+  "sources": ["user_explicit", "text_trigger", "derived_rule", "system"],
+  "signals": [
+    {
+      "id": "actor",
+      "domain": ["self", "helper", "unknown"],
+      "ttlSec": null,
+      "latched": [],
+      "critical": false,
+      "doc": "Who is holding the phone. Perspective only."
+    },
+    {
+      "id": "responsiveness",
+      "domain": ["responsive", "impaired", "unresponsive", "unknown"],
+      "ttlSec": 600,
+      "latched": ["unresponsive"],
+      "critical": true
+    },
+    {
+      "id": "breathing",
+      "domain": ["normal", "abnormal", "severely_abnormal", "unknown"],
+      "ttlSec": 600,
+      "ttlByValue": { "abnormal": 180 },
+      "latched": ["severely_abnormal"],
+      "critical": true
+    },
+    { "id": "chest", "domain": ["no", "yes", "unknown"], "ttlSec": 900, "latched": ["yes"], "critical": true },
+    { "id": "seizure", "domain": ["no", "yes", "unknown"], "ttlSec": 900, "latched": ["yes"], "critical": true },
+    {
+      "id": "syncope",
+      "domain": ["no", "yes", "unknown"],
+      "ttlSec": null,
+      "latched": ["yes"],
+      "critical": true,
+      "doc": "Fainting reported (text trigger). Proposed; clinical review."
+    },
+    {
+      "id": "selfHarm",
+      "domain": ["no", "yes", "unknown"],
+      "ttlSec": null,
+      "latched": ["yes"],
+      "critical": true,
+      "doc": "Self-harm intent reported (text trigger). Proposed; clinical review."
+    },
+    {
+      "id": "physicallyUnsafe",
+      "domain": ["no", "yes", "unknown"],
+      "ttlSec": 900,
+      "latched": ["yes"],
+      "critical": true
+    },
+    { "id": "anxiety", "domain": [0, 1, 2, 3, 4, "unknown"], "ttlSec": 300, "latched": [], "critical": false },
+    {
+      "id": "noise",
+      "domain": ["quiet", "moderate", "loud", "unknown"],
+      "ttlSec": 600,
+      "latched": [],
+      "critical": false
+    },
+    { "id": "company", "domain": ["alone", "with_someone", "unknown"], "ttlSec": 900, "latched": [], "critical": false },
+    {
+      "id": "companion",
+      "domain": ["none", "coming", "arrived", "unknown"],
+      "ttlSec": 3600,
+      "latched": [],
+      "critical": false
+    },
+    {
+      "id": "substanceClass",
+      "domain": ["none", "stim", "downer", "psychedelic", "unknown"],
+      "ttlSec": 14400,
+      "latched": [],
+      "critical": false,
+      "explicitOnly": true,
+      "doc": "Operational context only. Never inferred from symptoms. Never exported."
+    },
+    {
+      "id": "reportedTrend",
+      "domain": ["better", "same", "worse", "unknown"],
+      "ttlSec": 600,
+      "latched": [],
+      "critical": false,
+      "doc": "Explicit report of how the person in care is doing (self or helper perspective)."
+    }
+  ],
+  "facts": [
+    { "path": "trend", "domain": ["improving", "stable", "worsening", "unknown"] },
+    { "path": "connectivity", "domain": ["online", "offline"] },
+    { "path": "silence.count", "domain": [0, 1, 2] },
+    { "path": "session.resumedAfterGap", "domain": [true, false] },
+    { "path": "session.emergencyEngaged", "domain": [true, false] },
+    { "path": "session.helpOnScene", "domain": [true, false] },
+    { "path": "commitment.due", "domain": [true, false] }
+  ],
+  "invalidation": [
+    {
+      "id": "INVAL-001",
+      "on": { "signal": "companion", "value": "arrived" },
+      "set": { "company": "with_someone" },
+      "doc": "Explicit arrival replaces 'alone' immediately (no waiting for TTL)."
+    },
+    {
+      "id": "INVAL-002",
+      "on": { "signal": "company", "value": "alone" },
+      "onlyIf": { "eq": ["signal.companion", "arrived"] },
+      "set": { "companion": "none" },
+      "doc": "If the person says they are alone again, the companion left."
+    },
+    {
+      "id": "INVAL-003",
+      "on": { "signal": "actor", "value": "helper" },
+      "set": { "company": "with_someone" },
+      "doc": "A helper is, by definition, with the person."
+    },
+    {
+      "id": "INVAL-004",
+      "on": { "signal": "reportedTrend", "value": "worse" },
+      "expire": ["anxiety"],
+      "doc": "Feeling worse makes the last anxiety level stale."
+    }
+  ],
+  "events": [
+    { "id": "SESSION_STARTED", "origin": "runtime", "doc": "Boot. Creates an anonymous, local-only session." },
+    { "id": "SIGNALS_REPORTED", "origin": "human", "doc": "Answer or action that sets signals. Carries source." },
+    {
+      "id": "SIGNALS_EXPIRED",
+      "origin": "human",
+      "doc": "An action made a signal stale on purpose (e.g. after grounding, re-check anxiety)."
+    },
+    { "id": "STRATEGY_OUTCOME", "origin": "human", "doc": "done | failed ('Não consigo') | declined ('Agora não')." },
+    {
+      "id": "COMMITMENT_CREATED",
+      "origin": "human",
+      "doc": "Something the runtime must not forget (friend coming, relocation...)."
+    },
+    { "id": "COMMITMENT_RESOLVED", "origin": "human", "doc": "done | snooze | cancel." },
+    {
+      "id": "HANDOFF_OPENED",
+      "origin": "human",
+      "doc": "User tapped a tel:/sms:/wa.me link. The app knows the tap, not the outcome (L01)."
+    },
+    {
+      "id": "EMERGENCY_CALL_REPORTED",
+      "origin": "human",
+      "doc": "User says 'Já liguei'. Distinct from HANDOFF_OPENED: a report, not an observed tap (L01)."
+    },
+    {
+      "id": "HELP_ON_SCENE",
+      "origin": "human",
+      "doc": "Professional help arrived. Only way (besides CORRECTION) to leave the P0 latch."
+    },
+    {
+      "id": "CORRECTION",
+      "origin": "human",
+      "doc": "'Me enganei'. Clears the P0 latch and resets the commander's signals to unknown (so they are re-asked)."
+    },
+    {
+      "id": "QUESTION_FORCED",
+      "origin": "derived",
+      "doc": "A negated text trigger asks for explicit confirmation instead of acting."
+    },
+    {
+      "id": "TEXT_UNMATCHED",
+      "origin": "derived",
+      "doc": "Free text matched no local trigger. No generative reply exists."
+    },
+    { "id": "SESSION_END", "origin": "human", "doc": "User closed the session." },
+    { "id": "WIPE", "origin": "human", "doc": "Delete everything on this device now." },
+    { "id": "APP_HIDDEN", "origin": "runtime", "doc": "visibilitychange → hidden. Freezes silence accounting." },
+    {
+      "id": "APP_VISIBLE",
+      "origin": "runtime",
+      "doc": "visibilitychange → visible. May raise session.resumedAfterGap."
+    },
+    {
+      "id": "CONNECTIVITY",
+      "origin": "runtime",
+      "doc": "online/offline. Only affects strategies that require network."
+    },
+    {
+      "id": "TICK",
+      "origin": "runtime",
+      "doc": "Wake-up hint at nextWakeAt. Carries no meaning by itself; the core evaluates deadlines."
+    }
+  ],
+  "questions": [
+    {
+      "id": "Q_ACTOR",
+      "prerequisite": true,
+      "priority": 0,
+      "cooldownSec": 0,
+      "maxAsks": 99,
+      "bands": ["P1", "P2", "P3"],
+      "variants": {
+        "any": {
+          "card": "CARD_Q_ACTOR",
+          "answers": [{ "id": "self", "set": { "actor": "self" } }, { "id": "helper", "set": { "actor": "helper" } }]
+        }
+      }
+    },
+    {
+      "id": "Q_RESPONDS",
+      "priority": 10,
+      "cooldownSec": 120,
+      "maxAsks": 12,
+      "bands": ["P1", "P2", "P3"],
+      "variants": {
+        "helper": {
+          "card": "CARD_Q_RESPONDS",
+          "answers": [
+            { "id": "normal", "set": { "responsiveness": "responsive" } },
+            { "id": "little", "set": { "responsiveness": "impaired" } },
+            { "id": "none", "set": { "responsiveness": "unresponsive" } },
+            { "id": "unknown", "unknown": true, "set": { "responsiveness": "unknown" } }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q_BREATHING",
+      "priority": 20,
+      "cooldownSec": 120,
+      "maxAsks": 12,
+      "bands": ["P1", "P2", "P3"],
+      "variants": {
+        "helper": {
+          "card": "CARD_Q_BREATHING",
+          "answers": [
+            { "id": "normal", "set": { "breathing": "normal" } },
+            { "id": "strange", "set": { "breathing": "abnormal" } },
+            { "id": "barely", "set": { "breathing": "severely_abnormal" } },
+            { "id": "unknown", "unknown": true, "set": { "breathing": "unknown" } }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q_RED_FLAGS",
+      "priority": 30,
+      "cooldownSec": 120,
+      "maxAsks": 8,
+      "bands": ["P1", "P2", "P3"],
+      "variants": {
+        "self": {
+          "card": "CARD_Q_RED_FLAGS_SELF",
+          "answers": [
+            { "id": "breath", "set": { "breathing": "severely_abnormal" } },
+            { "id": "chest", "set": { "chest": "yes" } },
+            { "id": "none", "set": { "breathing": "normal", "chest": "no" } },
+            { "id": "unknown", "unknown": true, "set": { "breathing": "unknown", "chest": "unknown" } }
+          ]
+        },
+        "helper": {
+          "card": "CARD_Q_RED_FLAGS_HELPER",
+          "answers": [
+            { "id": "seizure", "set": { "seizure": "yes" } },
+            { "id": "chest", "set": { "chest": "yes" } },
+            { "id": "none", "set": { "seizure": "no", "chest": "no" } },
+            { "id": "unknown", "unknown": true, "set": { "seizure": "unknown", "chest": "unknown" } }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q_CLARITY",
+      "priority": 40,
+      "cooldownSec": 120,
+      "maxAsks": 8,
+      "bands": ["P1", "P2", "P3"],
+      "variants": {
+        "self": {
+          "card": "CARD_Q_CLARITY",
+          "answers": [
+            { "id": "yes", "set": { "responsiveness": "responsive" } },
+            { "id": "hard", "set": { "responsiveness": "impaired" } },
+            { "id": "unknown", "unknown": true, "set": { "responsiveness": "unknown" } }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q_COMPANY",
+      "priority": 50,
+      "cooldownSec": 180,
+      "maxAsks": 6,
+      "bands": ["P1", "P2", "P3"],
+      "variants": {
+        "self": {
+          "card": "CARD_Q_COMPANY",
+          "answers": [
+            { "id": "with", "set": { "company": "with_someone" } },
+            { "id": "alone", "set": { "company": "alone" } },
+            { "id": "unknown", "unknown": true, "set": { "company": "unknown" } }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q_ANXIETY",
+      "priority": 60,
+      "cooldownSec": 120,
+      "maxAsks": 12,
+      "bands": ["P1", "P2", "P3"],
+      "variants": {
+        "self": {
+          "card": "CARD_Q_ANXIETY_SELF",
+          "answers": [
+            { "id": "low", "set": { "anxiety": 1 } },
+            { "id": "high", "set": { "anxiety": 3 } },
+            { "id": "panic", "set": { "anxiety": 4 } },
+            { "id": "unknown", "unknown": true, "set": { "anxiety": "unknown" } }
+          ]
+        },
+        "helper": {
+          "card": "CARD_Q_ANXIETY_HELPER",
+          "answers": [
+            { "id": "calm", "set": { "anxiety": 1 } },
+            { "id": "anxious", "set": { "anxiety": 3 } },
+            { "id": "panic", "set": { "anxiety": 4 } },
+            { "id": "unknown", "unknown": true, "set": { "anxiety": "unknown" } }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q_NOISE",
+      "priority": 70,
+      "cooldownSec": 180,
+      "maxAsks": 6,
+      "bands": ["P1", "P2", "P3"],
+      "variants": {
+        "any": {
+          "card": "CARD_Q_NOISE",
+          "answers": [
+            { "id": "quiet", "set": { "noise": "quiet" } },
+            { "id": "moderate", "set": { "noise": "moderate" } },
+            { "id": "loud", "set": { "noise": "loud" } },
+            { "id": "unknown", "unknown": true, "set": { "noise": "unknown" } }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q_SUBSTANCE",
+      "priority": 80,
+      "cooldownSec": 600,
+      "maxAsks": 2,
+      "bands": ["P2", "P3"],
+      "variants": {
+        "any": {
+          "card": "CARD_Q_SUBSTANCE",
+          "answers": [
+            { "id": "stim", "set": { "substanceClass": "stim" } },
+            { "id": "downer", "set": { "substanceClass": "downer" } },
+            { "id": "psychedelic", "set": { "substanceClass": "psychedelic" } },
+            { "id": "none", "set": { "substanceClass": "none" } },
+            { "id": "unknown", "unknown": true, "set": { "substanceClass": "unknown" } }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q_HOW_NOW",
+      "priority": 90,
+      "cooldownSec": 120,
+      "maxAsks": 20,
+      "bands": ["P1", "P2", "P3"],
+      "variants": {
+        "any": {
+          "card": "CARD_Q_HOW_NOW",
+          "answers": [
+            { "id": "better", "set": { "reportedTrend": "better" } },
+            { "id": "same", "set": { "reportedTrend": "same" } },
+            { "id": "worse", "set": { "reportedTrend": "worse" } },
+            { "id": "unknown", "unknown": true, "set": { "reportedTrend": "unknown" } }
+          ]
+        }
+      }
+    }
+  ],
+  "textTriggers": {
+    "doc": "Free text is NOT chat. It is an alternate input for critical local triggers only. Affirmative match → act (over-triggering costs one tap to correct; under-triggering can cost a life). Negated match → ask explicitly.",
+    "normalization": ["nfd_strip_marks", "lowercase", "non_alnum_to_space", "collapse_spaces"],
+    "negators": ["nao", "sem", "nunca", "nem", "nenhum", "nenhuma"],
+    "negationWindow": 3,
+    "rules": [
+      {
+        "id": "TT-001",
+        "name": "breathing_critical",
+        "patterns": [
+          "\\bnao (consigo|to conseguindo|estou conseguindo|consegue|ta conseguindo|esta conseguindo) respirar\\b",
+          "\\bsem ar\\b",
+          "\\bfalta de ar\\b",
+          "\\bparou de respirar\\b",
+          "\\bnao (ta|esta) respirando\\b"
+        ],
+        "set": { "breathing": "severely_abnormal" },
+        "onNegated": { "ask": "Q_RED_FLAGS" }
+      },
+      {
+        "id": "TT-002",
+        "name": "unresponsive_other",
+        "patterns": [
+          "\\b(ele|ela|a pessoa|meu amigo|minha amiga|amigo|amiga) (apagou|desmaiou|nao acorda|nao responde|desacordad[oa])\\b",
+          "\\bnao (acorda|responde) mais\\b",
+          "\\bdesacordad[oa]\\b"
+        ],
+        "set": { "responsiveness": "unresponsive" },
+        "onNegated": { "ask": "Q_RESPONDS" }
+      },
+      {
+        "id": "TT-003",
+        "name": "fainted_self",
+        "patterns": ["\\b(apaguei|desmaiei)\\b"],
+        "set": { "syncope": "yes" },
+        "onNegated": { "ask": "Q_CLARITY" }
+      },
+      {
+        "id": "TT-004",
+        "name": "chest_critical",
+        "patterns": ["\\bdor (forte )?no peito\\b", "\\bpeito (ta|esta) doendo\\b", "\\baperto no peito\\b"],
+        "set": { "chest": "yes" },
+        "onNegated": { "ask": "Q_RED_FLAGS" }
+      },
+      {
+        "id": "TT-005",
+        "name": "seizure",
+        "patterns": ["\\bconvuls\\w*\\b", "\\b(ta|esta) se debatendo\\b", "\\bataque epilept\\w*\\b"],
+        "set": { "seizure": "yes" },
+        "onNegated": { "ask": "Q_RED_FLAGS" }
+      },
+      {
+        "id": "TT-006",
+        "name": "self_harm_intent",
+        "patterns": [
+          "\\bquero morrer\\b",
+          "\\bvou me matar\\b",
+          "\\bme matar\\b",
+          "\\bacabar com (a )?minha vida\\b",
+          "\\bsuicid\\w*\\b"
+        ],
+        "set": { "selfHarm": "yes" },
+        "onNegated": { "ask": "Q_HOW_NOW" }
+      },
+      {
+        "id": "TT-007",
+        "name": "physically_unsafe",
+        "patterns": [
+          "\\b(to|estou) em perigo\\b",
+          "\\bvao me bater\\b",
+          "\\bme ameac\\w*\\b",
+          "\\bnao (to|estou) (seguro|segura)\\b"
+        ],
+        "set": { "physicallyUnsafe": "yes" },
+        "onNegated": { "ask": "Q_HOW_NOW" }
+      }
+    ]
+  },
+  "hardRules": [
+    {
+      "id": "HR-001",
+      "name": "unresponsive",
+      "reason": "unresponsive",
+      "when": { "eq": ["signal.responsiveness", "unresponsive"] },
+      "onCorrection": { "reset": ["responsiveness"] },
+      "review": "required",
+      "latch": true
+    },
+    {
+      "id": "HR-002",
+      "name": "severe_breathing_problem",
+      "reason": "breathing",
+      "when": { "eq": ["signal.breathing", "severely_abnormal"] },
+      "onCorrection": { "reset": ["breathing"] },
+      "review": "required",
+      "latch": true
+    },
+    {
+      "id": "HR-003",
+      "name": "seizure",
+      "reason": "seizure",
+      "when": { "eq": ["signal.seizure", "yes"] },
+      "onCorrection": { "reset": ["seizure"] },
+      "review": "required",
+      "latch": true
+    },
+    {
+      "id": "HR-004",
+      "name": "acute_chest_problem",
+      "reason": "chest",
+      "when": { "eq": ["signal.chest", "yes"] },
+      "onCorrection": { "reset": ["chest"] },
+      "review": "required",
+      "latch": true
+    },
+    {
+      "id": "HR-005",
+      "name": "physically_unsafe",
+      "reason": "unsafe",
+      "when": { "eq": ["signal.physicallyUnsafe", "yes"] },
+      "onCorrection": { "reset": ["physicallyUnsafe"] },
+      "review": "required",
+      "latch": true
+    },
+    {
+      "id": "HR-006",
+      "name": "fainted_reported",
+      "reason": "fainted",
+      "when": { "eq": ["signal.syncope", "yes"] },
+      "onCorrection": { "reset": ["syncope"] },
+      "review": "proposed",
+      "latch": true
+    },
+    {
+      "id": "HR-007",
+      "name": "self_harm_intent",
+      "reason": "self_harm",
+      "when": { "eq": ["signal.selfHarm", "yes"] },
+      "onCorrection": { "reset": ["selfHarm"] },
+      "review": "proposed",
+      "latch": true
+    },
+    {
+      "id": "HR-008",
+      "name": "medical_risk_then_silence",
+      "reason": "silent_after_risk",
+      "when": { "all": [{ "gte": ["risk.medical", 3] }, { "gte": ["silence.count", 2] }] },
+      "onCorrection": { "reset": [] },
+      "review": "proposed",
+      "doc": "Known acute medical risk + repeated silence while the screen was visible. Silence alone never reaches P0 (L06).",
+      "latch": false
+    },
+    {
+      "id": "HR-009",
+      "name": "user_called_emergency",
+      "reason": "user_initiated",
+      "when": { "eq": ["session.emergencyEngaged", true] },
+      "onCorrection": { "reset": [] },
+      "review": "required",
+      "doc": "The user tapped 192 on their own (shell or card). The real world wins (L12): the engine follows them into P0 'waiting' guidance.",
+      "latch": true
+    }
+  ],
+  "risk": {
+    "doc": "Ordinal 0..4 per dimension. Level = MAX of matching rows (monotone, no weights, no fake precision). 'impairment' is computed and logged but no band rule reads it in v1 (BR-P1-02 was removed: shadowed by BR-P1-01, found by the coverage gate).",
+    "dimensions": ["medical", "impairment", "isolation", "emotional", "environmental", "uncertainty"],
+    "rules": [
+      { "dimension": "medical", "level": 3, "when": { "eq": ["signal.breathing", "abnormal"] } },
+      { "dimension": "medical", "level": 3, "when": { "eq": ["signal.responsiveness", "impaired"] } },
+      { "dimension": "medical", "level": 2, "when": { "eq": ["signal.reportedTrend", "worse"] } },
+      { "dimension": "impairment", "level": 3, "when": { "eq": ["signal.responsiveness", "impaired"] } },
+      {
+        "dimension": "impairment",
+        "level": 1,
+        "when": { "in": ["signal.substanceClass", ["stim", "downer", "psychedelic"]] }
+      },
+      {
+        "dimension": "isolation",
+        "level": 3,
+        "when": { "all": [{ "eq": ["signal.company", "alone"] }, { "neq": ["signal.companion", "coming"] }] }
+      },
+      {
+        "dimension": "isolation",
+        "level": 2,
+        "when": { "all": [{ "eq": ["signal.company", "alone"] }, { "eq": ["signal.companion", "coming"] }] }
+      },
+      { "dimension": "isolation", "level": 2, "when": { "unknown": "signal.company" } },
+      { "dimension": "emotional", "level": 4, "when": { "eq": ["signal.anxiety", 4] } },
+      { "dimension": "emotional", "level": 3, "when": { "eq": ["signal.anxiety", 3] } },
+      { "dimension": "emotional", "level": 3, "when": { "eq": ["signal.reportedTrend", "worse"] } },
+      { "dimension": "emotional", "level": 2, "when": { "eq": ["signal.anxiety", 2] } },
+      { "dimension": "emotional", "level": 1, "when": { "in": ["signal.anxiety", [1, "unknown"]] } },
+      { "dimension": "environmental", "level": 4, "when": { "eq": ["signal.physicallyUnsafe", "yes"] } },
+      { "dimension": "environmental", "level": 2, "when": { "eq": ["signal.noise", "loud"] } },
+      { "dimension": "environmental", "level": 1, "when": { "in": ["signal.noise", ["moderate", "unknown"]] } },
+      { "dimension": "uncertainty", "level": 4, "when": { "gte": ["silence.count", 2] } },
+      { "dimension": "uncertainty", "level": 3, "when": { "eq": ["silence.count", 1] } },
+      { "dimension": "uncertainty", "level": 3, "when": { "unknown": "signal.breathing" } },
+      {
+        "dimension": "uncertainty",
+        "level": 3,
+        "when": { "all": [{ "eq": ["signal.actor", "helper"] }, { "unknown": "signal.responsiveness" }] }
+      },
+      {
+        "dimension": "uncertainty",
+        "level": 3,
+        "when": { "all": [{ "eq": ["signal.actor", "self"] }, { "unknown": "signal.chest" }] }
+      },
+      {
+        "dimension": "uncertainty",
+        "level": 3,
+        "when": { "all": [{ "eq": ["signal.actor", "helper"] }, { "unknown": "signal.seizure" }] }
+      }
+    ]
+  },
+  "bandRules": [
+    { "id": "BR-P1-01", "band": "P1", "sticky": true, "when": { "gte": ["risk.medical", 3] } },
+    {
+      "id": "BR-P1-03",
+      "band": "P1",
+      "sticky": false,
+      "when": { "gte": ["risk.uncertainty", 3] },
+      "doc": "Not sticky: resolving uncertainty with explicit answers may lower the band immediately (L02)."
+    },
+    {
+      "id": "BR-P1-04",
+      "band": "P1",
+      "sticky": true,
+      "when": { "all": [{ "gte": ["risk.isolation", 3] }, { "gte": ["risk.emotional", 3] }] }
+    },
+    {
+      "id": "BR-P1-05",
+      "band": "P1",
+      "sticky": true,
+      "when": { "all": [{ "gte": ["risk.isolation", 2] }, { "eq": ["signal.substanceClass", "downer"] }] },
+      "review": "proposed"
+    },
+    {
+      "id": "BR-P1-06",
+      "band": "P1",
+      "sticky": true,
+      "when": { "all": [{ "gte": ["risk.isolation", 2] }, { "eq": ["trend", "worsening"] }] }
+    },
+    { "id": "BR-P2-01", "band": "P2", "sticky": true, "when": { "gte": ["risk.emotional", 3] } },
+    {
+      "id": "BR-P2-02",
+      "band": "P2",
+      "sticky": true,
+      "when": { "all": [{ "gte": ["risk.environmental", 2] }, { "gte": ["risk.emotional", 2] }] }
+    },
+    { "id": "BR-P3-99", "band": "P3", "sticky": false, "when": { "always": true } }
+  ],
+  "hysteresis": {
+    "doc": "Upgrades are immediate. Leaving a sticky band requires an EXPLICIT human input in that step (time alone never de-escalates, L03) AND (minDwellSec elapsed OR trend=improving). Non-sticky bands (uncertainty) follow the facts immediately.",
+    "minDwellSec": { "P1": 180, "P2": 120, "P3": 0 }
+  },
+  "requirements": {
+    "doc": "Preconditions a strategy may declare. Data, not code.",
+    "movement": {
+      "all": [{ "neq": ["signal.physicallyUnsafe", "yes"] }, { "neq": ["signal.responsiveness", "impaired"] }]
+    },
+    "safe_location": { "neq": ["signal.physicallyUnsafe", "yes"] },
+    "network": { "eq": ["connectivity", "online"] }
+  },
+  "engagement": {
+    "P0": {
+      "maxActions": 2,
+      "maxLowEmphasis": 1,
+      "maxAnswers": 0,
+      "maxChars": 200,
+      "education": false,
+      "questionBudget": 0,
+      "askBeforeAct": false
+    },
+    "P1": {
+      "maxActions": 3,
+      "maxLowEmphasis": 1,
+      "maxAnswers": 3,
+      "maxChars": 220,
+      "education": false,
+      "questionBudget": 2,
+      "askBeforeAct": true
+    },
+    "P2": {
+      "maxActions": 3,
+      "maxLowEmphasis": 1,
+      "maxAnswers": 4,
+      "maxChars": 260,
+      "education": false,
+      "questionBudget": 3,
+      "askBeforeAct": true
+    },
+    "P3": {
+      "maxActions": 3,
+      "maxLowEmphasis": 1,
+      "maxAnswers": 4,
+      "maxChars": 320,
+      "education": true,
+      "questionBudget": 2,
+      "askBeforeAct": true
+    }
+  },
+  "silence": {
+    "doc": "Silence = a response-awaiting card stayed VISIBLE for afterSec with no human input. Hidden time never counts (L06).",
+    "P0": { "afterSec": 20 },
+    "P1": { "afterSec": 60 },
+    "P2": { "afterSec": 180 },
+    "P3": null,
+    "maxCount": 2,
+    "resumeGapSec": 90
+  },
+  "commitments": [
+    {
+      "id": "FRIEND_ARRIVAL",
+      "defaultDueSec": 600,
+      "snoozeSec": 300,
+      "maxSnoozes": 2,
+      "confirmCard": "CARD_CONFIRM_FRIEND",
+      "onMissed": [{ "op": "SIGNALS_REPORTED", "set": { "companion": "none" }, "source": "derived_rule" }]
+    },
+    {
+      "id": "RELOCATION",
+      "defaultDueSec": 120,
+      "snoozeSec": 60,
+      "maxSnoozes": 1,
+      "confirmCard": "CARD_CONFIRM_RELOCATION",
+      "onMissed": [
+        { "op": "STRATEGY_OUTCOME", "skill": "reduce_stimulation", "strategy": "relocate", "outcome": "failed" }
+      ]
+    },
+    {
+      "id": "CONTACT_REPLY",
+      "defaultDueSec": 180,
+      "snoozeSec": 180,
+      "maxSnoozes": 2,
+      "confirmCard": "CARD_CONFIRM_CONTACT",
+      "onMissed": []
+    },
+    {
+      "id": "CHECK_IN",
+      "defaultDueSec": 600,
+      "snoozeSec": 300,
+      "maxSnoozes": 1,
+      "confirmCard": "CARD_CONFIRM_CHECKIN",
+      "onMissed": []
+    }
+  ],
+  "skills": [
+    {
+      "id": "assess",
+      "kind": "assessment",
+      "bands": ["P1", "P2", "P3"],
+      "doc": "Generic assessment. Which question to ask is decided by the VOI engine (Akinator logic), never by a hardcoded flow.",
+      "strategies": []
+    },
+    {
+      "id": "emergency_escalation",
+      "kind": "intervention",
+      "bands": ["P0"],
+      "doc": "The only P0 skill. Phases are derived from state, never chosen by policy.",
+      "phases": {
+        "call": { "default": "CARD_P0_CALL", "self_harm": "CARD_P0_CALL_CRISIS" },
+        "waiting": { "default": "CARD_P0_WAITING" },
+        "bystander": { "default": "CARD_P0_BYSTANDER" },
+        "handover": { "default": "CARD_P0_HANDOVER" }
+      },
+      "strategies": []
+    },
+    {
+      "id": "reduce_stimulation",
+      "kind": "intervention",
+      "bands": ["P1", "P2"],
+      "strategies": [
+        {
+          "id": "relocate",
+          "when": { "eq": ["signal.noise", "loud"] },
+          "requires": ["movement", "safe_location"],
+          "card": "CARD_RELOCATE",
+          "onShow": [{ "op": "COMMITMENT_CREATED", "kind": "RELOCATION" }],
+          "cooldownSec": 600,
+          "blockSec": 1800
+        },
+        {
+          "id": "in_place",
+          "when": { "in": ["signal.noise", ["loud", "moderate"]] },
+          "requires": [],
+          "card": "CARD_IN_PLACE",
+          "onShow": [],
+          "cooldownSec": 300,
+          "blockSec": 900
+        }
+      ]
+    },
+    {
+      "id": "contact_trusted_person",
+      "kind": "intervention",
+      "bands": ["P1", "P2"],
+      "strategies": [
+        {
+          "id": "stay_close",
+          "when": { "eq": ["signal.company", "with_someone"] },
+          "requires": [],
+          "card": "CARD_STAY_CLOSE",
+          "onShow": [],
+          "cooldownSec": 600,
+          "blockSec": 900
+        },
+        {
+          "id": "message_whatsapp",
+          "when": { "neq": ["signal.company", "with_someone"] },
+          "requires": ["network"],
+          "card": "CARD_CONTACT_WHATSAPP",
+          "onShow": [],
+          "cooldownSec": 900,
+          "blockSec": 3600
+        },
+        {
+          "id": "message_sms",
+          "when": { "neq": ["signal.company", "with_someone"] },
+          "requires": [],
+          "card": "CARD_CONTACT_SMS",
+          "onShow": [],
+          "cooldownSec": 900,
+          "blockSec": 3600
+        },
+        {
+          "id": "crisis_line",
+          "when": { "eq": ["signal.actor", "self"] },
+          "requires": [],
+          "card": "CARD_CRISIS_LINE",
+          "onShow": [],
+          "cooldownSec": 1200,
+          "blockSec": 1800
+        }
+      ]
+    },
+    {
+      "id": "confirm_commitment",
+      "kind": "intervention",
+      "bands": ["P1", "P2", "P3"],
+      "doc": "Generalizes 'confirm_arrival': any due commitment is confirmed with its own card (commitments[].confirmCard).",
+      "strategies": []
+    },
+    {
+      "id": "grounding",
+      "kind": "intervention",
+      "bands": ["P1", "P2"],
+      "strategies": [
+        {
+          "id": "breath_pacer",
+          "when": { "always": true },
+          "requires": [],
+          "card": "CARD_GROUNDING_BREATH",
+          "onShow": [],
+          "cooldownSec": 300,
+          "blockSec": 900,
+          "interactive": "breath_pacer"
+        },
+        {
+          "id": "feet_floor",
+          "when": { "always": true },
+          "requires": [],
+          "card": "CARD_GROUNDING_FEET",
+          "onShow": [],
+          "cooldownSec": 300,
+          "blockSec": 900
+        },
+        {
+          "id": "five_senses",
+          "when": { "always": true },
+          "requires": [],
+          "card": "CARD_GROUNDING_SENSES",
+          "onShow": [],
+          "cooldownSec": 300,
+          "blockSec": 900
+        }
+      ]
+    },
+    {
+      "id": "steady_check",
+      "kind": "intervention",
+      "bands": ["P1", "P2", "P3"],
+      "doc": "Stable-state support + the universal fallback 'hold' strategy that guarantees the decision function is total.",
+      "strategies": [
+        {
+          "id": "tips",
+          "when": { "all": [{ "in": ["signal.substanceClass", ["stim", "downer", "psychedelic"]] }] },
+          "bandsOnly": ["P3"],
+          "requires": [],
+          "card": "CARD_STEADY_TIPS",
+          "onShow": [],
+          "cooldownSec": 1800,
+          "blockSec": 1800
+        },
+        {
+          "id": "check_later",
+          "when": { "always": true },
+          "bandsOnly": ["P3"],
+          "requires": [],
+          "card": "CARD_STEADY_CHECK",
+          "onShow": [],
+          "cooldownSec": 900,
+          "blockSec": 900
+        },
+        {
+          "id": "hold",
+          "when": { "always": true },
+          "requires": [],
+          "card": "CARD_HOLD",
+          "onShow": [],
+          "cooldownSec": 0,
+          "blockSec": 0,
+          "alwaysEligible": true,
+          "repeatable": true
+        }
+      ]
+    }
+  ],
+  "policies": {
+    "P1": [
+      { "id": "P1-005", "when": { "eq": ["commitment.due", true] }, "skill": "confirm_commitment" },
+      {
+        "id": "P1-010",
+        "when": { "any": [{ "gte": ["silence.count", 1] }, { "eq": ["session.resumedAfterGap", true] }] },
+        "skill": "assess",
+        "question": "Q_HOW_NOW"
+      },
+      {
+        "id": "P1-020",
+        "when": {
+          "all": [
+            { "eq": ["signal.company", "alone"] },
+            { "neq": ["signal.companion", "coming"] },
+            { "eq": ["commitment.pending.CONTACT_REPLY", false] }
+          ]
+        },
+        "skill": "contact_trusted_person"
+      },
+      { "id": "P1-030", "when": { "eq": ["signal.noise", "loud"] }, "skill": "reduce_stimulation" },
+      { "id": "P1-040", "when": { "gte": ["risk.emotional", 3] }, "skill": "grounding" },
+      { "id": "P1-050", "when": { "always": true }, "skill": "contact_trusted_person" },
+      { "id": "P1-099", "when": { "always": true }, "skill": "steady_check" }
+    ],
+    "P2": [
+      { "id": "P2-005", "when": { "eq": ["commitment.due", true] }, "skill": "confirm_commitment" },
+      {
+        "id": "P2-010",
+        "when": { "any": [{ "gte": ["silence.count", 1] }, { "eq": ["session.resumedAfterGap", true] }] },
+        "skill": "assess",
+        "question": "Q_HOW_NOW"
+      },
+      {
+        "id": "P2-020",
+        "when": { "all": [{ "eq": ["signal.noise", "loud"] }, { "gte": ["risk.emotional", 3] }] },
+        "skill": "reduce_stimulation"
+      },
+      { "id": "P2-040", "when": { "gte": ["risk.emotional", 3] }, "skill": "grounding" },
+      { "id": "P2-050", "when": { "eq": ["signal.noise", "loud"] }, "skill": "reduce_stimulation" },
+      { "id": "P2-060", "when": { "always": true }, "skill": "grounding" },
+      { "id": "P2-099", "when": { "always": true }, "skill": "steady_check" }
+    ],
+    "P3": [
+      { "id": "P3-005", "when": { "eq": ["commitment.due", true] }, "skill": "confirm_commitment" },
+      {
+        "id": "P3-010",
+        "when": { "eq": ["session.resumedAfterGap", true] },
+        "skill": "assess",
+        "question": "Q_HOW_NOW"
+      },
+      { "id": "P3-099", "when": { "always": true }, "skill": "steady_check" }
+    ]
+  },
+  "cards": [
+    { "id": "CARD_Q_ACTOR", "kind": "question" },
+    { "id": "CARD_Q_RESPONDS", "kind": "question" },
+    { "id": "CARD_Q_BREATHING", "kind": "question" },
+    { "id": "CARD_Q_RED_FLAGS_SELF", "kind": "question" },
+    { "id": "CARD_Q_RED_FLAGS_HELPER", "kind": "question" },
+    { "id": "CARD_Q_CLARITY", "kind": "question" },
+    { "id": "CARD_Q_COMPANY", "kind": "question" },
+    { "id": "CARD_Q_ANXIETY_SELF", "kind": "question" },
+    { "id": "CARD_Q_ANXIETY_HELPER", "kind": "question" },
+    { "id": "CARD_Q_NOISE", "kind": "question" },
+    { "id": "CARD_Q_SUBSTANCE", "kind": "question" },
+    { "id": "CARD_Q_HOW_NOW", "kind": "question" },
+    {
+      "id": "CARD_P0_CALL",
+      "kind": "action",
+      "bands": ["P0"],
+      "variantKeys": ["reason", "reason.actor"],
+      "actions": [
+        {
+          "id": "call_192",
+          "emphasis": "primary",
+          "handoff": { "channel": "tel", "target": "emergency" },
+          "ops": [{ "op": "HANDOFF_OPENED", "channel": "tel", "target": "emergency" }]
+        },
+        { "id": "already_called", "emphasis": "secondary", "ops": [{ "op": "EMERGENCY_CALL_REPORTED" }] },
+        { "id": "mistake", "emphasis": "low", "ops": [{ "op": "CORRECTION" }] }
+      ]
+    },
+    {
+      "id": "CARD_P0_CALL_CRISIS",
+      "kind": "action",
+      "bands": ["P0"],
+      "variantKeys": ["reason.actor"],
+      "actions": [
+        {
+          "id": "call_192",
+          "emphasis": "primary",
+          "handoff": { "channel": "tel", "target": "emergency" },
+          "ops": [{ "op": "HANDOFF_OPENED", "channel": "tel", "target": "emergency" }]
+        },
+        {
+          "id": "call_188",
+          "emphasis": "secondary",
+          "handoff": { "channel": "tel", "target": "crisis_line" },
+          "ops": [{ "op": "HANDOFF_OPENED", "channel": "tel", "target": "crisis_line" }]
+        },
+        { "id": "mistake", "emphasis": "low", "ops": [{ "op": "CORRECTION" }] }
+      ]
+    },
+    {
+      "id": "CARD_P0_WAITING",
+      "kind": "action",
+      "bands": ["P0"],
+      "variantKeys": ["reason", "reason.actor"],
+      "actions": [
+        { "id": "help_arrived", "emphasis": "primary", "ops": [{ "op": "HELP_ON_SCENE" }] },
+        {
+          "id": "call_192_again",
+          "emphasis": "secondary",
+          "handoff": { "channel": "tel", "target": "emergency" },
+          "ops": [{ "op": "HANDOFF_OPENED", "channel": "tel", "target": "emergency" }]
+        },
+        { "id": "mistake", "emphasis": "low", "ops": [{ "op": "CORRECTION" }] }
+      ]
+    },
+    {
+      "id": "CARD_P0_BYSTANDER",
+      "kind": "action",
+      "bands": ["P0"],
+      "actions": [
+        {
+          "id": "call_192",
+          "emphasis": "primary",
+          "handoff": { "channel": "tel", "target": "emergency" },
+          "ops": [{ "op": "HANDOFF_OPENED", "channel": "tel", "target": "emergency" }]
+        },
+        { "id": "im_here", "emphasis": "secondary", "ops": [] }
+      ],
+      "variantKeys": ["engaged"]
+    },
+    {
+      "id": "CARD_P0_HANDOVER",
+      "kind": "action",
+      "bands": ["P0"],
+      "actions": [
+        { "id": "end_session", "emphasis": "primary", "ops": [{ "op": "SESSION_END" }] },
+        {
+          "id": "call_192",
+          "emphasis": "secondary",
+          "handoff": { "channel": "tel", "target": "emergency" },
+          "ops": [{ "op": "HANDOFF_OPENED", "channel": "tel", "target": "emergency" }]
+        }
+      ]
+    },
+    {
+      "id": "CARD_RELOCATE",
+      "kind": "action",
+      "bands": ["P1", "P2"],
+      "actions": [
+        {
+          "id": "arrived",
+          "emphasis": "primary",
+          "ops": [
+            { "op": "STRATEGY_OUTCOME", "outcome": "done" },
+            { "op": "SIGNALS_REPORTED", "set": { "noise": "quiet" } },
+            { "op": "COMMITMENT_RESOLVED", "kind": "RELOCATION", "outcome": "done" }
+          ]
+        },
+        {
+          "id": "cant_move",
+          "emphasis": "secondary",
+          "ops": [
+            { "op": "STRATEGY_OUTCOME", "outcome": "failed" },
+            { "op": "COMMITMENT_RESOLVED", "kind": "RELOCATION", "outcome": "cancel" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CARD_IN_PLACE",
+      "kind": "action",
+      "bands": ["P1", "P2"],
+      "actions": [
+        {
+          "id": "did_it",
+          "emphasis": "primary",
+          "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }, { "op": "SIGNALS_EXPIRED", "signals": ["anxiety"] }]
+        },
+        { "id": "didnt_help", "emphasis": "secondary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "failed" }] }
+      ],
+      "variantKeys": ["actor"]
+    },
+    {
+      "id": "CARD_STAY_CLOSE",
+      "kind": "action",
+      "bands": ["P1", "P2"],
+      "actions": [
+        { "id": "did_it", "emphasis": "primary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }] },
+        { "id": "not_now", "emphasis": "secondary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "declined" }] }
+      ],
+      "variantKeys": ["actor"]
+    },
+    {
+      "id": "CARD_CONTACT_WHATSAPP",
+      "kind": "action",
+      "bands": ["P1", "P2"],
+      "actions": [
+        {
+          "id": "open_whatsapp",
+          "emphasis": "primary",
+          "handoff": { "channel": "whatsapp", "target": "trusted" },
+          "ops": [
+            { "op": "HANDOFF_OPENED", "channel": "whatsapp", "target": "trusted" },
+            { "op": "STRATEGY_OUTCOME", "outcome": "done" },
+            {
+              "op": "STRATEGY_OUTCOME",
+              "skill": "contact_trusted_person",
+              "strategy": "message_sms",
+              "outcome": "done"
+            },
+            { "op": "COMMITMENT_CREATED", "kind": "CONTACT_REPLY" }
+          ]
+        },
+        { "id": "use_sms", "emphasis": "secondary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "declined" }] },
+        {
+          "id": "nobody",
+          "emphasis": "low",
+          "ops": [
+            { "op": "STRATEGY_OUTCOME", "outcome": "failed" },
+            {
+              "op": "STRATEGY_OUTCOME",
+              "skill": "contact_trusted_person",
+              "strategy": "message_sms",
+              "outcome": "failed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CARD_CONTACT_SMS",
+      "kind": "action",
+      "bands": ["P1", "P2"],
+      "actions": [
+        {
+          "id": "open_sms",
+          "emphasis": "primary",
+          "handoff": { "channel": "sms", "target": "trusted" },
+          "ops": [
+            { "op": "HANDOFF_OPENED", "channel": "sms", "target": "trusted" },
+            { "op": "STRATEGY_OUTCOME", "outcome": "done" },
+            {
+              "op": "STRATEGY_OUTCOME",
+              "skill": "contact_trusted_person",
+              "strategy": "message_whatsapp",
+              "outcome": "done"
+            },
+            { "op": "COMMITMENT_CREATED", "kind": "CONTACT_REPLY" }
+          ]
+        },
+        {
+          "id": "nobody",
+          "emphasis": "secondary",
+          "ops": [
+            { "op": "STRATEGY_OUTCOME", "outcome": "failed" },
+            {
+              "op": "STRATEGY_OUTCOME",
+              "skill": "contact_trusted_person",
+              "strategy": "message_whatsapp",
+              "outcome": "failed"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CARD_CRISIS_LINE",
+      "kind": "action",
+      "bands": ["P1", "P2"],
+      "actions": [
+        {
+          "id": "call_188",
+          "emphasis": "primary",
+          "handoff": { "channel": "tel", "target": "crisis_line" },
+          "ops": [
+            { "op": "HANDOFF_OPENED", "channel": "tel", "target": "crisis_line" },
+            { "op": "STRATEGY_OUTCOME", "outcome": "done" }
+          ]
+        },
+        { "id": "not_now", "emphasis": "secondary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "declined" }] }
+      ]
+    },
+    {
+      "id": "CARD_GROUNDING_BREATH",
+      "kind": "action",
+      "bands": ["P1", "P2"],
+      "actions": [
+        {
+          "id": "done",
+          "emphasis": "primary",
+          "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }, { "op": "SIGNALS_EXPIRED", "signals": ["anxiety"] }]
+        },
+        { "id": "not_this", "emphasis": "secondary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "declined" }] }
+      ],
+      "variantKeys": ["actor"]
+    },
+    {
+      "id": "CARD_GROUNDING_FEET",
+      "kind": "action",
+      "bands": ["P1", "P2"],
+      "actions": [
+        {
+          "id": "done",
+          "emphasis": "primary",
+          "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }, { "op": "SIGNALS_EXPIRED", "signals": ["anxiety"] }]
+        },
+        { "id": "not_this", "emphasis": "secondary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "declined" }] }
+      ]
+    },
+    {
+      "id": "CARD_GROUNDING_SENSES",
+      "kind": "action",
+      "bands": ["P1", "P2"],
+      "actions": [
+        {
+          "id": "done",
+          "emphasis": "primary",
+          "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }, { "op": "SIGNALS_EXPIRED", "signals": ["anxiety"] }]
+        },
+        { "id": "not_this", "emphasis": "secondary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "declined" }] }
+      ]
+    },
+    {
+      "id": "CARD_STEADY_TIPS",
+      "kind": "action",
+      "bands": ["P3"],
+      "variantKeys": ["substance"],
+      "actions": [
+        { "id": "ok", "emphasis": "primary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }] },
+        {
+          "id": "check_later",
+          "emphasis": "secondary",
+          "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }, { "op": "COMMITMENT_CREATED", "kind": "CHECK_IN" }]
+        },
+        {
+          "id": "call_poison",
+          "emphasis": "low",
+          "handoff": { "channel": "tel", "target": "poison" },
+          "ops": [{ "op": "HANDOFF_OPENED", "channel": "tel", "target": "poison" }]
+        }
+      ]
+    },
+    {
+      "id": "CARD_STEADY_CHECK",
+      "kind": "action",
+      "bands": ["P3"],
+      "actions": [
+        {
+          "id": "check_later",
+          "emphasis": "primary",
+          "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }, { "op": "COMMITMENT_CREATED", "kind": "CHECK_IN" }]
+        },
+        { "id": "im_fine_end", "emphasis": "secondary", "ops": [{ "op": "SESSION_END" }] }
+      ]
+    },
+    {
+      "id": "CARD_HOLD",
+      "kind": "action",
+      "bands": ["P1", "P2", "P3"],
+      "actions": [
+        {
+          "id": "better",
+          "emphasis": "primary",
+          "ops": [{ "op": "SIGNALS_REPORTED", "set": { "reportedTrend": "better" } }]
+        },
+        {
+          "id": "worse",
+          "emphasis": "secondary",
+          "ops": [{ "op": "SIGNALS_REPORTED", "set": { "reportedTrend": "worse" } }]
+        }
+      ],
+      "variantKeys": ["actor"]
+    },
+    {
+      "id": "CARD_CONFIRM_FRIEND",
+      "kind": "action",
+      "bands": ["P1", "P2", "P3"],
+      "actions": [
+        {
+          "id": "arrived",
+          "emphasis": "primary",
+          "ops": [
+            { "op": "COMMITMENT_RESOLVED", "kind": "FRIEND_ARRIVAL", "outcome": "done" },
+            { "op": "SIGNALS_REPORTED", "set": { "companion": "arrived" } }
+          ]
+        },
+        {
+          "id": "not_yet",
+          "emphasis": "secondary",
+          "ops": [{ "op": "COMMITMENT_RESOLVED", "kind": "FRIEND_ARRIVAL", "outcome": "snooze" }]
+        },
+        {
+          "id": "not_coming",
+          "emphasis": "secondary",
+          "ops": [
+            { "op": "COMMITMENT_RESOLVED", "kind": "FRIEND_ARRIVAL", "outcome": "cancel" },
+            { "op": "SIGNALS_REPORTED", "set": { "companion": "none" } }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CARD_CONFIRM_RELOCATION",
+      "kind": "action",
+      "bands": ["P1", "P2", "P3"],
+      "actions": [
+        {
+          "id": "arrived",
+          "emphasis": "primary",
+          "ops": [
+            { "op": "COMMITMENT_RESOLVED", "kind": "RELOCATION", "outcome": "done" },
+            { "op": "STRATEGY_OUTCOME", "skill": "reduce_stimulation", "strategy": "relocate", "outcome": "done" },
+            { "op": "SIGNALS_REPORTED", "set": { "noise": "quiet" } }
+          ]
+        },
+        {
+          "id": "cant_move",
+          "emphasis": "secondary",
+          "ops": [
+            { "op": "COMMITMENT_RESOLVED", "kind": "RELOCATION", "outcome": "cancel" },
+            { "op": "STRATEGY_OUTCOME", "skill": "reduce_stimulation", "strategy": "relocate", "outcome": "failed" }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CARD_CONFIRM_CONTACT",
+      "kind": "action",
+      "bands": ["P1", "P2", "P3"],
+      "actions": [
+        {
+          "id": "someone_coming",
+          "emphasis": "primary",
+          "ops": [
+            { "op": "COMMITMENT_RESOLVED", "kind": "CONTACT_REPLY", "outcome": "done" },
+            { "op": "SIGNALS_REPORTED", "set": { "companion": "coming" } },
+            { "op": "COMMITMENT_CREATED", "kind": "FRIEND_ARRIVAL" }
+          ]
+        },
+        {
+          "id": "nobody_coming",
+          "emphasis": "secondary",
+          "ops": [
+            { "op": "COMMITMENT_RESOLVED", "kind": "CONTACT_REPLY", "outcome": "cancel" },
+            { "op": "SIGNALS_REPORTED", "set": { "companion": "none" } }
+          ]
+        },
+        {
+          "id": "still_trying",
+          "emphasis": "secondary",
+          "ops": [{ "op": "COMMITMENT_RESOLVED", "kind": "CONTACT_REPLY", "outcome": "snooze" }]
+        }
+      ]
+    },
+    {
+      "id": "CARD_CONFIRM_CHECKIN",
+      "kind": "action",
+      "bands": ["P1", "P2", "P3"],
+      "actions": [
+        {
+          "id": "better",
+          "emphasis": "primary",
+          "ops": [
+            { "op": "COMMITMENT_RESOLVED", "kind": "CHECK_IN", "outcome": "done" },
+            { "op": "SIGNALS_REPORTED", "set": { "reportedTrend": "better" } }
+          ]
+        },
+        {
+          "id": "same",
+          "emphasis": "secondary",
+          "ops": [
+            { "op": "COMMITMENT_RESOLVED", "kind": "CHECK_IN", "outcome": "done" },
+            { "op": "SIGNALS_REPORTED", "set": { "reportedTrend": "same" } }
+          ]
+        },
+        {
+          "id": "worse",
+          "emphasis": "secondary",
+          "ops": [
+            { "op": "COMMITMENT_RESOLVED", "kind": "CHECK_IN", "outcome": "done" },
+            { "op": "SIGNALS_REPORTED", "set": { "reportedTrend": "worse" } }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CARD_SESSION_CLOSED",
+      "kind": "action",
+      "bands": ["P3"],
+      "actions": [
+        { "id": "wipe", "emphasis": "primary", "ops": [{ "op": "WIPE" }] },
+        { "id": "restart", "emphasis": "secondary", "ops": [{ "op": "WIPE" }] }
+      ]
+    },
+    {
+      "id": "CARD_SAFE_FALLBACK",
+      "kind": "action",
+      "bands": ["P0", "P1", "P2", "P3"],
+      "doc": "Rendered only if an invariant is violated at runtime. Fail-safe, never fail-silent.",
+      "actions": [
+        {
+          "id": "call_192",
+          "emphasis": "primary",
+          "handoff": { "channel": "tel", "target": "emergency" },
+          "ops": [{ "op": "HANDOFF_OPENED", "channel": "tel", "target": "emergency" }]
+        },
+        { "id": "restart", "emphasis": "secondary", "ops": [{ "op": "WIPE" }] }
+      ]
+    }
+  ],
+  "chips": [
+    {
+      "id": "CHIP_FRIEND_ARRIVED",
+      "bands": ["P1", "P2", "P3"],
+      "whenPending": "FRIEND_ARRIVAL",
+      "action": {
+        "id": "arrived",
+        "ops": [
+          { "op": "COMMITMENT_RESOLVED", "kind": "FRIEND_ARRIVAL", "outcome": "done" },
+          { "op": "SIGNALS_REPORTED", "set": { "companion": "arrived" } }
+        ]
+      }
+    }
+  ],
+  "handoffTemplates": { "trusted": "trusted_message" },
+  "invariants": [
+    {
+      "id": "INV-001",
+      "text": "band = P0 ⇒ skill = emergency_escalation (one commander).",
+      "enforcedBy": ["runtime", "exhaustive"]
+    },
+    {
+      "id": "INV-002",
+      "text": "Every decision yields exactly one foreground card.",
+      "enforcedBy": ["types", "runtime"]
+    },
+    {
+      "id": "INV-003",
+      "text": "The emergency affordance (tel:192) exists on every screen, outside the engine loop.",
+      "enforcedBy": ["shell", "e2e"]
+    },
+    { "id": "INV-004", "text": "companion = arrived ⇒ company ≠ alone.", "enforcedBy": ["runtime", "property"] },
+    {
+      "id": "INV-005",
+      "text": "A blocked strategy ('Não consigo') is never selected while blocked.",
+      "enforcedBy": ["runtime", "exhaustive"]
+    },
+    {
+      "id": "INV-006",
+      "text": "physicallyUnsafe = yes ⇒ no strategy that requires movement or a safe location.",
+      "enforcedBy": ["runtime", "exhaustive"]
+    },
+    {
+      "id": "INV-007",
+      "text": "Latched critical values never expire by TTL; only CORRECTION or HELP_ON_SCENE leave P0.",
+      "enforcedBy": ["property", "scenario"]
+    },
+    {
+      "id": "INV-008",
+      "text": "Card actions/answers/characters respect the engagement budget of the band.",
+      "enforcedBy": ["lint", "runtime"]
+    },
+    {
+      "id": "INV-009",
+      "text": "No question is asked more than maxAsks, nor re-asked inside its cooldown after 'Não sei'.",
+      "enforcedBy": ["runtime", "property"]
+    },
+    {
+      "id": "INV-010",
+      "text": "decide() is total: every reachable abstract state yields a valid decision.",
+      "enforcedBy": ["exhaustive", "lint"]
+    },
+    {
+      "id": "INV-011",
+      "text": "decide() is deterministic: same state + same time ⇒ same decision.",
+      "enforcedBy": ["property"]
+    },
+    {
+      "id": "INV-012",
+      "text": "substanceClass only ever comes from an explicit user answer.",
+      "enforcedBy": ["runtime", "lint"]
+    },
+    {
+      "id": "INV-013",
+      "text": "Silence is only counted while the page was visible for the whole window.",
+      "enforcedBy": ["scenario", "property"]
+    },
+    {
+      "id": "INV-014",
+      "text": "Education content only in bands where engagement.education = true.",
+      "enforcedBy": ["lint"]
+    },
+    {
+      "id": "INV-015",
+      "text": "A stale card tap is rejected — except an emergency handoff, which is always honored.",
+      "enforcedBy": ["scenario"]
+    },
+    {
+      "id": "INV-016",
+      "text": "src/core imports nothing from runtime/ui and performs no I/O (no fetch, no Date.now, no DOM).",
+      "enforcedBy": ["architecture-test", "csp"]
+    },
+    {
+      "id": "INV-017",
+      "text": "P0 never asks a question before showing the emergency action.",
+      "enforcedBy": ["exhaustive"]
+    },
+    {
+      "id": "INV-018",
+      "text": "Every band's policy table ends in an always-eligible rule (totality by construction).",
+      "enforcedBy": ["lint"]
+    }
+  ],
+  "storage": {
+    "engine": "indexeddb",
+    "pii": "none",
+    "retentionHours": 12,
+    "logMaxEntries": 500,
+    "neverStore": ["names", "phone_numbers", "location", "free_text"],
+    "doc": "Free text is matched locally and discarded; only the trigger id is logged."
+  },
+  "shield": {
+    "v1": {
+      "entryGate": "none",
+      "reason": "v1 has no server endpoint that can be abused: all handoffs are native links (tel:, sms:, wa.me). A captcha before help would break L12.",
+      "edge": [
+        "static hosting behind a CDN (absorbs volumetric attacks)",
+        "CSP: default-src 'self'; connect-src 'self' (no third-party endpoint exists to exfiltrate to)",
+        "no third-party scripts, no analytics, no fonts from CDNs",
+        "immutable hashed assets + Subresource Integrity"
+      ],
+      "humanSteps": "Grounding micro-games (breath_pacer) are calming interactions, never gates."
+    },
+    "v2": {
+      "serverEffects": ["relay_sms_to_preconsented_contact", "welfare_check_on_silence"],
+      "gate": "turnstile_invisible + proof_of_work + per-IP/per-device rate limits + country allowlist for SMS",
+      "neverGate": ["P0", "P1", "emergency_shell", "tel_links"],
+      "doc": "Only server effects that cost money or reach third parties are gated, and only outside P0/P1."
+    }
+  }
+}

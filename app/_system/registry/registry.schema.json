@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://sos.apollo.rio.br/registry.schema.json",
+  "title": "SOS Apollo — Universal Registry",
+  "description": "Shape of registry.json. Referential integrity (every id resolves, every literal is in its domain, totality, budgets) is enforced by scripts/registry-lint.ts, which is stricter than this schema.",
+  "type": "object",
+  "required": ["meta", "conventions", "laws", "regions", "bands", "sources", "signals", "facts", "invalidation", "events", "questions", "textTriggers", "hardRules", "risk", "bandRules", "hysteresis", "requirements", "engagement", "silence", "commitments", "skills", "policies", "cards", "chips", "invariants", "storage", "shield"],
+  "additionalProperties": false,
+  "$defs": {
+    "primitive": { "type": ["string", "number", "boolean"] },
+    "path": { "type": "string", "pattern": "^(signal\\.[a-zA-Z]+|risk\\.[a-z]+|trend|connectivity|silence\\.count|session\\.[a-zA-Z]+|commitment\\.(due|pending\\.[A-Z_]+))$" },
+    "pred": {
+      "oneOf": [
+        { "type": "object", "required": ["all"], "additionalProperties": false, "properties": { "all": { "type": "array", "items": { "$ref": "#/$defs/pred" }, "minItems": 1 } } },
+        { "type": "object", "required": ["any"], "additionalProperties": false, "properties": { "any": { "type": "array", "items": { "$ref": "#/$defs/pred" }, "minItems": 1 } } },
+        { "type": "object", "required": ["not"], "additionalProperties": false, "properties": { "not": { "$ref": "#/$defs/pred" } } },
+        { "type": "object", "required": ["eq"], "additionalProperties": false, "properties": { "eq": { "type": "array", "prefixItems": [{ "$ref": "#/$defs/path" }, { "$ref": "#/$defs/primitive" }], "minItems": 2, "maxItems": 2 } } },
+        { "type": "object", "required": ["neq"], "additionalProperties": false, "properties": { "neq": { "type": "array", "prefixItems": [{ "$ref": "#/$defs/path" }, { "$ref": "#/$defs/primitive" }], "minItems": 2, "maxItems": 2 } } },
+        { "type": "object", "required": ["in"], "additionalProperties": false, "properties": { "in": { "type": "array", "prefixItems": [{ "$ref": "#/$defs/path" }, { "type": "array", "items": { "$ref": "#/$defs/primitive" } }], "minItems": 2, "maxItems": 2 } } },
+        { "type": "object", "required": ["gte"], "additionalProperties": false, "properties": { "gte": { "type": "array", "prefixItems": [{ "$ref": "#/$defs/path" }, { "type": "number" }], "minItems": 2, "maxItems": 2 } } },
+        { "type": "object", "required": ["lte"], "additionalProperties": false, "properties": { "lte": { "type": "array", "prefixItems": [{ "$ref": "#/$defs/path" }, { "type": "number" }], "minItems": 2, "maxItems": 2 } } },
+        { "type": "object", "required": ["known"], "additionalProperties": false, "properties": { "known": { "$ref": "#/$defs/path" } } },
+        { "type": "object", "required": ["unknown"], "additionalProperties": false, "properties": { "unknown": { "$ref": "#/$defs/path" } } },
+        { "type": "object", "required": ["always"], "additionalProperties": false, "properties": { "always": { "const": true } } }
+      ]
+    },
+    "op": {
+      "type": "object",
+      "required": ["op"],
+      "properties": {
+        "op": { "enum": ["SIGNALS_REPORTED", "SIGNALS_EXPIRED", "STRATEGY_OUTCOME", "COMMITMENT_CREATED", "COMMITMENT_RESOLVED", "HANDOFF_OPENED", "EMERGENCY_CALL_REPORTED", "HELP_ON_SCENE", "CORRECTION", "SESSION_END", "WIPE"] },
+        "set": { "type": "object", "additionalProperties": { "$ref": "#/$defs/primitive" } },
+        "signals": { "type": "array", "items": { "type": "string" } },
+        "outcome": { "enum": ["done", "failed", "declined", "snooze", "cancel"] },
+        "skill": { "type": "string" },
+        "strategy": { "type": "string" },
+        "kind": { "type": "string", "pattern": "^[A-Z_]+$" },
+        "channel": { "enum": ["tel", "sms", "whatsapp"] },
+        "target": { "type": "string" },
+        "source": { "enum": ["user_explicit", "text_trigger", "derived_rule", "system"] }
+      },
+      "additionalProperties": false
+    },
+    "band": { "enum": ["P0", "P1", "P2", "P3"] },
+    "nonP0": { "enum": ["P1", "P2", "P3"] },
+    "engagement": {
+      "type": "object",
+      "required": ["maxActions", "maxLowEmphasis", "maxAnswers", "maxChars", "education", "questionBudget", "askBeforeAct"],
+      "properties": {
+        "maxActions": { "type": "integer", "minimum": 1, "maximum": 4 },
+        "maxLowEmphasis": { "type": "integer", "minimum": 0, "maximum": 1 },
+        "maxAnswers": { "type": "integer", "minimum": 0, "maximum": 4 },
+        "maxChars": { "type": "integer", "minimum": 80, "maximum": 400 },
+        "education": { "type": "boolean" },
+        "questionBudget": { "type": "integer", "minimum": 0, "maximum": 5 },
+        "askBeforeAct": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "properties": {
+    "$schema": { "type": "string" },
+    "meta": {
+      "type": "object",
+      "required": ["app", "registryVersion", "engineContract", "defaultLocale", "region", "status"],
+      "properties": {
+        "app": { "type": "string" }, "name": { "type": "string" },
+        "registryVersion": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+        "engineContract": { "type": "integer", "minimum": 1 },
+        "defaultLocale": { "type": "string" }, "region": { "type": "string", "pattern": "^[A-Z]{2}$" },
+        "status": { "enum": ["draft", "review", "approved"] }, "notes": { "type": "string" }
+      }
+    },
+    "conventions": { "type": "object", "required": ["idPatterns", "rules"] },
+    "laws": { "type": "array", "items": { "type": "object", "required": ["id", "text"], "properties": { "id": { "type": "string", "pattern": "^L\\d{2}$" }, "text": { "type": "string" } } } },
+    "regions": { "type": "object", "additionalProperties": { "type": "object", "required": ["numbers"], "properties": { "numbers": { "type": "object", "required": ["emergency"], "additionalProperties": { "type": "object", "required": ["tel", "display", "service"], "properties": { "tel": { "type": "string", "pattern": "^[0-9]+$" }, "display": { "type": "string" }, "service": { "type": "string" } } } } } } },
+    "bands": { "type": "array", "items": { "type": "object", "required": ["id", "rank", "meaning"], "properties": { "id": { "$ref": "#/$defs/band" }, "rank": { "type": "integer" }, "meaning": { "type": "string" } } } },
+    "sources": { "type": "array", "items": { "type": "string" } },
+    "signals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "domain", "ttlSec", "latched", "critical"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z][a-zA-Z]+$" },
+          "domain": { "type": "array", "items": { "$ref": "#/$defs/primitive" }, "contains": { "const": "unknown" } },
+          "ttlSec": { "type": ["integer", "null"], "minimum": 1 },
+          "ttlByValue": { "type": "object", "additionalProperties": { "type": "integer", "minimum": 1 } },
+          "latched": { "type": "array", "items": { "$ref": "#/$defs/primitive" } },
+          "critical": { "type": "boolean" }, "explicitOnly": { "type": "boolean" }, "doc": { "type": "string" }
+        },
+        "additionalProperties": false
+      }
+    },
+    "facts": { "type": "array", "items": { "type": "object", "required": ["path", "domain"] } },
+    "invalidation": { "type": "array", "items": { "type": "object", "required": ["id", "on"], "properties": { "id": { "type": "string", "pattern": "^INVAL-\\d{3}$" }, "on": { "type": "object", "required": ["signal", "value"] }, "onlyIf": { "$ref": "#/$defs/pred" }, "set": { "type": "object" }, "expire": { "type": "array", "items": { "type": "string" } }, "doc": { "type": "string" } } } },
+    "events": { "type": "array", "items": { "type": "object", "required": ["id", "origin", "doc"], "properties": { "id": { "type": "string", "pattern": "^[A-Z_]+$" }, "origin": { "enum": ["human", "runtime", "derived"] }, "doc": { "type": "string" } } } },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "priority", "cooldownSec", "maxAsks", "bands", "variants"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^Q_[A-Z_]+$" },
+          "prerequisite": { "type": "boolean" },
+          "priority": { "type": "integer", "minimum": 0 },
+          "cooldownSec": { "type": "integer", "minimum": 0 },
+          "maxAsks": { "type": "integer", "minimum": 1 },
+          "bands": { "type": "array", "items": { "$ref": "#/$defs/nonP0" } },
+          "variants": {
+            "type": "object",
+            "propertyNames": { "enum": ["self", "helper", "any"] },
+            "additionalProperties": { "type": "object", "required": ["card", "answers"], "properties": { "card": { "type": "string", "pattern": "^CARD_" }, "answers": { "type": "array", "minItems": 2, "items": { "type": "object", "required": ["id", "set"], "properties": { "id": { "type": "string" }, "set": { "type": "object" }, "unknown": { "type": "boolean" } } } } } }
+          }
+        }
+      }
+    },
+    "textTriggers": { "type": "object", "required": ["normalization", "negators", "negationWindow", "rules"] },
+    "hardRules": { "type": "array", "items": { "type": "object", "required": ["id", "name", "reason", "when", "onCorrection", "latch", "review"], "properties": { "id": { "type": "string", "pattern": "^HR-\\d{3}$" }, "when": { "$ref": "#/$defs/pred" }, "latch": { "type": "boolean" }, "review": { "enum": ["required", "proposed"] } } } },
+    "risk": { "type": "object", "required": ["dimensions", "rules"], "properties": { "rules": { "type": "array", "items": { "type": "object", "required": ["dimension", "level", "when"], "properties": { "level": { "type": "integer", "minimum": 0, "maximum": 4 }, "when": { "$ref": "#/$defs/pred" } } } } } },
+    "bandRules": { "type": "array", "items": { "type": "object", "required": ["id", "band", "sticky", "when"], "properties": { "id": { "type": "string", "pattern": "^BR-P[0-3]-\\d{2}$" }, "band": { "$ref": "#/$defs/nonP0" }, "when": { "$ref": "#/$defs/pred" } } } },
+    "hysteresis": { "type": "object", "required": ["minDwellSec"] },
+    "requirements": { "type": "object", "additionalProperties": { "oneOf": [{ "type": "string" }, { "$ref": "#/$defs/pred" }] } },
+    "engagement": { "type": "object", "required": ["P0", "P1", "P2", "P3"], "additionalProperties": { "$ref": "#/$defs/engagement" } },
+    "silence": { "type": "object", "required": ["P0", "P1", "P2", "P3", "maxCount", "resumeGapSec"] },
+    "commitments": { "type": "array", "items": { "type": "object", "required": ["id", "defaultDueSec", "snoozeSec", "maxSnoozes", "confirmCard", "onMissed"], "properties": { "onMissed": { "type": "array", "items": { "$ref": "#/$defs/op" } } } } },
+    "skills": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "kind", "bands", "strategies"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z]+(_[a-z]+)*$" },
+          "kind": { "enum": ["assessment", "intervention"] },
+          "bands": { "type": "array", "items": { "$ref": "#/$defs/band" } },
+          "phases": { "type": "object" },
+          "strategies": { "type": "array", "items": { "type": "object", "required": ["id", "when", "requires", "card", "onShow", "cooldownSec", "blockSec"], "properties": { "when": { "$ref": "#/$defs/pred" }, "onShow": { "type": "array", "items": { "$ref": "#/$defs/op" } } } } }
+        }
+      }
+    },
+    "policies": { "type": "object", "required": ["P1", "P2", "P3"], "additionalProperties": { "type": "array", "items": { "type": "object", "required": ["id", "when", "skill"], "properties": { "id": { "type": "string", "pattern": "^P[1-3]-\\d{3}$" }, "when": { "$ref": "#/$defs/pred" }, "skill": { "type": "string" }, "question": { "type": "string" } } } } },
+    "cards": { "type": "array", "items": { "type": "object", "required": ["id", "kind"], "properties": { "id": { "type": "string", "pattern": "^CARD_[A-Z0-9_]+$" }, "kind": { "enum": ["question", "action"] }, "actions": { "type": "array", "items": { "type": "object", "required": ["id", "emphasis", "ops"], "properties": { "emphasis": { "enum": ["primary", "secondary", "low"] }, "ops": { "type": "array", "items": { "$ref": "#/$defs/op" } }, "handoff": { "type": "object", "required": ["channel", "target"] } } } } } } },
+    "chips": { "type": "array" },
+    "handoffTemplates": { "type": "object" },
+    "invariants": { "type": "array", "items": { "type": "object", "required": ["id", "text", "enforcedBy"], "properties": { "id": { "type": "string", "pattern": "^INV-\\d{3}$" } } } },
+    "storage": { "type": "object", "required": ["pii", "retentionHours", "logMaxEntries"], "properties": { "pii": { "const": "none" } } },
+    "shield": { "type": "object", "required": ["v1", "v2"] }
+  }
+}

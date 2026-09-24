@@ -1,0 +1,336 @@
+{
+  "locale": "pt-BR",
+  "reviewLegend": {
+    "draft": "Written by engineering. NOT approved for production.",
+    "editorial": "Approved for tone/clarity. Not clinically reviewed.",
+    "clinical": "Approved by a qualified health professional (name + date in docs/CLINICAL-REVIEW.md)."
+  },
+  "shell": {
+    "sosBar": "Emergência? Ligar 192",
+    "fallbackTitle": "Precisa de ajuda agora?",
+    "fallbackBody": "SAMU 192 (emergência médica) · CVV 188 (apoio emocional, 24h) · Disque-Intoxicação 0800 722 6001",
+    "textPlaceholder": "Ou escreva o que está acontecendo",
+    "privacyLine": "Sem login. Nada sai deste aparelho."
+  },
+  "notices": {
+    "TEXT_UNMATCHED": "Não entendi. Use uma das opções abaixo pra eu te ajudar com segurança.",
+    "STALE_TAP": "Essa tela já mudou. Veja a pergunta atual."
+  },
+  "handoff": { "trusted_message": "Oi, não tô muito bem e preciso de alguém comigo. Pode vir ou me ligar agora?" },
+  "chips": { "CHIP_FRIEND_ARRIVED": { "label": "Chegou alguém? Toque aqui" } },
+  "cards": {
+    "CARD_Q_ACTOR": {
+      "review": "draft",
+      "title": "Quem precisa de ajuda?",
+      "body": "",
+      "actions": { "self": "Eu", "helper": "Outra pessoa" }
+    },
+    "CARD_Q_RESPONDS": {
+      "review": "draft",
+      "clinical": true,
+      "title": "A pessoa responde quando você chama ou toca nela?",
+      "body": "",
+      "actions": {
+        "normal": "Responde normal",
+        "little": "Pouco ou confusa",
+        "none": "Não responde",
+        "unknown": "Não sei"
+      }
+    },
+    "CARD_Q_BREATHING": {
+      "review": "draft",
+      "clinical": true,
+      "title": "Como está a respiração dela?",
+      "body": "",
+      "actions": {
+        "normal": "Normal",
+        "strange": "Estranha ou ofegante",
+        "barely": "Quase ou não respira",
+        "unknown": "Não sei"
+      }
+    },
+    "CARD_Q_RED_FLAGS_SELF": {
+      "review": "draft",
+      "clinical": true,
+      "title": "Agora, algum destes?",
+      "body": "",
+      "actions": {
+        "breath": "Muito difícil respirar",
+        "chest": "Dor forte no peito",
+        "none": "Respiro bem, sem dor no peito",
+        "unknown": "Não sei"
+      }
+    },
+    "CARD_Q_RED_FLAGS_HELPER": {
+      "review": "draft",
+      "clinical": true,
+      "title": "Está acontecendo algum destes?",
+      "body": "",
+      "actions": {
+        "seizure": "Convulsão (se debatendo)",
+        "chest": "Dor forte no peito",
+        "none": "Nenhum desses",
+        "unknown": "Não sei"
+      }
+    },
+    "CARD_Q_CLARITY": {
+      "review": "draft",
+      "title": "Você consegue pensar e responder normalmente?",
+      "body": "",
+      "actions": { "yes": "Consigo", "hard": "Tá difícil, confuso", "unknown": "Não sei" }
+    },
+    "CARD_Q_COMPANY": {
+      "review": "draft",
+      "title": "Tem alguém de confiança aí com você?",
+      "body": "",
+      "actions": { "with": "Sim, aqui comigo", "alone": "Tô sozinho(a)", "unknown": "Não sei" }
+    },
+    "CARD_Q_ANXIETY_SELF": {
+      "review": "draft",
+      "title": "Quanto de ansiedade agora?",
+      "body": "",
+      "actions": { "low": "Pouca", "high": "Bastante", "panic": "Muita, pânico", "unknown": "Não sei" }
+    },
+    "CARD_Q_ANXIETY_HELPER": {
+      "review": "draft",
+      "title": "A pessoa parece ansiosa ou em pânico?",
+      "body": "",
+      "actions": { "calm": "Calma", "anxious": "Ansiosa", "panic": "Em pânico", "unknown": "Não sei" }
+    },
+    "CARD_Q_NOISE": {
+      "review": "draft",
+      "title": "Como está o lugar agora?",
+      "body": "",
+      "actions": {
+        "quiet": "Tranquilo",
+        "moderate": "Barulho médio",
+        "loud": "Muito barulho ou luz",
+        "unknown": "Não sei"
+      }
+    },
+    "CARD_Q_SUBSTANCE": {
+      "review": "draft",
+      "clinical": true,
+      "title": "Usou alguma coisa?",
+      "body": "Só pra ajustar as dicas. Fica só neste aparelho e some sozinho.",
+      "actions": {
+        "stim": "Estimulante",
+        "downer": "Álcool ou calmante",
+        "psychedelic": "Psicodélico",
+        "none": "Nada",
+        "unknown": "Não sei / misturei"
+      }
+    },
+    "CARD_Q_HOW_NOW": {
+      "review": "draft",
+      "title": "Tudo bem por aí?",
+      "body": { "default": "Como você está agora?", "helper": "Como a pessoa está agora?" },
+      "actions": { "better": "Melhor", "same": "Igual", "worse": "Pior", "unknown": "Não sei" }
+    },
+    "CARD_P0_CALL": {
+      "review": "draft",
+      "clinical": true,
+      "title": "Ligue 192 agora.",
+      "body": {
+        "default": "Pode ser uma emergência. O SAMU é grátis e atende 24h.",
+        "unresponsive": "A pessoa não responde. Ligue 192 e fique com ela.",
+        "breathing.self": "Falta de ar forte é emergência. Ligue 192 agora.",
+        "breathing.helper": "Respiração muito ruim é emergência. Ligue 192 e fique com a pessoa.",
+        "seizure": "Convulsão é emergência. Ligue 192. Afaste objetos e proteja a cabeça.",
+        "chest.self": "Dor forte no peito é emergência. Ligue 192 e fique sentado(a).",
+        "chest.helper": "Dor forte no peito é emergência. Ligue 192 e deixe a pessoa sentada.",
+        "unsafe": "Vá pra perto de outras pessoas se puder. Ligue 192. Em caso de violência: 190.",
+        "fainted": "Desmaio precisa de avaliação. Ligue 192.",
+        "self_harm": "Se houver risco agora, ligue 192.",
+        "silent_after_risk": "Sem resposta. Se a pessoa não responder, ligue 192.",
+        "user_initiated": "Você escolheu ligar. Faça isso agora: 192."
+      },
+      "aside": "Se der, deixe à mão: o que foi usado, quanto e quando.",
+      "actions": { "call_192": "Ligar 192", "already_called": "Já liguei", "mistake": "Me enganei" }
+    },
+    "CARD_P0_CALL_CRISIS": {
+      "review": "draft",
+      "clinical": true,
+      "title": "Você não precisa passar por isso sozinho(a).",
+      "body": {
+        "default": "Se houver risco agora, ligue 192. Pra conversar agora, o CVV atende no 188, grátis, 24h.",
+        "self_harm.helper": "Se houver risco agora, ligue 192. Não deixe a pessoa sozinha."
+      },
+      "actions": { "call_192": "Ligar 192", "call_188": "Ligar 188 (CVV)", "mistake": "Me enganei" }
+    },
+    "CARD_P0_WAITING": {
+      "review": "draft",
+      "clinical": true,
+      "title": "Enquanto a ajuda chega:",
+      "body": {
+        "default": "Fique onde está, com a porta acessível. Siga o que o atendente do 192 disser.",
+        "unresponsive": "Fique com a pessoa. Se ela respira, deite-a de lado. Nada pela boca. Siga o atendente.",
+        "breathing.self": "Sente-se inclinado(a) pra frente. Afrouxe a roupa. Destranque a porta se puder.",
+        "breathing.helper": "Fique com a pessoa. Se desmaiar e respirar, deite-a de lado. Siga o atendente.",
+        "seizure": "Não segure os movimentos, nada na boca. Quando parar, deite a pessoa de lado.",
+        "chest.self": "Fique sentado(a) e parado(a). Destranque a porta se estiver sozinho(a).",
+        "chest.helper": "Deixe a pessoa sentada e parada. Não a deixe sozinha. Siga o atendente.",
+        "unsafe": "Fique perto de outras pessoas ou de um segurança. Não volte ao lugar do perigo.",
+        "fainted": "Fique sentado(a) ou deitado(a). Não fique sozinho(a) até a ajuda chegar.",
+        "self_harm.self": "Fique perto de alguém. Afaste o que possa te machucar.",
+        "self_harm.helper": "Não deixe a pessoa sozinha. Afaste o que possa machucar.",
+        "silent_after_risk": "Se a pessoa não responder, fique com ela e siga o atendente do 192.",
+        "user_initiated": "Fique onde está. Siga o que o atendente do 192 disser."
+      },
+      "actions": { "help_arrived": "A ajuda chegou", "call_192_again": "Ligar 192 de novo", "mistake": "Me enganei" }
+    },
+    "CARD_P0_BYSTANDER": {
+      "review": "draft",
+      "clinical": true,
+      "title": "ATENÇÃO: esta pessoa pode precisar de ajuda.",
+      "body": {
+        "default": "Se você está vendo esta tela, ligue 192 (SAMU) e fique com ela.",
+        "engaged": "O 192 já foi chamado. Fique com esta pessoa até a ajuda chegar."
+      },
+      "actions": { "call_192": "Ligar 192", "im_here": "Tô aqui" }
+    },
+    "CARD_P0_HANDOVER": {
+      "review": "draft",
+      "clinical": true,
+      "title": "A ajuda chegou.",
+      "body": "Siga as orientações da equipe. Você fez a coisa certa.",
+      "actions": { "end_session": "Encerrar", "call_192": "Ligar 192" }
+    },
+    "CARD_RELOCATE": {
+      "review": "draft",
+      "clinical": true,
+      "title": "Menos estímulo agora.",
+      "body": "Vai pra um lugar mais quieto e com menos luz. Me avisa quando chegar.",
+      "actions": { "arrived": "Cheguei", "cant_move": "Não consigo" }
+    },
+    "CARD_IN_PLACE": {
+      "review": "draft",
+      "clinical": true,
+      "title": "Dá pra baixar o volume daí mesmo.",
+      "body": {
+        "default": "Senta ou encosta numa parede. Cobre os ouvidos ou fecha os olhos por um minuto.",
+        "helper": "Ajude a pessoa a sentar. Fale baixo, sem pressa. Menos luz e menos gente em volta."
+      },
+      "actions": { "did_it": "Fiz isso", "didnt_help": "Não ajudou" }
+    },
+    "CARD_STAY_CLOSE": {
+      "review": "draft",
+      "clinical": true,
+      "title": "Fica perto de quem está com você.",
+      "body": {
+        "default": "Conta pra essa pessoa como você está. Não precisa explicar tudo.",
+        "helper": "Fica perto da pessoa. Não deixa ela sozinha, nem pra buscar algo."
+      },
+      "actions": { "did_it": "Ok, fiz isso", "not_now": "Agora não" }
+    },
+    "CARD_CONTACT_WHATSAPP": {
+      "review": "draft",
+      "title": "Chama alguém de confiança.",
+      "body": "Vou abrir o WhatsApp com uma mensagem pronta. Você escolhe pra quem mandar.",
+      "actions": { "open_whatsapp": "Abrir WhatsApp", "use_sms": "Prefiro SMS", "nobody": "Não tenho ninguém" }
+    },
+    "CARD_CONTACT_SMS": {
+      "review": "draft",
+      "title": "Chama alguém de confiança.",
+      "body": "Vou abrir o SMS com uma mensagem pronta. Você escolhe pra quem mandar.",
+      "actions": { "open_sms": "Abrir SMS", "nobody": "Não tenho ninguém" }
+    },
+    "CARD_CRISIS_LINE": {
+      "review": "draft",
+      "clinical": true,
+      "title": "Dá pra conversar com alguém agora.",
+      "body": "O CVV atende no 188, grátis, 24h. É só ligar e falar como você está.",
+      "actions": { "call_188": "Ligar 188", "not_now": "Agora não" }
+    },
+    "CARD_GROUNDING_BREATH": {
+      "review": "draft",
+      "title": "Respira comigo.",
+      "body": {
+        "default": "Segue o círculo: puxa o ar quando ele cresce, solta devagar quando ele diminui.",
+        "helper": "Respire junto com a pessoa, devagar. Ela pode seguir o círculo também."
+      },
+      "actions": { "done": "Terminei", "not_this": "Outra coisa" }
+    },
+    "CARD_GROUNDING_FEET": {
+      "review": "draft",
+      "title": "Pés no chão.",
+      "body": "Sente os pés firmes no chão. Aperta as mãos uma na outra por 5 segundos e solta. Repete 3 vezes.",
+      "actions": { "done": "Fiz", "not_this": "Outra coisa" }
+    },
+    "CARD_GROUNDING_SENSES": {
+      "review": "draft",
+      "title": "Olha em volta.",
+      "body": "Diga pra si: 3 coisas que você vê, 2 que você ouve, 1 que você toca.",
+      "actions": { "done": "Fiz", "not_this": "Outra coisa" }
+    },
+    "CARD_STEADY_TIPS": {
+      "review": "draft",
+      "clinical": true,
+      "education": true,
+      "title": "Tá mais tranquilo. Umas dicas curtas:",
+      "body": {
+        "default": "Descansa, bebe água aos poucos e fica perto de alguém de confiança.",
+        "stim": "Faz pausas longe do calor. Água aos poucos. Evita misturar com outras coisas.",
+        "downer": "Não misture com mais nada. Fique acompanhado(a). Se der sono forte, deite de lado.",
+        "psychedelic": "Lugar calmo, luz baixa e alguém sóbrio por perto. Isso passa."
+      },
+      "actions": { "ok": "Valeu", "check_later": "Me chama em 10 min", "call_poison": "Dúvida? 0800 722 6001" }
+    },
+    "CARD_STEADY_CHECK": {
+      "review": "draft",
+      "title": "Tá mais tranquilo.",
+      "body": "Quer que eu cheque de novo daqui a 10 minutos? Deixa o app aberto.",
+      "actions": { "check_later": "Sim, me chama", "im_fine_end": "Tô bem, encerrar" }
+    },
+    "CARD_HOLD": {
+      "review": "draft",
+      "clinical": true,
+      "title": "Tô aqui com você.",
+      "body": {
+        "default": "Fica onde está e respira devagar. Se piorar, liga 192.",
+        "helper": "Fica com a pessoa e observa a respiração. Se piorar ou ela não responder, ligue 192."
+      },
+      "actions": { "better": "Melhorou", "worse": "Piorou" }
+    },
+    "CARD_CONFIRM_FRIEND": {
+      "review": "draft",
+      "title": "A pessoa que vinha já chegou?",
+      "body": "",
+      "actions": { "arrived": "Chegou", "not_yet": "Ainda não", "not_coming": "Não vem mais" }
+    },
+    "CARD_CONFIRM_RELOCATION": {
+      "review": "draft",
+      "title": "Conseguiu ir pra um lugar mais calmo?",
+      "body": "",
+      "actions": { "arrived": "Cheguei", "cant_move": "Não consigo" }
+    },
+    "CARD_CONFIRM_CONTACT": {
+      "review": "draft",
+      "title": "Conseguiu falar com alguém?",
+      "body": "",
+      "actions": {
+        "someone_coming": "Alguém tá vindo",
+        "nobody_coming": "Ninguém vem",
+        "still_trying": "Ainda tentando"
+      }
+    },
+    "CARD_CONFIRM_CHECKIN": {
+      "review": "draft",
+      "title": "Passou um tempinho. Como está agora?",
+      "body": "",
+      "actions": { "better": "Melhor", "same": "Igual", "worse": "Pior" }
+    },
+    "CARD_SESSION_CLOSED": {
+      "review": "draft",
+      "title": "Que bom. Se cuida.",
+      "body": "O que foi respondido fica só neste aparelho e é apagado sozinho em até 12h.",
+      "actions": { "wipe": "Apagar agora", "restart": "Começar de novo" }
+    },
+    "CARD_SAFE_FALLBACK": {
+      "review": "draft",
+      "title": "Algo não saiu como esperado.",
+      "body": "Se precisar de ajuda agora, ligue 192.",
+      "actions": { "call_192": "Ligar 192", "restart": "Recomeçar" }
+    }
+  }
+}

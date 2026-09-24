@@ -1,0 +1,162 @@
+<title>Simulador SOS Apollo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+:root{
+  --ground:#EEF1EE; --panel:#FFFFFF; --ink:#15191B; --muted:#56615B; --line:#D3D9D4; --soft:#E6EBE7;
+  --accent:#1D6B86; --p0:#C8233A; --p1:#B8610A; --p2:#2172A8; --p3:#2B7A4E;
+  --btn:#EDF1EE; --phone:#F8F9F7; --warn-bg:#FFF4D6; --warn-ink:#5A4300;
+  --display:"Archivo","Arial Narrow",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --ground:#0D1012; --panel:#161A1D; --ink:#E6EAE7; --muted:#9BA69F; --line:#283034; --soft:#1D2226;
+  --accent:#62B4CF; --p0:#FF5E6E; --p1:#FFA53A; --p2:#5DB0E6; --p3:#4CC47F;
+  --btn:#20262A; --phone:#111416; --warn-bg:#2E2610; --warn-ink:#F2D98B; color-scheme:dark; } }
+:root[data-theme="dark"]{
+  --ground:#0D1012; --panel:#161A1D; --ink:#E6EAE7; --muted:#9BA69F; --line:#283034; --soft:#1D2226;
+  --accent:#62B4CF; --p0:#FF5E6E; --p1:#FFA53A; --p2:#5DB0E6; --p3:#4CC47F;
+  --btn:#20262A; --phone:#111416; --warn-bg:#2E2610; --warn-ink:#F2D98B; color-scheme:dark; }
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font:15px/1.5 var(--body);padding-inline:16px;padding-block:20px 40px}
+.wrap{max-width:1180px;margin:0 auto;display:grid;gap:16px}
+header h1{font:800 clamp(24px,4vw,34px)/1.1 var(--display);letter-spacing:-.01em;margin:0;text-wrap:balance}
+header p{margin:6px 0 0;color:var(--muted);max-width:70ch}
+.warn{background:var(--warn-bg);color:var(--warn-ink);border-radius:10px;padding:10px 14px;font-size:14px}
+.warn b{font-weight:700}
+code,.num{font-family:var(--mono);font-size:.86em}
+.num{font-variant-numeric:tabular-nums}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px}
+.controls .grp{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.controls .sep{width:1px;align-self:stretch;background:var(--line)}
+.controls button,.controls select{font:600 14px var(--body);color:var(--ink);background:var(--btn);border:1px solid var(--line);border-radius:8px;padding:8px 12px;min-height:38px;cursor:pointer}
+.controls button.go{background:var(--accent);color:var(--panel);border-color:var(--accent)}
+.controls button[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
+.controls label{font-size:13px;color:var(--muted)}
+#scn-doc{flex-basis:100%;margin:0;font-size:13px;color:var(--muted)}
+.stage{display:grid;grid-template-columns:minmax(0,390px) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:860px){.stage{grid-template-columns:1fr}}
+/* Phone */
+.phone{background:var(--phone);border:1px solid var(--line);border-radius:28px;overflow:hidden;min-height:560px;position:relative;max-width:390px;width:100%;justify-self:center}
+.sos{display:block;width:100%;border:0;background:var(--p0);color:#fff;font:400 16px var(--body);padding:12px;cursor:pointer}
+.sos strong{font-weight:700;font-size:18px}
+#phone-screen{padding:14px}
+.phone .card{background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--p3);border-radius:16px;padding:18px;display:grid;gap:12px}
+.phone .card.band-P0{border-left-color:var(--p0)}.phone .card.band-P1{border-left-color:var(--p1)}.phone .card.band-P2{border-left-color:var(--p2)}
+.phone .title{font:700 21px/1.25 var(--body);margin:0;text-wrap:balance}.phone .card.band-P0 .title{font-size:24px}
+.phone .body{margin:0;font-size:16px}.phone .aside,.phone .notice{margin:0;color:var(--muted);font-size:13px}
+.phone .notice{border:1px dashed var(--line);padding:8px 10px;border-radius:10px}
+.phone .actions{display:grid;gap:8px}
+.phone .btn{display:block;width:100%;min-height:52px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:var(--btn);color:var(--ink);font:700 16px var(--body);text-align:center;text-decoration:none;cursor:pointer}
+.phone .btn.primary{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.phone .card.band-P0 .btn.primary{background:var(--p0);border-color:var(--p0);color:#fff;font-size:19px;min-height:62px}
+.phone .btn.low{background:transparent;border-color:transparent;color:var(--muted);font-weight:400;min-height:40px;text-decoration:underline}
+.phone .chip{justify-self:start;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);padding:7px 13px;font:14px var(--body);cursor:pointer}
+.phone .free-text{display:grid;grid-template-columns:1fr auto;gap:8px}
+.phone .free-text input{min-height:42px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--ink);padding:0 12px;font:16px var(--body);min-width:0}
+.phone .free-text .btn{width:auto;min-height:42px}
+.pacer{display:grid;place-items:center;height:150px}.pacer-dot{width:130px;height:130px;border-radius:50%;background:radial-gradient(circle,var(--p2),transparent 70%);transform:scale(.45);transition:transform 4s ease-in-out}
+.pacer-label{margin-top:-86px;color:var(--muted);font-size:14px}
+#toast{position:absolute;left:12px;right:12px;bottom:12px;background:var(--ink);color:var(--panel);padding:10px 12px;border-radius:12px;font-size:14px}
+/* Brain */
+.brain{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+@media (max-width:1100px){.brain{grid-template-columns:1fr}}
+.pane{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px;min-width:0}
+.pane h2{font:600 12px var(--display);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 10px}
+.pane.wide{grid-column:1/-1}
+.decision{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;align-items:center}
+#b-band{grid-row:span 3;font:800 40px/1 var(--display);width:76px;height:76px;display:grid;place-items:center;border-radius:14px;color:#fff;background:var(--p3)}
+#b-band[data-band="P0"]{background:var(--p0)}#b-band[data-band="P1"]{background:var(--p1)}#b-band[data-band="P2"]{background:var(--p2)}
+#b-rule{font:600 18px var(--mono)} #b-bandrule,#b-skill{color:var(--muted);font-size:13px}
+#b-skill{font-family:var(--mono)}
+#b-because{margin:12px 0 0;padding:0;list-style:none;display:grid;gap:4px;font-size:13px}
+#b-because .op{color:var(--accent);font-weight:700}
+.risk-row{display:grid;grid-template-columns:110px 1fr 18px;gap:8px;align-items:center;font-size:13px}
+.meter{display:grid;grid-template-columns:repeat(4,1fr);gap:3px}.meter i{height:8px;border-radius:2px;background:var(--soft)}.meter i.on{background:var(--accent)}
+#b-risk{display:grid;gap:6px}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+td{padding:5px 6px;border-top:1px solid var(--line);vertical-align:top}
+tr.dim td{color:var(--muted)}
+tr.voi-critical td{color:var(--p0);font-weight:700}tr.voi-decisive td{color:var(--accent);font-weight:700}
+tr.voi-known td,tr.voi-irrelevant td{color:var(--muted)}
+#b-commit{margin:0;padding-left:18px;font-size:13px}#b-time{margin:8px 0 0;font-size:12px;color:var(--muted)}
+#b-timeline{list-style:none;margin:0;padding:0;display:grid;gap:4px;max-height:280px;overflow:auto;font-size:12.5px}
+#b-timeline li{display:grid;grid-template-columns:62px 30px minmax(0,1fr) minmax(0,1.2fr);gap:8px;align-items:baseline;padding:3px 0;border-top:1px solid var(--line)}
+#b-timeline .in,#b-timeline .out{overflow-wrap:anywhere}
+.pill{font:700 11px var(--mono);color:#fff;border-radius:5px;padding:1px 5px;background:var(--p3);text-align:center}
+.pill[data-band="P0"]{background:var(--p0)}.pill[data-band="P1"]{background:var(--p1)}.pill[data-band="P2"]{background:var(--p2)}
+.dim{color:var(--muted)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){.pacer-dot{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Simulador SOS Apollo</h1>
+    <p>O motor real, rodando aqui no navegador: sem IA, sem servidor, sem login. À esquerda, o que a pessoa vê. À direita, por que o motor decidiu isso. Toque nas respostas, avance o tempo ou rode uma das histórias do brainstorm.</p>
+  </header>
+  <div class="warn" role="note"><b>Protótipo de engenharia.</b> Os textos ainda não passaram por revisão clínica e nada é discado ou enviado a partir desta página. Numa emergência real, ligue <b>192</b> (SAMU) direto do seu telefone.</div>
+
+  <div class="controls" aria-label="Controles do simulador">
+    <div class="grp">
+      <label for="c-scn">História</label>
+      <select id="c-scn"></select>
+      <button id="c-play" class="go" type="button">Rodar história</button>
+    </div>
+    <span class="sep" aria-hidden="true"></span>
+    <div class="grp">
+      <button id="c-1m" type="button">+1 min</button>
+      <button id="c-5m" type="button">+5 min</button>
+      <button id="c-bg" type="button">Sair do app 5 min</button>
+      <button id="c-net" type="button" aria-pressed="false">Ficar offline</button>
+      <button id="c-reset" type="button">Recomeçar</button>
+    </div>
+    <p id="scn-doc"></p>
+  </div>
+
+  <div class="stage">
+    <div class="phone">
+      <button id="sos-demo" class="sos" type="button">Emergência? <strong>Ligar 192</strong></button>
+      <main id="phone-screen" aria-live="polite"></main>
+      <div id="toast" role="status" hidden></div>
+    </div>
+
+    <div class="brain">
+      <section class="pane wide" aria-labelledby="h-dec">
+        <h2 id="h-dec">Decisão agora · <span id="b-clock" class="num"></span></h2>
+        <div class="decision">
+          <div id="b-band">P1</div>
+          <div id="b-rule">—</div>
+          <div id="b-bandrule"></div>
+          <div id="b-skill"></div>
+        </div>
+        <ul id="b-because" aria-label="Motivos (gerados pela mesma regra que decidiu)"></ul>
+      </section>
+      <section class="pane" aria-labelledby="h-voi">
+        <h2 id="h-voi">Perguntas · valor da informação</h2>
+        <div class="tbl"><table><tbody id="b-voi"></tbody></table></div>
+      </section>
+      <section class="pane" aria-labelledby="h-risk">
+        <h2 id="h-risk">Vetor de risco · 0 a 4</h2>
+        <div id="b-risk"></div>
+      </section>
+      <section class="pane" aria-labelledby="h-sig">
+        <h2 id="h-sig">Sinais · valor, origem, validade</h2>
+        <div class="tbl"><table><tbody id="b-signals"></tbody></table></div>
+      </section>
+      <section class="pane" aria-labelledby="h-com">
+        <h2 id="h-com">Compromissos e tempo</h2>
+        <ul id="b-commit"></ul>
+        <p id="b-time"></p>
+      </section>
+      <section class="pane wide" aria-labelledby="h-tl">
+        <h2 id="h-tl">Linha do tempo · log estruturado</h2>
+        <ol id="b-timeline"></ol>
+      </section>
+    </div>
+  </div>
+</div>
+<script>/*__BUNDLE__*/</script>
