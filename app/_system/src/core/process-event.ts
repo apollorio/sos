@@ -22,12 +22,16 @@ import { checkInvariants } from "./state/invariants";
 import { decide, pickKey } from "./planner/decide";
 import { variantFor } from "./planner/voi";
 import { buildFacts } from "./logic/facts";
+import type { DomainEvent } from "./domain/events";
+import type { StrategyPriors } from "./continuity/types";
 
 export const ENGINE_VERSION = "0.1.0";
 
 export interface ProcessOptions {
   /** dev: invariant violations throw. prod: they render CARD_SAFE_FALLBACK. */
   mode?: "dev" | "prod";
+  /** v0.2: longitudinal priors. Reorder eligible strategies only; never a fact (INV-020/021). */
+  priors?: StrategyPriors;
 }
 
 export function startSession(sessionId: string, at: number, reg: Reg = REG, opts: ProcessOptions = {}): StepResult {
@@ -48,6 +52,7 @@ export function processEvent(prev: SessionState, input: RawInput, reg: Reg = REG
   let rejected: StepResult["rejected"];
   let summary = "duplicate";
   let eventTypes: string[] = [];
+  let events: DomainEvent[] = [];
   let explicitStep = false;
 
   if (duplicate) rejected = "DUPLICATE";
@@ -63,25 +68,26 @@ export function processEvent(prev: SessionState, input: RawInput, reg: Reg = REG
     explicitStep = ing.human && !ing.rejected;
     for (const ev of ing.events) reduce(s, ev, now, reg, notes);
     eventTypes = ing.events.map((e) => e.type);
+    events = ing.events;
   }
 
-  if (notes.wiped) return terminal(s, "CARD_SESSION_CLOSED", now, reg, summary, eventTypes, [{ type: "WIPE_STORAGE" }], rejected);
+  if (notes.wiped) return terminal(s, "CARD_SESSION_CLOSED", now, reg, summary, eventTypes, events, [{ type: "WIPE_STORAGE" }], rejected);
 
   accrueSilence(s, now, reg);
   const expired = expireSignals(s, now);
   if (expired.length) notes.notes.push(`expired:${expired.join(",")}`);
   pruneCommitments(s, now);
 
-  if (s.status !== "active") return terminal(s, "CARD_SESSION_CLOSED", now, reg, summary, eventTypes, [{ type: "KEEP_AWAKE", on: false }], rejected);
+  if (s.status !== "active") return terminal(s, "CARD_SESSION_CLOSED", now, reg, summary, eventTypes, events, [{ type: "KEEP_AWAKE", on: false }], rejected);
 
-  const decision = decide(s, now, reg, explicitStep);
+  const decision = decide(s, now, reg, explicitStep, opts.priors);
   const effects: Effect[] = [];
   const card = applyDecision(s, decision, now, reg, effects);
 
   const violations = checkInvariants(s, decision, card, now, reg);
   if (violations.length) {
     if (mode === "dev") throw new Error(`Invariant violation: ${violations.join(" | ")}`);
-    return terminal(s, "CARD_SAFE_FALLBACK", now, reg, summary, eventTypes, [], rejected, violations);
+    return terminal(s, "CARD_SAFE_FALLBACK", now, reg, summary, eventTypes, events, [], rejected, violations);
   }
 
   effects.push({ type: "KEEP_AWAKE", on: decision.band === "P0" });
@@ -92,7 +98,7 @@ export function processEvent(prev: SessionState, input: RawInput, reg: Reg = REG
     effects,
     nextWakeAt: nextWakeAt(s, now, reg),
   };
-  return { state: s, output, log: logEntry(s, now, summary, eventTypes, decision.band, decision.pick, decision.why, [], notes), ...(rejected ? { rejected } : {}) };
+  return { state: s, output, log: logEntry(s, now, summary, eventTypes, decision.band, decision.pick, decision.why, [], notes), events, ...(rejected ? { rejected } : {}) };
 }
 
 /* ───────────────────────────── bookkeeping ───────────────────────────── */
@@ -210,6 +216,7 @@ function terminal(
   reg: Reg,
   summary: string,
   eventTypes: string[],
+  events: DomainEvent[],
   effects: Effect[],
   rejected: StepResult["rejected"],
   violations: string[] = [],
@@ -236,6 +243,7 @@ function terminal(
     state: s,
     output: { card: view, chips: [], effects, nextWakeAt: null },
     log: logEntry(s, now, summary, eventTypes, band, { ...pick, skill: "steady_check" }, why, violations, { notes: [] }, "terminal"),
+    events,
     ...(rejected ? { rejected } : {}),
   };
 }

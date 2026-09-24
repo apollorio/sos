@@ -23,6 +23,7 @@ import { evaluate, type Facts } from "../logic/predicate";
 import { evaluateHardRules, type Commander } from "../safety/hard-rules";
 import { determineBand, type BandOutcome } from "../safety/band-engine";
 import { askable, rankQuestions, type CoreOutcome } from "./voi";
+import type { StrategyPriors } from "../continuity/types";
 
 export class EngineError extends Error {}
 
@@ -61,7 +62,7 @@ function prerequisite(facts: Facts, reg: Reg): QuestionId | null {
 }
 
 /** Pipeline without questions (used by VOI simulation and by the exhaustive tests). */
-export function decideCore(state: SessionState, now: number, reg: Reg, explicit = true): CoreOutcome & { decision: Decision } {
+export function decideCore(state: SessionState, now: number, reg: Reg, explicit = true, priors?: StrategyPriors): CoreOutcome & { decision: Decision } {
   const { facts } = buildFacts(state, now, reg);
   const cmd = evaluateHardRules(state, facts, reg);
   if (cmd) {
@@ -70,7 +71,7 @@ export function decideCore(state: SessionState, now: number, reg: Reg, explicit 
   }
   const bo = determineBand(state.band, facts, now, reg, explicit);
   const band = bo.next.current;
-  const ctx: SkillCtx = { state, facts, band, now, reg };
+  const ctx: SkillCtx = { state, facts, band, now, reg, ...(priors ? { priors } : {}) };
   for (const rule of reg.data.policies[band] ?? []) {
     if (rule.skill === "assess") continue;
     const ev = evaluate(rule.when, facts);
@@ -95,7 +96,7 @@ function whyFor(band: Band, bo: BandOutcome, policyRule: Why["policyRule"], beca
 }
 
 /** Full decision (with the question layer). `explicit` = this step carries a human input. */
-export function decide(state: SessionState, now: number, reg: Reg, explicit = false): Decision {
+export function decide(state: SessionState, now: number, reg: Reg, explicit = false, priors?: StrategyPriors): Decision {
   const { facts } = buildFacts(state, now, reg);
 
   // 1. P0 — executes, never asks (L05, INV-017).
@@ -105,7 +106,7 @@ export function decide(state: SessionState, now: number, reg: Reg, explicit = fa
   // 3. Band (computed before the prerequisite so even the first card has an honest band).
   const bo = determineBand(state.band, facts, now, reg, explicit);
   const band: NonP0Band = bo.next.current;
-  const ctx: SkillCtx = { state, facts, band, now, reg };
+  const ctx: SkillCtx = { state, facts, band, now, reg, ...(priors ? { priors } : {}) };
   const asQuestion = (qid: string, policyRule: Why["policyRule"], cls?: "critical" | "decisive"): Decision | null => {
     const pick = assessPick(ctx, qid);
     if (!pick) return null;
@@ -135,9 +136,9 @@ export function decide(state: SessionState, now: number, reg: Reg, explicit = fa
   }
 
   // 5. VOI.
-  const base = decideCore(state, now, reg, explicit);
+  const base = decideCore(state, now, reg, explicit, priors);
   // Simulated answers ARE explicit human inputs, so they may release hysteresis.
-  const ranked = rankQuestions(state, facts, band, base, now, reg, (s, t, r) => decideCore(s, t, r, true));
+  const ranked = rankQuestions(state, facts, band, base, now, reg, (s, t, r) => decideCore(s, t, r, true, priors));
   const top = ranked[0];
   if (top?.cls === "critical") {
     const d = asQuestion(top.q.id, "VOI_CRITICAL", "critical");

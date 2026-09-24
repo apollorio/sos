@@ -6,6 +6,7 @@ import type { SkillId, CardId } from "../../generated/registry.gen";
 import type { Skill, SkillCtx } from "./skill";
 import { strategyIneligibility } from "../planner/eligibility";
 import { variantKeysFor } from "./variants";
+import { reorderByPriors } from "../continuity/priors";
 
 export function strategySkill(id: SkillId): Skill {
   return {
@@ -13,8 +14,10 @@ export function strategySkill(id: SkillId): Skill {
     select(ctx: SkillCtx) {
       const def = ctx.reg.skill.get(id);
       if (!def) throw new Error(`skill ${id} missing from registry`);
-      for (const st of def.strategies) {
-        if (strategyIneligibility(id, st, ctx) !== null) continue;
+      const eligible = def.strategies.filter((st) => strategyIneligibility(id, st, ctx) === null);
+      // Eligibility first, history second: a prior can never enable a strategy, only reorder (L14, INV-021).
+      const ordered = ctx.priors ? reorderByPriors(id, eligible, ctx.priors) : eligible;
+      for (const st of ordered) {
         return {
           skill: id,
           strategy: st.id,

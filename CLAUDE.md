@@ -1,0 +1,80 @@
+# SOS · apollo::rio — project instructions
+
+This repository is **SOS**, the Harm Control app of **apollo::rio** (https://apollo.rio.br), served at
+**https://sos.apollo.rio.br**. Independent, voluntary, non-profit, **no login** (privacy and trust are the product).
+Language of the product: **pt-BR**. Language of engineering docs/code: English.
+
+Every session in this repo is the "SOS app" session. Read this file, then `app/_audit/README.md`, then
+`app/_system/docs/BLUEPRINT.md` (v0.1, what is built) and `app/_system/docs/BLUEPRINT-v0.2-CONTINUITY.md` (what we are building).
+
+## Layout
+
+```
+/                      gateway: index.html redirects to /app (SOS) or /somar (knowledge, "coming soon")
+/app                   LEGACY production UI (191-node JSON flows, GSAP orb, script.js). Do not extend it; it is being replaced.
+/app/_knowledge        reference material: artifacts/ (base code refs), studies/ (grouped notes per moment)
+/app/_audit            permanent audit trail. Append-only. Every phase = one folder + one row in README.md
+/app/_system           ★ THE ENGINE — 100 % of our work happens here
+   blueprint.md        mirror of docs/BLUEPRINT.md (read-only copy)
+   registry.json       mirror of registry/registry.json (read-only copy; canonical is registry/registry.json)
+   registry/           registry.json (single source of truth) · registry.schema.json · locales/pt-BR.json (all copy + review status)
+   src/core            PURE deterministic engine (no clock, I/O, DOM, randomness). Exhaustively verified.
+   src/runtime         impure shell: engine loop, storage, effects, trust (vault identity, crypto), continuity (journal, sync)
+   src/ui              dumb renderer
+   src/demo            engineering simulator (real engine + brain panel)
+   demo/template.html  ★ OUR DEMO/TEST SURFACE — every feature must be visible and testable here
+   dist/simulator.html built demo (npx tsx scripts/build-demo.ts)
+   public/             static shell (tel:192 with zero JS) + PWA
+   scripts/            codegen · lint · format · simulate · build-demo · bench
+   tests/              scenarios · property · exhaustive · registry · invariants · architecture · continuity · trust · handoff · e2e
+   docs/               BLUEPRINT.md · BLUEPRINT-v0.2-CONTINUITY.md · CLINICAL-REVIEW.md · adr/ · privacy/ · api/
+   config/README.md    command reference (package.json/tsconfig/vitest.config live at _system root)
+```
+
+## Commands (run from `app/_system`)
+
+```bash
+npm install
+npm run verify              # registry:check → typecheck → test → test:exhaustive (~3 min) → build
+npm test                    # fast suite (~5 s). Run after EVERY change.
+npm run registry:format && npm run registry:codegen && npm run registry:lint   # after editing registry/*.json
+npm run simulate [name]     # replay a golden scenario with the "why"
+npx tsx scripts/build-demo.ts   # rebuild dist/simulator.html — ALWAYS after touching src/ or demo/template.html
+npm run build && npm run e2e    # real Chromium shell test
+```
+
+## Non-negotiable rules
+
+1. **Behavior is data.** Change what the app does in `registry/registry.json` (+ `locales/pt-BR.json`), not in code.
+   `src/core` changes only when the *kind* of behavior changes. IDs are append-only, never reused.
+2. **The core stays pure** (INV-016). `src/core` never imports `runtime`/`ui`, never touches `Date.now`, `fetch`,
+   `window`, storage, timers or `Math.random`. Time enters only as `RawInput.at`. `tests/architecture` enforces it.
+3. **The laws L01–L20 in the registry are binding.** Notably: P0 executes before asking (L05); time never de-escalates (L03);
+   emergency never depends on network/backend (L13/L19); history may influence but never becomes current fact (L14);
+   derived ≠ reported (L15); no diagnosis from patterns (L16); memory reduces burden, never surveillance (L20).
+4. **No LLM anywhere in the decision loop or in any summary** (ADR-0001, ADR-0008). Summaries are deterministic templates.
+5. **Never store PII, raw free text, precise location history or IPs in the health state.** Text is matched and discarded.
+6. **Green before commit.** `npm test` + `npm run registry:check` + `npm run typecheck` must pass; rebuild `dist/simulator.html`.
+   Run `npm run test:exhaustive` whenever registry rules, band logic, hard rules, eligibility or strategy ordering change.
+7. **Every feature is demonstrable in `demo/template.html`.** If it cannot be shown in the simulator, it is not done.
+8. **Clinical copy is draft** until a clinician signs `docs/CLINICAL-REVIEW.md`. Don't claim otherwise. Never ship to a public URL
+   with `registry:lint --release` red.
+9. **Audit trail:** any phase of work adds a folder under `app/_audit/NNN-name/` and a row in `app/_audit/README.md`.
+   Findings are struck through, never deleted.
+10. **Keep the mirrors in sync** when the canonical files change: `cp registry/registry.json registry.json` and
+    `cp docs/BLUEPRINT.md blueprint.md` inside `_system` (or note the drift in the audit).
+
+## Architecture in one breath (v0.2)
+
+Two planes. **Acute Safety Plane** (deterministic · offline · instant · local): ingest → reduce → time/TTL → hard rules → band
+→ VOI → policy → skill → invariants → ONE card. **Continuity Plane** (async · encrypted · 180 days · pseudonymous): every
+step is journaled (append-only, idempotent, two clocks, provenance), a Continuity Snapshot derives strategy history and
+patterns, priors may *reorder eligible strategies* only, and deterministic templates produce the Crisis Passport (friend /
+health-professional) shared through expiring capability links. The continuity plane MUST NEVER control P0 or gate help.
+
+## Working style
+
+- Use subagents (haiku/sonnet) for mechanical mapping/reading/bulk edits; keep the main thread for design and verification.
+- Prefer editing registry + tests over code. Every new rule/strategy = data + scenario + review status.
+- Small, verified commits on the designated branch; open a draft PR; keep `npm run verify` green.
+- Deliverables for the user are files inside this repo (docs/, _audit/), not chat-only.

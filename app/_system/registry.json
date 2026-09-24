@@ -25,7 +25,9 @@
       "invalidation": "^INVAL-\\d{3}$",
       "invariant": "^INV-\\d{3}$",
       "law": "^L\\d{2}$",
-      "chip": "^CHIP_[A-Z_]+$"
+      "chip": "^CHIP_[A-Z_]+$",
+      "journalKind": "^[A-Z]+(_[A-Z]+)*$",
+      "accessScope": "^[A-Z]+(_[A-Z]+)*$"
     },
     "rules": [
       "IDs are append-only. Never reuse a retired ID; mark it deprecated instead.",
@@ -52,7 +54,33 @@
     { "id": "L09", "text": "'Não consigo' invalidates the strategy, never the person." },
     { "id": "L10", "text": "Actor defines perspective, never identity. No login, no names, no phone numbers stored." },
     { "id": "L11", "text": "Emergency access does not depend on JavaScript staying alive. The app fails to the shell." },
-    { "id": "L12", "text": "The real world beats the app. Nothing (captcha, network, onboarding) ever gates help." }
+    { "id": "L12", "text": "The real world beats the app. Nothing (captcha, network, onboarding) ever gates help." },
+    {
+      "id": "L13",
+      "text": "Remote continuity can enrich decisions but never be required. The acute plane decides alone, offline, first."
+    },
+    {
+      "id": "L14",
+      "text": "Historical information may influence; it may never become current fact. A prior reorders, it never sets a signal."
+    },
+    {
+      "id": "L15",
+      "text": "Derived interpretations are never presented as user-reported facts. Reported and derived stay separate everywhere."
+    },
+    {
+      "id": "L16",
+      "text": "No diagnosis is inferred from operational patterns. The system stores recurrence; professionals diagnose."
+    },
+    {
+      "id": "L17",
+      "text": "Sensitive history is not analytics. Health state never reaches operational logs or telemetry."
+    },
+    {
+      "id": "L18",
+      "text": "Sharing is scoped, expiring and auditable, and always initiated by the person or the current helper."
+    },
+    { "id": "L19", "text": "Emergency access never depends on network or backend." },
+    { "id": "L20", "text": "Memory exists to reduce burden, not to increase surveillance." }
   ],
   "regions": {
     "BR": {
@@ -1588,6 +1616,46 @@
       "id": "INV-018",
       "text": "Every band's policy table ends in an always-eligible rule (totality by construction).",
       "enforcedBy": ["lint"]
+    },
+    {
+      "id": "INV-019",
+      "text": "Continuity never gates: the card is decided and rendered before any journal or sync work; a sync failure changes no output.",
+      "enforcedBy": ["engine-loop", "property"]
+    },
+    {
+      "id": "INV-020",
+      "text": "Priors never write a signal. History never becomes a current fact.",
+      "enforcedBy": ["types", "property"]
+    },
+    {
+      "id": "INV-021",
+      "text": "Historical preference < current contraindication: a prior can only reorder strategies that are already eligible; fallbacks stay last.",
+      "enforcedBy": ["property", "exhaustive"]
+    },
+    {
+      "id": "INV-022",
+      "text": "Every journal event and every summary line carries provenance; reported and derived are never merged.",
+      "enforcedBy": ["journal-test", "summary-test"]
+    },
+    {
+      "id": "INV-023",
+      "text": "No diagnostic vocabulary in any generated summary (continuity.forbiddenInference).",
+      "enforcedBy": ["lexicon-test"]
+    },
+    {
+      "id": "INV-024",
+      "text": "The journal is append-only and idempotent by eventId; corrections are events; clientSeq is strictly increasing.",
+      "enforcedBy": ["property"]
+    },
+    {
+      "id": "INV-025",
+      "text": "Health state never reaches operational logs (single logger with an allowlist).",
+      "enforcedBy": ["architecture-test"]
+    },
+    {
+      "id": "INV-026",
+      "text": "A share capsule is scoped, expires, is revocable, and its key lives only in the URL fragment.",
+      "enforcedBy": ["capsule-test"]
     }
   ],
   "storage": {
@@ -1615,6 +1683,106 @@
       "gate": "turnstile_invisible + proof_of_work + per-IP/per-device rate limits + country allowlist for SMS",
       "neverGate": ["P0", "P1", "emergency_shell", "tel_links"],
       "doc": "Only server effects that cost money or reach third parties are gated, and only outside P0/P1."
+    }
+  },
+  "continuity": {
+    "doc": "v0.2 continuity plane. Everything here is derived from StepResult after the card is decided (L13, INV-019).",
+    "journalKinds": [
+      { "id": "EPISODE_STARTED", "doc": "Boot of an anonymous session (episodeId = sessionId)." },
+      { "id": "EPISODE_ENDED", "doc": "Session ended or wiped." },
+      {
+        "id": "SIGNAL_REPORTED",
+        "doc": "One signal value set by an explicit answer, a text trigger (id only) or a derived rule. Carries provenance."
+      },
+      { "id": "SIGNAL_EXPIRED", "doc": "A signal became unknown by TTL or on purpose." },
+      { "id": "CARD_SHOWN", "doc": "A new foreground card (decision). skill/strategy/band/cardId/questionId." },
+      { "id": "BAND_CHANGED", "doc": "Derived: band transition, with the commanding hard rule when P0." },
+      { "id": "STRATEGY_OUTCOME", "doc": "done / failed / declined reported by a tap." },
+      { "id": "COMMITMENT_CREATED", "doc": "A future check was promised." },
+      { "id": "COMMITMENT_RESOLVED", "doc": "done / snooze / cancel." },
+      { "id": "HANDOFF_OPENED", "doc": "An observed tap on tel/sms/whatsapp. Never a claim of delivery (L01)." },
+      { "id": "EMERGENCY_CALL_REPORTED", "doc": "'Já liguei' reported." },
+      { "id": "HELP_ON_SCENE", "doc": "'A ajuda chegou' reported." },
+      { "id": "CORRECTION", "doc": "'Me enganei': reverses a latched fact. Stays in the journal (INV-024)." },
+      { "id": "QUESTION_FORCED", "doc": "A negated text trigger forced a question (trigger id only)." },
+      { "id": "TEXT_UNMATCHED", "doc": "Free text matched nothing. The text is never stored." },
+      { "id": "APP_HIDDEN", "doc": "Person left the app." },
+      { "id": "APP_VISIBLE", "doc": "Person came back (gap in payload)." },
+      { "id": "CONNECTIVITY", "doc": "online/offline." }
+    ],
+    "provenance": ["user_explicit", "helper_explicit", "runtime_observed", "derived"],
+    "retention": {
+      "doc": "Days. 0 = never stored. 'episode' = purged with the episode. See docs/privacy/DATA-CLASSIFICATION.md.",
+      "acuteStateHours": 12,
+      "journalDays": 180,
+      "snapshotDays": 180,
+      "locationPolicy": "episode",
+      "securityLogDays": 30,
+      "shareCapsuleDefaultHours": 6,
+      "shareCapsuleMaxHours": 24,
+      "shareCapsuleMaxViews": 3,
+      "rawTextDays": 0
+    },
+    "buckets": {
+      "doc": "Recency buckets for influence, in days. Discrete, no weights (B2).",
+      "RECENT": 30,
+      "RELEVANT": 90,
+      "OLD": 180
+    },
+    "evidence": {
+      "doc": "A pattern needs repetition before it may influence (INV-021).",
+      "minAttempted": 3,
+      "minBetterForHelpful": 2,
+      "minNegativeForUnhelpful": 2,
+      "outcomeWindowSec": 900
+    },
+    "share": {
+      "audiences": {
+        "trusted_person": ["CURRENT_EPISODE"],
+        "health_professional": ["CURRENT_EPISODE", "RECENT_CRISIS_HISTORY", "STRATEGY_HISTORY", "EXPOSURE_CONTEXT"]
+      },
+      "optionalScopes": ["LOCATION_CURRENT", "EMERGENCY_CONTACT_CONTEXT"],
+      "expiryHours": [1, 6, 24],
+      "doc": "Scopes a capsule may carry per audience. LOCATION_CURRENT only when explicitly chosen at share time (D16)."
+    },
+    "consent": {
+      "doc": "One-time calm choices, never asked in P0/P1 (L12, L20).",
+      "continuityDefault": false,
+      "emergencyPassportDefault": false,
+      "locationDefault": "unavailable",
+      "locationOptions": ["unavailable", "approximate_region", "explicit_current_location"]
+    },
+    "forbiddenInference": {
+      "doc": "Terms that a generated summary or a continuity card must never contain (L16, INV-023). Lowercase, accent-insensitive match.",
+      "terms": [
+        "depressão",
+        "depressao",
+        "depressivo",
+        "transtorno",
+        "diagnóstico",
+        "diagnostico",
+        "dissociativo",
+        "dependência química",
+        "dependencia quimica",
+        "dependente",
+        "viciado",
+        "vício",
+        "vicio",
+        "psicose",
+        "psicótico",
+        "psicotico",
+        "esquizofrenia",
+        "bipolar",
+        "borderline",
+        "tentativa de suicídio",
+        "tentativa de suicidio",
+        "overdose",
+        "abuso de substância",
+        "abuso de substancia",
+        "síndrome",
+        "sindrome",
+        "patologia"
+      ]
     }
   }
 }

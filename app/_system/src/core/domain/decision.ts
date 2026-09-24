@@ -1,6 +1,7 @@
 import type { Band, CardId, SkillId, QuestionId, HardRuleId, PolicyRuleId, BandRuleId, ChipId } from "../../generated/registry.gen";
 import type { TraceLeaf } from "../logic/predicate";
 import type { Channel, Emphasis, Op } from "../registry/types";
+import type { DomainEvent } from "./events";
 
 /** What the skill layer produces: ONE foreground card (+ effects to run when it is first shown). */
 export interface SkillPick {
@@ -96,5 +97,7 @@ export interface StepResult {
   state: import("./state").SessionState;
   output: Output;
   log: LogEntry;
+  /** Domain events this input produced (ingest). The journal derives from them; they never carry free text. */
+  events: DomainEvent[];
   rejected?: "DUPLICATE" | "STALE_CARD" | "UNKNOWN_ACTION" | "NOT_INITIALIZED";
 }

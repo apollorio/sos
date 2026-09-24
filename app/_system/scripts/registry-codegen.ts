@@ -65,6 +65,13 @@ export type EventId = ${lit(reg.events.map((e: { id: string }) => e.id))};
 export type RiskDimension = ${lit(reg.risk.dimensions)};
 export type HandoffTarget = ${lit(Object.keys(reg.regions[reg.meta.region].numbers).concat(["trusted"]))};
 export type Requirement = ${lit(Object.keys(reg.requirements).filter((k) => k !== "doc"))};
+export type LawId = ${lit(reg.laws.map((l: { id: string }) => l.id))};
+export type JournalKind = ${lit(reg.continuity.journalKinds.map((k: { id: string }) => k.id))};
+export const JOURNAL_KINDS = ${arr(reg.continuity.journalKinds.map((k: { id: string }) => k.id))};
+export type Provenance = ${lit(reg.continuity.provenance)};
+export type ShareAudience = ${lit(Object.keys(reg.continuity.share.audiences))};
+export type AccessScope = ${lit([...new Set([...Object.values(reg.continuity.share.audiences as Record<string, string[]>).flat(), ...reg.continuity.share.optionalScopes])])};
+export type RecencyBucket = ${lit(Object.keys(reg.continuity.buckets).filter((k) => k !== "doc"))};
 `;
 
 if (process.argv.includes("--check")) {

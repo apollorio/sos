@@ -9,7 +9,8 @@ This folder is the permanent record of each audit phase. Every phase gets its ow
 | 001 | `001-design/` | 🔜 | n/a | Design audit: principles, grid, components, animations |
 | 001 | `001-design/` | ✅ design layer done | 2026-09-23 | "Abraço": connected gateway→app transition, calm preloader (C1), static 188/192 (C7), resume by choice (C9), pastel orb, sheet quiets home, focus mode (wake lock). Clinical content untouched. See `001-design/001-design-abraco.md` |
 | C3 | n/a | ✅ resolved | 2026-09-23 | Removed the debug `fetch` to `127.0.0.1:7796` from `plogAudio` in `script.js` (now a no-op; the GSAP-ticker call site listed in `000-mapa-do-projeto.md` §C3 was already gone). No other localhost fetches remain. Cache-bust `script.js?v=1.1.2`. Backups in `.superseeded/*pre-C3 2026-09-23*`. |
-| 002 | `002-conteudo/` | 🔜 | n/a | Flows and content vs. frequency (motivational / techniques / therapy / regulation) |
+| 002 | `002-continuidade/` | ✅ plan + foundations | 2026-09-24 | Blueprint v0.2 (two planes: acute core + 180-day pseudonymous continuity vault), laws L13–L20, invariants INV-019–026, journal/snapshot/priors/summaries/capsules + crypto with tests; toolchain files restored to `_system` root. See `002-continuidade/002-plano-continuidade.md` |
+| 002-c | `002-conteudo/` | 🔜 | n/a | Flows and content vs. frequency (motivational / techniques / therapy / regulation) |
 | 003 | `003-melhorias/` | 🔜 | n/a | Improvements built on 001 + 002 |
 | 004–008 | n/a | off-computer | n/a | Hospitals, government, partnerships |
 

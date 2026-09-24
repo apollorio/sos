@@ -256,6 +256,36 @@ export function lintRegistry(opts: { release?: boolean; reg?: Reg; locales?: Rec
     for (const k of Object.keys(loc.cards)) if (!REG.card.has(k)) warn(`${code}: orphan copy ${k}`);
   }
 
+  /* ── Continuity (v0.2): journal kinds documented, scopes consistent, retention within law, lexicon present ── */
+  {
+    const c = d.continuity;
+    const seenK = new Set<string>();
+    for (const k of c.journalKinds) {
+      if (!re("journalKind").test(k.id)) err(`journalKind "${k.id}" violates ${conv["journalKind"]}`);
+      if (seenK.has(k.id)) err(`duplicate journalKind ${k.id}`);
+      seenK.add(k.id);
+      if (!k.doc) err(`journalKind ${k.id} has no doc`);
+    }
+    const scopes = new Set([...Object.values(c.share.audiences).flat(), ...c.share.optionalScopes]);
+    for (const sc of scopes) if (!re("accessScope").test(sc)) err(`accessScope "${sc}" violates ${conv["accessScope"]}`);
+    for (const [aud, list] of Object.entries(c.share.audiences)) for (const sc of list) if (c.share.optionalScopes.includes(sc)) err(`audience ${aud} lists optional scope ${sc} as default (must be chosen explicitly, D16)`);
+    if (!c.share.expiryHours.includes(c.retention.shareCapsuleDefaultHours)) err(`continuity.retention.shareCapsuleDefaultHours not in share.expiryHours`);
+    if (Math.max(...c.share.expiryHours) > c.retention.shareCapsuleMaxHours) err(`share.expiryHours exceeds shareCapsuleMaxHours`);
+    if (c.retention.journalDays > 180 || c.retention.snapshotDays > 180) err(`continuity retention beyond 180 days`);
+    if (c.buckets.RECENT >= c.buckets.RELEVANT || c.buckets.RELEVANT >= c.buckets.OLD || c.buckets.OLD > c.retention.journalDays) err(`continuity.buckets must be RECENT < RELEVANT < OLD ≤ journalDays`);
+    if (c.evidence.minBetterForHelpful > c.evidence.minAttempted) err(`evidence.minBetterForHelpful > minAttempted (never satisfiable)`);
+    if (c.forbiddenInference.terms.length < 5) err(`continuity.forbiddenInference needs a real lexicon`);
+    for (const [code, loc] of Object.entries(LOCALES)) {
+      const ct = loc.continuity;
+      if (!ct) { err(`${code}: missing continuity templates`); continue; }
+      for (const k of REG.strategy.keys()) if (!ct.strategyPhrases[k]) err(`${code}: continuity.strategyPhrases missing ${k}`);
+      for (const h of d.hardRules) if (!ct.reasonPhrases[h.reason]) err(`${code}: continuity.reasonPhrases missing ${h.reason}`);
+      const norm = (x: string) => x.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+      const dump = norm(JSON.stringify(ct));
+      for (const term of c.forbiddenInference.terms) if (dump.includes(norm(term))) err(`${code}: continuity templates contain forbidden term "${term}" (INV-023)`);
+    }
+  }
+
   if (d.meta.status !== "approved" && release) err(`meta.status is "${d.meta.status}" — release requires "approved"`);
   return { errors, warnings };
 }

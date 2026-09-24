@@ -4,7 +4,7 @@
 // Source of truth: registry/registry.json
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const REGISTRY_HASH = "0a6264c62477daac";
+export const REGISTRY_HASH = "d1ebd416bb931137";
 export const REGISTRY_VERSION = "0.1.0";
 
 export type Band = "P0" | "P1" | "P2" | "P3";
@@ -43,9 +43,16 @@ export type HardRuleReason = "unresponsive" | "breathing" | "seizure" | "chest" 
 export type BandRuleId = "BR-P1-01" | "BR-P1-03" | "BR-P1-04" | "BR-P1-05" | "BR-P1-06" | "BR-P2-01" | "BR-P2-02" | "BR-P3-99";
 export type PolicyRuleId = "P1-005" | "P1-010" | "P1-020" | "P1-030" | "P1-040" | "P1-050" | "P1-099" | "P2-005" | "P2-010" | "P2-020" | "P2-040" | "P2-050" | "P2-060" | "P2-099" | "P3-005" | "P3-010" | "P3-099";
 export type TextTriggerId = "TT-001" | "TT-002" | "TT-003" | "TT-004" | "TT-005" | "TT-006" | "TT-007";
-export type InvariantId = "INV-001" | "INV-002" | "INV-003" | "INV-004" | "INV-005" | "INV-006" | "INV-007" | "INV-008" | "INV-009" | "INV-010" | "INV-011" | "INV-012" | "INV-013" | "INV-014" | "INV-015" | "INV-016" | "INV-017" | "INV-018";
+export type InvariantId = "INV-001" | "INV-002" | "INV-003" | "INV-004" | "INV-005" | "INV-006" | "INV-007" | "INV-008" | "INV-009" | "INV-010" | "INV-011" | "INV-012" | "INV-013" | "INV-014" | "INV-015" | "INV-016" | "INV-017" | "INV-018" | "INV-019" | "INV-020" | "INV-021" | "INV-022" | "INV-023" | "INV-024" | "INV-025" | "INV-026";
 export type ChipId = "CHIP_FRIEND_ARRIVED";
 export type EventId = "SESSION_STARTED" | "SIGNALS_REPORTED" | "SIGNALS_EXPIRED" | "STRATEGY_OUTCOME" | "COMMITMENT_CREATED" | "COMMITMENT_RESOLVED" | "HANDOFF_OPENED" | "EMERGENCY_CALL_REPORTED" | "HELP_ON_SCENE" | "CORRECTION" | "QUESTION_FORCED" | "TEXT_UNMATCHED" | "SESSION_END" | "WIPE" | "APP_HIDDEN" | "APP_VISIBLE" | "CONNECTIVITY" | "TICK";
 export type RiskDimension = "medical" | "impairment" | "isolation" | "emotional" | "environmental" | "uncertainty";
 export type HandoffTarget = "emergency" | "crisis_line" | "poison" | "police" | "fire" | "trusted";
 export type Requirement = "movement" | "safe_location" | "network";
+export type LawId = "L01" | "L02" | "L03" | "L04" | "L05" | "L06" | "L07" | "L08" | "L09" | "L10" | "L11" | "L12" | "L13" | "L14" | "L15" | "L16" | "L17" | "L18" | "L19" | "L20";
+export type JournalKind = "EPISODE_STARTED" | "EPISODE_ENDED" | "SIGNAL_REPORTED" | "SIGNAL_EXPIRED" | "CARD_SHOWN" | "BAND_CHANGED" | "STRATEGY_OUTCOME" | "COMMITMENT_CREATED" | "COMMITMENT_RESOLVED" | "HANDOFF_OPENED" | "EMERGENCY_CALL_REPORTED" | "HELP_ON_SCENE" | "CORRECTION" | "QUESTION_FORCED" | "TEXT_UNMATCHED" | "APP_HIDDEN" | "APP_VISIBLE" | "CONNECTIVITY";
+export const JOURNAL_KINDS = ["EPISODE_STARTED", "EPISODE_ENDED", "SIGNAL_REPORTED", "SIGNAL_EXPIRED", "CARD_SHOWN", "BAND_CHANGED", "STRATEGY_OUTCOME", "COMMITMENT_CREATED", "COMMITMENT_RESOLVED", "HANDOFF_OPENED", "EMERGENCY_CALL_REPORTED", "HELP_ON_SCENE", "CORRECTION", "QUESTION_FORCED", "TEXT_UNMATCHED", "APP_HIDDEN", "APP_VISIBLE", "CONNECTIVITY"] as const;
+export type Provenance = "user_explicit" | "helper_explicit" | "runtime_observed" | "derived";
+export type ShareAudience = "trusted_person" | "health_professional";
+export type AccessScope = "CURRENT_EPISODE" | "RECENT_CRISIS_HISTORY" | "STRATEGY_HISTORY" | "EXPOSURE_CONTEXT" | "LOCATION_CURRENT" | "EMERGENCY_CONTACT_CONTEXT";
+export type RecencyBucket = "RECENT" | "RELEVANT" | "OLD";

@@ -146,6 +146,21 @@ export interface CardDef {
 
 export interface ChipDef { id: string; bands: string[]; whenPending: string; action: { id: string; ops: Op[] } }
 
+export interface ContinuityDef {
+  doc?: string;
+  journalKinds: { id: string; doc: string }[];
+  provenance: string[];
+  retention: {
+    acuteStateHours: number; journalDays: number; snapshotDays: number; locationPolicy: "episode" | "never";
+    securityLogDays: number; shareCapsuleDefaultHours: number; shareCapsuleMaxHours: number; shareCapsuleMaxViews: number; rawTextDays: 0;
+  };
+  buckets: { RECENT: number; RELEVANT: number; OLD: number; doc?: string };
+  evidence: { minAttempted: number; minBetterForHelpful: number; minNegativeForUnhelpful: number; outcomeWindowSec: number; doc?: string };
+  share: { audiences: Record<string, string[]>; optionalScopes: string[]; expiryHours: number[]; doc?: string };
+  consent: { continuityDefault: false; emergencyPassportDefault: false; locationDefault: "unavailable"; locationOptions: string[]; doc?: string };
+  forbiddenInference: { terms: string[]; doc?: string };
+}
+
 export interface RegistryData {
   conventions: { idPatterns: Record<string, string>; rules: string[] };
   meta: { registryVersion: string; engineContract: number; defaultLocale: string; region: string; status: string };
@@ -172,4 +187,5 @@ export interface RegistryData {
   chips: ChipDef[];
   invariants: { id: string; text: string; enforcedBy: string[] }[];
   storage: { retentionHours: number; logMaxEntries: number };
+  continuity: ContinuityDef;
 }

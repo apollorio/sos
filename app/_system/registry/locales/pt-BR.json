@@ -332,5 +332,126 @@
       "body": "Se precisar de ajuda agora, ligue 192.",
       "actions": { "call_192": "Ligar 192", "restart": "Recomeçar" }
     }
+  },
+  "continuity": {
+    "review": "draft",
+    "doc": "Deterministic templates for the Crisis Passport (ADR-0008). No diagnostic vocabulary (INV-023). {x} are parameters.",
+    "signalPhrases": {
+      "responsiveness.responsive": "respondia normalmente",
+      "responsiveness.impaired": "respondia com dificuldade",
+      "responsiveness.unresponsive": "não respondia quando chamada",
+      "breathing.normal": "respiração normal",
+      "breathing.abnormal": "respiração alterada",
+      "breathing.severely_abnormal": "respiração muito alterada",
+      "chest.no": "sem dor ou aperto no peito",
+      "chest.yes": "dor ou aperto no peito",
+      "seizure.no": "sem convulsão",
+      "seizure.yes": "convulsão",
+      "syncope.yes": "desmaio",
+      "selfHarm.yes": "relato de intenção de se machucar",
+      "physicallyUnsafe.no": "em local seguro",
+      "physicallyUnsafe.yes": "em situação de perigo físico",
+      "anxiety.0": "ansiedade ausente",
+      "anxiety.1": "ansiedade leve",
+      "anxiety.2": "ansiedade moderada",
+      "anxiety.3": "ansiedade alta",
+      "anxiety.4": "ansiedade muito alta",
+      "noise.quiet": "lugar calmo",
+      "noise.moderate": "lugar com algum barulho",
+      "noise.loud": "lugar muito barulhento",
+      "company.alone": "sozinha",
+      "company.with_someone": "com alguém",
+      "companion.none": "ninguém a caminho",
+      "companion.coming": "alguém a caminho",
+      "companion.arrived": "pessoa de apoio chegou",
+      "substanceClass.none": "relatou não ter usado nada",
+      "substanceClass.stim": "relatou uso de estimulante",
+      "substanceClass.downer": "relatou uso de depressor",
+      "substanceClass.psychedelic": "relatou uso de psicodélico",
+      "reportedTrend.better": "relatou estar melhor",
+      "reportedTrend.same": "relatou estar igual",
+      "reportedTrend.worse": "relatou estar pior",
+      "actor.self": "a própria pessoa está usando o SOS",
+      "actor.helper": "alguém está ajudando"
+    },
+    "strategyPhrases": {
+      "reduce_stimulation.relocate": "sair do barulho",
+      "reduce_stimulation.in_place": "reduzir estímulos no lugar",
+      "contact_trusted_person.stay_close": "ficar perto de alguém",
+      "contact_trusted_person.message_whatsapp": "mensagem para alguém de confiança (WhatsApp)",
+      "contact_trusted_person.message_sms": "mensagem para alguém de confiança (SMS)",
+      "contact_trusted_person.crisis_line": "CVV 188",
+      "grounding.breath_pacer": "respiração guiada",
+      "grounding.feet_floor": "pés no chão",
+      "grounding.five_senses": "cinco sentidos",
+      "steady_check.tips": "dicas de cuidado",
+      "steady_check.check_later": "checagem depois",
+      "steady_check.hold": "ficar por perto"
+    },
+    "outcomePhrases": { "done": "feito", "failed": "não conseguiu", "declined": "não quis" },
+    "bandPhrases": {
+      "P0": "possível emergência — 192 em primeiro lugar",
+      "P1": "precisando estabilizar segurança ou companhia",
+      "P2": "sofrimento alto, ainda interagindo",
+      "P3": "mais estável"
+    },
+    "reasonPhrases": {
+      "unresponsive": "não respondia",
+      "breathing": "respiração muito alterada",
+      "seizure": "convulsão",
+      "chest": "dor no peito",
+      "unsafe": "perigo físico",
+      "fainted": "desmaio",
+      "self_harm": "intenção de se machucar",
+      "silent_after_risk": "silêncio após risco",
+      "user_initiated": "ligou para o 192 por conta própria"
+    },
+    "handoffPhrases": {
+      "tel.emergency": "abriu ligação para o 192",
+      "tel.crisis": "abriu ligação para o CVV 188",
+      "tel.poison": "abriu ligação para o Disque-Intoxicação",
+      "whatsapp.trusted": "abriu mensagem para alguém de confiança",
+      "sms.trusted": "abriu SMS para alguém de confiança"
+    },
+    "eventPhrases": {
+      "EMERGENCY_CALL_REPORTED": "relatou que já ligou para o 192",
+      "HELP_ON_SCENE": "relatou que a ajuda chegou",
+      "CORRECTION": "corrigiu uma informação anterior",
+      "APP_HIDDEN": "saiu do app",
+      "APP_VISIBLE": "voltou ao app",
+      "EPISODE_STARTED": "começou a usar o SOS",
+      "EPISODE_ENDED": "encerrou"
+    },
+    "trusted": {
+      "title": "SOS Apollo — resumo para quem está ajudando",
+      "started": "Começou a se sentir mal por volta de {time}.",
+      "nowHeading": "Agora:",
+      "triedHeading": "Já tentou:",
+      "triedLine": "{time} — {strategy} ({outcome})",
+      "closing": "Se você chegar, confirme no próprio telefone da pessoa.",
+      "empty": "Ainda não relatou nada além disso."
+    },
+    "professional": {
+      "title": "SOS APOLLO · RESUMO DE CRISE RELATADO PELA PESSOA",
+      "started": "Episódio iniciado às {time} · {date}",
+      "reportedHeading": "Relatado pela pessoa ou por quem ajudava:",
+      "derivedHeading": "Derivado pelo aplicativo (interpretação, não relato):",
+      "courseHeading": "Curso:",
+      "historyHeading": "Últimos {days} dias:",
+      "historyEpisodes": "• {n} episódio(s) com uso do SOS",
+      "historyP0": "• {n} episódio(s) chegaram a possível emergência",
+      "historyHelpful": "• estratégia relatada como útil mais de uma vez: {strategy}",
+      "historyNone": "• sem histórico anterior registrado",
+      "locationLine": "Localização informada no momento do compartilhamento: {location}",
+      "disclaimer": "ESTE RESUMO CONTÉM DADOS RELATADOS PELA PESSOA. Verificação clínica é necessária.",
+      "line": "{time} — {text}",
+      "bandLine": "{time} — {band}",
+      "p0Line": "{time} — {band} · motivo: {reason}"
+    },
+    "consentCard": {
+      "title": "O SOS pode lembrar do que ajudou",
+      "body": "Guarda seu histórico de apoio por até 180 dias, protegido, para lembrar do que funcionou. Não precisa de conta, nome, rosto ou voz.",
+      "actions": { "enable": "Lembrar por 180 dias", "later": "Agora não", "learn": "Entender privacidade" }
+    }
   }
 }

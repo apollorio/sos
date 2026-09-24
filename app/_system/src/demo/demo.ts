@@ -16,6 +16,16 @@ import { buildFacts } from "../core/logic/facts";
 import { decideCore } from "../core/planner/decide";
 import { askable, rankQuestions } from "../core/planner/voi";
 import { SCENARIOS, type Step } from "../../tests/scenarios/scenarios";
+import type { Journal, JournalEvent } from "../core/journal/journal";
+import { memoryVaultStore } from "../runtime/continuity/journal-store";
+import { deriveSnapshot } from "../core/continuity/snapshot";
+import { strategyPriors } from "../core/continuity/priors";
+import { purgeExpired } from "../core/continuity/retention";
+import type { ContinuitySnapshot, StrategyPriors } from "../core/continuity/types";
+import { buildCrisisSummary, renderSummary, findForbiddenTerms } from "../core/handoff/summary";
+import { newCapsule, capsuleLink, parseCapsuleLink } from "../core/handoff/capsule";
+import { sealCapsule, openCapsule, newCapsuleId } from "../runtime/handoff/capsule-crypto";
+import { synthHistory } from "./history-fixture";
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const locale = LOCALES["pt-BR"]!;
@@ -105,6 +115,84 @@ function renderBrain(r: StepResult) {
     `<li><span class="t num">t+${fmt(h.at - t0)}</span><span class="pill" data-band="${h.log.band}">${h.log.band}</span><span class="in">${esc(h.log.input.replace(/\s\[.*\]$/, ""))}</span><span class="out"><code>${esc(h.log.why.commander ?? h.log.why.policyRule ?? "")}</code> → ${esc(h.title.replace("CARD_", ""))}</span></li>`).join("");
 }
 
+/* ───────────────────────── Continuity plane (v0.2) · separate, never controls P0 ───────────────────────── */
+const vault = memoryVaultStore();
+let consent = false;
+let snapshot: ContinuitySnapshot | null = null;
+let priors: StrategyPriors = {};
+let currentJournal: Journal | null = null;
+const DAY = 86_400_000;
+
+async function refreshContinuity() {
+  const all = purgeExpired(await vault.readAll(), clock(), REG);
+  snapshot = deriveSnapshot(all, clock(), REG);
+  priors = consent ? strategyPriors(snapshot, REG) : {};
+  renderContinuity();
+}
+
+function renderContinuity() {
+  const sn = snapshot;
+  $("k-snap").innerHTML = sn
+    ? [["episódios (180 d)", sn.episodeCount], ["último episódio", sn.lastEpisodeAt ? `${Math.round((clock() - sn.lastEpisodeAt) / DAY)} d atrás` : "—"], ["chegaram a P0", sn.previousP0Count], ["sozinha", sn.supportPatterns.episodesAlone], ["melhorou após apoio", sn.supportPatterns.improvedAfterSupport], ["recusou contato", sn.supportPatterns.declinedContact], ["consentimento", consent ? "ligado" : "desligado (priors vazios)"]]
+        .map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")
+    : "<dt>—</dt><dd>cofre vazio</dd>";
+  $("k-strat").innerHTML = sn && sn.strategyHistory.length
+    ? sn.strategyHistory.map((h) => `<tr><td><code>${esc(h.strategy)}</code></td><td class="num">${h.attempted}×</td><td class="num">↑${h.outcome.better} =${h.outcome.same} ↓${h.outcome.worse}</td><td>${esc(h.bucket ?? "")}</td><td>${priors[h.strategy] ? `<span class="prior" data-p="${priors[h.strategy]}">${priors[h.strategy]}</span>` : "<span class='dim'>sem evidência</span>"}</td></tr>`).join("")
+    : "<tr><td class='dim'>nenhuma estratégia registrada</td></tr>";
+  const evs = currentJournal?.events.slice(-12).reverse() ?? [];
+  $("k-journal").innerHTML = evs.length
+    ? evs.map((e: JournalEvent) => `<tr><td class="num">${e.clientSeq}</td><td><code>${esc(e.kind)}</code></td><td class="dim">${esc(e.provenance)}</td><td class="dim">${esc(Object.entries(e.payload).filter(([, v]) => v !== null && v !== false).map(([k, v]) => `${k}=${String(v)}`).join(" "))}</td></tr>`).join("")
+    : "<tr><td class='dim'>—</td></tr>";
+}
+
+async function allEventsForSummary(): Promise<JournalEvent[]> {
+  const stored = await vault.readAll();
+  const cur = currentJournal?.events ?? [];
+  const ids = new Set(stored.map((e) => e.eventId));
+  return [...stored, ...cur.filter((e) => !ids.has(e.eventId))];
+}
+
+let lastSummaryText = "";
+async function showSummary(audience: "trusted_person" | "health_professional") {
+  if (!currentJournal) return;
+  const events = await allEventsForSummary();
+  const s = buildCrisisSummary(events, currentJournal.episodeId, { audience, snapshot: consent ? snapshot : null, now: clock() }, REG);
+  lastSummaryText = renderSummary(s, locale.continuity);
+  const bad = findForbiddenTerms(lastSummaryText, REG);
+  $("k-summary-title").textContent = audience === "trusted_person" ? "Resumo para quem está ajudando (escopo: episódio atual)" : `Resumo para profissional de saúde (escopos: ${s.scopes.join(", ")})${bad.length ? " · ✖ termo proibido: " + bad.join(", ") : " · ✔ sem vocabulário diagnóstico"}`;
+  $("k-summary").textContent = lastSummaryText;
+  $("k-link").textContent = "";
+  $("k-summary-wrap").hidden = false;
+}
+
+$("k-consent").addEventListener("click", async () => {
+  consent = !consent;
+  const b = $("k-consent");
+  b.setAttribute("aria-pressed", String(consent));
+  b.textContent = `Lembrar por 180 dias: ${consent ? "ligado" : "desligado"}`;
+  await refreshContinuity();
+  toast(consent ? "Continuidade ligada: o histórico pode reordenar estratégias elegíveis. Nunca muda P0, banda nem fatos (L14)." : "Continuidade desligada: o app segue igual ao v0.1.");
+});
+$("k-seed").addEventListener("click", async () => {
+  const now = clock();
+  await vault.append([...synthHistory("grounding", "five_senses", 3, "better", now - 2 * DAY, "S"), ...synthHistory("reduce_stimulation", "relocate", 2, "worse", now - 40 * DAY, "R")]);
+  if (!consent) $("k-consent").click(); else await refreshContinuity();
+  toast("5 episódios simulados: 'cinco sentidos' ajudou 3×. Rode a história self-club-panic-loud e veja o grounding mudar de ordem.");
+});
+$("k-clear").addEventListener("click", async () => { await vault.wipe(); await refreshContinuity(); toast("Cofre apagado (Apagar cofre = direito de eliminação, LGPD)."); });
+$("k-friend").addEventListener("click", () => void showSummary("trusted_person"));
+$("k-pro").addEventListener("click", () => void showSummary("health_professional"));
+$("k-capsule").addEventListener("click", async () => {
+  if (!lastSummaryText) await showSummary("trusted_person");
+  const id = newCapsuleId();
+  const policy = newCapsule({ id, now: clock(), audience: "trusted_person" }, REG);
+  const { sealed, keyB64u } = await sealCapsule(lastSummaryText);
+  const link = capsuleLink("https://sos.apollo.rio.br", id, keyB64u);
+  const parsed = parseCapsuleLink(link)!;
+  const back = await openCapsule(sealed, parsed.key);
+  $("k-link").textContent = `${link}\n→ servidor guarda ${sealed.ct.length} chars de cifra, expira em ${Math.round((policy.expiresAt - policy.createdAt) / 3_600_000)} h, máx. ${policy.maxViews} aberturas · chave só no #fragment · ${back === lastSummaryText ? "✔ aberta localmente com a chave" : "✖ falha"}`;
+});
+
 let loop: EngineLoop;
 
 async function boot() {
@@ -117,7 +205,18 @@ async function boot() {
     });
     renderBrain(r);
   }, clock);
+  // Continuity hooks: strictly after render (INV-019). Priors only with consent (L20).
+  loop.hooks = {
+    priors: () => (consent ? priors : undefined),
+    onJournal: async (evs, j) => {
+      currentJournal = j;
+      if (consent) await vault.append(evs);
+      if (evs.some((e) => e.kind === "EPISODE_ENDED" || e.kind === "STRATEGY_OUTCOME")) await refreshContinuity();
+      else renderContinuity();
+    },
+  };
   await loop.start();
+  await refreshContinuity();
 }
 
 // Neutralize every handoff: this is a simulator.
@@ -155,6 +254,9 @@ $("c-reset").addEventListener("click", async () => { await reset(); });
 
 async function reset() {
   offset = 0;
+  currentJournal = null;
+  lastSummaryText = "";
+  $("k-summary-wrap").hidden = true;
   t0 = clock();
   history.length = 0;
   offBtn.setAttribute("aria-pressed", "false");

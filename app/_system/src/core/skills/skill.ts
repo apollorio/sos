@@ -11,6 +11,7 @@ import type { SkillPick } from "../domain/decision";
 import type { Facts } from "../logic/predicate";
 import type { Band, SkillId } from "../../generated/registry.gen";
 import type { Commander } from "../safety/hard-rules";
+import type { StrategyPriors } from "../continuity/types";
 
 export interface SkillCtx {
   state: SessionState;
@@ -20,6 +21,8 @@ export interface SkillCtx {
   reg: Reg;
   commander?: Commander;
   questionId?: string;
+  /** Longitudinal priors (v0.2). May reorder ELIGIBLE strategies only (INV-021). */
+  priors?: StrategyPriors;
 }
 
 export interface Skill {
