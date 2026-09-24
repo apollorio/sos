@@ -1,0 +1,33 @@
+{
+  "name": "sos-apollo-harm-control",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Deterministic, offline, login-free harm-control runtime. No LLM. Registry-driven.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "registry:codegen": "tsx scripts/registry-codegen.ts",
+    "registry:check": "tsx scripts/registry-codegen.ts --check && tsx scripts/registry-lint.ts",
+    "registry:lint": "tsx scripts/registry-lint.ts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run --exclude tests/exhaustive/**",
+    "test:exhaustive": "vitest run tests/exhaustive",
+    "simulate": "tsx scripts/simulate.ts",
+    "verify": "npm run registry:check && npm run typecheck && npm run test && npm run test:exhaustive && npm run build",
+    "build": "npm run registry:check && esbuild src/runtime/boot.ts --bundle --format=esm --target=es2020 --minify --outfile=public/app.js",
+    "registry:format": "tsx scripts/registry-format.ts",
+    "e2e": "tsx tests/e2e/shell.e2e.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^22.20.4",
+    "ajv": "^8.20.0",
+    "esbuild": "^0.24.2",
+    "fast-check": "^3.23.2",
+    "playwright-core": "1.56",
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vitest": "^2.1.9"
+  }
+}
