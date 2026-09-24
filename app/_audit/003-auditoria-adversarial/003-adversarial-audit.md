@@ -608,3 +608,18 @@ key rotation; C-SSRS attribution (must precede any public release, not the next 
 Everything the continuity plane promises (memory, passport, capsules) is currently **true only inside the simulator and the
 test-suite**; no real person can consent to it, and nothing they generate is ever kept beyond the tab. That is safe — and it is
 not the architecture claimed.
+
+---
+
+## Addendum — second pass (same commit b2655f2, re-audited at b517bd6; no code changed)
+
+Additional red-team probes executed against the real runtime:
+
+| Probe | Result | Effect on verdict |
+|---|---|---|
+| **R1 — hung local store.** `EngineLoop` with a `Store.saveState` that never resolves; `loop.start()` awaited 500 ms. | **0 render calls.** `engine-loop.ts:73` `await this.store.saveState(r.state)` precedes `this.render(r)` (:76). A stalled IndexedDB transaction (no timeout, no race) blocks the engine card indefinitely. The static shell tel:192 (`public/index.html`, e2e "engine crash") is the only survivor. | Engine **Offline Independence: VERIFIED → PARTIAL**. New blocker J-7: render before persistence, or bound the store with a timeout + memory fallback. |
+| **R2 — `responsiveness=impaired` vs grounding.** self · no red flags · clarity "hard" · with · quiet; `strategyIneligibility` for all three grounding strategies. | `null` for `breath_pacer`, `feet_floor`, `five_senses` — nothing in the registry blocks cognitively demanding grounding for an impaired person (that path happened to pick `stay_close` via P1-050, but `P1-040 emotional≥3 → grounding` would fire the moment anxiety≥3 is reported). | Confirms §17 second half. **UNSAFE** stands. |
+| **R3 — entry "hit strong" then isolation appears later.** loud+with → `grounding.breath_pacer` (P2); after `company` TTL (900 s) expires → `Q_RED_FLAGS_SELF` re-asked in P1 (uncertainty). | The engine re-triages from facts; no redirect hack, no flow ownership. | §2 engine finding **VERIFIED** (again). |
+| **Correction — legacy "18 steps to 192".** BFS over `data.json → panico.nodes` (28 nodes, start `a1`): **no panico node contains a `tel:` link at all**. `app/index.html` **does** contain a static `tel:192` strip (added in audit phase 001 "Abraço"). | The earlier phrasing "the tel link is 18 taps away" is **withdrawn**: the number came from audit 000 (pre-001). Corrected finding: the *flow content* never offers 192, and the *page* always shows a static 192/188 strip — whether the strip stays visible/reachable while the bottom sheet is open is **UNKNOWN** (not executed). The copy "Você não está em perigo real." (data.json:564) remains a **FLAG** independent of tap distance. | Top-10 item 2 reworded; severity unchanged (false reassurance + no red-flag gate in the flow). |
+
+Scorecard delta: Engine · Offline Independence → **PARTIAL**. Everything else unchanged. `npm run verify` re-run: exit 0.
