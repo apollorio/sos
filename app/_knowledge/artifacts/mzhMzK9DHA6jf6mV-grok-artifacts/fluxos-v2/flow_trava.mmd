@@ -1,0 +1,63 @@
+flowchart TD
+  START(["▶ Paranoia · v2"]) --> trava_a1
+  trava_a1{"<b>a1</b><br/>Tô aqui. O que trava mais agora?"}
+  class trava_a1 choice
+  trava_frame("<b>frame</b><br/>A sensação está real. Discutir com ela não ajuda. Vamos baixar uma coisa só.")
+  class trava_frame info
+  trava_low[["<b>uma_coisa</b><br/>☐ Capuz, olhar no chão, ou som mais baixo.. uma<br/>☐ Costa numa parede, se der"]]
+  class trava_low task
+  trava_script[["<b>reality_script</b><br/>☐ Em voz alta: Eu estou aqui. O excesso de som ou luz piora. Isto passa."]]
+  class trava_script task
+  trava_move{"<b>corpo</b><br/>O corpo deixa fazer algo pequeno?"}
+  class trava_move choice
+  trava_pes[["<b>micro_move</b><br/>☐ Dedos dos pés, um lado e outro"]]
+  class trava_pes task
+  trava_hug[["<b>butterfly</b><br/>☐ Braços cruzados, toque alternado nos ombros, devagar<br/>só se tocar em você for ok"]]
+  class trava_hug task
+  trava_check{"<b>check</b><br/>A agitação cedeu um pouco?"}
+  class trava_check choice
+  trava_gente{"<b>gente</b><br/>Tem alguém para um SMS curto?"}
+  class trava_gente choice
+  trava_crt[["<b>crt_10</b><br/>☐ 10 segundos antes de enviar"]]
+  class trava_crt task
+  trava_sms{{"<b>sms</b><br/>📞 Mensagem pronta: tô mal, pode ficar na linha?"}}
+  class trava_sms action
+  trava_188{{"<b>cvv</b><br/>📞 CVV 188 · não é tarefa, é ligação"}}
+  class trava_188 action
+  trava_fecha(["<b>fecha</b><br/>Você não saiu. O corpo sai da trava no tempo dele. 188 aqui."])
+  class trava_fecha info,endn
+  trava_a1 -->|"Estão me olhando ou julgando"| trava_frame
+  trava_a1 -->|"Travei, não mexo"| trava_frame
+  trava_a1 -->|"Falta de ar junto"| FLOW_panico
+  trava_a1 -->|"Tudo irreal junto"| FLOW_real
+  trava_a1 -->|"Pensamento de acabar"| FLOW_cssrs
+  trava_a1 -.->|"⚡ agora"| trava_low
+  trava_frame -.->|continuar| trava_low
+  trava_low ==>|"baixei uma"| trava_script
+  trava_script ==>|"disse"| trava_move
+  trava_move -->|"Quase nada"| trava_pes
+  trava_move -->|"Consigo os braços"| trava_hug
+  trava_pes ==>|"mexi"| trava_check
+  trava_hug ==>|"toquei"| trava_check
+  trava_check -->|"Um pouco"| trava_gente
+  trava_check -->|"Ainda alto"| trava_188
+  trava_gente -->|"Sim"| trava_crt
+  trava_gente -->|"Não"| trava_188
+  trava_crt ==>|"pausei"| trava_sms
+  trava_sms -.->|continuar| trava_fecha
+  trava_188 -.->|continuar| trava_fecha
+  trava_fecha -.->|continuar| EXIT
+  FLOW_panico(["→ pânico"])
+  class FLOW_panico ext
+  FLOW_real(["→ onde eu tô"])
+  class FLOW_real ext
+  FLOW_cssrs(["→ triagem"])
+  class FLOW_cssrs ext
+  EXIT(["pode fechar"])
+  class EXIT ext
+  classDef choice fill:#1b1030,stroke:#a855f7,color:#eee
+  classDef info fill:#0f1a24,stroke:#38bdf8,color:#ddd
+  classDef task fill:#0f2419,stroke:#34d399,color:#ddd
+  classDef action fill:#2a0f12,stroke:#ef4444,color:#fff,stroke-width:2px
+  classDef endn fill:#111,stroke:#fff,color:#fff,stroke-width:3px
+  classDef ext fill:#333,stroke:#999,color:#fff

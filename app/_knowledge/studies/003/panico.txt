@@ -1,0 +1,471 @@
+## Product Architecture & UX Specification: Panic & Acute Anxiety Crisis Flow
+
+Designing an interface for users in an acute state of panic or somatic distress (racing heart, shortness of breath, hyperventilation) requires a radically different approach from standard app UX. During hyperarousal, the prefrontal cortex experiences reduced executive function, processing speed drops significantly, and fine motor skills degrade.
+
+The following specification outlines the non-negotiable architectural principles, state machine logic, and UI/UX best practices for executing a safe, effective crisis navigation flow.
+
+---
+
+## 1. Executive Principles & Safety Guardrails
+
+| Principle | Technical / UX Requirement | Rationale |
+| --- | --- | --- |
+| **Somatic Triage First** | Never default to assuming "it's just anxiety." | Acute cardiac events, pulmonary embolisms, and severe arrhythmias mimic panic attacks. Misdiagnosis carries lethal risk. |
+| **Enforced Trust Boundaries** | Restrict social connectivity to pre-verified contacts or official helplines (CVV 188). | Seeking support from strangers, open chat rooms, or public forums during acute vulnerability increases panic, exposes users to exploitation, and spreads misinformation. |
+| **Zero Cognitive Friction** | Max 1 primary decision per screen; progressive disclosure. | High cortisol and adrenaline impair reading comprehension and decision-making. |
+| **Offline-First Resilience** | All core flow screens, breathing pacers, and local helpline numbers must function without network access. | Network degradation should never block emergency triage or grounding tools. |
+| **Non-Alarmist Design Language** | Cool pastel tones (muted blues/teals), generous whitespace, minimum 18pt font sizes, no high-contrast warning reds except in explicit medical dispatch states. | Aggressive UI colors increase physiological arousal and heart rate. |
+
+---
+
+## 2. Complete State Machine & Decision Logic
+
+```
+               [ User Triggers Crisis Mode ]
+                            │
+                            ▼
+           ┌─────────────────────────────────┐
+           │   STEP 1: Medical Triage Gate   │
+           └─────────────────────────────────┘
+                            │
+            ┌───────────────┴───────────────┐
+            ▼                               ▼
+ [Somatic Flags Present / Unknown]   [Known Anxiety Pattern]
+            │                               │
+            ▼                               ▼
+┌──────────────────────┐          ┌─────────────────────────────────┐
+│ STEP 2: Emergency    │          │ STEP 3: Trusted Anchor Gate     │
+│ Dispatch (SAMU 192)  │          │ (WhatsApp Trusted Contact/188)  │
+└──────────────────────┘          └─────────────────────────────────┘
+                                                    │
+                                                    ▼
+                                  ┌─────────────────────────────────┐
+                                  │ STEP 4: Physiological Reflex    │
+                                  │ (Trigeminal / Ice Grounding)    │
+                                  └─────────────────────────────────┘
+                                                    │
+                                                    ▼
+                                  ┌─────────────────────────────────┐
+                                  │ STEP 5: Autonomic Down-Regulation│
+                                  │ (4-4-6 Paced Breathing)         │
+                                  └─────────────────────────────────┘
+                                                    │
+                                                    ▼
+                                  ┌─────────────────────────────────┐
+                                  │ STEP 6: Verified Local Resources│
+                                  │ (RJ Public Health Infrastructure)│
+                                  └─────────────────────────────────┘
+
+```
+
+---
+
+## 3. Screen-by-Screen UX & Microcopy Specification
+
+### Step 1: Medical Triage Gate (Red Direction vs. Green Direction)
+
+* **Goal:** Differentiate between a life-threatening medical event and an acute panic response within 5 seconds.
+* **UI Pattern:** Checklist with large tap targets (minimum height 56dp).
+
+```
+Header: Triagem de Segurança
+Body: Sentir o coração acelerado e falta de ar é assustador. Precisamos checar seu corpo primeiro.
+
+Question: Você está sentindo algum destes sinais AGORA?
+[ ] Dor, aperto ou queimação no peito que vai para o braço ou queixo
+[ ] Formigamento num lado do corpo ou dificuldade para falar
+[ ] Tontura extrema ou sensação de desmaio iminente
+[ ] É a PRIMEIRA VEZ na vida que você sente isso tão forte
+
+CTA Primary (Red/Acento): [Tenho 1 ou mais desses sintomas / Tenho dúvida]
+CTA Secondary (Neutral): [Não. Já conheço esses sintomas de crises anteriores]
+
+```
+
+---
+
+### Step 2: Immediate Medical Dispatch (If Red Flags Present)
+
+* **Goal:** Direct the user to professional medical evaluation immediately.
+* **UI Pattern:** High-contrast direct-dial action screen.
+
+```
+Header: Atenção Médica Necessária
+Body: Por segurança, esses sintomas precisam de avaliação médica imediata. Não tente controlar isso sozinho(a).
+
+Primary Action Cards:
+1. [ Ligar para o SAMU - 192 ] (One-tap phone call trigger)
+2. [ Chamar Acompanhante ] (Alerts saved emergency contact)
+
+Instruction Checklist:
+• Destranque a porta da frente se estiver sozinho(a).
+• Sente-se confortavelmente enquanto aguarda socorro.
+• NÃO tente dirigir ou pilotar.
+
+```
+
+---
+
+### Step 3: Critical Security Anchor (Trusted Contact Only)
+
+* **Goal:** Connect the user with a verified support system while explicitly forbidding engagement with strangers.
+* **UI Pattern:** Warning Card + One-tap WhatsApp deep link generation.
+
+```
+Header: Conecte-se com Alguém de Confiança
+Banner (Critical Alert Style): 
+🛑 NUNCA procure apoio com desconhecidos, grupos de internet ou redes abertas agora. 
+A vulnerabilidade na crise pode expor você a desinformação ou situações perigosas.
+
+Instruction:
+Fale APENAS com uma pessoa da sua extrema confiança (mãe, pai, irmão, parceiro/a, melhor amigo/a).
+
+Interactive Element:
+[ Pre-formatted WhatsApp Message Card ]
+"Oi, estou tendo uma crise de ansiedade forte agora. Preciso muito que uma pessoa de confiança fique em linha comigo no Zap ou venha aqui até passar. Pode me responder?"
+
+CTA Primary: [ Copiar e Abrir WhatsApp ]
+CTA Secondary (If no one is available): [ Ligar para Apoio Sigiloso (CVV 188) ]
+
+```
+
+---
+
+### Step 4: Physiological Reflex Activation (Mammalian Dive Reflex)
+
+* **Goal:** Trigger the vagus nerve and trigeminal pathway to mechanically slow the heart rate (bradycardic response).
+* **UI Pattern:** Visual card selector with step-by-step physical grounding actions.
+
+```
+Header: Quebrando o Alarme do Cérebro
+Body: Seu cérebro ativou um alarme falso. Vamos usar o seu corpo para desacelerá-lo mecanicamente.
+
+Option Cards (Horizontally scrollable or tabbed):
+1. Água Fria no Rosto (Recomendado)
+   "Vá até a pia e lave o rosto com água gelada por 10 a 15 segundos. Isso ativa o reflexo de mergulho e força o coração a desacelerar."
+
+2. Choque Térmico com Gelo
+   "Pegue uma pedra de gelo na cozinha e segure na mão ou encoste na nuca/pulso."
+
+3. Ancoragem Física
+   "Sente-se no chão, encoste as costas firmemente na parede e pressione os pés contra o solo."
+
+CTA Primary: [ Conclui este passo / Ir para Respiração ]
+
+```
+
+---
+
+### Step 5: Paced Autonomic Breathing (4-4-6 Cadence)
+
+* **Goal:** Correct hypercapnia/hyperventilation through prolonged exhalation, lowering sympathetic arousal.
+* **UI Pattern:** Expanding/contracting visual circle with soft haptic engine support.
+
+```
+Visual Component: Dynamic Pulsing Circle
+Timing Matrix:
+• Inhale (Nariz): 4 segundos (Circle Expands)
+• Hold (Segurar): 4 segundos (Circle Holds Pulse)
+• Exhale (Boca): 6 segundos (Circle Contracts)
+
+Instruction Text: 
+"Solte o ar suavemente como se estivesse soprando uma vela."
+
+Accessibility Note: 
+Trigger discrete haptic feedback (HapticEngine / Vibrations) on breath transition cues so users can keep eyes closed if desired.
+
+```
+
+---
+
+### Step 6: RJ Localized Public Health & Emergency Infrastructure
+
+* **Goal:** Offer clear, localized next steps for ongoing care or walk-in medical relief in Rio de Janeiro.
+* **UI Pattern:** Categorized resource directory with geo-aware contact actions.
+
+```
+Header: Recursos de Saúde no Rio de Janeiro
+
+Category 1: Atendimento Urgente Presencial (SUS-RJ)
+• UPAs 24h (Unidades de Pronto Atendimento)
+  "Para medicação rápida e avaliação presencial em crises intensas."
+  Ex: UPA Copacabana, UPA Botafogo, UPA Tijuca, UPA Barra da Tijuca.
+  [ Botão: Abrir UPA mais próxima no Mapa ]
+
+Category 2: Escuta Emoção e Apoio 24h
+• CVV (Centro de Valorização da Vida)
+  Ligue: 188 (Gratuito, 24h, sigiloso)
+  [ Botão: Ligar 188 ]
+
+Category 3: Acompanhamento Contínuo (Saúde Mental)
+• CAPS (Centros de Atenção Psicossocial)
+  "Para tratamento contínuo com psicólogos e psiquiatras perto da sua residência."
+
+```
+
+---
+
+## 4. Technical Implementation Guidelines
+
+### State Persistence & Data Schema
+
+Emergency contacts must be stored locally using encrypted key-value storage (`AsyncStorage`, `NSUserDefaults`, or `EncryptedSharedPreferences`). Never rely on an API call to fetch a user's emergency contact during a live crisis.
+
+```json
+{
+  "emergency_config": {
+    "trusted_contact_name": "Ana (Irmã)",
+    "trusted_contact_phone": "+5521999999999",
+    "has_prior_panic_history": true,
+    "preferred_grounding_method": "cold_water"
+  },
+  "local_health_defaults": {
+    "samu": "192",
+    "cvv": "188",
+    "state": "RJ",
+    "city": "Rio de Janeiro"
+  }
+}
+
+```
+
+### Accessibility & Hardware Integration
+
+1. **Screen Stay Awake:** Keep the device display active during the flow using native idle timer flags (`KeepAwake` / `FLAG_KEEP_SCREEN_ON`). A darkening screen induces panic.
+2. **Haptic Breathing Patterns:** Utilize `UIImpactFeedbackGenerator` (iOS) or `Vibrator` (Android) to deliver distinct tactile feedback during the breathing cycle:
+* **Inhale:** Light continuous micro-pulses.
+* **Hold:** Single medium tap.
+* **Exhale:** Soft rhythmic decaying vibration.
+
+
+3. **WCAG 2.1 AA Compliance:** Minimum color contrast ratio of 4.5:1 for all text elements. Font scale scaling factors must be respected without breaking layout bounds.
+
+Refinamos o fluxo priorizando o alerta **crítico de segurança**: o contato de apoio precisa ser obrigatoriamente **uma pessoa de extrema confiança** (amigo ou familiar próximo).
+
+Procurar apoio com desconhecidos, grupos aleatórios de internet ou redes abertas durante uma crise é perigoso, expõe à vulnerabilidade e frequentemente piora o pânico.
+
+---
+
+## 🏗️ Fluxo Refinado de Atendimento (UX Roadmap)
+
+```
+[Passo 1: Triagem de Sintomas Físicos]
+           │
+           ├── (Sintomas de Risco) ──► [Passo 2: Emergência Médica (SAMU 192 / UPA)]
+           │
+           └── (Crise Conhecida) ───► [Passo 3: Aparelho de Apoio - APENAS CONFIANÇA]
+                                                │
+                                                ▼
+                                      [Passo 4: Desativação Física (Água/Gelo)]
+                                                │
+                                                ▼
+                                      [Passo 5: Controle da Hiperventilação]
+                                                │
+                                                ▼
+                                      [Passo 6: Serviços Oficiais do Rio de Janeiro]
+
+```
+
+---
+
+## 📱 Sequência e Microcopias para o App (PT-BR)
+
+1. **Passo 1: Avaliação Inicial de Segurança:** Descartando Emergências Médicas.
+> **Texto na tela:**
+> *"Sua segurança vem em primeiro lugar. Vamos checar seus sintomas corporais agora."*
+> **Você está sentindo algum destes sinais?**
+> * Dor forte, aperto ou queimação no peito que espalha para o braço ou queixo.
+> * Formigamento num lado do corpo ou dificuldade para falar.
+> * Tontura extrema ou sensação de que vai desmaiar.
+> * É a PRIMEIRA VEZ na vida que você sente isso.
+> 
+> 
+> **[Sim / Tenho dúvidas]** ➔ *(Redireciona para o Passo 2)*
+> **[Não, é uma crise de pânico/ansiedade conhecida]** ➔ *(Redireciona para o Passo 3)*
+
+
+2. **Passo 2: Encaminhamento Médico:** Atendimento Imediato.
+> **Texto na tela:**
+> *"Por precaução médica, esses sintomas exigem avaliação presencial imediata."*
+> 1. **Ligue para o SAMU:** **192**.
+> 2. **Chame um familiar ou vizinho conhecido** para acompanhar você até a emergência.
+> 3. **Vá à UPA ou Pronto Socorro mais próximo.**
+> 
+> 
+> *Nunca dirija se estiver com falta de ar ou tontura.*
+
+
+3. **Passo 3: Acompanhante de Estrita Confiança:** Regra Absoluta de Proteção Emocional.
+> **Texto na tela:**
+> 🛑 **REGRA DE SEGURANÇA CRÍTICA:**
+> **NUNCA procure apoio com desconhecidos, grupos de internet ou redes abertas durante a crise.**
+> Falar com estranhos enquanto você está vulnerável pode aumentar seu pânico, expor você a desinformação ou a situações perigosas.
+> **O que fazer agora:**
+> Envie uma mensagem no WhatsApp ou ligue **apenas para alguém que você já conhece e confia profundamente** (mãe, pai, irmão, melhor amigo/a, parceiro/a).
+> *Mensagem pronta para copiar e enviar no Zap:*
+> > *"Oi, estou tendo uma crise de ansiedade forte. Preciso muito que uma pessoa de confiança fique em linha comigo no Zap ou venha aqui até passar. Pode me ajudar?"*
+> 
+> 
+
+
+4. **Passo 4: Regulação Fisiológica (Choque Térmico):** Reduzindo os Batimentos no Corpo.
+> **Texto na tela:**
+> *"Seu cérebro está em sinal de alerta extremo. Vamos usar o corpo para desacelerá-lo de forma mecânica."*
+> **Escolha uma ação imediata:**
+> * **Água fria no rosto:** Vá até a pia e lave o rosto com água bem gelada por 10 a 15 segundos.
+> * **Pedra de gelo:** Segure uma pedra de gelo na mão fechada ou encoste na nuca/pulso.
+> * **Pés no chão:** Sente-se no chão, encoste as costas na parede e sinta o apoio firme.
+> 
+> 
+> *(O contato com o frio ativa o reflexo parassimpático e força o coração a desacelerar).*
+
+
+5. **Passo 5: Ancoragem Respiratória (4-4-6):** Normalizando a Respiração.
+> **Texto na tela:**
+> *"A sensação de sufoco acontece porque o corpo está acumulando muito oxigênio. Vamos equilibrar a respiração."*
+> **Siga o ritmo da tela:**
+> 1. **Puxe o ar** pelo nariz em **4 segundos**.
+> 2. **Segure** por **4 segundos**.
+> 3. **Solte devagar** pela boca em **6 segundos** (como se estivesse soprando uma vela suavemente).
+> 
+> 
+> *Mantenha o foco apenas na contagem.*
+
+
+6. **Passo 6: Recursos de Saúde no Rio de Janeiro:** Pontos Oficiais e Verificados.
+> **Texto na tela:**
+> *"Se precisar de apoio profissional imediato ou escuta treinada e confidencial no Rio de Janeiro:"*
+> **Escuta Profissional e Gratuita:**
+> * **CVV (Centro de Valorização da Vida):** Ligue **188** (Atendimento gratuito 24h, sigiloso, por voluntários treinados — excelente opção se o seu contato de confiança não puder atender).
+> 
+> 
+> **Rede Pública de Saúde (Atendimento Presencial no RJ):**
+> * **UPAs 24h:** Atendimento médico e aplicação de medicação para crises agudas de ansiedade/pânico (ex: UPA Copacabana, Botafogo, Tijuca, Barra, etc.).
+> * **SAMU:** **192** (Para remoção de emergência).
+> * **CAPS (Centro de Atenção Psicossocial):** Para acompanhamento terapêutico e psiquiátrico contínuo e gratuito perto do seu bairro.
+> 
+> 
+
+
+---
+
+### 🔑 Por que essa abordagem é essencial no app?
+
+* **Preserva a integridade do usuário:** Em momento de pânico, a capacidade de julgamento fica reduzida. Bloquear a ideia de procurar estranhos previne golpes, gatilhos de medo adicional e abordagens mal-intencionadas.
+* **Proporciona uma alternativa segura (CVV 188):** Se o usuário não tiver nenhum amigo/familiar de confiança disponível na hora, o app direciona para um serviço oficial gratuito de escuta qualificada (**CVV**), e não para fóruns ou chats anônimos.
+
+
+Ao lidar com **coração acelerado e falta de ar**, a prioridade absoluta de qualquer aplicativo ou fluxo de atendimento deve ser **garantir a segurança física do usuário primeiro**, sem descartar uma emergência médica, para só depois aplicar técnicas de acalmação e suporte.
+
+Abaixo está a estrutura ideal do fluxo (Roadmap) e os textos em **português do Brasil**, divididos em etapas claras e com uma ação por tela/passo.
+
+---
+
+## 🏗️ Estrutura do Fluxo (UX Roadmap)
+
+```
+[Passo 1: Triagem de Emergência]
+           │
+           ├── (Sim / Incerto) ──► [Passo 2: Direcionamento Médico (SAMU / UPA)]
+           │
+           └── (Não - Já avaliado) ──► [Passo 3: Ação Imediata de Segurança (Acompanhante)]
+                                                │
+                                                ▼
+                                      [Passo 4: Regulação Fisiológica (Mergulho / Gelo)]
+                                                │
+                                                ▼
+                                      [Passo 5: Respiração Guiada (Ancoragem)]
+                                                │
+                                                ▼
+                                      [Passo 6: Recursos de Saúde no Rio de Janeiro]
+
+```
+
+---
+
+## 📱 Textos e Passos (Instruções em PT-BR)
+
+1. **Passo 1: Checagem Rápida de Segurança:** Descartando Emergências Médicas.
+**Aviso:** O aplicativo nunca deve assumir que é apenas pânico no primeiro momento.
+
+> **Texto na tela:**
+> *"Sentir o coração acelerado e falta de ar é assustador. Antes de continuarmos, precisamos garantir a sua segurança."*
+> **Você está sentindo algum destes sintomas agora?**
+> * Dor no peito, aperto forte ou queimação que vai para o braço ou mandíbula.
+> * Formigamento num lado do corpo ou fala enrolada.
+> * Tontura extrema ou sensação iminente de desmaio.
+> * É a PRIMEIRA VEZ que você sente isso tão forte na vida.
+> 
+> 
+> **[Opção A: Sim, sinto algo disso / Não tenho certeza]** ➔ *(Redireciona para o Passo 2)*
+> **[Opção B: Não, já conheço esses sintomas de crises de ansiedade anteriores]** ➔ *(Redireciona para o Passo 3)*
+
+
+2. **Passo 2: Ação de Emergência (Se houver risco físico):** Encaminhamento Imediato.
+> **Texto na tela:**
+> *"Por segurança, esses sintomas precisam de avaliação médica imediata."*
+> 1. **Ligue para o SAMU:** **192** (ligação gratuita).
+> 2. **Peça ajuda:** Ligue para um familiar ou vizinho próximo para que venha até você agora.
+> 3. **Mantenha a porta destrancada** se estiver sozinho(a).
+> 4. **Vá à UPA ou Pronto Socorro mais próximo.**
+> 
+> 
+> *Não tente dirigir enquanto estiver sentindo falta de ar ou tontura.*
+
+
+3. **Passo 3: Não Fique Sozinho(a):** Ação Imediata de Suporte Emocional.
+> **Texto na tela:**
+> *"Ok, vamos focar em acalmar seu corpo e sua mente agora."*
+> **Sua primeira ação agora: Avise alguém de confiança.**
+> Envie uma mensagem simples ou ligue para um amigo/familiar. Você não precisa passar por isso sozinho(a).
+> *Sugestão de mensagem para copiar:*
+> > *"Oi, estou tendo um momento de ansiedade muito forte agora e preciso de companhia ou só de conversar um pouco. Você pode me responder ou me ligar?"*
+> 
+> 
+
+
+4. **Passo 4: Resposta Fisiológica do Corpo:** Desativando o Alarme de Emergência.
+> **Texto na tela:**
+> *"O seu cérebro acionou um alarme de perigo. Vamos enviar um sinal físico para ele desacelerar."*
+> **O que fazer agora (Escolha uma opção rápida):**
+> * **Agua fria:** Vá à pia e jogue água fria no rosto ou coloque uma pedra de gelo nas mãos ou na nuca.
+> * **Contato com o chão:** Sente-se no chão e apoie as costas firmemente na parede.
+> 
+> 
+> *(Isso ativa o sistema nervoso parassimpático e reduz os batimentos cardíacos mecanicamente).*
+
+
+5. **Passo 5: Respiração de Ancoragem:** Regulando a Falta de Ar.
+> **Texto na tela:**
+> *"A sensação de sufocamento acontece porque você está respirando rápido demais. Vamos desacelerar sem forçar."*
+> **Acompanhe a regra do 4-4-6:**
+> 1. **Puxe o ar** pelo nariz devagar contando até **4**.
+> 2. **Segure** o ar por **4** segundos.
+> 3. **Solte** o ar suavemente pela boca (como se soprasse uma vela) em **6** segundos.
+> 
+> 
+> *Repita por 2 a 3 minutos.*
+
+
+6. **Passo 6: Boas Práticas e Recursos no Rio de Janeiro:** Apoio Local e Contatos de Emergência.
+> **Texto na tela:**
+> *"Se a crise persistir ou você precisar de atendimento presencial, confira os recursos disponíveis no Rio de Janeiro:"*
+> **1. Emergência e Saúde Pública (SUS-RJ):**
+> * **UPAs 24h (Unidades de Pronto Atendimento):** Atendimento para crises agudas de ansiedade e pânico com avaliação médica imediata (ex.: UPA Copacabana, UPA Botafogo, UPA Tijuca, UPA Barra da Tijuca, etc.).
+> * **SAMU:** Ligue **192**.
+> * **CAPS (Centro de Atenção Psicossocial):** Para acompanhamento psicológico e psiquiátrico contínuo e gratuito perto da sua região.
+> 
+> 
+> **2. Atendimento Emocional Gratuito:**
+> * **CVV (Centro de Valorização da Vida):** Ligue **188** (disponível 24h, gratuito) para conversar voluntariamente com alguém treinado para ouvir sem julgamentos.
+> 
+> 
+
+
+---
+
+### 💡 Recomendações de UX/Boas Práticas para o App
+
+1. **Botão de Atalho Permanente:** Coloque um botão visível em todas as telas com o texto *"Preciso de ajuda urgente"* para ligar diretamente para o **192** (SAMU) ou **188** (CVV).
+2. **Interface Limpa:** Use tipografia legível, cores suaves (tons de azul/verde pastel em vez de vermelho de alerta) e botões grandes fáceis de clicar durante um momento de tremendo estresse motor.
+3. **Sem Textos Longos por Tela:** Apresente apenas uma instrução por vez (padrão *Card* ou *Wizard*) para não sobrecarregar a capacidade cognitiva do usuário durante o pânico.

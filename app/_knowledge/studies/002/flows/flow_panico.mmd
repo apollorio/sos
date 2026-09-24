@@ -1,0 +1,59 @@
+flowchart TD
+  START(["▶ Pânico · v2"]) --> panico_red
+  panico_red{"<b>red_flag</b><br/>Dor no peito que espalha, desmaio, convulsão, falta de ar de verdade, um lado fraco? Na dúvida conta como sim."}
+  class panico_red choice,risk
+  panico_corpo{"<b>corpo</b><br/>Sem esses sinais, a gente manda um aviso pro corpo. Qual cabe agora?"}
+  class panico_corpo choice
+  panico_gelo[["<b>cold_hand</b><br/>☐ Gelo ou água fria na mão, 15 s<br/>rosto só se frio na cara não te derruba"]]
+  class panico_gelo task
+  panico_sigh[["<b>sigh</b><br/>☐ Duas puxadas pelo nariz, solta tudo pela boca · 3 vezes"]]
+  class panico_sigh task
+  panico_frame("<b>frame</b><br/>Sem aqueles sinais, o pico costuma ser alarme falso. Não é garantia. Se mudar, o 192 está em cima.")
+  class panico_frame info
+  panico_anchor[["<b>anchor_3</b><br/>☐ 3 coisas que você vê<br/>☐ Os dois pés no chão"]]
+  class panico_anchor task
+  panico_check{"<b>check</b><br/>E agora?"}
+  class panico_check choice
+  panico_mais{"<b>ainda</b><br/>Mais uma ferramenta, não as quatro:"}
+  class panico_mais choice
+  panico_hum[["<b>hum</b><br/>☐ Boca fechada, hmmmm, 15 s, sente o peito"]]
+  class panico_hum task
+  panico_box[["<b>box</b><br/>☐ 4-4-4-4 · quatro voltas"]]
+  class panico_box task
+  panico_188{{"<b>cvv</b><br/>Se quiser voz humana agora:<br/>📞 CVV 188"}}
+  class panico_188 action
+  panico_fecha(["<b>fecha</b><br/>Não é fraqueza. É fisiologia. Pode parar aqui. 188 fica."])
+  class panico_fecha info,endn
+  panico_fica("<b>fica</b><br/>Se quiser companhia: observa o ar, sem seguir o pensamento. Eu continuo.")
+  class panico_fica info
+  panico_red -->|"Sim ou não sei"| FLOW_samu
+  panico_red -->|"Não, nenhuma"| panico_corpo
+  panico_corpo -->|"Gelo na mão"| panico_gelo
+  panico_corpo -->|"Suspiro"| panico_sigh
+  panico_corpo -->|"Usei algo"| FLOW_torto
+  panico_gelo ==>|"sente o frio"| panico_frame
+  panico_sigh ==>|"três vezes"| panico_frame
+  panico_frame -.->|continuar| panico_anchor
+  panico_anchor ==>|"ancorei"| panico_check
+  panico_check -->|"Baixou um pouco"| panico_188
+  panico_check -->|"Ainda alto"| panico_mais
+  panico_mais -->|"Humming"| panico_hum
+  panico_mais -->|"Box"| panico_box
+  panico_hum ==>|"vibrou"| panico_188
+  panico_box ==>|"fiz"| panico_188
+  panico_188 -.->|continuar| panico_fecha
+  panico_fecha -.->|"fica mais"| panico_fica
+  panico_fica -.->|continuar| EXIT
+  FLOW_samu(["→ resgate"])
+  class FLOW_samu ext
+  FLOW_torto(["→ bateu forte"])
+  class FLOW_torto ext
+  EXIT(["pode fechar"])
+  class EXIT ext
+  classDef choice fill:#1b1030,stroke:#a855f7,color:#eee
+  classDef info fill:#0f1a24,stroke:#38bdf8,color:#ddd
+  classDef task fill:#0f2419,stroke:#34d399,color:#ddd
+  classDef action fill:#2a0f12,stroke:#ef4444,color:#fff,stroke-width:2px
+  classDef endn fill:#111,stroke:#fff,color:#fff,stroke-width:3px
+  classDef risk stroke:#ff0055,stroke-width:4px
+  classDef ext fill:#333,stroke:#999,color:#fff

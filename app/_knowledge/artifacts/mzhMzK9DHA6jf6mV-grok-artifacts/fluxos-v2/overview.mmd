@@ -1,0 +1,28 @@
+flowchart TD
+  HOME(["Quem tá no pico?"])
+  EU["Sou eu"]
+  AMIGO["Tô com alguém<br/>frase curta · não discute · pergunta"]
+  RF["Corpo assusta?<br/>dúvida liga"]
+  torto["Bateu forte<br/>para · sai do barulho · não bebe pra descer"]
+  panico["Pânico<br/>gelo no punho até doer"]
+  realidade["Onde eu tô"]
+  trava["Estão me olhando<br/>não fala que ninguém olha"]
+  falar["Sozinho ou caindo<br/>pergunta direto"]
+  samu["Liga agora"]
+  cssrs["Acabar com a própria vida?<br/>se a ideia é não, ainda pergunta o ato"]
+  HOME --> EU
+  HOME --> AMIGO
+  EU --> torto
+  EU --> panico
+  EU --> realidade
+  EU --> trava
+  EU --> falar
+  EU --> samu
+  torto --> RF
+  panico --> RF
+  AMIGO -->|não acorda| samu
+  RF -->|sim ou não sei| samu
+  falar -->|pensando em acabar| cssrs
+  trava -->|pensando em acabar| cssrs
+  AMIGO -->|falou em acabar| cssrs
+  cssrs -->|agora| samu

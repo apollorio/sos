@@ -1,0 +1,87 @@
+flowchart TD
+  START(["▶ Bateu forte · v2"]) --> torto_a1
+  torto_a1{"<b>a1</b><br/>Tô aqui. O que tá mais perto do agora?"}
+  class torto_a1 choice
+  torto_red_flag{"<b>red_flag</b><br/>Alguma destas AGORA? Dor no peito · convulsão · não acorda · respiração lenta ou lábio roxo · muito calor e confusão · um lado do corpo fraco"}
+  class torto_red_flag choice,risk
+  torto_cool[["<b>cool_down</b><br/>Estimulante / MDMA.. esfriar é o que salva:<br/>☐ Para de se mexer sem parar<br/>☐ Pano frio: nuca, axila ou atrás do joelho<br/>☐ Acordado: goles ou isotônico.. não litros<br/>☐ Afasta o resto.. não soma outra coisa"]]
+  class torto_cool task
+  torto_one_change[["<b>one_change</b><br/>Uma coisa só no ambiente:<br/>☐ Luz baixa ou som baixo.. escolhe uma"]]
+  class torto_one_change task
+  torto_reality[["<b>reality_script</b><br/>Diz em voz alta, se der:<br/>☐ Estou sob efeito. Isto passa. Som alto piora."]]
+  class torto_reality task
+  torto_psych("<b>psych</b><br/>A percepção mudou. O chão não. Não luta com a onda. Eu fico.")
+  class torto_psych info
+  torto_depress{"<b>no_mix</b><br/>Álcool, G ou outro depressor. Você está acordado e conseguindo ler?"}
+  class torto_depress choice,risk
+  torto_alcohol[["<b>alcool_acordado</b><br/>Sem número mágico de copo:<br/>☐ Alguns goles e comida se o estômago aceitar<br/>☐ Não dirige<br/>☐ Não soma benzo, G nem opioide"]]
+  class torto_alcohol task
+  torto_recovery{{"<b>recovery</b><br/>De lado. Joelho de cima dobrado. Não dá água. Não deixa só.<br/>📞 SAMU 192<br/>📞 Bombeiros 193"}}
+  class torto_recovery action,risk
+  torto_nalox("<b>naloxone_if</b><br/>Se a respiração está ruim e pode ser opioide: quem souber usa naloxona, avisa o 192, espera 2–3 min, fica. Não reverte estimulante. No Brasil nem sempre tem.")
+  class torto_nalox info
+  torto_inject("<b>inject</b><br/>Se está estável: não compartilha seringa. Se a respiração já está lenta, esquece a aula e fica na tela do 192.")
+  class torto_inject info
+  torto_check{"<b>check</b><br/>E agora, comparado com quando abriu?"}
+  class torto_check choice
+  torto_urge[["<b>urge_surf</b><br/>A vontade é onda. 10 min sem alimentar:<br/>☐ Onde está no corpo?<br/>☐ HALT: fome, raiva, solidão ou cansaço? uma coisa pequena<br/>☐ Não pega mais uma"]]
+  class torto_urge task
+  torto_breath[["<b>breath_46</b><br/>☐ 4 inspira · 1–2 segura · 6 solta · para se tontura"]]
+  class torto_breath task
+  torto_gente{"<b>gente</b><br/>Tem alguém, ou prefere o 188?"}
+  class torto_gente choice
+  torto_188{{"<b>cvv</b><br/>📞 CVV 188"}}
+  class torto_188 action
+  torto_comedown("<b>comedown</b><br/>A queda mente que isso é a vida inteira. O peso é real. O 'para sempre' não é.")
+  class torto_comedown info
+  torto_fecha(["<b>fecha</b><br/>Você ficou. O próximo minuto basta. 188 continua aqui."])
+  class torto_fecha info,endn
+  torto_a1 -->|"Acelerou, calor, coração"| torto_red_flag
+  torto_a1 -->|"Onda, tudo estranho"| torto_red_flag
+  torto_a1 -->|"Álcool, G ou derrubou"| torto_depress
+  torto_a1 -->|"Usei seringa"| torto_red_flag
+  torto_a1 -->|"Não usei nada"| FLOW_panico
+  torto_a1 -->|"Estão me olhando"| FLOW_trava
+  torto_a1 -.->|"⚡ agora"| torto_red_flag
+  torto_red_flag -->|"Sim ou não sei"| FLOW_samu
+  torto_red_flag -->|"Não, nenhuma · estimulante"| torto_cool
+  torto_red_flag -->|"Não · onda"| torto_psych
+  torto_red_flag -->|"Não · seringa e estável"| torto_inject
+  torto_cool ==>|"esfriei"| torto_one_change
+  torto_one_change ==>|"uma coisa"| torto_reality
+  torto_reality ==>|"disse"| torto_check
+  torto_psych -.->|continuar| torto_one_change
+  torto_inject -.->|continuar| torto_check
+  torto_depress -->|"Acordado, lendo isto"| torto_alcohol
+  torto_depress -->|"Apagando, vômito, respiração ruim"| torto_recovery
+  torto_alcohol ==>|"feito"| torto_check
+  torto_recovery -.->|continuar| torto_nalox
+  torto_nalox -.->|continuar| FLOW_samu
+  torto_check -->|"Um pouco melhor"| torto_breath
+  torto_check -->|"Quero mais uma"| torto_urge
+  torto_check -->|"Piorou no corpo"| FLOW_samu
+  torto_check -->|"Caiu uma tristeza enorme"| torto_comedown
+  torto_urge ==>|"esperei"| torto_breath
+  torto_breath ==>|"respirei"| torto_gente
+  torto_gente -->|"Tem alguém"| torto_fecha
+  torto_gente -->|"188"| torto_188
+  torto_188 -.->|continuar| torto_fecha
+  torto_comedown -.->|continuar| FLOW_falar
+  torto_fecha -.->|continuar| EXIT
+  FLOW_panico(["→ pânico"])
+  class FLOW_panico ext
+  FLOW_trava(["→ paranoia"])
+  class FLOW_trava ext
+  FLOW_samu(["→ resgate"])
+  class FLOW_samu ext
+  FLOW_falar(["→ solidão"])
+  class FLOW_falar ext
+  EXIT(["pode fechar · 188 na tela"])
+  class EXIT ext
+  classDef choice fill:#1b1030,stroke:#a855f7,color:#eee
+  classDef info fill:#0f1a24,stroke:#38bdf8,color:#ddd
+  classDef task fill:#0f2419,stroke:#34d399,color:#ddd
+  classDef action fill:#2a0f12,stroke:#ef4444,color:#fff,stroke-width:2px
+  classDef endn fill:#111,stroke:#fff,color:#fff,stroke-width:3px
+  classDef risk stroke:#ff0055,stroke-width:4px
+  classDef ext fill:#333,stroke:#999,color:#fff

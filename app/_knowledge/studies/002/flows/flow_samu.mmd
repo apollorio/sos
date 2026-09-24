@@ -1,0 +1,52 @@
+flowchart TD
+  START(["▶ Resgate · v2"]) --> samu_call
+  samu_call{{"<b>liga</b><br/>Liga agora. Fala: socorro médico, o que você vê, o lugar, fica na linha. Embalagem se tiver. Não precisa narrar crime.<br/>📞 SAMU 192<br/>📞 Bombeiros 193"}}
+  class samu_call action,risk
+  samu_ve{"<b>vendo</b><br/>Enquanto eles vêm ou ainda na linha.. o que você vê?"}
+  class samu_ve choice
+  samu_lado{{"<b>recovery</b><br/>De lado. Joelho de cima dobrado. Não dá água. Não sacode. Não deixa só.<br/>Se puder ser opioide e tiver naloxona: uma dose, avisa o SAMU, espera 2–3 min."}}
+  class samu_lado action,risk
+  samu_calor("<b>calor</b><br/>Para de se mexer. Pano frio na nuca, axila, atrás do joelho. Não segura à força. Não discute o que a pessoa está vendo. Dor no peito: diz isso pro SAMU.")
+  class samu_calor info
+  samu_conv("<b>convulsao</b><br/>Nada na boca. Não segura o corpo. Afasta o que machuca. Quando passar, de lado. Continua na linha.")
+  class samu_conv info
+  samu_queda("<b>queda</b><br/>Não move. Suspeita de coluna: mãos só para a cabeça não girar, se precisar. O SAMU guia.")
+  class samu_queda info
+  samu_avc("<b>avc</b><br/>Boca torta, um braço fraco, fala embolada: diz essas três coisas pro atendente. Agora.")
+  class samu_avc info
+  samu_luz("<b>lighthouse</b><br/>Se está acordado: 'Estou aqui. Isso passa. Não vou a lugar nenhum.' Uma frase. Licença antes de tocar. Uma mudança só: luz ou som.")
+  class samu_luz info
+  samu_prep[["<b>prep</b><br/>☐ Lugar claro pra equipe<br/>☐ Nome, idade, o que pode ter usado.. se souber<br/>☐ Alguém na porta"]]
+  class samu_prep task
+  samu_cuida("<b>quem_cuidou</b><br/>Você também passou por isso. Três respirações lentas. 188 é seu também, depois.")
+  class samu_cuida info
+  samu_188{{"<b>depois</b><br/>📞 CVV 188 para você<br/>CAPS é acolhimento do SUS, não hospital.. pede o mais perto, sem lista inventada"}}
+  class samu_188 action
+  samu_fecha(["<b>fecha</b><br/>Você ficou com a pessoa. Isso importa. Cuida de você também."])
+  class samu_fecha info,endn
+  samu_call -.->|continuar| samu_ve
+  samu_ve -->|"Não acorda ou respiração ruim"| samu_lado
+  samu_ve -->|"Muito quente, agitado ou dor no peito"| samu_calor
+  samu_ve -->|"Convulsionando"| samu_conv
+  samu_ve -->|"Caiu e pode ter se machucado"| samu_queda
+  samu_ve -->|"Boca torta ou um lado fraco"| samu_avc
+  samu_ve -->|"Acordado, pânico ou medo"| samu_luz
+  samu_lado -.->|continuar| samu_prep
+  samu_calor -.->|continuar| samu_prep
+  samu_conv -.->|continuar| samu_prep
+  samu_queda -.->|continuar| samu_prep
+  samu_avc -.->|continuar| samu_prep
+  samu_luz -.->|continuar| samu_prep
+  samu_prep ==>|"pronto"| samu_cuida
+  samu_cuida -.->|continuar| samu_188
+  samu_188 -.->|continuar| samu_fecha
+  samu_fecha -.->|continuar| EXIT
+  EXIT(["pode fechar"])
+  class EXIT ext
+  classDef choice fill:#1b1030,stroke:#a855f7,color:#eee
+  classDef info fill:#0f1a24,stroke:#38bdf8,color:#ddd
+  classDef task fill:#0f2419,stroke:#34d399,color:#ddd
+  classDef action fill:#2a0f12,stroke:#ef4444,color:#fff,stroke-width:2px
+  classDef endn fill:#111,stroke:#fff,color:#fff,stroke-width:3px
+  classDef risk stroke:#ff0055,stroke-width:4px
+  classDef ext fill:#333,stroke:#999,color:#fff

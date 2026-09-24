@@ -1,0 +1,52 @@
+flowchart TD
+  START(["▶ Onde eu tô? · v2"]) --> realidade_a1
+  realidade_a1{"<b>a1</b><br/>Parece filme, ou você parece longe de você. O que está mais forte?"}
+  class realidade_a1 choice
+  realidade_plain("<b>plain</b><br/>É o nervo se protegendo. Incômodo, e em geral passa. Você está aqui. O chão está aqui.")
+  class realidade_plain info
+  realidade_touch[["<b>toque</b><br/>☐ Toca o tecido da roupa<br/>☐ Palma na parede ou no chão"]]
+  class realidade_touch task
+  realidade_nome[["<b>nomeia</b><br/>☐ Diz 3 objetos que existem neste cômodo"]]
+  class realidade_nome task
+  realidade_frio[["<b>cold_hand</b><br/>☐ Gelo ou água fria na mão"]]
+  class realidade_frio task
+  realidade_breath[["<b>breath_46</b><br/>☐ 4 · segura pouco · 6 · uma série só"]]
+  class realidade_breath task
+  realidade_check{"<b>check</b><br/>O estranho diminuiu um pouco?"}
+  class realidade_check choice
+  realidade_move[["<b>micro</b><br/>☐ Aperta e solta os punhos, devagar<br/>☐ Mexe os dedos dos pés"]]
+  class realidade_move task
+  realidade_gente{"<b>gente</b><br/>Alguém pode ficar perto, mesmo em silêncio?"}
+  class realidade_gente choice
+  realidade_188{{"<b>cvv</b><br/>📞 CVV 188"}}
+  class realidade_188 action
+  realidade_fecha(["<b>fecha</b><br/>Você ficou, mesmo com tudo estranho. Pode ir devagar. 188 aqui."])
+  class realidade_fecha info,endn
+  realidade_a1 -->|"Tudo longe ou eu longe"| realidade_plain
+  realidade_a1 -->|"Usei algo"| FLOW_torto
+  realidade_a1 -->|"Coração disparado junto"| FLOW_panico
+  realidade_a1 -.->|"⚡ agora"| realidade_touch
+  realidade_plain -.->|continuar| realidade_touch
+  realidade_touch ==>|"senti"| realidade_nome
+  realidade_nome ==>|"nomeei"| realidade_frio
+  realidade_frio ==>|"frio"| realidade_breath
+  realidade_breath ==>|"respirei"| realidade_check
+  realidade_check -->|"Um pouco"| realidade_move
+  realidade_check -->|"Ainda forte"| realidade_move
+  realidade_move ==>|"me movi"| realidade_gente
+  realidade_gente -->|"Posso chamar"| realidade_fecha
+  realidade_gente -->|"Não agora"| realidade_188
+  realidade_188 -.->|continuar| realidade_fecha
+  realidade_fecha -.->|continuar| EXIT
+  FLOW_torto(["→ bateu forte"])
+  class FLOW_torto ext
+  FLOW_panico(["→ pânico"])
+  class FLOW_panico ext
+  EXIT(["pode fechar"])
+  class EXIT ext
+  classDef choice fill:#1b1030,stroke:#a855f7,color:#eee
+  classDef info fill:#0f1a24,stroke:#38bdf8,color:#ddd
+  classDef task fill:#0f2419,stroke:#34d399,color:#ddd
+  classDef action fill:#2a0f12,stroke:#ef4444,color:#fff,stroke-width:2px
+  classDef endn fill:#111,stroke:#fff,color:#fff,stroke-width:3px
+  classDef ext fill:#333,stroke:#999,color:#fff

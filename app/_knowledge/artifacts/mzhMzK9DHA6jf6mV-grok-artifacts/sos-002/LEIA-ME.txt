@@ -1,0 +1,23 @@
+SOS 002 · Harm control
+Pasta pronta para baixar. Nada aqui substitui revisão clínica.
+
+site/          o leitor. Abra site/index.html no navegador.
+               index.html + style.css + app.js. Sem internet.
+estrategia/    tese, o que fica e o que sai, patch de nós.
+fluxos/        Mermaid de cada caminho. Cole num editor Mermaid.
+
+Ordem de leitura
+1. estrategia/002-estrategia-harm-control.md
+2. estrategia/002-patch-de-nos.md
+3. fluxos/overview.mmd
+4. um fluxo por vez, na ordem do mapa
+
+Mapa
+overview.mmd       home e portão compartilhado
+flow_torto.mmd     Bateu forte · droga
+flow_panico.mmd    Pânico · ansiedade
+flow_realidade.mmd Onde eu tô · irrealidade
+flow_trava.mmd     Paranoia · trava
+flow_falar.mmd     Solidão · depressão · pico
+flow_samu.mmd      Resgate
+flow_cssrs.mmd     triagem, escondida até o risco subir

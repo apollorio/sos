@@ -1,0 +1,71 @@
+flowchart TD
+  START(["▶ C-SSRS · v2 · sem lista de método na tela"]) --> cssrs_c1
+  cssrs_c1{"<b>c1</b><br/>Nos últimos 30 dias, você desejou estar morto ou dormir e não acordar?"}
+  class cssrs_c1 choice,risk
+  cssrs_pausa[["<b>pausa</b><br/>☐ Três respirações 4-6. Só três."]]
+  class cssrs_pausa task
+  cssrs_c2{"<b>c2</b><br/>Você teve pensamentos de acabar com a própria vida?"}
+  class cssrs_c2 choice,risk
+  cssrs_c3{"<b>c3</b><br/>Você pensou em como seria?"}
+  class cssrs_c3 choice
+  cssrs_gelo[["<b>gelo</b><br/>☐ Água fria ou gelo na mão, 15 s"]]
+  class cssrs_gelo task
+  cssrs_c4{"<b>c4</b><br/>Teve esses pensamentos e alguma intenção de agir?"}
+  class cssrs_c4 choice,risk
+  cssrs_box[["<b>box</b><br/>☐ Box 4×4, quatro ciclos"]]
+  class cssrs_box task
+  cssrs_c5{"<b>c5</b><br/>Você começou a organizar um plano?"}
+  class cssrs_c5 choice,risk
+  cssrs_c6{"<b>c6</b><br/>Nos últimos 3 meses, você fez, começou ou preparou alguma coisa para acabar com a própria vida?"}
+  class cssrs_c6 choice,risk
+  cssrs_emerg{{"<b>emergente</b><br/>Isso pede gente agora. Pode ligar junto com alguém.<br/>📞 CVV 188<br/>📞 SAMU 192"}}
+  class cssrs_emerg action,risk
+  cssrs_meios[["<b>meios</b><br/>Mais longe, por agora. Não precisa jogar fora:<br/>☐ Remédio noutro cômodo ou com alguém<br/>☐ Objeto que corta, ou arma, com outra pessoa<br/>☐ Sai de janela e varanda. Senta no chão."]]
+  class cssrs_meios task,risk
+  cssrs_coping{"<b>coping</b><br/>Continuo aqui. O que ajuda mais neste minuto?"}
+  class cssrs_coping choice
+  cssrs_safety[["<b>safety_micro</b><br/>Quatro linhas, uma de cada vez:<br/>☐ Um sinal de que o pico voltou<br/>☐ Uma coisa que você faz sem ninguém<br/>☐ Uma pessoa<br/>☐ 188 e 192 já estão nesta tela"]]
+  class cssrs_safety task
+  cssrs_hope[["<b>hope</b><br/>☐ Uma foto que acalma, ou<br/>☐ Uma razão pequena para as próximas horas, ou<br/>☐ Uma mensagem antiga boa"]]
+  class cssrs_hope task
+  cssrs_trig{"<b>gatilho</b><br/>Uma palavra, se quiser. O que disparou?"}
+  class cssrs_trig choice
+  cssrs_c1 -->|"Sim"| cssrs_pausa
+  cssrs_c1 -->|"Não"| cssrs_c2
+  cssrs_pausa ==>|"três"| cssrs_c2
+  cssrs_c2 -->|"Sim"| cssrs_c3
+  cssrs_c2 -->|"Não"| cssrs_c6
+  cssrs_c3 -->|"Sim"| cssrs_gelo
+  cssrs_c3 -->|"Não"| cssrs_c4
+  cssrs_gelo ==>|"feito"| cssrs_c4
+  cssrs_c4 -->|"Sim"| cssrs_box
+  cssrs_c4 -->|"Não"| cssrs_c5
+  cssrs_box ==>|"respirei"| cssrs_c5
+  cssrs_c5 -->|"Sim"| cssrs_meios
+  cssrs_c5 -->|"Não"| cssrs_c6
+  cssrs_past{{"<b>passado</b><br/>Faz tempo, e ainda importa. Uma voz agora:<br/>📞 CVV 188"}}
+  class cssrs_past action
+  cssrs_c6 -->|"Sim, nestes 3 meses"| cssrs_emerg
+  cssrs_c6 -->|"Sim, mas faz mais tempo"| cssrs_past
+  cssrs_c6 -->|"Não"| cssrs_coping
+  cssrs_emerg -.->|continuar| cssrs_meios
+  cssrs_past -.->|continuar| cssrs_safety
+  cssrs_meios ==>|"mais longe"| cssrs_safety
+  cssrs_coping -->|"Um plano curto"| cssrs_safety
+  cssrs_coping -->|"Uma foto ou razão"| cssrs_hope
+  cssrs_coping -->|"O que disparou"| cssrs_trig
+  cssrs_safety ==>|"anotei"| cssrs_trig
+  cssrs_hope ==>|"olhei"| cssrs_trig
+  cssrs_trig -->|"Substância ou álcool"| FLOW_torto
+  cssrs_trig -->|"Outra coisa ou não sei"| FLOW_falar
+  FLOW_falar(["→ solidão"])
+  class FLOW_falar ext
+  FLOW_torto(["→ bateu forte"])
+  class FLOW_torto ext
+  classDef choice fill:#1b1030,stroke:#a855f7,color:#eee
+  classDef info fill:#0f1a24,stroke:#38bdf8,color:#ddd
+  classDef task fill:#0f2419,stroke:#34d399,color:#ddd
+  classDef action fill:#2a0f12,stroke:#ef4444,color:#fff,stroke-width:2px
+  classDef endn fill:#111,stroke:#fff,color:#fff,stroke-width:3px
+  classDef risk stroke:#ff0055,stroke-width:4px
+  classDef ext fill:#333,stroke:#999,color:#fff

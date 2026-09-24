@@ -1,0 +1,758 @@
+**Veredito:** Holanda trata festa como problema de saúde pública com lei + GGD/GHOR + testagem **fora** do terreno. Alemanha (Berlim) trata clube como cultura + *awareness* + testagem de laboratório + tenda de crise psicodélica. Os dois concordam no mesmo núcleo: água de graça, chill-out, staff treinado, peer no chão, alerta de mercado, **não** “cortar com outra substância”. Teste no meio da pista quase não existe nos dois países.
+
+---
+
+## 1. Os dois modelos
+
+| | **Países Baixos** | **Alemanha / Berlim** |
+|---|---|---|
+| Lógica | Município + Trimbos + GHOR licenciam o evento | Clube + Clubcommission + projetos de cena |
+| Teste | DIMS/Jellinek: **32–34 postos fixos**. Festival on-site **proibido desde 1999**. ADE só abre extra **fora** da festa | Drugchecking Berlin (desde jun/2023): 3 postos, anônimo, resultado em ~3 dias. Festival móvel = Eclipse e afins, não o padrão da cidade |
+| Peer no evento | **Unity** (~140 voluntários) + **Celebrate Safe** | **SONAR**, **Eclipse** (crise psicodélica desde 1997), times de *Awareness* |
+| Alerta | App **Red Alert** + Unity | **KnowDrugs** + drugchecking.berlin |
+| Clube de referência | ADE / dance events sob *beleidsframe* da prefeitura | Berghain *Awareness*: quiet room, staff, “não oferece substância pra baixar alguém” |
+| Dado duro | ~**12 / 10 mil** no posto de 1º socorro por queixa ligada a droga; ~40 / 10 mil qualquer queixa. Trimbos 2023: mais intoxicação grave de MDMA e ket, ~48% desses casos sérios | 1º ano Berlim: ~**1.800** amostras, ~**850** avisos; ~1 em 2 testes gera warning; ~1 em 3 pessoas recusada por fila. ~90% das bals de MDMA testadas = dose alta |
+
+Conflito útil: NL **não** quer stand de teste na festa (sem tempo de conversa; pó leva ~1 semana no lab). DE **quer** mais on-site e ainda não tem escala.
+
+---
+
+## 2. Mapa de harm control (refinado)
+
+Ordem que Trimbos, GGD e Berghain usam: **antes → porta → pista → crise → depois**. Sem ensinar uso.
+
+### A. ANTES (casa / semana)
+
+O que os protocolos oficiais pedem:
+- Dormir e comer. Estômago vazio + stim + calor = o combo que GGD marca como incidente.
+- Se a pessoa **já decidiu** usar: testar **antes**, no posto fixo (NL) ou no lab de Berlim — não no portão.
+- Checar **Red Alert / KnowDrugs / Unity** no dia. Mercado muda; aviso existe pra isso.
+- Combinar **1 buddy** e o que cada um tomou. Berghain: “entre amigos, falem o que e quanto.”
+- Não ir sozinho. Não misturar com álcool (regra escrita no awareness do clube).
+- Plano de saída: quem leva, onde dorme, água no caminho.
+
+Produto: checklist pré-role + pin de alerta local + “ping do buddy” + “não tem teste no local”.
+
+### B. PORTA / PRODUÇÃO
+
+O que a *leidraad* NL 4.0 e a GGD colocam no alvará:
+- Regras de droga **visíveis** no site, ingresso e entrada.
+- Staff (porta, bar, segurança) treinado pra **reconhecer mal-estar**, não só pra apreender.
+- Ponto de reporte interno (funcionário vê alguém mal → canal único).
+- Água **grátis** obrigatória em dance event, esporte pesado e **≥25 °C**.
+- Posto de cuidado + sala de resfriar (*afkoelingsruimte*).
+- Controle de clima (calor + umidade + stim = hipertermia).
+- Unity / Celebrate Safe no briefing se o risco de uso for alto.
+
+Alemanha clube:
+- Time de **Awareness** no chão (violência sexual + discriminação + AOD).
+- Treino pago (projeto BEST / SONAR / Awareness Akademie).
+- Quiet room no térreo (Berghain descreve: staff chama backup, sala quieta, ou 112).
+- Eclipse no festival: *Psychedelische Ambulanz* = safe space de crise, sem sermão.
+
+Número velho ainda citado no material NL de incidente: ~**6 socorristas / 10 mil**, metade enfermagem de evento.
+
+### C. PISTA (durante)
+
+Infra que os dois países tratam como harm reduction de verdade:
+1. **Chill-out** com banco, menos som, ar. Survey NL antigo: 57% das festas e 2/3 dos clubes **não tinham**. Continua o furo mais barato de corrigir.
+2. **Água em gole.** Trimbos/GGD: XTC segura líquido; litro atrás de litro = hiponatremia (mulher jovem no radar). Placa no bebedouro > folheto. Comida com sal / sopa no come-down.
+3. **Peer** (Unity / SONAR): responde pergunta, não fiscaliza.
+4. **Não conta notícia pesada** pra quem está sob efeito (cena BR + sitter DE).
+5. **Não oferece outra substância** “pra baixar”. Berghain: na quase totalidade piora. Crime se for em terceiro.
+6. Copo: só o que foi servido na sua frente; não divide; não larga. Spiking entra no mesmo protocolo de awareness.
+7. Calor ≥25 °C: aviso extra no telão / app. Parar de dançar se o corpo esquentar e não suar.
+
+Por classe (só o que o protocolo de evento trata como *controle*, não como receita):
+
+- **MDMA/bala:** sombra, gole, sal, parar se hipertermia. Emergência = quente + confuso + não sua / convulsão → 112/192.
+- **Estimulante (speed, pó, 3-MMC):** mesmo pacote de calor + coração; não redosar no banheiro.
+- **Psicodélico:** Eclipse/Zendo: sentar, luz baixa, “isso passa”, não dirigir a trip.
+- **Ket / GHB / álcool:** risco de via aérea. Deitar de lado. Não deixar sozinho. Não “acordar no banho”.
+- **Erva/edible:** grounding + tempo; clube trata como pânico, não como overdose típica.
+- **Lança / inalante:** NL/DE quase não protocolam porque o recado institucional é **não**. Se caiu: ar + 192.
+
+### D. CRISE (o mapa operacional)
+
+Triage que aparece cruzado (GHOR + Berghain + Eclipse + tendas BR):
+
+1. A pessoa responde e anda? → buddy + água + chill-out.  
+2. Pânico / loop / “vou morrer”? → 1 sitter, quarto quieto, frase curta, sem plateia.  
+3. Não responde / vômito / convulsão / superquente / frio + inconsciente? → **112 (DE/NL) / 192 (BR)**. Berghain: na chamada descreve **sintoma**, não a substância.  
+4. Inconsciente que respira → posição lateral.  
+5. Staff não improvisa “antidoto”.  
+6. Se houver tenda de RD / ambulância de evento: leva pra lá **antes** do hospital, salvo sinal vermelho.
+
+### E. DEPOIS
+
+- Sono não é fraqueza (texto do Berghain).
+- Comida + água no dia seguinte.
+- NL: **consultório médico de party drugs** (Brijder/Jellinek), sem encaminhamento, se o mal-estar ficar.
+- DE: Drogennotdienst **030 19237** + Partydrogensprechstunde 365 dias.
+- Não “consertar” o come-down com outra coisa.
+- Se houve assédio: awareness / Gewaltschutzambulanz (Berlim, 72 h pra DNA).
+
+---
+
+## 3. O que entra no harm-control do produto (tradução direta)
+
+**Pré:** buddy lock, alerta de mercado, “teste é off-site”, checklist sono/comida, clima do dia.  
+**No evento:** mapa água + chill-out + posto + tenda; botão “não estou bem”; script de sitter; bloqueio de notícia pesada no grupo marcado.  
+**Crise:** 3 níveis (chão / quiet room / emergência); “descreva o corpo, não a droga”.  
+**Pós:** lembrete de sono + linha de consultório.  
+**Produção:** briefing staff estilo SONAR/Unity; placa de água “gole, não litro”; teto 25 °C dispara aviso.
+
+Não entra: dose, “como testar em casa”, “o que misturar pra descer”.
+
+---
+
+## 4. Fontes e furos
+
+- Primário NL: Trimbos *Leidraad* 4.0 (2024), GGD Haaglanden, Jellinek/DIMS, Unity, Celebrate Safe, frame ADE Amsterdam.  
+- Primário DE: Berghain Awareness, Drugchecking Berlin / Vista / Fixpunkt / Schwulenberatung, SONAR, Eclipse, Clubcommission, Drogennotdienst.  
+- Rede: TEDI / EUDA (o teste existe pra monitorar mercado + aconselhamento, não pra “liberar” a substância).  
+- Social (X da pesquisa anterior): confirma o mesmo kit de chão — 1 pessoa, lugar quieto, água, tempo — e não o kit químico.
+
+**Furo:** NL tem o melhor manual de *produção*; DE tem o melhor manual de *clube/awareness*. Nenhum dos dois publica taxa de “bad trip resolvida na tenda” de forma limpa. Teste on-site em festival DE é irregular. Blackout alcoólico continua o buraco estatístico.
+
+
+Janela: **23 set 2018 → 23 set 2026** (você pediu 8 anos; o skill de X corta em 6, então o núcleo sólido é 2020–2026). Tudo abaixo é o que **gente no X relatou que acalmou**, não protocolo médico. Emergência (não respira, convulsão, inconsciente que não acorda, peito fechando): **192**.
+
+---
+
+**Kit universal (vale pra quase tudo que o X chama de “too high / bad / PT”)**
+
+1. Uma pessoa só, voz baixa, sem plateia.  
+2. Trocar o lugar (outra sala, fora, menos luz, menos gente).  
+3. Água aos goles + algo leve (arroz, pão, fruta).  
+4. Dizer: “é o efeito, tem hora pra acabar, você está seguro.”  
+5. Não soltar notícia ruim, meme pesado, briga, horror. Post BR 2025, ~6k likes.  
+6. Não deixar sozinho. Amigos da roda falharam; tenda de RD / desconhecido treinado funcionou.  
+7. Se o corpo quebra → tenda / SAMU, não “mais uma pra equilibrar”.
+
+---
+
+**Por substância — o que o X associa a “controlar”**
+
+### Cannabis / edible / “green out”
+O que mais se repete:
+- **Esperar.** Edible não “desliga”; gente relata tremor a noite inteira.  
+- **CBD** (óleo/drink) — claim mais comum 2020–2026: “empurra o THC”. Folclore de dispensary, não RTC.  
+- **Pimenta-do-reino** (cheirar ou mastigar grão, não aspirar pó) — threads virais 2020 e 2023 (2k–2.7k likes). Dizem que o cheiro/caryophyllene puxa pro corpo. Um relato de cheirar pó = crise de espirro; não faça isso.  
+- **5-4-3-2-1**, água gelada, série calma, deitar. Fechar o olho piorou pra alguns.  
+- Set ruim + erva alta em THC / zero CBD = paranoia. “Se a mente não tá legal, não fuma.”  
+
+O que o X **não** confirma: suco de laranja “corta” o efeito. Relato de educadora: cítrico = grounding de cheiro/frio, não antídoto.
+
+Melhor encaixe no produto: timer “edible demora”, checklist água/comida/CBD-se-tiver, ping de amigo, grounding.
+
+### LSD / ácido
+Relatos: trip longa (muita gente fala 8–16 h). O que “tirou” do loop:
+- Trocar **música**. Horror / hardcore / set ruim aparece como gatilho de pânico e até quase pular de carro.  
+- Sair do quarto / ir pra natureza / parque quieto com 1 amigo até baixar.  
+- Sitter que **não interpreta** a trip. Só ancora: “você está aqui, isso passa.”  
+- Não usar sozinho, lugar desconhecido, sitter ruim. Relatos ligam isso a trauma.  
+- Dose “de festa” + ansiedade prévia = bad quase certa no discurso da cena.
+
+Não listo “mata-trip” químico. No X isso vira receita de mistura; risco próprio.
+
+### Cogumelo / psilocibina
+Parecido com LSD, duração menor no relato popular (~6–8 h).
+- Ambiente + sitter. “Não existe bad em setting controlado” é slogan; na prática a galera ainda entra em loop.  
+- **Mudar de cômodo / ir pra fora** quando trava no loop.  
+- Falar com alguém conhecido (família/amigo) aliviou.  
+- Respirar e “pegar carona” em vez de lutar.  
+- Não misturar álcool nem remédio psiquiátrico — aviso repetido em thread longa de 2023.  
+- Laranja/chocolate no mesmo post: grounding, não interruptor.
+
+### MDMA / bala / ecstasy
+Aqui o X BR é mais operacional (threads 2021–2025). Controle **durante**, não “desligar”:
+- **Água devagar** (o post viral fala ~250 ml/h). Engolir litro pra “lavar” aparece ligado a hiponatremia, sobretudo em mulher jovem.  
+- Calor da pista = risco. Sombra, vento, parar de dançar se o corpo esquentar demais.  
+- Eletrólito / isotônico, não só água.  
+- Conforto no come-down: cobertor, playlist, comida, dormir. Folclore de banana/ovo/leite no dia seguinte = conforto, não cura.  
+- Não empilhar com álcool / outra bala / estimulante.  
+- Óculos: pupila enorme + luz = pânico sensorial.
+
+Sinal de emergência que o X e as tendas tratam como hospital: superquente + confuso + não sua / convulsão.
+
+### Cocaína / pó
+Pouca thread limpa de “o que baixou a paranoia”. O que sobra:
+- Parar de redosar.  
+- Sair do banheiro/pista, água, comida, alguém que não cobrece.  
+- Kit de festa BR (canudo próprio, não nota) = menos infecção, **não** acalma o coração.  
+- Come-down: sono, comida, não “uma pra fechar”.  
+- Paranoia + arma / briga = risco de terceiros; o relato da faca foi desescalada verbal + tirar o objeto, não técnica de festa.
+
+### Ketamina / k-hole
+X fala pouco de “trazer de volta”. Padrão de quem já caiu no buraco:
+- Não deixar a pessoa sozinha, deitar de lado se vomitar, proteger via aérea.  
+- Não jogar água fria, não gritar, não filmar.  
+- Tempo. Dissociação passa; estimular demais piora.  
+- Mistura com álcool / GHB / downer = o X trata como overdose, não “bad”.
+
+### Lança / loló
+Consenso mais duro no X BR 2019–2025: **a RD que a própria cena repete é não usar**, e se usar **não misturar com álcool**. Relatos de desmaio, “trava”, morte em baile. “Como baforar sem queimar neurônio” viralizou como conteúdo de risco; a resposta da galera de RD séria foi: isso não tem uso seguro.  
+Se a pessoa caiu: ar, deitar, não deixar virar de bruços, 192 se não volta.
+
+### Álcool / blackout
+Busca PT “apaguei / não lembro + amigo + água” no X deu **quase nada útil**. O que existe no campo (e as tendas aplicam):
+- Parar de servir.  
+- Água + comida.  
+- Não deixar andar sozinho / dirigir / “mais uma pra acordar”.  
+- Inconsciente: de lado, via aérea, 192. Banho frio no posto médico aparece em depoimento de festival como algo que **não resolveu** o pânico — o que resolveu foi conversa na tenda de RD.
+
+---
+
+**Tenda / SOS Bad Trip (o “controle” que mais gente no X BR cita que funcionou)**
+
+ResPire, É de Lei, Sarará, coletivos: esteira, água, sem julgamento, alguém sentado do lado, encaminha se o corpo piora. Relato: “passava metade da festa dormindo na RD.” Outro: amigos não souberam; desconhecidos da tenda souberam.
+
+Zendo / sitter (o que a cena psicodélica copia no X):
+- Sentar, não dirigir a trip.  
+- Luz baixa, menos estímulo.  
+- “Você está seguro, isso tem fim.”  
+- Não imobilizar a não ser risco imediato.  
+- Truque de festival (2025, 200 likes): desviar o foco — “vou ver alguém pior do lado” — só funciona com tom gentil; é anedota.
+
+---
+
+**O que o X empurra e você não deve tratar como fato**
+- Magnésio spray “aborta trip” — 1 post 900 likes.  
+- Benzo / outra droga pra matar trip — não reproduzo.  
+- Pimenta “zera THC em minutos” — viral, efeito real provavelmente grounding + expectativa.  
+- Suco / vitamina C “corta ácido”.  
+- Mais da mesma substância pra “equilibrar”.
+
+---
+
+**Mapa harm-control (produto), por classe**
+
+| Classe | Ação no app | Não fazer |
+|---|---|---|
+| Erva / edible | Timer + grounding + ping + “CBD/pimenta se tiver em casa” como opção folclórica | Receita de dose |
+| Psicodélico | Script sitter + troca de som/luz + “não conte notícia” | Interpretar a trip |
+| MDMA | Alerta calor + gole de água + “pare de dançar” | “Bebe 2 litros” |
+| Pó | Sair do loop de redose + alguém sóbrio | Kit de uso |
+| Ket / lança / blackout | Modo emergência + deitar de lado + 192 | “Acorda essa porra” |
+| Qualquer | 1 contato, local quieto, sem plateia | Filmagem / humilhação |
+
+---
+
+**Conflito e furo**
+- Cena de festa: RD salva. Moralista: RD “ensina a usar”. X não fecha.  
+- Blackout alcoólico em 1ª pessoa no X = buraco.  
+- “Cortar com outra substância” = o pedido mais comum e o dado mais podre.  
+- Posts de 2018–2019 de loló existem; o piso técnico de 6 anos já cobre o mesmo recado.
+
+Isso é o máximo que o X entrega de **ação real de gente**, não de laboratório.
+
+
+
+## Arquitetura de Produto & Especificação UX: Fluxo de Acolhimento e Sobrevida em Alteração Sensorial Aguda ("Bateu Forte")
+
+
+
+Projetar uma interface para um usuário sob **intoxicação aguda, "bad trip", sobrecarga sensorial ou alteração de consciência** requer princípios de redução de danos e psicologia de crise. Nesses estados, o processamento cognitivo está severamente alterado, a paranoia pode estar elevada e a capacidade de julgamento crítico encontra-se comprometida.
+
+Esta especificação define o fluxo completo, a microcopia em português do Brasil (com tom acolhedor, empático e de suporte seguro) e a lógica de triagem indireta — identificando o estado metabólico/sensorial do usuário **sem exigir que ele nomeie substâncias ilícitas**, oferecendo protocolos de pouso seguros para cada cenário.
+
+---
+
+## 1. Princípios Executivos e Travas de Segurança
+
+| Princípio | Requisito Técnico / UX | Justificativa |
+| --- | --- | --- |
+| **Acolhimento Sem Julgamento** | Tom de voz empático, caloroso e de validação ("abraço acolhedor"). | A vergonha ou o medo de ser punido/julgado faz o usuário esconder sintomas graves ou adiar o pedido de socorro. |
+| **Triagem Sensorial Indireta** | Perguntar por *sensações corporais* em vez de nomes de drogas. | O usuário muitas vezes não sabe a composição exata da substância, tem medo de registrar uso de ilícitos ou está confuso demais para lembrar. |
+| **Detecção de Policonsumo (Aviso de Cocaetileno e Depressão)** | Mapeamento ativo de mistura com álcool ou múltiplos depressores/estimulantes. | A mistura de cocaína/estimulantes com álcool produz cocaetileno (cardiotoxidade extrema). A mistura de álcool com depressores (GHB, cetamina, opióides) gera risco fatal de parada respiratória e broncoaspiração. |
+| **Âncora de Confiança Estrita** | Bloqueio de comunidades abertas/estranhos. Direcionamento exclusivo para contatos salvos ou serviços oficiais (SAMU 192 / CVV 188). | Em estado de vulnerabilidade e alteração mental, falar com desconhecidos em fóruns ou redes expõe o usuário a maus-tratos, exploração, pânico induzido ou golpes. |
+| **Redução de Danos Baseada em Evidências** | Orientações de postura (posição lateral de segurança), resfriamento corporal, hidratação fracionada e ancoragem de realidade. | Medidas físicas simples salvam vidas em casos de hipertermia, aspiração de vômito ou pânico dissociativo. |
+
+---
+
+## 2. Máquina de Estados e Lógica do Fluxo
+
+```
+                    [ Usuário Aciona: "Bateu Forte / Preciso de Ajuda" ]
+                                             │
+                                             ▼
+                        ┌──────────────────────────────────────────┐
+                        │   PASSO 1: Triagem de Emergência Médica  │
+                        └──────────────────────────────────────────┘
+                                             │
+                       ┌─────────────────────┴─────────────────────┐
+                       ▼                                           ▼
+          [Sinais de Risco Vital]                     [Sem Risco Vital Imediato]
+                       │                                           │
+                       ▼                                           ▼
+         ┌───────────────────────────┐               ┌───────────────────────────┐
+         │ PASSO 2: Despacho Médico  │               │ PASSO 3: Mapeamento       │
+         │ Imediato (SAMU 192 / UPA) │               │ Sensorial Indireto        │
+         └───────────────────────────┘               └───────────────────────────┘
+                                                                   │
+                                                                   ▼
+                                                     ┌───────────────────────────┐
+                                                     │ PASSO 4: Âncora de        │
+                                                     │ Confiança (Zap / 188)     │
+                                                     └───────────────────────────┘
+                                                                   │
+                                                                   ▼
+                                                     ┌───────────────────────────┐
+                                                     │ PASSO 5: Rota de Pouso    │
+                                                     │ Customizada pelo Perfil   │
+                                                     └───────────────────────────┘
+                                                                   │
+                                       ┌───────────────────────────┼───────────────────────────┐
+                                       ▼                           ▼                           ▼
+                             [Perfil Acelerado]          [Perfil Desconectado]       [Perfil Alteração Visual]
+                                       │                           │                           │
+                                       ▼                           ▼                           ▼
+                             • Resfriamento              • Posição Lateral           • Ancoragem Realidade
+                             • Respiração 4-7-8          • Monitoramento Aéreo       • Técnica 5-4-3-2-1
+                             • Hidratação Aos Poucos     • Não Forçar Água           • Mantra de Tempo
+                                       │                           │                           │
+                                       └───────────────────────────┼───────────────────────────┘
+                                                                   │
+                                                                   ▼
+                                                     ┌───────────────────────────┐
+                                                     │ PASSO 6: Apoio de Saúde   │
+                                                     │ e Redução de Danos no RJ  │
+                                                     └───────────────────────────┘
+
+```
+
+---
+
+## 3. Especificação Tela a Tela & Microcopia (PT-BR)
+
+### PASSO 1: Triagem de Emergência Médica (Checagem de Risco Vital)
+
+* **Objetivo:** Identificar overdosagem, parada respiratória iminente, convulsão ou colapso cardiovascular nos primeiros 10 segundos.
+
+
+* **Interface:** Lista limpa com botões de toque amplo.
+
+
+
+```text
+[ CABEÇALHO ]
+Estou aqui com você. Você está seguro(a).
+Antes de começarmos a te acalmar, precisamos checar como seu corpo está respondendo.
+
+[ PERGUNTA ]
+Você ou alguém ao seu lado está apresentando algum destes sinais AGORA?
+
+[ ] Dor no peito, aperto forte ou sensação de que o coração vai explodir
+[ ] Lábios ou ponta dos dedos roxos/azulados ou respiração muito fraca/lenta
+[ ] Convulsão, corpo travado se batendo ou perda de consciência (não responde)
+[ ] Febre muito alta com pele seca (sem suar) e confusão extrema
+[ ] Vômito ininterrupto sem conseguir sentar ou parar em pé
+
+[ BOTÃO DE AÇÃO PRIMÁRIO (Alerta) ]
+[ Tenho 1 ou mais desses sinais / Estou com medo de ser grave ] ➔ (Vai para Passo 2)
+
+[ BOTÃO DE AÇÃO SECUNDÁRIO (Neutro) ]
+[ Não tenho esses sinais. Estou consciente, mas a sensação está ruim/forte ] ➔ (Vai para Passo 3)
+
+```
+
+---
+
+### PASSO 2: Despacho Médico Imediato (Emergência)
+
+* **Objetivo:** Direcionamento direto para socorro de urgência sem ambiguidades.
+
+
+* **Interface:** Ações em um toque com instruções claras de suporte enquanto a ajuda não chega.
+
+
+
+```text
+[ CABEÇALHO ]
+Sua vida e sua saúde são a única prioridade agora. Ninguém vai te julgar.
+
+[ AÇÕES IMEDIATAS ]
+1. [ LIGAR PARA O SAMU - 192 ] (Botão de discagem direta)
+2. [ AVISAR CONTATO DE EMERGÊNCIA ] (Dispara alerta com localização para contato salvo)
+
+[ INSTRUÇÕES DE SOBREVIVÊNCIA ]
+• Se a pessoa ao seu lado desacordou: Deite-a DE LADO (posição lateral de segurança) para evitar que engasgue caso vomite.
+• Destranque a porta do local onde você está.
+• Não tente tomar remédios por conta própria para "cortar" o efeito.
+
+```
+
+---
+
+### PASSO 3: Mapeamento Sensorial Indireto (Sem Nomes de Drogas)
+
+* **Objetivo:** Descobrir a classe fisiológica do estado (Estimulante, Depressor/Dissociativo, Psicodélico/Alucinógeno) e checar policonsumo (álcool) sem citar substâncias ilícitas.
+
+
+* **Interface:** Seleção intuitiva de cards visuais.
+
+
+
+```text
+[ CABEÇALHO ]
+Entendido. Vamos fazer esse efeito passar e trazer você de volta para a terra de forma segura.
+
+[ PERGUNTA 1: O QUE SEU CORPO ESTÁ SENTINDO MAIS FORTE? ]
+
+(Card A) ⚡ ACELERADO / PILHADO
+• Coração muito rápido, agitação, dentes travados, calor no corpo, paranoia ou medo intenso.
+(Mapeia fisiologia: Estimulantes como Cocaina, MDMA, Éxtasy, Metanfetamina)
+
+(Card B) 🌀 DESCONECTADO / LENTO / CORPO PESADO
+• Pés e mãos dormentes, sensação de flutuar fora do corpo, tontura, dificuldade extrema de andar ou falar, ambiente girando.
+(Mapeia fisiologia: Depressores/Dissociativos como Cetamina, GHB, Opióides, Bebida alcoólica em excesso)
+
+(Card C) 🌈 VISUAL / MUNDO DIFERENTE / PENSAMENTOS EM LOOP
+• Formas e cores mudando, sons diferentes, pensamentos presos em repetição, sensação de "perder o controle da mente".
+(Mapeia fisiologia: Psicodélicos/Alucinógenos como LSD, Cogumelos, MDMA em dose alta)
+
+---
+
+[ PERGUNTA 2: VOCÊ MISTUROU COM ÁLCOOL OU OUTRA COISA? ]
+[ ] Não, foi apenas uma coisa
+[ ] Sim, consumi bebidas alcoólicas junto
+[ ] Misturei mais de uma coisa diferente
+[ ] Não tenho certeza
+
+*Lógica do sistema:* Se selecionado "Sim, consumi bebidas alcoólicas junto" + Card A ➔ Ativa alerta interno de risco de toxicidade cruzada e monitoramento cardíaco reforçado.
+Se selecionado "Sim" + Card B ➔ Ativa alerta de risco extremo de depressão respiratória.
+
+```
+
+---
+
+### PASSO 4: Âncora de Confiança Estrita (Proteção de Vulnerabilidade)
+
+* **Objetivo:** Isolar o usuário de ambientes danosos (redes públicas) e conectar a um ponto seguro.
+
+
+* **Interface:** Alerta de segurança + Gerador de mensagem direta para o WhatsApp.
+
+
+
+```text
+[ CABEÇALHO ]
+Regra de Ouro da Sua Segurança 🛡️
+
+[ CARD DE ALERTA ]
+🛑 NUNCA procure ajuda em grupos abertos de internet, redes sociais ou com pessoas estranhas agora.
+Em momentos em que as coisas "bateram muito forte", sua percepção muda e você fica vulnerável. Falar com desconhecidos pode aumentar seu pânico ou te colocar em risco.
+
+[ O QUE FAZER ]
+Fale APENAS com uma pessoa da sua extrema confiança (um(a) amigo(a) próximo(a), irmão/irmã, parceiro(a)) que saiba te acolher sem brigas.
+
+[ BOTÃO: MENSAGEM RÁPIDA NO ZAP ]
+Texto pré-formatado para copiar:
+"Oi, consumi algo que bateu muito forte e estou me sentindo mal/assustado(a). Preciso que uma pessoa de confiança fique em linha comigo ou venha ficar do meu lado até o efeito passar. Pode me ajudar?"
+
+[ BOTÃO SECUNDÁRIO ]
+[ Não tenho ninguém de confiança disponível agora ] ➔ Direciona para ligar no CVV (188) para escuta humana e calma 24h.
+
+```
+
+---
+
+### PASSO 5: Rotas de Pouso e Regulação (Específicas por Perfil)
+
+#### 🟢 ROTA 1: Para o Perfil "Acelerado / Pilhado" (Foco: Desacelerar Coração e Corpo)
+
+*Objetivo:* Reduzir estimulação simpática, evitar hipertermia e estabilizar batimentos.
+
+```text
+[ TÍTULO ]
+Pouso Seguro: Desacelerando seu Corpo
+
+1. Mude o ambiente agora:
+Vá para um lugar mais silencioso, com luz baixa e ventilado. Se estiver numa festa ou local barulhento, saia da pista.
+
+2. Resfriamento físico:
+Molhe os pulsos e a nuca com água fria. Se estiver com muito calor, tire casacos ou roupas apertadas.
+
+3. Hidratação consciente:
+Beba água EM PEQUENOS GOLES (não vire o copo de uma vez). Dá uma pausa entre cada gole.
+
+4. Respiração de desaceleração (4-7-8):
+• Puxe o ar pelo nariz em 4 segundos.
+• Segure o ar por 7 segundos.
+• Solte bem devagar pela boca em 8 segundos.
+
+[ MENSAJE DE REASSURANÇA ]
+"O pico dessa substância já passou ou está no limite. Seu fígado e seu corpo já estão trabalhando para limpar isso. Cada minuto que passa é um minuto a menos de efeito."
+
+```
+
+---
+
+#### 🔵 ROTA 2: Para o Perfil "Desconectado / Lento" (Foco: Segurança Física e Vias Aéreas)
+
+*Objetivo:* Prevenir broncoaspiração de vômito, evitar quedas e monitorar nível de consciência.
+
+```text
+[ TÍTULO ]
+Pouso Seguro: Protegendo seu Corpo
+
+1. Sente-se ou deite-se com segurança:
+Não tente andar nem ficar em pé se suas pernas estiverem moles ou a cabeça girando.
+
+2. Se precisar deitar, USE A POSIÇÃO LATERAL DE SEGURANÇA:
+Deite de lado, com o joelho de cima dobrado para apoiar o corpo e a cabeça encostada na mão. Isso garante que, se você tiver náusea ou vomitar, suas vias aéreas fiquem 100% livres.
+
+3. Não force a ingestão de água ou comida:
+Se você estiver muito sonolento(a) ou com a boca anestesiada, engolir pode ser perigoso. Apenas molhe os lábios se estiver com a boca seca.
+
+4. Mantenha o foco no tato:
+Sinta o chão ou o sofá sob seu corpo. Você está no planeta Terra, seu corpo está seguro e apoiado.
+
+[ AVISO DE MISTURA ]
+Se você bebeu álcool junto, peça para a pessoa ao seu lado monitorar sua respiração. Se você começar a respirar menos de 8 vezes por minuto ou não responder ao chamado, ela deve ligar 192 imediatamente.
+
+```
+
+---
+
+#### 🟣 ROTA 3: Para o Perfil "Alteração Visual / Loop Mental" (Foco: Ancoragem de Realidade)
+
+*Objetivo:* Dissipar a "bad trip", quebrar loops de pensamentos paranoicos e reancorar os sentidos no presente.
+
+```text
+[ TÍTULO ]
+Pouso Seguro: Voltando para a Realidade
+
+1. O Mantra do Tempo (Repita mentalmente):
+"Isso é apenas uma substância química temporária no meu cérebro. Ela vai perder a força e vai passar. Minha mente está segura."
+
+2. Exercício de Ancoragem Sensorial (Técnica 5-4-3-2-1):
+Olhe ao seu redor e identifique agora:
+• 5 coisas que você consegue VER (ex: seu sapato, a parede, uma luz, sua mão).
+• 4 coisas que você consegue TOCAR (ex: a textura da sua calça, o chão frio, seu cabelo).
+• 3 sons reais que você consegue OUVIR no ambiente.
+• 2 cheiros que você consegue sentir.
+• 1 sabor na sua boca.
+
+3. Mude a música ou a iluminação:
+Coloque uma música calma e conhecida com voz humana (isso ajuda o cérebro a reconectar com a linguagem e a realidade).
+
+[ REASSURANÇA ]
+"Nada do que você está vendo ou pensando agora é permanente. Você tomou algo que altera temporariamente os filtros do cérebro. Os filtros vão voltar ao normal."
+
+```
+
+---
+
+### PASSO 6: Infraestrutura de Saúde e Redução de Danos no Rio de Janeiro
+
+* **Objetivo:** Fornecer pontos públicos e seguros de suporte presencial e escuta sem criminalização no Estado do Rio de Janeiro.
+
+
+* **Interface:** Diretório geolocalizado e acionável em um toque.
+
+
+
+```text
+[ CABEÇALHO ]
+Recursos Oficiais e Gratuitos de Apoio (Rio de Janeiro)
+
+Category 1: Escuta Emocional e Apoio em Crise (24h)
+• CVV (Centro de Valorização da Vida)
+  Ligue: 188 (Atendimento gratuito, sigiloso e sem julgamentos por voluntários treinados).
+
+Category 2: Atendimento Médico de Emergência Presencial (SUS-RJ)
+• UPAs 24h (Unidades de Pronto Atendimento)
+  "Atendimento médico para aplicação de medicação de alívio, soro para hidratação e monitoramento cardíaco em crises intensas."
+  Exemplos no RJ: UPA Copacabana, UPA Botafogo, UPA Tijuca, UPA Barra da Tijuca, UPA Marechal Hermes, etc.
+  [ Botão: Abrir UPA mais próxima no GPS ]
+
+Category 3: Atenção Psicossocial e Redução de Danos
+• CAPS AD (Centro de Atenção Psicossocial Álcool e Outras Drogas)
+  "Serviço aberto do SUS especializado em acolhimento contínuo, saúde mental e redução de danos, sem necessidade de encaminhamento prévio."
+
+```
+
+---
+
+## 4. Especificações Técnicas de Implementação e UX
+
+1. **Gestão do Estado de Consciência (Wake Lock & Display):**
+* Manter a tela do dispositivo acesa durante todo o fluxo usando a flag nativa de sistema (`FLAG_KEEP_SCREEN_ON` no Android / `isIdleTimerDisabled` no iOS) para evitar que o escurecimento da tela cause sensação de desmaio ou pânico.
+
+
+
+
+2. **Gatilhos Hápticos Rítmicos (Feedback Tátil):**
+* Na rota de respiração e ancoragem, utilizar padrões de vibração suave para que o usuário consiga seguir o ritmo de respiração ou sentir a presença do aplicativo mesmo de olhos fechados.
+
+
+
+
+3. **Arquitetura Anti-Vazamento (Privacy & Zero Trail):**
+* Os dados selecionados na triagem sensorial (ex: "Acelerado", "Misturou com Álcool") **nunca devem ser salvos em banco de dados remoto nem associados ao perfil do usuário**. A lógica deve ser processada exclusivamente em memória local e descartada assim que o fluxo for encerrado.
+
+
+
+
+4. **Diretrizes de Acessibilidade Cognitiva (WCAG 2.1 AA):**
+* Tipografia em tamanho mínimo de 18pt com alto contraste em fundos escuros/suaves (modo noturno automático para evitar fotofobia).
+
+
+* Sem elementos piscantes, animações aceleradas ou cores vermelhas de pânico (exceto na tela explícita de chamada ao SAMU 192).
+
+
+**Veredito:** Holanda trata festa como problema de saúde pública com lei + GGD/GHOR + testagem **fora** do terreno. Alemanha (Berlim) trata clube como cultura + *awareness* + testagem de laboratório + tenda de crise psicodélica. Os dois concordam no mesmo núcleo: água de graça, chill-out, staff treinado, peer no chão, alerta de mercado, **não** “cortar com outra substância”. Teste no meio da pista quase não existe nos dois países.
+
+---
+
+## 1. Os dois modelos
+
+| | **Países Baixos** | **Alemanha / Berlim** |
+|---|---|---|
+| Lógica | Município + Trimbos + GHOR licenciam o evento | Clube + Clubcommission + projetos de cena |
+| Teste | DIMS/Jellinek: **32–34 postos fixos**. Festival on-site **proibido desde 1999**. ADE só abre extra **fora** da festa | Drugchecking Berlin (desde jun/2023): 3 postos, anônimo, resultado em ~3 dias. Festival móvel = Eclipse e afins, não o padrão da cidade |
+| Peer no evento | **Unity** (~140 voluntários) + **Celebrate Safe** | **SONAR**, **Eclipse** (crise psicodélica desde 1997), times de *Awareness* |
+| Alerta | App **Red Alert** + Unity | **KnowDrugs** + drugchecking.berlin |
+| Clube de referência | ADE / dance events sob *beleidsframe* da prefeitura | Berghain *Awareness*: quiet room, staff, “não oferece substância pra baixar alguém” |
+| Dado duro | ~**12 / 10 mil** no posto de 1º socorro por queixa ligada a droga; ~40 / 10 mil qualquer queixa. Trimbos 2023: mais intoxicação grave de MDMA e ket, ~48% desses casos sérios | 1º ano Berlim: ~**1.800** amostras, ~**850** avisos; ~1 em 2 testes gera warning; ~1 em 3 pessoas recusada por fila. ~90% das bals de MDMA testadas = dose alta |
+
+Conflito útil: NL **não** quer stand de teste na festa (sem tempo de conversa; pó leva ~1 semana no lab). DE **quer** mais on-site e ainda não tem escala.
+
+---
+
+## 2. Mapa de harm control (refinado)
+
+Ordem que Trimbos, GGD e Berghain usam: **antes → porta → pista → crise → depois**. Sem ensinar uso.
+
+### A. ANTES (casa / semana)
+
+O que os protocolos oficiais pedem:
+- Dormir e comer. Estômago vazio + stim + calor = o combo que GGD marca como incidente.
+- Se a pessoa **já decidiu** usar: testar **antes**, no posto fixo (NL) ou no lab de Berlim — não no portão.
+- Checar **Red Alert / KnowDrugs / Unity** no dia. Mercado muda; aviso existe pra isso.
+- Combinar **1 buddy** e o que cada um tomou. Berghain: “entre amigos, falem o que e quanto.”
+- Não ir sozinho. Não misturar com álcool (regra escrita no awareness do clube).
+- Plano de saída: quem leva, onde dorme, água no caminho.
+
+Produto: checklist pré-role + pin de alerta local + “ping do buddy” + “não tem teste no local”.
+
+### B. PORTA / PRODUÇÃO
+
+O que a *leidraad* NL 4.0 e a GGD colocam no alvará:
+- Regras de droga **visíveis** no site, ingresso e entrada.
+- Staff (porta, bar, segurança) treinado pra **reconhecer mal-estar**, não só pra apreender.
+- Ponto de reporte interno (funcionário vê alguém mal → canal único).
+- Água **grátis** obrigatória em dance event, esporte pesado e **≥25 °C**.
+- Posto de cuidado + sala de resfriar (*afkoelingsruimte*).
+- Controle de clima (calor + umidade + stim = hipertermia).
+- Unity / Celebrate Safe no briefing se o risco de uso for alto.
+
+Alemanha clube:
+- Time de **Awareness** no chão (violência sexual + discriminação + AOD).
+- Treino pago (projeto BEST / SONAR / Awareness Akademie).
+- Quiet room no térreo (Berghain descreve: staff chama backup, sala quieta, ou 112).
+- Eclipse no festival: *Psychedelische Ambulanz* = safe space de crise, sem sermão.
+
+Número velho ainda citado no material NL de incidente: ~**6 socorristas / 10 mil**, metade enfermagem de evento.
+
+### C. PISTA (durante)
+
+Infra que os dois países tratam como harm reduction de verdade:
+1. **Chill-out** com banco, menos som, ar. Survey NL antigo: 57% das festas e 2/3 dos clubes **não tinham**. Continua o furo mais barato de corrigir.
+2. **Água em gole.** Trimbos/GGD: XTC segura líquido; litro atrás de litro = hiponatremia (mulher jovem no radar). Placa no bebedouro > folheto. Comida com sal / sopa no come-down.
+3. **Peer** (Unity / SONAR): responde pergunta, não fiscaliza.
+4. **Não conta notícia pesada** pra quem está sob efeito (cena BR + sitter DE).
+5. **Não oferece outra substância** “pra baixar”. Berghain: na quase totalidade piora. Crime se for em terceiro.
+6. Copo: só o que foi servido na sua frente; não divide; não larga. Spiking entra no mesmo protocolo de awareness.
+7. Calor ≥25 °C: aviso extra no telão / app. Parar de dançar se o corpo esquentar e não suar.
+
+Por classe (só o que o protocolo de evento trata como *controle*, não como receita):
+
+- **MDMA/bala:** sombra, gole, sal, parar se hipertermia. Emergência = quente + confuso + não sua / convulsão → 112/192.
+- **Estimulante (speed, pó, 3-MMC):** mesmo pacote de calor + coração; não redosar no banheiro.
+- **Psicodélico:** Eclipse/Zendo: sentar, luz baixa, “isso passa”, não dirigir a trip.
+- **Ket / GHB / álcool:** risco de via aérea. Deitar de lado. Não deixar sozinho. Não “acordar no banho”.
+- **Erva/edible:** grounding + tempo; clube trata como pânico, não como overdose típica.
+- **Lança / inalante:** NL/DE quase não protocolam porque o recado institucional é **não**. Se caiu: ar + 192.
+
+### D. CRISE (o mapa operacional)
+
+Triage que aparece cruzado (GHOR + Berghain + Eclipse + tendas BR):
+
+1. A pessoa responde e anda? → buddy + água + chill-out.  
+2. Pânico / loop / “vou morrer”? → 1 sitter, quarto quieto, frase curta, sem plateia.  
+3. Não responde / vômito / convulsão / superquente / frio + inconsciente? → **112 (DE/NL) / 192 (BR)**. Berghain: na chamada descreve **sintoma**, não a substância.  
+4. Inconsciente que respira → posição lateral.  
+5. Staff não improvisa “antidoto”.  
+6. Se houver tenda de RD / ambulância de evento: leva pra lá **antes** do hospital, salvo sinal vermelho.
+
+### E. DEPOIS
+
+- Sono não é fraqueza (texto do Berghain).
+- Comida + água no dia seguinte.
+- NL: **consultório médico de party drugs** (Brijder/Jellinek), sem encaminhamento, se o mal-estar ficar.
+- DE: Drogennotdienst **030 19237** + Partydrogensprechstunde 365 dias.
+- Não “consertar” o come-down com outra coisa.
+- Se houve assédio: awareness / Gewaltschutzambulanz (Berlim, 72 h pra DNA).
+
+---
+
+## 3. O que entra no harm-control do produto (tradução direta)
+
+**Pré:** buddy lock, alerta de mercado, “teste é off-site”, checklist sono/comida, clima do dia.  
+**No evento:** mapa água + chill-out + posto + tenda; botão “não estou bem”; script de sitter; bloqueio de notícia pesada no grupo marcado.  
+**Crise:** 3 níveis (chão / quiet room / emergência); “descreva o corpo, não a droga”.  
+**Pós:** lembrete de sono + linha de consultório.  
+**Produção:** briefing staff estilo SONAR/Unity; placa de água “gole, não litro”; teto 25 °C dispara aviso.
+
+Não entra: dose, “como testar em casa”, “o que misturar pra descer”.
+
+---
+
+## 4. Fontes e furos
+
+- Primário NL: Trimbos *Leidraad* 4.0 (2024), GGD Haaglanden, Jellinek/DIMS, Unity, Celebrate Safe, frame ADE Amsterdam.  
+- Primário DE: Berghain Awareness, Drugchecking Berlin / Vista / Fixpunkt / Schwulenberatung, SONAR, Eclipse, Clubcommission, Drogennotdienst.  
+- Rede: TEDI / EUDA (o teste existe pra monitorar mercado + aconselhamento, não pra “liberar” a substância).  
+- Social (X da pesquisa anterior): confirma o mesmo kit de chão — 1 pessoa, lugar quieto, água, tempo — e não o kit químico.
+
+**Furo:** NL tem o melhor manual de *produção*; DE tem o melhor manual de *clube/awareness*. Nenhum dos dois publica taxa de “bad trip resolvida na tenda” de forma limpa. Teste on-site em festival DE é irregular. Blackout alcoólico continua o buraco estatístico.
+
+
+**Veredito.** O mapa do produto está alinhado com RD de nightlife (EMCDDA/EUDA, Health Victoria, DanceSafe, Drugs.ie) e com a Lei 11.343 art. 19–20 + Resolução CNDH/CNS 01/2025: informação, acolhimento, emergência — sem incentivar uso.
+
+O que o app deve fazer: timer, sitter sem interpretação, calor + gole (não litros), quebrar redose, posição lateral + 192, 1 contato, sem plateia/filmagem. O que não deve: receita de dose, kit de uso, “bebe 2 L”, “acorda essa porra”, interpretar a trip.
+
+---
+
+**Mapa harm-control — protocolo por classe**
+
+| Classe | Ação no app (evidência) | Não fazer | Base |
+|---|---|---|---|
+| Erva / edible | Timer 90–120 min (onset oral atrasado; pico 2–4 h). Grounding (respirar, sentar, água). Ping 1 contato. Opção folclórica: “CBD/pimenta *se já tiver em casa*” — rotular como ritual, não antídoto. | Receita de dose. Redose porque “não bateu”. Prometer que CBD/pimenta “corta”. | Onset 30 min–2 h; 11-OH-THC. CBD misto. Pimenta = β-cariofileno/CB2, sem ensaio humano. |
+| Psicodélico | Script sitter (Zendo): espaço seguro; sentar, não guiar; atravessar, não abafar; difícil ≠ ruim. Troca som/luz. “Não conte notícia / não abra feed.” | Interpretar a trip. Terapia. Empurrar conversa. Deixar sozinho. | ADF 2024 + Zendo 4 princípios. Sitter ≠ terapeuta. |
+| MDMA | Alerta calor. Gole (não carga). “Pare de dançar / vai pro fresco.” Sinais: confusão, pele quente/seca, convulsão → 192. | “Bebe 2 litros.” Forçar água pura sem pausa. Misturar álcool/outro estimulante no copy. | Hipertermia + hiponatremia (ADH). Oficial: gole lento; ~teto citado 250–500 ml/h *se* dançando — no app: “gole + pausa”, sem meta de volume. |
+| Pó | Sair do loop de redose (timer + “já usou; espera o pico”). Alguém sóbrio / nunca sozinho. Overamp: fresco, água, comida, mudar ambiente. Dor no peito / convulsão → 192. | Kit de uso. Instrução de via. “Toma mais pra equilibrar.” | Buddy + não sozinho. Redose e mix sobem overdose/coração. Coca+álcool = cocaetileno. |
+| Ket / lança / blackout | Modo emergência: via aérea, deitar de lado (PLS), ar fresco, 192. Ket: não deixa cair / sozinho; se respira, fica. Lança: tira da fonte, ventila; morte súbita por inalante existe. | “Acorda essa porra.” Sacudir, bater, água na cara, forçar vômito, dar remédio/álcool. | Ket: suporte + PLS se inconsciente e respirando. Lança/loló: SAMU 192 + PLS. Não acordar à força. |
+| Qualquer | 1 contato pré-escolhido. Local quieto. Sem plateia. Botão 192 + “o que falar: substância se souber, respira?, convulsão?”. Consentimento: sem foto/vídeo. | Filmagem / humilhação / story. Multidão em volta. Abandonar. | EMCDDA nightlife: ambiente > panfleto. Lei 11.343: RD = atenção, não incentivo. |
+
+---
+
+**Copy de produto (curto)**
+
+- Erva/edible: “Espera o timer. Não redosa. Senta. Avisa 1 pessoa. CBD/pimenta só se já tiver — é folclore.”
+- Psicodélico: “Sitter sóbrio. Luz baixa. Sem feed. Sem interpretar.”
+- MDMA: “Calor mata mais que sede. Gole. Para de dançar. Fresco.”
+- Pó: “Loop de redose = risco. Alguém sóbrio. Peito/convulsão = 192.”
+- Ket/lança/blackout: “De lado. Não sacode. 192. Fica.”
+- Global: “1 contato. Sem plateia. Sem filme.”
+
+---
+
+**Conflitos.** Água no MDMA: DanceSafe/Drug Aware citam ~1 pint ou 500 ml/h se dançando; Victoria só “gole, não demais”. App deve evitar número alto — o erro mortal no BR é “bebe 2 L”. CBD/pimenta: química plausível, evidência humana fraca — o teu “opção folclórica” é o enquadramento certo. Ket “overdose rara sozinha” vs inconsciência perigosa: tratar blackout como emergência sempre.
+
+**Gaps.** Sem RCT de app de RD nightlife mudando mortalidade. Sem protocolo federal BR substância-a-substância para festa — só diretriz geral de RD. Naloxone comunitária take-home ainda sem norma federal clara. Não incluir kit de uso no produto (Lei 11.343 + risco penal/sanitário).
+
+**Fontes.** Primárias: Lei 11.343 arts. 19–20; CNDH/CNS 01/2025; Health Victoria 2026; EMCDDA nightlife; ADF trip-sitting 2024; Zendo 4 princípios; UK ketamine review 2026. Secundárias: DanceSafe heat 2024; Drugs.ie; SFAF ket/cocaína. Folclore: reviews 2026 de pimenta/CBD. Social: não usado como fato.

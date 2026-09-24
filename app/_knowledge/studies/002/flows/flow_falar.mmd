@@ -1,0 +1,65 @@
+flowchart TD
+  START(["▶ Solidão · depressão · pico · v2"]) --> falar_a1
+  falar_a1{"<b>a1</b><br/>Tô aqui. O que pesa mais neste minuto?"}
+  class falar_a1 choice
+  falar_so("<b>so</b><br/>A dor é real. Não é drama. E não é o resto da vida inteira.. mesmo o cérebro jurando que é.")
+  class falar_so info
+  falar_halt[["<b>halt</b><br/>Antes de decidir qualquer coisa grande:<br/>☐ Fome, raiva, cansaço? uma coisa pequena.. água, comida, banho"]]
+  class falar_halt task
+  falar_pico_body{"<b>pico</b><br/>Pico de choro, raiva ou vergonha. Uma coisa pro corpo:"}
+  class falar_pico_body choice
+  falar_gelo[["<b>cold_hand</b><br/>☐ Gelo na mão, 15 s"]]
+  class falar_gelo task
+  falar_punho[["<b>punho</b><br/>☐ Aperta o punho 5 s e solta · 3 vezes"]]
+  class falar_punho task
+  falar_crt[["<b>crt_10</b><br/>☐ Não manda a mensagem ainda. 10 segundos."]]
+  class falar_crt task
+  falar_palavra{"<b>palavra</b><br/>Qual a palavra desse pico? Uma. Raiva, vergonha, medo, vazio, outra."}
+  class falar_palavra choice
+  falar_gente{"<b>gente</b><br/>Alguém na linha, ou 188?"}
+  class falar_gente choice
+  falar_wa{{"<b>wa</b><br/>Texto pronto, você aperta enviar:<br/>📞 Ei.. tô passando mal. Pode ficar na linha?"}}
+  class falar_wa action
+  falar_188{{"<b>cvv</b><br/>📞 CVV 188 · voz humana, 24h"}}
+  class falar_188 action
+  falar_plano[["<b>uma_coisa</b><br/>☐ Uma coisa só para a próxima hora.. água, cortina, banho, cama"]]
+  class falar_plano task
+  falar_fecha(["<b>fecha</b><br/>Você não está só. Não precisa estar bem. Pode parar aqui."])
+  class falar_fecha info,endn
+  falar_fica("<b>fica</b><br/>Se quiser ficar: escreve sem filtro, ou caminha só quando o pico já baixou. Sono leve se for hora de dormir.")
+  class falar_fica info
+  falar_a1 -->|"Muito só ou vazio"| falar_so
+  falar_a1 -->|"Pico: choro, raiva, vergonha"| falar_pico_body
+  falar_a1 -->|"Pensamento de acabar ou de me machucar"| FLOW_cssrs
+  falar_a1 -->|"Usei algo"| FLOW_torto
+  falar_a1 -->|"Não sei se o corpo está seguro"| FLOW_samu
+  falar_a1 -.->|"⚡ agora"| falar_gelo
+  falar_so -.->|continuar| falar_halt
+  falar_halt ==>|"uma coisa"| falar_gente
+  falar_pico_body -->|"Gelo"| falar_gelo
+  falar_pico_body -->|"Punho"| falar_punho
+  falar_gelo ==>|"frio"| falar_crt
+  falar_punho ==>|"soltei"| falar_crt
+  falar_crt ==>|"pausei"| falar_palavra
+  falar_palavra -->|"qualquer palavra"| falar_gente
+  falar_gente -->|"Tem alguém"| falar_wa
+  falar_gente -->|"Ninguém"| falar_188
+  falar_wa -.->|continuar| falar_plano
+  falar_188 -.->|continuar| falar_plano
+  falar_plano ==>|"tenho uma"| falar_fecha
+  falar_fecha -.->|"fica mais"| falar_fica
+  falar_fica -.->|continuar| EXIT
+  FLOW_cssrs(["→ triagem C-SSRS"])
+  class FLOW_cssrs ext
+  FLOW_torto(["→ bateu forte"])
+  class FLOW_torto ext
+  FLOW_samu(["→ resgate"])
+  class FLOW_samu ext
+  EXIT(["pode fechar · 188 na tela"])
+  class EXIT ext
+  classDef choice fill:#1b1030,stroke:#a855f7,color:#eee
+  classDef info fill:#0f1a24,stroke:#38bdf8,color:#ddd
+  classDef task fill:#0f2419,stroke:#34d399,color:#ddd
+  classDef action fill:#2a0f12,stroke:#ef4444,color:#fff,stroke-width:2px
+  classDef endn fill:#111,stroke:#fff,color:#fff,stroke-width:3px
+  classDef ext fill:#333,stroke:#999,color:#fff
