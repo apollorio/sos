@@ -15,15 +15,15 @@ acute core makes today; everything here is proven not to (see §12).
 |---|---|---|---|
 | 0 | Freeze v0.1 core | ✔ | `npm run verify` green on the base commit; exhaustive 3.15 M states passing |
 | 1 | Threat model + LGPD/RIPD | ✔ skeleton | `docs/privacy/RIPD.md`, `docs/privacy/THREAT-MODEL.md` |
-| 2 | Data classification / retention matrix | ✔ | `registry.continuity.retention`, `docs/privacy/DATA-CLASSIFICATION.md` |
-| 3 | Anonymous vault identity | ✔ | `src/runtime/trust/vault-identity.ts` + `tests/trust` |
+| 2 | Data classification / retention matrix | ✔ client · ☐ server job | `registry.continuity.retention`, `docs/privacy/DATA-CLASSIFICATION.md`; expired episodes are deleted from local storage on every refresh (`boot-continuity.ts`, `tests/continuity/vault-store.test.ts`) — corrected 2026-09-25, before that the purge was in-memory only |
+| 3 | Anonymous vault identity | ✔ tests · ☐ production | `src/runtime/trust/vault-identity.ts` + `tests/trust`; not instantiated in production (`boot.ts` passes `identity=null`), no recovery-key UI |
 | 4 | Crypto architecture | ✔ client side | `src/runtime/trust/envelope.ts`, `src/runtime/handoff/capsule-crypto.ts`; KMS side in `docs/api/VAULT-PROTOCOL.md` |
 | 5 | Event schema v2 (journal, two clocks, provenance) | ✔ | `src/core/journal/*`, `src/core/domain/provenance.ts` |
 | 6 | Offline sync queue | ✔ | `src/runtime/continuity/sync.ts` (idempotent, append-only, never gates) |
-| 7 | Continuity Vault (local + protocol) | ✔ local · ☐ server | `src/runtime/continuity/journal-store.ts`, `docs/api/VAULT-PROTOCOL.md` |
+| 7 | Continuity Vault (local + protocol) | ✔ local store · ☐ consent UI · ☐ server | `src/runtime/continuity/journal-store.ts` (serialized ops, quarantine, per-episode erase), `docs/api/VAULT-PROTOCOL.md`. Without a consent card nothing is ever written in production (D11) |
 | 8 | Deterministic episode summaries | ✔ | `src/core/handoff/summary.ts` + `tests/handoff` |
-| 9 | Share capsules / Crisis Passport | ✔ types + crypto + policy · ☐ server | `src/core/handoff/capsule.ts`, `src/runtime/handoff/capsule-crypto.ts` |
-| 20 (early) | Longitudinal personalization (strategy priors) | ✔ | `src/core/continuity/priors.ts`, `strategySkill` reorder, property tests |
+| 9 | Share capsules / Crisis Passport | ✔ types + crypto + policy · ☐ share UI · ☐ server · ☐ `/s/` page | `src/core/handoff/capsule.ts`, `src/runtime/handoff/capsule-crypto.ts`; reachable only from the simulator |
+| 20 (early) | Longitudinal personalization (strategy priors) | ✔ | `src/core/continuity/priors.ts`, `strategySkill` reorder, property tests. Contraindications that priors must never override are data (INV-027) since 2026-09-25 |
 | 10–19, 21–26 | Human State v2, Belief Engine, Need Map, VOI v2, Packs, Programs, Care Router, QA, reviews | ☐ | §13 gives file-level specs |
 
 ---
@@ -221,6 +221,8 @@ when on, helper mode may open a scoped summary on the person's own unlocked devi
 | 024 | Journal is append-only and idempotent by `eventId`; corrections are events. | property |
 | 025 | Health state never reaches operational logs. | observability allowlist · architecture test on `src/runtime` |
 | 026 | A share capsule is scoped, expires, is revocable, and its key lives only in the URL fragment. | capsule tests |
+| 027 | Grounding respects physiology: no breath pacer unless breathing=normal ∧ responsive; no five_senses unless responsive. (Added after audit 003 — without it, INV-021 was vacuous for grounding.) | requirements · lint · runtime · exhaustive · scenarios |
+| L10 guard | A non-P0 card shown to a helper resolves to helper-addressed copy unless declared actor-neutral. | `tests/invariants/perspective.ts` · exhaustive Tier A/B |
 
 ---
 
@@ -277,11 +279,15 @@ they must fit into. SOS architecture decides what donor code may become.
 
 ## 13b · Known follow-ups from this build
 
-- `public/app.js` grew from 80 KB to 104 KB min because the continuity plane is bundled with boot. Next step: load
-  `src/runtime/continuity/boot-continuity.ts` through a dynamic `import()` after the first card (it is already attached
-  after `js-ok`), keeping the acute bundle at ~80 KB.
-- The simulator inlines 121 KB of engine (was 90 KB) for the same reason; acceptable for an engineering tool.
-- `demo/template.html` now declares `<meta charset="utf-8">` (it did not before; any non-ASCII regex in the bundle broke).
+- The engine bundle is now `public/assets/app.<hash>.js` (107 KB min) because the continuity plane is bundled with boot.
+  Next step: load `src/runtime/continuity/boot-continuity.ts` through a dynamic `import()` after the first card (it is
+  already attached after `js-ok`), keeping the acute bundle at ~80 KB.
+- The simulator inlines ~127 KB of engine for the same reason; acceptable for an engineering tool.
+- `demo/template.html` declares `<meta charset="utf-8">` (it did not before; any non-ASCII regex in the bundle broke).
+- Deploys are content-addressed since 2026-09-25 (`scripts/build.ts`): hashed bundle + SRI + SW VERSION stamped from the
+  shell's content; `npm run build:check` fails when `public/` is stale; the e2e installs v1, deploys v2 and observes the update.
+- Revoking continuity consent currently stops writing and clears priors but keeps what was stored; the consent UI phase
+  must decide (with counsel, D18) whether revocation also erases the local vault.
 
 ## 14 · Decisions that need approval
 

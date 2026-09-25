@@ -623,3 +623,89 @@ Additional red-team probes executed against the real runtime:
 | **Correction — legacy "18 steps to 192".** BFS over `data.json → panico.nodes` (28 nodes, start `a1`): **no panico node contains a `tel:` link at all**. `app/index.html` **does** contain a static `tel:192` strip (added in audit phase 001 "Abraço"). | The earlier phrasing "the tel link is 18 taps away" is **withdrawn**: the number came from audit 000 (pre-001). Corrected finding: the *flow content* never offers 192, and the *page* always shows a static 192/188 strip — whether the strip stays visible/reachable while the bottom sheet is open is **UNKNOWN** (not executed). The copy "Você não está em perigo real." (data.json:564) remains a **FLAG** independent of tap distance. | Top-10 item 2 reworded; severity unchanged (false reassurance + no red-flag gate in the flow). |
 
 Scorecard delta: Engine · Offline Independence → **PARTIAL**. Everything else unchanged. `npm run verify` re-run: exit 0.
+
+---
+
+## Remediation pass — 2026-09-25 (same branch; engine + production)
+
+Every item below was re-verified by execution after the change: fast suite, exhaustive proof (Tier A/B/C, with two new
+assertions), `npm run e2e` (real Chromium, 12 checks) and the new `npm run e2e:legacy` (production page, 9 checks).
+
+### Blockers from §J
+
+| J | Blocker | Status | Evidence |
+|---|---|---|---|
+| J1 | Grounding contraindications | **FIXED** | registry requirements `breathing_normal`, `responsive`; `breath_pacer` requires both, `five_senses` requires `responsive`; lint rule + runtime INV-027 + exhaustive assertion over every Tier-A state; scenarios `abnormal-breathing-no-pacer`, `impaired-no-five-senses`; fast sweep in `tests/invariants/actor-perspective.test.ts` |
+| J2 | Deployment integrity | **FIXED** | `scripts/build.ts`: `public/assets/app.<sha256:12>.js`, `integrity="sha384-…"` on the module tag, SW `VERSION` stamped from the content of every shell file, SW install with `cache: "reload"`; `_headers`: `immutable` only on `/assets/*`, `no-cache` on `/`, `/index.html`, `/sw.js`; `tests/build/stamp.test.ts`; `npm run build:check`; e2e: a tampered bundle is refused (with a control proving the interception itself boots) and an installed v1 activates v2 and deletes the v1 cache |
+| J3 | What production is | **DECIDED BY THE REPO'S RULES + HARDENED** | CLAUDE.md rule 8 forbids a public engine while `registry:lint --release` is red ⇒ the legacy page stays production for now. Hardened: crisis bar (188/192) in every flow; `sos_flow_progress` expires after 12 h; `npm run e2e:legacy`. `core.js` and the panic copy stay with the owner (below) |
+| J4 | Vault purge / deletion / consent / recovery | **PARTIAL** | expired episodes are now deleted from storage on every refresh; "Apagar agora" erases the episode from the vault (`onWipe → removeEpisode`); vault operations serialized (an append racing an erase could resurrect it). Consent UI, recovery-key UI and server remain ☐ — now stated as such in the v0.2 status table |
+| J5 | Quarantine of bad records | **FIXED** | `isJournalEvent`/`partitionRecords` on every read, malformed records moved to a quarantine key, snapshot tolerates payload-less events (red-team probe D); `tests/continuity/vault-store.test.ts` |
+| J6 | False claims | **FIXED** | v0.2 status table (phases 2/3/7/9), VAULT-PROTOCOL conformance line, v0.1 §14 integrity row and bundle size, config README, CLAUDE.md |
+| R1 | Hung IndexedDB held the card | **FIXED** | each step starts its write and its effects, then renders, arms the timer and journals; storage runs on its own serialized chain, each op bounded to 1.5 s; IndexedDB open bounded to 3 s (then memory); the boot read bounded to 3 s (then a fresh session; defect 4 below); after "Apagar agora" the new session never reads storage; `tests/runtime/engine-loop.test.ts` (wedged writes: three cards render immediately; a read that never settles: first card at 3 s; a failed read: fresh session; control: a slow read still resumes a latched P0; renderer crash: the P0 is still persisted; slow store: the erased session never resumes) |
+
+### New defects found during remediation (not in the first two passes)
+
+1. **A helper was offered a message saying *they* are unwell (L10, UNSAFE for trust).** Found by the exhaustive L10
+   assertion. `company=with_someone` is set for helpers by INVAL-003 but expires after 900 s, and `Q_COMPANY` is self-only,
+   so it is never re-asked. Reproduced in a real session: helper · "Responde normal" · "Estranha ou ofegante" · "Calma" ·
+   "Tranquilo" · +16 min → `CARD_CONTACT_WHATSAPP` with `wa.me/?text=Oi, não tô muito bem e preciso de alguém comigo…`.
+   Fixed in data: `stay_close` when `company=with_someone ∨ actor=helper`; `message_whatsapp`/`message_sms` require
+   `actor=self`. Scenario `helper-company-expiry`.
+2. **Helpers addressed as the patient (L10).** `CARD_GROUNDING_FEET`, `CARD_GROUNDING_SENSES`, `CARD_RELOCATE` had no helper
+   copy; `CARD_STEADY_TIPS` resolved the substance key before the actor key; `CARD_Q_SUBSTANCE` asked the helper "Usou
+   alguma coisa?". Helper variants added (draft, same clinical gate); `variantKeysFor` tries `<substance>.<actor>` first;
+   `tests/invariants/perspective.ts` is asserted in the fast suite and in exhaustive Tier A/B (mutation-checked: removing one
+   helper variant fails it).
+3. **Production: no dialable 192 inside three flows.** `style.css:413` hides the home 192/188 strip while a sheet is open and
+   `showCrisisBar` rendered the in-sheet bar only for falar/panico/cssrs/crisis nodes/risk ≥ MODERATE. Chromium with every
+   third-party host blocked: `torto` (the substance flow), `realidade`, `trava` → **0 clickable tel:192**. Fixed: the crisis
+   bar renders in every flow. `e2e:legacy` fails on the old script and passes on the new one. The same run shows the legacy
+   page works with the CDN entirely down (no page errors).
+4. **The first R1 fix left the boot read unbounded.** Found by re-reading this pass, not by a guard. `EngineLoop.start()`
+   awaited `store.loadState()` with no budget, so an IndexedDB read that never settles reproduced R1 at boot: no engine card,
+   and the service worker (registered after the first card) never installed. The static shell stayed usable. Fixed: the read
+   is bounded to 3 s, and a read that times out or fails starts a fresh session. Two tests fail on the unbounded read
+   (mutation-checked); a control proves a slow read inside the budget still resumes a latched P0.
+
+### Corrections to this audit
+
+- **§20** "the helper is never asked how they feel … verified copy" — *partially false*: `Q_HOW_NOW` was correct, but the
+  grounding, relocate, tips and substance cards addressed the helper as the patient, and the self-crisis WhatsApp template
+  was reachable by helpers (items 1–2 above, now fixed).
+- **§3 / Top-10 #5 `core.js` "UNKNOWN / UNSAFE"** → evidence (fetched 2026-09-25, 87 KB): an ecosystem loader that injects
+  ~20 scripts from `cdn.apollo.rio.br` (jQuery, GSAP + 7 plugins, Lenis, popper, morphism, translate, icon, apollo-suporte,
+  script.js, tooltip) plus Google Fonts and `assets.apollo.rio.br`. Its storage keys are theme/dark-mode/fullscreen only; no
+  script reads `sos_flow_progress`/`sos_risk`. `tracker.v2` (POSTs analytics to `<origin>/wp-json/apollo/v1/track/batch`) is
+  **not** in the current load list, but its gate `isApolloFamilyHost()` admits `sos.apollo.rio.br`, so adding it to the list
+  upstream would ship analytics on the crisis page with no change in this repo. `apollo-suporte.js` posts name/e-mail/message
+  to a Google Form and `apollo.rio.br/wp-json/apollo/v1/report`, but has no `[data-apollo-suporte]` trigger on SOS pages.
+  **Verdict: no exfiltration of health state in the current version; supply-chain risk remains** (unpinned, no SRI, no CSP,
+  same-origin access to the persisted risk state).
+
+### Still open
+
+| Item | Owner / phase |
+|---|---|
+| Remove `core.js` from `/app` and the gateway, or pin it with SRI behind a CSP (000.5 item 4 / C2) | owner decision |
+| "Você não está em perigo real." (`data.json` panico `m1`) — categorical reassurance before any red-flag check | owner + clinician |
+| C-SSRS attribution/licensing; repository LICENSE | owner |
+| Continuity consent card, recovery-key UI, vault server incl. per-episode delete (now in VAULT-PROTOCOL) | phases 3/7/9 |
+| Belief engine, need map, human-state v2, packs, programs, care router | phases 10–24 |
+| Legacy progress older than 12 h is erased on the next visit (a static page has no background job) | residual, accepted |
+| `CARD_RELOCATE` action labels ("Cheguei") are first-person for helpers — labels have no actor variants | copy model |
+| Engine bundle 107 KB (continuity plane not lazy-loaded) | v0.2 §13b |
+| Persisted `SessionState.v` is never read, so a state saved by an older bundle is resumed as-is after a service-worker update. Not reproduced. If processing such a state throws, the engine fails to shell (static help, tel:192) on every load until `storage.retentionHours` (12 h) passes | runtime: state versioning |
+
+### Scorecard deltas (engine / production)
+
+| Area | Before | After |
+|---|---|---|
+| Offline Independence | PARTIAL / PARTIAL | **VERIFIED** (render-first, bounded storage, tests) / PARTIAL (works with the CDN down — verified — but still loads it) |
+| Privacy | VERIFIED / FAIL | VERIFIED / **PARTIAL** (risk state bounded to 12 h; `core.js` evidenced; supply-chain risk open) |
+| Remote Continuity | PARTIAL / FAIL | PARTIAL (purge + erase real; consent/server absent) / FAIL |
+| Rescue | PARTIAL / PARTIAL | PARTIAL (perspective fixed; `ACTOR_CHANGED` missing) / PARTIAL |
+| Clinical Safety | FAIL / FAIL | **PARTIAL** (INV-027 proven; clinical review pending) / **PARTIAL** (192 in every flow; copy flag open) |
+| Testing | VERIFIED / FAIL | VERIFIED / **PARTIAL** (`e2e:legacy` guards the production page) |
+
+Executive verdict after remediation: production **STRUCTURALLY MISALIGNED** (it still serves linear flows — by the
+release-gate rule, not by accident); engine **PARTIALLY COMPLIANT** with **no open UNSAFE finding**.

@@ -11,7 +11,8 @@ Every session in this repo is the "SOS app" session. Read this file, then `app/_
 
 ```
 /                      gateway: index.html redirects to /app (SOS) or /somar (knowledge, "coming soon")
-/app                   LEGACY production UI (191-node JSON flows, GSAP orb, script.js). Do not extend it; it is being replaced.
+/app                   LEGACY production UI (191-node JSON flows, GSAP orb, script.js) — what sos.apollo.rio.br serves today.
+                       Do not extend it; safety/privacy fixes only, guarded by `npm run e2e:legacy`. script.js uses CRLF: preserve it.
 /app/_knowledge        reference material: artifacts/ (base code refs), studies/ (grouped notes per moment)
 /app/_audit            permanent audit trail. Append-only. Every phase = one folder + one row in README.md
 /app/_system           ★ THE ENGINE — 100 % of our work happens here
@@ -40,7 +41,9 @@ npm test                    # fast suite (~5 s). Run after EVERY change.
 npm run registry:format && npm run registry:codegen && npm run registry:lint   # after editing registry/*.json
 npm run simulate [name]     # replay a golden scenario with the "why"
 npx tsx scripts/build-demo.ts   # rebuild dist/simulator.html — ALWAYS after touching src/ or demo/template.html
-npm run build && npm run e2e    # real Chromium shell test
+npm run build && npm run e2e    # stamped build (hashed bundle + SRI + SW VERSION) and real-Chromium shell test
+npm run build:check             # fail if public/ is stale (never hand-edit public/index.html or public/sw.js)
+npm run e2e:legacy              # the PRODUCTION page (/app): 192 clickable in every flow, CDN blocked
 ```
 
 ## Non-negotiable rules
@@ -54,6 +57,7 @@ npm run build && npm run e2e    # real Chromium shell test
    derived ≠ reported (L15); no diagnosis from patterns (L16); memory reduces burden, never surveillance (L20).
 4. **No LLM anywhere in the decision loop or in any summary** (ADR-0001, ADR-0008). Summaries are deterministic templates.
 5. **Never store PII, raw free text, precise location history or IPs in the health state.** Text is matched and discarded.
+   The same applies to the legacy page: its persisted progress/risk expires after 12 h.
 6. **Green before commit.** `npm test` + `npm run registry:check` + `npm run typecheck` must pass; rebuild `dist/simulator.html`.
    Run `npm run test:exhaustive` whenever registry rules, band logic, hard rules, eligibility or strategy ordering change.
 7. **Every feature is demonstrable in `demo/template.html`.** If it cannot be shown in the simulator, it is not done.

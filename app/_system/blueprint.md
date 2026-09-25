@@ -20,7 +20,7 @@ This blueprint audits the three brainstorm versions and closes their gaps. It al
 | Property tests (random event sequences) | ✔ passing | 5 properties × 400 runs per CI run (stress-tested at 4,000) × ≤45 steps |
 | Golden scenarios (the brainstorm's own stories) | ✔ passing | 14 executable stories |
 | Static emergency shell + PWA + e2e in real Chromium | ✔ passing | 192 works with JS off, after a crash, and 2 taps from boot |
-| Whole engine + registry + copy, bundled | ✔ | **80 KB** min · **25 KB** gzip |
+| Whole engine + registry + copy, bundled | ✔ | **80 KB** min · **25 KB** gzip in v0.1 (v0.2 with the continuity plane: 107 KB, see v0.2 §13b) |
 | Clinical content | ✖ **draft** | release gate blocks production until a clinician signs (`docs/CLINICAL-REVIEW.md`) |
 
 **On "0 chance of error":** no system can promise that, and claiming it would be the most dangerous line in this document. Here is what the base *does* guarantee, by exhaustive proof rather than sampling:
@@ -406,7 +406,7 @@ The pyramid has already paid for itself. It caught **5 real defects** before thi
 |---|---|
 | Entry | **no gate.** A bot loading a static page gains nothing. |
 | Handoffs | native `tel:`, `sms:` and `wa.me` links, run by the user's phone inside their own gesture. No server, no SMS bill, no pumping target. |
-| Code integrity | strict CSP (`default-src 'self'`, no third-party scripts), immutable hashed assets, SRI. |
+| Code integrity | strict CSP (`default-src 'self'`, no third-party scripts), content-hashed bundle served immutable, SRI on the module tag, SW VERSION stamped from the shell's content (`scripts/build.ts`; true since 2026-09-25, before that the bundle was unhashed and the SW VERSION constant). |
 | Exfiltration | no analytics, no telemetry, no endpoint on self to post to. |
 | DDoS | static CDN (Cloudflare Pages or Netlify) absorbs volumetric attacks. |
 | "Human steps" | the breath pacer: a calming micro-interaction, **never a gate**. |

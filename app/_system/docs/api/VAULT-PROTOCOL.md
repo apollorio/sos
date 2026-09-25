@@ -20,6 +20,7 @@ Transport: HTTPS, JSON. Auth: every request body is signed with the vault's Ed25
 | GET | `/v1/vaults/{id}/snapshot` | — | latest encrypted snapshot (client derives + uploads it; server never computes on plaintext) |
 | PUT | `/v1/vaults/{id}/snapshot` | `{snapshotEnc}` | replace |
 | DELETE | `/v1/vaults/{id}` | — | full purge, signed |
+| DELETE | `/v1/vaults/{id}/episodes/{episodeId}` | — | erase one episode ("Apagar agora" parity with the device), signed; required before sync can be enabled |
 | POST | `/v1/capsules` | `{ciphertext, audience, scopes, ttlSec, maxViews}` | Turnstile-gated (only write that costs money); returns `capsuleId` |
 | GET | `/v1/capsules/{id}` | — | ciphertext if not expired/revoked and `views < maxViews`; increments views; audit row |
 | DELETE | `/v1/capsules/{id}` | — | revoke (signed by creator vault) |
@@ -31,5 +32,8 @@ Transport: HTTPS, JSON. Auth: every request body is signed with the vault's Ed25
 - No endpoint decides anything about care. There is no `/decide`.
 
 ## Conformance
-`tests/continuity/sync.test.ts` exercises a `MemoryVaultServer` implementing exactly this contract; the Worker must pass
-the same test file through an HTTP adapter before deployment.
+Only `PUT /v1/vaults/{id}/events` has a reference implementation today: `MemoryVaultServer` in
+`src/runtime/continuity/sync.ts`, exercised by `tests/trust/vault.test.ts` (signature check, idempotency, ciphertext-only
+wire). Every other endpoint below is specification only. Before any deployment, a conformance suite covering all
+endpoints must exist and the Worker must pass it through an HTTP adapter. (Corrected 2026-09-25: an earlier version of
+this section cited a test file that does not exist.)

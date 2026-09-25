@@ -18,8 +18,10 @@ npm run typecheck         # tsc --strict
 npm test                  # scenarios · properties · lint mutations · architecture · triggers · continuity · handoff · trust (~8 s)
 npm run test:exhaustive   # 3.5 M-state proof (~3 min)
 npm run simulate [name]   # print what a person would see, step by step, with the "why"
-npm run build             # public/app.js (80 KB · 25 KB gz)
-npm run e2e               # real Chromium: 192 with JS off, after a crash, 2 taps to P0
+npm run build             # public/assets/app.<hash>.js + SRI in index.html + stamped sw.js VERSION
+npm run build:check       # fail if public/ is not what the current sources produce
+npm run e2e               # real Chromium: 192 with JS off, after a crash, 2 taps to P0, SRI refusal, v1→v2 update
+npm run e2e:legacy        # real Chromium on the PRODUCTION page (/app): 192 clickable in every flow with the CDN down, 12 h progress expiry
 npx tsx scripts/build-demo.ts   # dist/simulator.html — the engineering simulator
 ```
 
