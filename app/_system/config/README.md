@@ -18,11 +18,15 @@ npm run typecheck         # tsc --strict
 npm test                  # scenarios · properties · lint mutations · architecture · triggers · continuity · handoff · trust (~8 s)
 npm run test:exhaustive   # 3.5 M-state proof (~3 min)
 npm run simulate [name]   # print what a person would see, step by step, with the "why"
-npm run build             # public/assets/app.<hash>.js + SRI in index.html + stamped sw.js VERSION
-npm run build:check       # fail if public/ is not what the current sources produce
-npm run e2e               # real Chromium: 192 with JS off, after a crash, 2 taps to P0, SRI refusal, v1→v2 update
-npm run e2e:legacy        # real Chromium on the PRODUCTION page (/app): 192 clickable in every flow with the CDN down, 12 h progress expiry
-npx tsx scripts/build-demo.ts   # dist/simulator.html — the engineering simulator
+npm run build             # app/ (the deployed /app/): assets/app.<hash>.js + SRI + stamped sw.js + beta/release channel;
+                          # then dist/simulator.html and the beta lab app/lab/ (hub, missions, clinical review, simulator)
+npm run build:check       # fail if app/, dist/simulator.html or app/lab/ is not what the current sources produce
+npm run e2e               # real Chromium on the repository root as deployed: shell (192 with JS off, after a crash, 2 taps to
+                          # P0, beta notice, CSP, SRI refusal, v1→v2 update, offline reload) + lab (gateway → /app/, review
+                          # and mission feedback round trip, reset)
+npm run e2e:legacy        # real Chromium on the legacy page (/app/legacy.html): 192 clickable in every flow with the CDN down, 12 h progress expiry
+npm run review:summary -- <file.json>   # a clinician's exported review → Markdown for docs/CLINICAL-REVIEW.md (read-only)
+npx tsx scripts/build-demo.ts   # dist/simulator.html alone — the engineering simulator
 ```
 
 ## The rule of this repository

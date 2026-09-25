@@ -16,6 +16,12 @@
 | Triage labels | Q_RED_FLAGS, Q_RESPONDS, Q_BREATHING | Does each label mean exactly what its `set` records? (label ↔ data parity) |
 | Text triggers | TT-001…TT-007 | Missing common regional phrasings? False positives? |
 
+## How to review: the beta lab
+Open `/app/lab/revisao.html` (see `docs/BETA-LAB.md`). It lists every item above, read from the registry and the locale,
+plus every triage question and every strategy card (grounding contraindications included). Give a verdict per item,
+download the file, and send it to the team. `npm run review:summary -- <file>` turns it into the row below once every
+required item is approved on the current registry hash.
+
 ## Record of approvals
 | Date | Reviewer (name, registration) | Scope | Registry hash | Notes |
 |---|---|---|---|---|

@@ -279,13 +279,15 @@ they must fit into. SOS architecture decides what donor code may become.
 
 ## 13b · Known follow-ups from this build
 
-- The engine bundle is now `public/assets/app.<hash>.js` (107 KB min) because the continuity plane is bundled with boot.
+- The engine bundle is now `app/assets/app.<hash>.js` (107 KB min) because the continuity plane is bundled with boot.
   Next step: load `src/runtime/continuity/boot-continuity.ts` through a dynamic `import()` after the first card (it is
   already attached after `js-ok`), keeping the acute bundle at ~80 KB.
 - The simulator inlines ~127 KB of engine for the same reason; acceptable for an engineering tool.
 - `demo/template.html` declares `<meta charset="utf-8">` (it did not before; any non-ASCII regex in the bundle broke).
 - Deploys are content-addressed since 2026-09-25 (`scripts/build.ts`): hashed bundle + SRI + SW VERSION stamped from the
-  shell's content; `npm run build:check` fails when `public/` is stale; the e2e installs v1, deploys v2 and observes the update.
+  shell's content; `npm run build:check` fails when the shell is stale; the e2e installs v1, deploys v2 and observes the update.
+- Since audit 009 the shell lives at `app/` (served at `/app/`, the gateway at `/`) with relative paths, a `beta` channel
+  notice stamped while the clinical release gate is red, and the beta lab at `app/lab/` (docs/BETA-LAB.md).
 - Revoking continuity consent currently stops writing and clears priors but keeps what was stored; the consent UI phase
   must decide (with counsel, D18) whether revocation also erases the local vault.
 

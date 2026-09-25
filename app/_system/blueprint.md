@@ -115,7 +115,7 @@ These live in `registry.json → laws` and are cited by id in code and tests.
 
 ```mermaid
 flowchart TB
-  subgraph SHELL["STATIC SHELL · public/index.html · zero JS (L11)"]
+  subgraph SHELL["STATIC SHELL · app/index.html · zero JS (L11)"]
     SOS["tel:192 bar · always visible"]
     HELP["static help panel · SAMU 192 · CVV 188 · 0800 722 6001<br/>visible until the engine proves it is alive"]
   end
@@ -454,11 +454,11 @@ sos-apollo/
 │   │   └── storage/session-store.ts
 │   ├── ui/{render,locale,breath-pacer}.ts   dumb renderer · copy resolution · the human step
 │   └── demo/demo.ts               engineering simulator (virtual clock + brain panel)
-├── public/                        index.html (static shell) · app.css · sw.js · manifest · _headers
+├── ../index.html (= /app/)        static shell · app.css · sw.js · manifest · assets/ (stamped in place; /_headers at the repo root)
 ├── tests/
 │   ├── exhaustive/decision-space.test.ts   Tier A/B/C · precedence · coverage
 │   ├── property/engine.property.test.ts    fast-check random sequences
-│   ├── scenarios/{scenarios,scenarios.test}.ts   14 golden stories
+│   ├── scenarios/{scenarios,scenarios.test}.ts   18 golden stories
 │   ├── registry/{lint,schema}.test.ts      + 11 mutation cases
 │   ├── invariants/text-triggers.test.ts
 │   ├── architecture/boundaries.test.ts     INV-016
