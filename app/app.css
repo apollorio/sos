@@ -27,3 +27,7 @@ html:not(.js-ok) #app { display:none; }
 .pacer-label { margin-top:-100px; color:var(--muted); }
 :focus-visible { outline:3px solid var(--p2); outline-offset:2px; }
 @media (prefers-reduced-motion: reduce) { .pacer-dot { transition:none !important; } }
+/* Beta channel notice (stamped by scripts/build.ts): shown while the clinical release gate is red. */
+.channel { margin:20px 0 0; padding:10px 12px; border:1px dashed var(--line); border-radius:12px; color:var(--muted); font-size:14px; text-align:center; }
+.channel a { color:inherit; }
+html[data-channel="release"] .channel { display:none; }

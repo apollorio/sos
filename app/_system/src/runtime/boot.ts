@@ -35,7 +35,7 @@ async function main(): Promise<void> {
   document.documentElement.classList.add("js-ok");
   // Continuity plane (v0.2): attached AFTER the first card is on screen; never awaited by the acute path (INV-019).
   void attachContinuity(loop, now).catch(() => undefined);
-  if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(() => undefined);
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(() => undefined);
 }
 
 main().catch(failToShell);

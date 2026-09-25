@@ -1,0 +1,26 @@
+# Netlify / Cloudflare Pages format. The site is the repository root: / = gateway, /app/ = SOS (PWA), /app/lab/ = beta lab.
+# The strict CSP covers the SOS app only. The gateway and the legacy page still load third-party scripts
+# (core.js, GSAP, fonts): that is an open owner decision (audit 003), so they get the other headers but no CSP here.
+/*
+  Referrer-Policy: no-referrer
+  X-Content-Type-Options: nosniff
+  Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=(), interest-cohort=()
+  Strict-Transport-Security: max-age=63072000; includeSubDomains
+# Everything that points at a bundle must always be revalidated, or a deploy can be shadowed by an old copy.
+/app/
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'
+  Cross-Origin-Opener-Policy: same-origin
+  Cache-Control: no-cache
+/app/index.html
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'
+  Cross-Origin-Opener-Policy: same-origin
+  Cache-Control: no-cache
+/app/sw.js
+  Cache-Control: no-cache
+# Content-addressed bundles never change: cache forever.
+/app/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+# The lab is for invited testers and clinicians, never for search engines.
+/app/lab/*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-cache

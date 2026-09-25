@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="light dark">
+<title>SOS Apollo · Laboratório beta</title>
+<style>
+:root{--bg:#f6f7f9;--fg:#0b0d10;--muted:#4a5561;--card:#fff;--line:#dde3ea;--accent:#0a5cb8;--p0:#c4000f;--ok:#1a7f37;--mid:#8a5a00;--soft:#eef2f6}
+@media (prefers-color-scheme:dark){:root{--bg:#0b0d10;--fg:#f4f6f8;--muted:#9aa4ae;--card:#151a20;--line:#26303a;--accent:#64b5ff;--p0:#ff5a4f;--ok:#3ddc6e;--mid:#ffcc4d;--soft:#1f2730}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:16px 16px 120px}
+a{color:var(--accent)}
+.top{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;justify-content:space-between;padding:8px 0 4px}
+.top a{font-size:15px}
+h1{font-size:28px;line-height:1.2;margin:8px 0}
+h2{font-size:21px;line-height:1.3;margin:28px 0 8px}
+h3{font-size:17px;margin:0}
+.lead{color:var(--muted);margin:0 0 16px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:12px 0}
+.safety{border-left:6px solid var(--p0)}
+.safety strong{color:var(--p0)}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.tile{display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;color:inherit;text-decoration:none}
+.tile strong{display:block;font-size:18px;margin-bottom:4px;color:var(--accent)}
+.tile span{color:var(--muted);font-size:15px}
+.meta{color:var(--muted);font-size:13px;word-break:break-all}
+.badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--muted);margin-left:6px;vertical-align:middle}
+.badge.p0{background:var(--p0);color:#fff;margin-left:0}
+.item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:12px 0}
+.item.done{border-left:6px solid var(--ok)}
+.item.changed{border-left:6px solid var(--mid)}
+dl{display:grid;grid-template-columns:minmax(120px,190px) 1fr;gap:6px 14px;margin:12px 0}
+dt{color:var(--muted);font-size:14px}
+dd{margin:0}
+@media (max-width:560px){dl{grid-template-columns:1fr}dt{margin-top:6px}}
+fieldset{border:0;padding:0;margin:10px 0 0;display:flex;flex-wrap:wrap;gap:8px}
+legend{font-size:14px;color:var(--muted);margin-bottom:4px;width:100%}
+label.opt{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;background:var(--bg)}
+label.opt:has(input:checked){border-color:var(--accent);outline:2px solid var(--accent)}
+textarea,input[type=text],select{width:100%;font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+textarea{min-height:64px;margin-top:10px}
+.who{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.who label{font-size:14px;color:var(--muted)}
+ol.steps{padding-left:22px}
+ol.steps li{margin:10px 0}
+.see{display:block;color:var(--muted);font-size:15px;margin-top:2px}
+.see q{color:var(--fg);quotes:none}
+.warn{display:block;color:var(--p0);font-size:14px;margin-top:2px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:8px 16px calc(8px + env(safe-area-inset-bottom))}
+.bar .in{max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center}
+.bar .grow{flex:1 1 100%;font-size:13px;color:var(--muted)}
+@media (min-width:640px){.bar .grow{flex-basis:200px}}
+.bar button{padding:6px 12px;font-size:15px}
+button{font:inherit;border-radius:10px;border:1px solid var(--line);background:var(--soft);color:var(--fg);padding:8px 14px;cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+nav.toc{display:flex;flex-wrap:wrap;gap:6px}
+nav.toc a{font-size:14px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 10px;text-decoration:none}
+.note{font-size:14px;color:var(--muted)}
+.hidden{display:none!important}
+@media print{.bar,.no-print,nav.toc{display:none!important}.wrap{padding-bottom:0}.item{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<h1>SOS Apollo · Laboratório beta</h1>
+<p class="lead">Área de teste da nova versão do SOS, para um grupo pequeno de testadores e para profissionais de saúde revisarem e aprovarem os textos clínicos.</p>
+<div class="box safety" role="note">
+  <p><strong>Versão de teste.</strong> Os textos clínicos ainda não foram aprovados por profissionais de saúde.</p>
+  <p>Em uma emergência real, ligue <a href="tel:192">192 (SAMU)</a>. Para apoio emocional, <a href="tel:188">188 (CVV)</a>.</p>
+  <p>Durante os testes, o app pode abrir o discador ou o WhatsApp. Cancele: não complete ligações nem envie mensagens.</p>
+</div>
+<div class="box"><p><strong>Versão final: bloqueada.</strong> 17 itens aguardam aprovação clínica. Enquanto isso, o app mostra o aviso de versão beta.</p>
+  <details><summary class="note">Detalhes técnicos</summary><ul class="note"><li>pt-BR: CARD_Q_RESPONDS clinical copy is &quot;draft&quot; (needs clinical review)</li><li>pt-BR: CARD_Q_BREATHING clinical copy is &quot;draft&quot; (needs clinical review)</li><li>pt-BR: CARD_Q_RED_FLAGS_SELF clinical copy is &quot;draft&quot; (needs clinical review)</li><li>pt-BR: CARD_Q_RED_FLAGS_HELPER clinical copy is &quot;draft&quot; (needs clinical review)</li><li>pt-BR: CARD_Q_SUBSTANCE clinical copy is &quot;draft&quot; (needs clinical review)</li><li>pt-BR: CARD_P0_CALL clinical copy is &quot;draft&quot; (needs clinical review)</li><li>pt-BR: CARD_P0_CALL_CRISIS clinical copy is &quot;draft&quot; (needs clinical review)</li><li>pt-BR: CARD_P0_WAITING clinical copy is &quot;draft&quot; (needs clinical review)</li><li>pt-BR: CARD_P0_BYSTANDER clinical copy is &quot;draft&quot; (needs clinical review)</li><li>pt-BR: CARD_P0_HANDOVER clinical copy is &quot;draft&quot; (needs clinical review)</li><li>pt-BR: CARD_RELOCATE clinical copy is &quot;draft&quot; (needs clinical review)</li><li>pt-BR: CARD_IN_PLACE clinical copy is &quot;draft&quot; (needs clinical review)</li><li>pt-BR: CARD_STAY_CLOSE clinical copy is &quot;draft&quot; (needs clinical review)</li><li>pt-BR: CARD_CRISIS_LINE clinical copy is &quot;draft&quot; (needs clinical review)</li><li>pt-BR: CARD_STEADY_TIPS clinical copy is &quot;draft&quot; (needs clinical review)</li><li>pt-BR: CARD_HOLD clinical copy is &quot;draft&quot; (needs clinical review)</li><li>meta.status is &quot;draft&quot; — release requires &quot;approved&quot;</li></ul></details></div>
+
+<h2>Para quem vai testar</h2>
+<div class="grid">
+  <a class="tile" href="../"><strong>Abrir o app</strong><span>A versão beta, como uma pessoa usaria. A barra vermelha do 192 fica sempre no topo.</span></a>
+  <a class="tile" href="roteiros.html"><strong>Roteiros de teste</strong><span>12 missões curtas. Cada uma diz o que tocar e o que deve aparecer.</span></a>
+  <a class="tile" href="simulador.html"><strong>Simulador com o porquê</strong><span>O mesmo motor, com um painel que mostra por que cada tela apareceu. Não abre o discador.</span></a>
+</div>
+
+<h2>Para profissionais de saúde</h2>
+<div class="grid">
+  <a class="tile" href="revisao.html"><strong>Revisão clínica</strong><span>65 itens: regras de emergência, perguntas, orientações e frases de alerta. Aprove, ajuste ou reprove item por item.</span></a>
+  <a class="tile" href="../legacy.html"><strong>Versão anterior</strong><span>A página que está no ar hoje, para comparar.</span></a>
+</div>
+
+<h2>Como mandar o retorno</h2>
+<div class="box">
+  <p>Nada aqui envia dados. As respostas ficam só neste navegador até você baixar o arquivo de retorno.</p>
+  <p>Ao terminar, toque em «Baixar retorno» e envie o arquivo para a equipe pelo mesmo canal em que recebeu o convite.</p>
+  <p>Não escreva nomes, telefones ou informações de saúde reais. Isto é uma simulação.</p>
+</div>
+
+<h2>Recomeçar do zero</h2>
+<div class="box">
+  <p class="note">Cada missão começa melhor com o app zerado. Feche a aba do app e toque abaixo.</p>
+  <button type="button" onclick="sosResetApp(document.getElementById('reset-out'))">Apagar os dados do app neste navegador</button>
+  <p id="reset-out" class="note" role="status"></p>
+</div>
+<p class="meta">Registro 0.1.0 · hash 0641dbc0d316481f · motor assets/app.2975c2d8f7f6.js</p>
+
+</div>
+<script>
+async function sosResetApp(out){
+  if(!confirm("Apagar os dados do app SOS neste navegador? Feche antes a aba do app.")) return;
+  for (const db of ["sos-apollo","sos-apollo-vault"]) {
+    await new Promise((r)=>{ try{ const q=indexedDB.deleteDatabase(db); q.onsuccess=q.onerror=q.onblocked=()=>r(); }catch(e){ r(); } });
+  }
+  if(out) out.textContent="Pronto. Abra o app de novo: ele começa pela primeira pergunta.";
+}</script>
+</body>
+</html>

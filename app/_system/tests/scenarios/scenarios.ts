@@ -7,7 +7,7 @@ import { processEvent, startSession } from "../../src/core/process-event";
 import type { RawInput } from "../../src/core/domain/events";
 import type { StepResult } from "../../src/core/domain/decision";
 
-type Expect = Partial<{ band: string; cardId: string; skill: string; strategy: string | null; questionId: string; rejected: string; notice: string; policyRule: string; commander: string }>;
+type Expect = Partial<{ band: string; cardId: string; skill: string; strategy: string | null; questionId: string; rejected: string; notice: string; policyRule: string; commander: string; status: string }>;
 
 export type Step =
   | { label?: string; answer: string; after?: number; expect?: Expect }
@@ -67,6 +67,7 @@ function check(r: StepResult, e?: Expect): string[] {
   eq("notice", e.notice, r.output.notice);
   eq("policyRule", e.policyRule, r.log.why.policyRule);
   eq("commander", e.commander, r.log.why.commander);
+  eq("status", e.status, r.state.status);
   return f;
 }
 
@@ -135,6 +136,16 @@ export const SCENARIOS: Scenario[] = [
       { answer: "self" }, { answer: "none" }, { answer: "yes" }, { answer: "high" },
       { answer: "alone", expect: { strategy: "message_whatsapp" } },
       { tap: "nobody", expect: { skill: "contact_trusted_person", strategy: "crisis_line", cardId: "CARD_CRISIS_LINE" } },
+    ],
+  },
+  {
+    name: "calm-end-and-wipe",
+    doc: "Stable person ends the session and erases it: 'Tô bem, encerrar' closes, 'Apagar agora' wipes storage (L20); the runtime then starts a fresh session.",
+    steps: [
+      { answer: "self" }, { answer: "none" }, { answer: "yes" },
+      { answer: "low", expect: { band: "P3", cardId: "CARD_STEADY_CHECK" } },
+      { tap: "im_fine_end", expect: { cardId: "CARD_SESSION_CLOSED", status: "ended" } },
+      { tap: "wipe", expect: { status: "wiped" } },
     ],
   },
   {

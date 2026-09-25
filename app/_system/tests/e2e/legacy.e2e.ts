@@ -1,23 +1,16 @@
 /**
- * LEGACY PRODUCTION PAGE (/app) — what sos.apollo.rio.br actually serves today (audit 003).
+ * LEGACY PRODUCTION PAGE (/app/legacy.html; it was /app/ until the beta lab, audit 009) — the page in production (audit 003).
  * Real Chromium, every third-party host blocked (CDN down / offline conditions):
  *   · every flow keeps a clickable tel:192 on screen while its sheet is open
  *   · the persisted flow progress (node + risk level) expires after 12 h
  *   npm run e2e:legacy
  */
 import { chromium, type Page } from "playwright-core";
-import { createServer } from "node:http";
-import { readFileSync, existsSync, statSync } from "node:fs";
-import { extname, join, resolve } from "node:path";
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+import { serve, REPO_ROOT } from "./serve";
 
-const ROOT = resolve("../..");
-const TYPES: Record<string, string> = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".json": "application/json", ".png": "image/png" };
-const server = createServer((req, res) => {
-  let p = join(ROOT, decodeURIComponent(req.url!.split("?")[0]!));
-  if (existsSync(p) && statSync(p).isDirectory()) p = join(p, "index.html");
-  if (!existsSync(p)) { res.writeHead(404).end(); return; }
-  res.writeHead(200, { "content-type": TYPES[extname(p)] ?? "application/octet-stream" }).end(readFileSync(p));
-}).listen(4191);
+const server = serve(REPO_ROOT, 4191);
 const browser = await chromium.launch({ executablePath: process.env["CHROMIUM"] ?? "/opt/pw-browsers/chromium-1194/chrome-linux/chrome" });
 const fail = (m: string) => { console.error("✖", m); process.exitCode = 1; };
 const ok = (m: string) => console.log("✔", m);
@@ -27,7 +20,7 @@ async function open(init?: (page: Page) => Promise<void>): Promise<Page> {
   const page = await ctx.newPage();
   await page.route("**/*", (r) => (new URL(r.request().url()).hostname === "localhost" ? r.continue() : r.abort()));
   if (init) await init(page);
-  await page.goto("http://localhost:4191/app/");
+  await page.goto("http://localhost:4191/app/legacy.html");
   await page.waitForTimeout(3200);
   await page.mouse.click(195, 390); // preloader: "toque para entrar"
   await page.waitForTimeout(600);
@@ -46,7 +39,7 @@ async function clickable192(page: Page): Promise<boolean> {
   }));
 }
 
-const data = JSON.parse(readFileSync(join(ROOT, "app/data.json"), "utf8")) as Record<string, { start?: string; nodes?: Record<string, unknown> }>;
+const data = JSON.parse(readFileSync(join(REPO_ROOT, "app/data.json"), "utf8")) as Record<string, { start?: string; nodes?: Record<string, unknown> }>;
 const flows = ["torto", "panico", "realidade", "trava", "falar", "samu"];
 
 try {

@@ -1,21 +1,19 @@
 /**
  * E2E smoke (real Chromium): INV-003 — the 192 affordance exists with JS disabled, with the
- * engine running, and after the engine crashes. Plus one real click-through to P0.
+ * engine running, and after the engine crashes. Plus one real click-through to P0, the beta notice,
+ * a clean CSP, SRI, the v1 → v2 update and an offline reload. Served from the repository root at /app/.
  *   npm run build && npm run e2e
  */
 import { chromium } from "playwright-core";
-import { createServer } from "node:http";
-import { readFileSync, existsSync, cpSync, mkdtempSync } from "node:fs";
+import { readFileSync, cpSync, mkdtempSync, mkdirSync } from "node:fs";
 import { tmpdir } from "node:os";
-import { writeStamped } from "../../scripts/build";
-import { extname, join } from "node:path";
+import { join } from "node:path";
+import { writeStamped, releaseChannel } from "../../scripts/build";
+import { serve, REPO_ROOT } from "./serve";
 
-const TYPES: Record<string, string> = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".webmanifest": "application/manifest+json" };
-const server = createServer((req, res) => {
-  const path = join("public", req.url === "/" ? "index.html" : req.url!.split("?")[0]!);
-  if (!existsSync(path)) { res.writeHead(404).end(); return; }
-  res.writeHead(200, { "content-type": TYPES[extname(path)] ?? "application/octet-stream" }).end(readFileSync(path));
-}).listen(4173);
+// The site is the repository root, exactly as deployed: the app lives at /app/.
+const server = serve(REPO_ROOT, 4173);
+const APP = "http://localhost:4173/app/";
 
 const exe = process.env["CHROMIUM"] ?? "/opt/pw-browsers/chromium-1194/chrome-linux/chrome";
 const browser = await chromium.launch({ executablePath: exe });
@@ -27,15 +25,20 @@ try {
   // 1. No JavaScript at all.
   const noJs = await browser.newContext({ javaScriptEnabled: false, viewport: { width: 390, height: 780 } });
   const p1 = await noJs.newPage();
-  await p1.goto("http://localhost:4173/");
+  await p1.goto(APP);
   (await p1.locator("#sos").getAttribute("href")) === "tel:192" ? ok("JS disabled: SOS bar → tel:192") : fail("no SOS bar without JS");
   (await p1.locator("#static-help").isVisible()) ? ok("JS disabled: static help panel visible") : fail("static panel hidden without JS");
+  const channel = releaseChannel();
+  (await p1.locator("html").getAttribute("data-channel")) === channel && (await p1.locator(".channel").isVisible()) === (channel === "beta")
+    ? ok(`channel "${channel}": the beta notice is ${channel === "beta" ? "shown while the clinical release gate is red" : "hidden"}`) : fail("beta notice does not match the release gate");
   if (shots) await p1.screenshot({ path: `${shots}/0-no-js.png` });
 
   // 2. Engine running: two taps to P0 as a helper.
   const ctx = await browser.newContext({ viewport: { width: 390, height: 780 } });
   const p = await ctx.newPage();
-  await p.goto("http://localhost:4173/");
+  const cspViolations: string[] = [];
+  p.on("console", (m) => { if (/Content Security Policy|Refused to/i.test(m.text())) cspViolations.push(m.text()); });
+  await p.goto(APP);
   await p.waitForSelector("html.js-ok .card");
   (await p.locator("#static-help").isVisible()) ? fail("static panel should hide when engine is alive") : ok("engine alive: static panel hidden, card shown");
   if (shots) await p.screenshot({ path: `${shots}/1-actor.png` });
@@ -45,6 +48,11 @@ try {
   const hero = p.locator(".card.band-P0 a.btn.primary");
   (await hero.getAttribute("href")) === "tel:192" ? ok("helper → 'Não responde' → P0 card with tel:192 hero (2 taps)") : fail("P0 hero missing");
   if (shots) await p.screenshot({ path: `${shots}/3-p0.png` });
+  cspViolations.length === 0 ? ok("CSP (default-src 'self', no inline script or style): no violation while booting and reaching P0") : fail(`CSP violations: ${cspViolations.join(" | ")}`);
+  (await p.locator(".channel a").getAttribute("href")) === "./lab/" ? ok("the notice links to the beta lab (./lab/)") : fail("lab link missing");
+  // Control: the policy is really enforced (otherwise "no violation" above would prove nothing).
+  const inlineBlocked = await p.evaluate(() => { const s = document.createElement("script"); s.textContent = "window.__inline = 1"; document.head.append(s); return (window as unknown as { __inline?: number }).__inline === undefined; });
+  inlineBlocked ? ok("CSP control: an injected inline script is refused") : fail("CSP is not enforced: inline script ran");
 
   // 3. Engine crash → fail to shell.
   await p.evaluate(() => { setTimeout(() => { throw new Error("boom"); }); });
@@ -54,7 +62,7 @@ try {
 
   // 4. Self flow with free text trigger.
   const p2 = await (await browser.newContext({ viewport: { width: 390, height: 780 } })).newPage();
-  await p2.goto("http://localhost:4173/");
+  await p2.goto(APP);
   await p2.waitForSelector("html.js-ok .card");
   await p2.getByRole("button", { name: "Eu" }).click();
   await p2.waitForSelector("text=Agora, algum destes?");
@@ -69,7 +77,7 @@ try {
   const cctx = await browser.newContext({ serviceWorkers: "block", viewport: { width: 390, height: 780 } });
   const cp = await cctx.newPage();
   await cp.route("**/assets/app.*.js", async (route) => { const res = await route.fetch(); await route.fulfill({ response: res, body: await res.text() }); });
-  await cp.goto("http://localhost:4173/");
+  await cp.goto(APP);
   await cp.waitForSelector("html.js-ok .card", { timeout: 5000 }).catch(() => undefined);
   (await cp.evaluate(() => document.documentElement.classList.contains("js-ok"))) ? ok("SRI control: intercepted but untouched bundle boots") : fail("SRI control failed to boot");
   await cctx.close();
@@ -79,7 +87,7 @@ try {
     const res = await route.fetch();
     await route.fulfill({ response: res, body: (await res.text()) + "\n;window.__tampered=1;" });
   });
-  await tp.goto("http://localhost:4173/");
+  await tp.goto(APP);
   await tp.waitForTimeout(800);
   (await tp.evaluate(() => (window as unknown as { __tampered?: number }).__tampered === undefined && !document.documentElement.classList.contains("js-ok")))
     ? ok("SRI: a tampered bundle is refused by the browser") : fail("tampered bundle executed");
@@ -89,21 +97,21 @@ try {
 
   // 6. Update path: an installed v1 picks up a v2 deploy on the next load (no stale bundle for a year).
   const site = mkdtempSync(join(tmpdir(), "sos-deploy-"));
-  cpSync("public", site, { recursive: true });
-  const srv2 = createServer((req, res) => {
-    const path = join(site, req.url === "/" ? "index.html" : req.url!.split("?")[0]!);
-    if (!existsSync(path)) { res.writeHead(404).end(); return; }
-    res.writeHead(200, { "content-type": TYPES[extname(path)] ?? "application/octet-stream", "cache-control": "no-cache" }).end(readFileSync(path));
-  }).listen(4174);
+  const shell = join(site, "app");
+  mkdirSync(shell);
+  for (const f of ["index.html", "app.css", "sw.js", "manifest.webmanifest", "assets"]) cpSync(join(REPO_ROOT, "app", f), join(shell, f), { recursive: true });
+  const srv2 = serve(site, 4174, { "cache-control": "no-cache" });
   try {
     const uctx = await browser.newContext({ viewport: { width: 390, height: 780 } });
     const up = await uctx.newPage();
-    await up.goto("http://localhost:4174/");
+    await up.goto("http://localhost:4174/app/");
     await up.waitForSelector("html.js-ok .card");
     await up.waitForFunction(() => navigator.serviceWorker.controller !== null, null, { timeout: 8000 });
+    const scope = await up.evaluate(async () => (await navigator.serviceWorker.getRegistration())?.scope ?? "");
+    scope === "http://localhost:4174/app/" ? ok("service worker scope is /app/ (the gateway at / is never intercepted)") : fail(`service worker scope ${scope}`);
     const v1src = await up.locator("script[type=module]").getAttribute("src");
-    const v1 = readFileSync(join(site, v1src!.slice(1)), "utf8");
-    const s2 = writeStamped(site, v1 + "\n/* deploy v2 */\n");
+    const v1 = readFileSync(join(shell, v1src!), "utf8");
+    const s2 = writeStamped(shell, v1 + "\n/* deploy v2 */\n", channel);
     const changed = await up.evaluate(() => new Promise<boolean>((resolve) => {
       navigator.serviceWorker.addEventListener("controllerchange", () => resolve(true), { once: true });
       void navigator.serviceWorker.getRegistration().then((r) => r?.update());
@@ -114,8 +122,13 @@ try {
     await up.waitForSelector("html.js-ok .card");
     const v2src = await up.locator("script[type=module]").getAttribute("src");
     const keys = await up.evaluate(() => caches.keys());
-    v2src === `/${s2.file}` && keys.length === 1 && keys[0] === s2.version
+    v2src === `./${s2.file}` && keys.length === 1 && keys[0] === s2.version
       ? ok(`update: next load runs ${s2.file} from cache ${s2.version}; v1 cache deleted`) : fail(`still on ${v2src} with caches ${keys.join(",")}`);
+    await uctx.setOffline(true);
+    await up.reload();
+    await up.waitForSelector("html.js-ok .card", { timeout: 5000 }).catch(() => undefined);
+    (await up.locator("html.js-ok .card").count()) === 1 && (await up.locator("#sos").getAttribute("href")) === "tel:192"
+      ? ok("offline: a reload with no network is served by the service worker (card + tel:192)") : fail("offline reload failed");
     await uctx.close();
   } finally {
     srv2.close();
