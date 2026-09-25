@@ -5,7 +5,9 @@
  */
 import { chromium } from "playwright-core";
 import { createServer } from "node:http";
-import { readFileSync, existsSync } from "node:fs";
+import { readFileSync, existsSync, cpSync, mkdtempSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { writeStamped } from "../../scripts/build";
 import { extname, join } from "node:path";
 
 const TYPES: Record<string, string> = { ".html": "text/html", ".js": "text/javascript", ".css": "text/css", ".webmanifest": "application/manifest+json" };
@@ -61,6 +63,63 @@ try {
   await p2.waitForSelector(".card.band-P0", { timeout: 3000 }).catch(() => undefined);
   (await p2.locator(".card.band-P0").count()) === 1 ? ok("free text 'não consigo respirar' → P0 (local trigger, no LLM)") : fail("text trigger failed");
   if (shots) await p2.screenshot({ path: `${shots}/4-text-p0.png` });
+
+  // 5. Subresource Integrity: a tampered bundle never runs; the static 192 shell stays (L11).
+  //    Control first: the same interception with the original bytes must still boot (so the check below is not vacuous).
+  const cctx = await browser.newContext({ serviceWorkers: "block", viewport: { width: 390, height: 780 } });
+  const cp = await cctx.newPage();
+  await cp.route("**/assets/app.*.js", async (route) => { const res = await route.fetch(); await route.fulfill({ response: res, body: await res.text() }); });
+  await cp.goto("http://localhost:4173/");
+  await cp.waitForSelector("html.js-ok .card", { timeout: 5000 }).catch(() => undefined);
+  (await cp.evaluate(() => document.documentElement.classList.contains("js-ok"))) ? ok("SRI control: intercepted but untouched bundle boots") : fail("SRI control failed to boot");
+  await cctx.close();
+  const tctx = await browser.newContext({ serviceWorkers: "block", viewport: { width: 390, height: 780 } });
+  const tp = await tctx.newPage();
+  await tp.route("**/assets/app.*.js", async (route) => {
+    const res = await route.fetch();
+    await route.fulfill({ response: res, body: (await res.text()) + "\n;window.__tampered=1;" });
+  });
+  await tp.goto("http://localhost:4173/");
+  await tp.waitForTimeout(800);
+  (await tp.evaluate(() => (window as unknown as { __tampered?: number }).__tampered === undefined && !document.documentElement.classList.contains("js-ok")))
+    ? ok("SRI: a tampered bundle is refused by the browser") : fail("tampered bundle executed");
+  (await tp.locator("#static-help").isVisible()) && (await tp.locator("#sos").getAttribute("href")) === "tel:192"
+    ? ok("SRI: static help + tel:192 remain after the refusal") : fail("no fallback after SRI refusal");
+  await tctx.close();
+
+  // 6. Update path: an installed v1 picks up a v2 deploy on the next load (no stale bundle for a year).
+  const site = mkdtempSync(join(tmpdir(), "sos-deploy-"));
+  cpSync("public", site, { recursive: true });
+  const srv2 = createServer((req, res) => {
+    const path = join(site, req.url === "/" ? "index.html" : req.url!.split("?")[0]!);
+    if (!existsSync(path)) { res.writeHead(404).end(); return; }
+    res.writeHead(200, { "content-type": TYPES[extname(path)] ?? "application/octet-stream", "cache-control": "no-cache" }).end(readFileSync(path));
+  }).listen(4174);
+  try {
+    const uctx = await browser.newContext({ viewport: { width: 390, height: 780 } });
+    const up = await uctx.newPage();
+    await up.goto("http://localhost:4174/");
+    await up.waitForSelector("html.js-ok .card");
+    await up.waitForFunction(() => navigator.serviceWorker.controller !== null, null, { timeout: 8000 });
+    const v1src = await up.locator("script[type=module]").getAttribute("src");
+    const v1 = readFileSync(join(site, v1src!.slice(1)), "utf8");
+    const s2 = writeStamped(site, v1 + "\n/* deploy v2 */\n");
+    const changed = await up.evaluate(() => new Promise<boolean>((resolve) => {
+      navigator.serviceWorker.addEventListener("controllerchange", () => resolve(true), { once: true });
+      void navigator.serviceWorker.getRegistration().then((r) => r?.update());
+      setTimeout(() => resolve(false), 8000);
+    }));
+    changed ? ok("update: the v1 install found and activated the v2 service worker") : fail("v2 service worker never took control");
+    await up.reload();
+    await up.waitForSelector("html.js-ok .card");
+    const v2src = await up.locator("script[type=module]").getAttribute("src");
+    const keys = await up.evaluate(() => caches.keys());
+    v2src === `/${s2.file}` && keys.length === 1 && keys[0] === s2.version
+      ? ok(`update: next load runs ${s2.file} from cache ${s2.version}; v1 cache deleted`) : fail(`still on ${v2src} with caches ${keys.join(",")}`);
+    await uctx.close();
+  } finally {
+    srv2.close();
+  }
 } finally {
   await browser.close();
   server.close();

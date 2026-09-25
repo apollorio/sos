@@ -16,9 +16,10 @@
     "test:exhaustive": "vitest run tests/exhaustive",
     "simulate": "tsx scripts/simulate.ts",
     "verify": "npm run registry:check && npm run typecheck && npm run test && npm run test:exhaustive && npm run build",
-    "build": "npm run registry:check && esbuild src/runtime/boot.ts --bundle --format=esm --target=es2020 --minify --outfile=public/app.js",
+    "build": "npm run registry:check && tsx scripts/build.ts",
     "registry:format": "tsx scripts/registry-format.ts",
-    "e2e": "tsx tests/e2e/shell.e2e.ts"
+    "e2e": "tsx tests/e2e/shell.e2e.ts",
+    "build:check": "tsx scripts/build.ts --check"
   },
   "devDependencies": {
     "@types/node": "^22.20.4",

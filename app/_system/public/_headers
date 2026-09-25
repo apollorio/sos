@@ -6,5 +6,13 @@
   X-Content-Type-Options: nosniff
   Cross-Origin-Opener-Policy: same-origin
   Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
-/app.js
+# Content-addressed bundles never change: cache forever.
+/assets/*
   Cache-Control: public, max-age=31536000, immutable
+# Everything that points at a bundle must always be revalidated, or a deploy can be shadowed by an old copy.
+/
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
+/sw.js
+  Cache-Control: no-cache
