@@ -8,6 +8,7 @@ import type { LogEntry } from "../../core/domain/decision";
 
 const DB = "sos-apollo";
 const STORE = "kv";
+const OPEN_BUDGET_MS = 3000;
 
 export interface Store {
   loadState(): Promise<SessionState | null>;
@@ -18,7 +19,8 @@ export interface Store {
 }
 
 export async function openStore(retentionHours: number, maxLogs: number, clock: () => number): Promise<Store> {
-  const idb = await openIdb().catch(() => null);
+  // A blocked or wedged IndexedDB must not keep the engine from starting: fall back to memory (L11/L12).
+  const idb = await Promise.race([openIdb(), new Promise<never>((_, rej) => setTimeout(() => rej(new Error("idb open timeout")), OPEN_BUDGET_MS))]).catch(() => null);
   const mem = new Map<string, unknown>();
   const get = async <T>(k: string): Promise<T | undefined> => (idb ? idbGet<T>(idb, k).catch(() => mem.get(k) as T) : (mem.get(k) as T));
   const put = async (k: string, v: unknown) => { mem.set(k, v); if (idb) await idbPut(idb, k, v).catch(() => undefined); };

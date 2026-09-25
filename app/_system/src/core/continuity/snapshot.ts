@@ -17,7 +17,7 @@ function emptyHistory(strategy: string): StrategyHistory {
 }
 
 export function deriveSnapshot(all: JournalEvent[], now: number, reg: Reg): ContinuitySnapshot {
-  const events = purgeExpired(all, now, reg).slice().sort((a, b) => a.clientObservedAt - b.clientObservedAt || a.clientSeq - b.clientSeq);
+  const events = purgeExpired(all.filter((e) => e && typeof e === "object" && !!e.payload && typeof e.payload === "object"), now, reg).slice().sort((a, b) => a.clientObservedAt - b.clientObservedAt || a.clientSeq - b.clientSeq);
   const starts = episodeStarts(events);
   const byEpisode = new Map<string, JournalEvent[]>();
   for (const e of events) (byEpisode.get(e.episodeId) ?? byEpisode.set(e.episodeId, []).get(e.episodeId)!).push(e);

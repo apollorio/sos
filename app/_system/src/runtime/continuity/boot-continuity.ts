@@ -24,15 +24,24 @@ export interface Continuity {
   events(): Promise<JournalEvent[]>;
 }
 
-export async function attachContinuity(loop: EngineLoop, clock: () => number, identity: VaultIdentity | null = null, client: VaultClient | null = null): Promise<Continuity> {
-  const store = await openVaultStore();
+export async function attachContinuity(
+  loop: Pick<EngineLoop, "hooks">,
+  clock: () => number,
+  identity: VaultIdentity | null = null,
+  client: VaultClient | null = null,
+  vault?: VaultStore,
+): Promise<Continuity> {
+  const store = vault ?? (await openVaultStore());
   const consent = await store.consent();
   let snapshot: ContinuitySnapshot | null = null;
   let priors: StrategyPriors = {};
   const queue = new SyncQueue(store, identity, client, { clock });
 
+  // Retention is enforced on storage, not only in memory: expired episodes are deleted (Phase 2, 180 d).
   const refresh = async () => {
-    const all = purgeExpired(await store.readAll(), clock(), REG);
+    const stored = await store.readAll();
+    const all = purgeExpired(stored, clock(), REG);
+    if (all.length < stored.length) await store.replaceAll(all);
     snapshot = deriveSnapshot(all, clock(), REG);
     priors = consent.continuity ? strategyPriors(snapshot, REG) : {};
   };
@@ -40,6 +49,7 @@ export async function attachContinuity(loop: EngineLoop, clock: () => number, id
 
   loop.hooks = {
     priors: () => (consent.continuity ? priors : undefined),
+    onWipe: async (episodeId) => { await store.removeEpisode(episodeId); await refresh().catch(() => undefined); },
     onJournal: async (evs) => {
       if (!consent.continuity) return; // no consent ⇒ nothing persists beyond the acute plane (L20)
       await queue.enqueue(evs);
