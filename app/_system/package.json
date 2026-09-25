@@ -19,7 +19,8 @@
     "build": "npm run registry:check && tsx scripts/build.ts",
     "registry:format": "tsx scripts/registry-format.ts",
     "e2e": "tsx tests/e2e/shell.e2e.ts",
-    "build:check": "tsx scripts/build.ts --check"
+    "build:check": "tsx scripts/build.ts --check",
+    "e2e:legacy": "tsx tests/e2e/legacy.e2e.ts"
   },
   "devDependencies": {
     "@types/node": "^22.20.4",
