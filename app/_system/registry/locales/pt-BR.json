@@ -111,7 +111,7 @@
     "CARD_Q_SUBSTANCE": {
       "review": "draft",
       "clinical": true,
-      "title": "Usou alguma coisa?",
+      "title": { "default": "Usou alguma coisa?", "helper": "A pessoa usou alguma coisa?" },
       "body": "Só pra ajustar as dicas. Fica só neste aparelho e some sozinho.",
       "actions": {
         "stim": "Estimulante",
@@ -200,7 +200,10 @@
       "review": "draft",
       "clinical": true,
       "title": "Menos estímulo agora.",
-      "body": "Vai pra um lugar mais quieto e com menos luz. Me avisa quando chegar.",
+      "body": {
+        "default": "Vai pra um lugar mais quieto e com menos luz. Me avisa quando chegar.",
+        "helper": "Leve a pessoa pra um lugar mais quieto e com menos luz, sem pressa. Me avise quando chegarem."
+      },
       "actions": { "arrived": "Cheguei", "cant_move": "Não consigo" }
     },
     "CARD_IN_PLACE": {
@@ -254,13 +257,19 @@
     "CARD_GROUNDING_FEET": {
       "review": "draft",
       "title": "Pés no chão.",
-      "body": "Sente os pés firmes no chão. Aperta as mãos uma na outra por 5 segundos e solta. Repete 3 vezes.",
+      "body": {
+        "default": "Sente os pés firmes no chão. Aperta as mãos uma na outra por 5 segundos e solta. Repete 3 vezes.",
+        "helper": "Ajude a pessoa a sentir os pés firmes no chão. Peça pra ela apertar as mãos por 5 segundos e soltar. Repitam 3 vezes."
+      },
       "actions": { "done": "Fiz", "not_this": "Outra coisa" }
     },
     "CARD_GROUNDING_SENSES": {
       "review": "draft",
-      "title": "Olha em volta.",
-      "body": "Diga pra si: 3 coisas que você vê, 2 que você ouve, 1 que você toca.",
+      "title": { "default": "Olha em volta.", "helper": "Olhem em volta, juntos." },
+      "body": {
+        "default": "Diga pra si: 3 coisas que você vê, 2 que você ouve, 1 que você toca.",
+        "helper": "Peça pra pessoa dizer, no ritmo dela: 3 coisas que vê, 2 que ouve, 1 que toca."
+      },
       "actions": { "done": "Fiz", "not_this": "Outra coisa" }
     },
     "CARD_STEADY_TIPS": {
@@ -272,7 +281,11 @@
         "default": "Descansa, bebe água aos poucos e fica perto de alguém de confiança.",
         "stim": "Faz pausas longe do calor. Água aos poucos. Evita misturar com outras coisas.",
         "downer": "Não misture com mais nada. Fique acompanhado(a). Se der sono forte, deite de lado.",
-        "psychedelic": "Lugar calmo, luz baixa e alguém sóbrio por perto. Isso passa."
+        "psychedelic": "Lugar calmo, luz baixa e alguém sóbrio por perto. Isso passa.",
+        "helper": "Deixe a pessoa descansar, com água aos poucos, e fique perto dela.",
+        "stim.helper": "Ajude a pessoa a fazer pausas longe do calor. Água aos poucos. Evite que ela misture com outras coisas.",
+        "downer.helper": "Não deixe a pessoa misturar com mais nada nem ficar sozinha. Se der sono forte, deite-a de lado.",
+        "psychedelic.helper": "Lugar calmo, luz baixa e alguém sóbrio perto dela. Fale com calma: isso passa."
       },
       "actions": { "ok": "Valeu", "check_later": "Me chama em 10 min", "call_poison": "Dúvida? 0800 722 6001" }
     },

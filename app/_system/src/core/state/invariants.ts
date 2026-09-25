@@ -26,6 +26,8 @@ export function checkInvariants(state: SessionState, decision: Decision, card: C
     if (st && facts["signal.physicallyUnsafe"] === "yes" && st.requires.some((r) => r === "movement" || r === "safe_location")) {
       v.push(`INV-006 unsafe ∧ ${key}`);
     }
+    if (pick.skill === "grounding" && pick.strategy === "breath_pacer" && (facts["signal.breathing"] !== "normal" || facts["signal.responsiveness"] !== "responsive")) v.push(`INV-027 breath_pacer with breathing=${String(facts["signal.breathing"])} responsiveness=${String(facts["signal.responsiveness"])}`);
+    if (pick.skill === "grounding" && pick.strategy === "five_senses" && facts["signal.responsiveness"] !== "responsive") v.push(`INV-027 five_senses with responsiveness=${String(facts["signal.responsiveness"])}`);
   }
 
   const eng = reg.data.engagement[band];

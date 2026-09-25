@@ -19,6 +19,7 @@ import { determineBand } from "../../src/core/safety/band-engine";
 import { buildFacts } from "../../src/core/logic/facts";
 import type { Decision } from "../../src/core/domain/decision";
 import type { Primitive } from "../../src/core/domain/signals";
+import { helperPerspectiveViolation } from "../invariants/perspective";
 
 const NOW = 1_800_000_000_000;
 const RANK: Record<string, number> = { P0: 0, P1: 1, P2: 2, P3: 3 };
@@ -81,6 +82,8 @@ function assertDecision(c: Record<string, Primitive>, s: SessionState, d: Decisi
   if (d.pick.strategy === "message_whatsapp" && s.connectivity === "offline") throw new Error(`network requirement ${where}`);
   const eng = REG.data.engagement[d.band];
   if (!eng) throw new Error(`no engagement for ${d.band}`);
+  // L10 — a helper is never addressed as the person in crisis.
+  if (c["actor"] === "helper") { const v = helperPerspectiveViolation(d.pick, d.band); if (v) throw new Error(`L10 ${v} at ${where}`); }
 }
 
 /* ───────── Tier A: decideCore over the broad space (no question layer) ───────── */
@@ -130,6 +133,11 @@ describe("exhaustive decision space", () => {
       if (!s) continue;
       const { decision } = decideCore(s, NOW, REG);
       assertDecision(c, s, decision, coverage);
+      // INV-027 — grounding respects physiology (proven over the whole space, not only in scenarios).
+      if (decision.pick.skill === "grounding" && decision.pick.strategy === "breath_pacer") {
+        if (c["breathing"] !== "normal" || c["responsiveness"] !== "responsive") throw new Error(`INV-027 breath_pacer at ${JSON.stringify(c)}`);
+      }
+      if (decision.pick.skill === "grounding" && decision.pick.strategy === "five_senses" && c["responsiveness"] !== "responsive") throw new Error(`INV-027 five_senses at ${JSON.stringify(c)}`);
       bandOf.set(JSON.stringify(c), RANK[decision.band]!);
       n++;
     }
@@ -252,7 +260,7 @@ describe("exhaustive decision space", () => {
     ];
     // Reachable only through a SEQUENCE (one strategy refused, the next one offered), never from a
     // single abstract state. Each one is pinned by a golden scenario instead. The list must stay honest:
-    const HISTORY_ONLY = new Set(["grounding.feet_floor", "grounding.five_senses", "contact_trusted_person.crisis_line"]);
+    const HISTORY_ONLY = new Set(["grounding.five_senses", "contact_trusted_person.crisis_line"]);
     const stale = [...HISTORY_ONLY].filter((id) => coverage.has(id));
     expect(stale, "HISTORY_ONLY lists rules that ARE reachable — remove them").toEqual([]);
     const dead = expected.filter((id) => !coverage.has(id) && !HISTORY_ONLY.has(id));

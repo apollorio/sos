@@ -150,6 +150,42 @@ export const SCENARIOS: Scenario[] = [
     ],
   },
   {
+    name: "abnormal-breathing-no-pacer",
+    doc: "INV-027 + L10: helper reports breathing 'strange' (abnormal, not P0) and an anxious person → no breath pacer; helper-addressed grounding, then staying close.",
+    steps: [
+      { answer: "helper" }, { answer: "normal" },
+      { answer: "strange", expect: { band: "P1", questionId: "Q_RED_FLAGS" } },
+      { answer: "none" }, { answer: "anxious" },
+      { answer: "quiet", expect: { band: "P1", skill: "grounding", strategy: "feet_floor", policyRule: "P1-040" } },
+      { tap: "not_this", expect: { skill: "grounding", strategy: "five_senses" } },
+      { tap: "not_this", expect: { skill: "contact_trusted_person", strategy: "stay_close", policyRule: "P1-050" } },
+    ],
+  },
+  {
+    name: "impaired-no-five-senses",
+    doc: "INV-027: thinking is 'hard' (impaired) + high anxiety → only the simple feet_floor; never five_senses or the breath pacer.",
+    steps: [
+      { answer: "self" }, { answer: "none" },
+      { answer: "hard", expect: { band: "P1", questionId: "Q_COMPANY" } },
+      { answer: "with", expect: { skill: "contact_trusted_person", strategy: "stay_close" } },
+      { tap: "did_it", expect: { questionId: "Q_ANXIETY" } },
+      { answer: "high", expect: { questionId: "Q_NOISE" } },
+      { answer: "quiet", expect: { band: "P1", skill: "grounding", strategy: "feet_floor", policyRule: "P1-040" } },
+      { tap: "not_this", expect: { skill: "contact_trusted_person", strategy: "crisis_line", policyRule: "P1-050" } },
+    ],
+  },
+  {
+    name: "helper-company-expiry",
+    doc: "L10: 16 min into a rescue the helper's company=with_someone has expired (Q_COMPANY is self-only). The helper keeps 'stay close' and is never offered the 'não tô muito bem' WhatsApp template.",
+    steps: [
+      { answer: "helper" }, { answer: "normal" }, { answer: "strange" }, { answer: "none" }, { answer: "calm" },
+      { answer: "quiet", expect: { band: "P1", skill: "contact_trusted_person", strategy: "stay_close" } },
+      { runtime: "TICK", after: 960, expect: { questionId: "Q_RESPONDS" } },
+      { answer: "normal" }, { answer: "strange" }, { answer: "none" }, { answer: "calm" },
+      { answer: "quiet", expect: { band: "P1", skill: "contact_trusted_person", strategy: "stay_close", policyRule: "P1-050" } },
+    ],
+  },
+  {
     name: "background-is-not-silence",
     doc: "L06: 7 minutes in background produce NO silence; returning triggers a resume check-in instead.",
     steps: [

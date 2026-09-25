@@ -744,7 +744,9 @@
       "all": [{ "neq": ["signal.physicallyUnsafe", "yes"] }, { "neq": ["signal.responsiveness", "impaired"] }]
     },
     "safe_location": { "neq": ["signal.physicallyUnsafe", "yes"] },
-    "network": { "eq": ["connectivity", "online"] }
+    "network": { "eq": ["connectivity", "online"] },
+    "breathing_normal": { "eq": ["signal.breathing", "normal"] },
+    "responsive": { "eq": ["signal.responsiveness", "responsive"] }
   },
   "engagement": {
     "P0": {
@@ -882,7 +884,7 @@
       "strategies": [
         {
           "id": "stay_close",
-          "when": { "eq": ["signal.company", "with_someone"] },
+          "when": { "any": [{ "eq": ["signal.company", "with_someone"] }, { "eq": ["signal.actor", "helper"] }] },
           "requires": [],
           "card": "CARD_STAY_CLOSE",
           "onShow": [],
@@ -891,7 +893,7 @@
         },
         {
           "id": "message_whatsapp",
-          "when": { "neq": ["signal.company", "with_someone"] },
+          "when": { "all": [{ "neq": ["signal.company", "with_someone"] }, { "eq": ["signal.actor", "self"] }] },
           "requires": ["network"],
           "card": "CARD_CONTACT_WHATSAPP",
           "onShow": [],
@@ -900,7 +902,7 @@
         },
         {
           "id": "message_sms",
-          "when": { "neq": ["signal.company", "with_someone"] },
+          "when": { "all": [{ "neq": ["signal.company", "with_someone"] }, { "eq": ["signal.actor", "self"] }] },
           "requires": [],
           "card": "CARD_CONTACT_SMS",
           "onShow": [],
@@ -916,7 +918,8 @@
           "cooldownSec": 1200,
           "blockSec": 1800
         }
-      ]
+      ],
+      "doc": "L10: a helper is by definition with the person, even after company's TTL expires (Q_COMPANY is self-only), so a helper always keeps stay_close and never gets the self-crisis message templates."
     },
     {
       "id": "confirm_commitment",
@@ -933,7 +936,7 @@
         {
           "id": "breath_pacer",
           "when": { "always": true },
-          "requires": [],
+          "requires": ["breathing_normal", "responsive"],
           "card": "CARD_GROUNDING_BREATH",
           "onShow": [],
           "cooldownSec": 300,
@@ -952,13 +955,14 @@
         {
           "id": "five_senses",
           "when": { "always": true },
-          "requires": [],
+          "requires": ["responsive"],
           "card": "CARD_GROUNDING_SENSES",
           "onShow": [],
           "cooldownSec": 300,
           "blockSec": 900
         }
-      ]
+      ],
+      "doc": "Contraindications are data (INV-027): breath_pacer needs breathing=normal and responsiveness=responsive; five_senses needs responsiveness=responsive; feet_floor is the simple fallback."
     },
     {
       "id": "steady_check",
@@ -1171,7 +1175,8 @@
             { "op": "COMMITMENT_RESOLVED", "kind": "RELOCATION", "outcome": "cancel" }
           ]
         }
-      ]
+      ],
+      "variantKeys": ["actor"]
     },
     {
       "id": "CARD_IN_PLACE",
@@ -1312,7 +1317,8 @@
           "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }, { "op": "SIGNALS_EXPIRED", "signals": ["anxiety"] }]
         },
         { "id": "not_this", "emphasis": "secondary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "declined" }] }
-      ]
+      ],
+      "variantKeys": ["actor"]
     },
     {
       "id": "CARD_GROUNDING_SENSES",
@@ -1325,7 +1331,8 @@
           "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }, { "op": "SIGNALS_EXPIRED", "signals": ["anxiety"] }]
         },
         { "id": "not_this", "emphasis": "secondary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "declined" }] }
-      ]
+      ],
+      "variantKeys": ["actor"]
     },
     {
       "id": "CARD_STEADY_TIPS",
@@ -1656,6 +1663,11 @@
       "id": "INV-026",
       "text": "A share capsule is scoped, expires, is revocable, and its key lives only in the URL fragment.",
       "enforcedBy": ["capsule-test"]
+    },
+    {
+      "id": "INV-027",
+      "text": "Grounding respects physiology: breath_pacer is never selected unless breathing=normal and responsiveness=responsive; five_senses never unless responsiveness=responsive.",
+      "enforcedBy": ["requirements", "runtime", "exhaustive", "scenario", "lint"]
     }
   ],
   "storage": {

@@ -256,6 +256,12 @@ export function lintRegistry(opts: { release?: boolean; reg?: Reg; locales?: Rec
     for (const k of Object.keys(loc.cards)) if (!REG.card.has(k)) warn(`${code}: orphan copy ${k}`);
   }
 
+  /* ── Grounding physiology (INV-027): the paced-breathing exercise must be gated by breathing=normal ── */
+  for (const s of d.skills) for (const st of s.strategies) {
+    if (st.interactive === "breath_pacer" && !st.requires.includes("breathing_normal")) err(`${s.id}.${st.id}: breath pacer without the breathing_normal requirement (INV-027)`);
+    if (st.id === "five_senses" && !st.requires.includes("responsive")) err(`${s.id}.${st.id}: five_senses without the responsive requirement (INV-027)`);
+  }
+
   /* ── Continuity (v0.2): journal kinds documented, scopes consistent, retention within law, lexicon present ── */
   {
     const c = d.continuity;

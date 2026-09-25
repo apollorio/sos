@@ -7,7 +7,10 @@ export function variantKeysFor(card: CardDef | undefined, ctx: SkillCtx, reason?
   const keys: string[] = [];
   const vk = card?.variantKeys ?? [];
   if (reason) keys.push(`${reason}.${actor}`, reason);
-  if (vk.includes("substance")) keys.push(String(ctx.facts["signal.substanceClass"]));
+  if (vk.includes("substance")) {
+    const sub = String(ctx.facts["signal.substanceClass"]);
+    keys.push(`${sub}.${actor}`, sub); // perspective first: a helper never gets tips addressed to the person in crisis (L10)
+  }
   if (vk.includes("engaged") && ctx.state.flags.emergencyEngaged) keys.push("engaged");
   keys.push(actor, "default");
   return [...new Set(keys)];
