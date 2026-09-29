@@ -20,6 +20,7 @@
 | Substances (audit 011) | Q_SUBSTANCE («Como bateu no corpo?»), Q_WHICH_STIM/_DOWNER/_PSY, Q_ALCOHOL, Q_SEX, Q_BODY | Are the body-first descriptions right for each class? Is asking about sex enhancers acceptable in this wording? |
 | Combinations (audit 011) | risk `mixing`, BR-P1-07 (≥3 → P1), BR-P2-03 (≥2 → P2), 6 CARD_CARE_MIX_* warnings | Right pairs and levels? Anything missing (e.g. MDMA + SSRIs, alcohol + opioid pills)? Is "never P0 by itself" acceptable? |
 | Care tips (audit 011) | 16 CARD_CARE_* cards (soro fisiológico no nariz / gargarejo, water in sips "não litros", food, teeth, cool shower, side position, lança/loló, poppers, azulzinho) and `can_swallow` / `awake` gates | Accurate and non-judgmental? Saline is described as rinsing and soothing, never "neutralizing" (audit 011 F1). Are the gates enough? |
+| Re-check timing (audit 012) | Good answers valid longer: breathing normal 20 min, no chest pain 30 min, responsive 30 min; re-checks only after a tap (L28) | Is this safe, in particular for a helper watching a friend on depressants? |
 | Pace and orb (audit 011) | L25 (slow = ≥ 20 s per answer → no questions between helps), L27 orb in 4 · 1 · 6 behind every non-P0 card | Is the orb's pattern appropriate for everyone who breathes normally? Is 20 s a sensible "slow"? |
 
 ## How to review: the beta lab

@@ -30,7 +30,7 @@ Everything under `app/lab/` and the stamped parts of `app/` are build output: `n
   example phrases. Every item carries a content hash; a verdict given on an older text is flagged as "changed".
 - **Its required scope is wider than the release lint.** The lint requires sign-off on the 16 cards flagged `clinical`,
   the proposed hard rules and `meta.status`. The sheet also asks for every triage question and every strategy card,
-  including the grounding exercises whose contraindications were audit 003's first blocker (95 required items, 6 optional since audit 011: substance questions, combination warnings and care tips were added).
+  including the grounding exercises whose contraindications were audit 003's first blocker (96 required items, 6 optional since audit 012: substance questions, combination warnings and care tips were added in 011).
   Whether those cards should also be flagged `clinical` in `pt-BR.json` (making the lint match) is an owner decision.
 - **The beta notice is automatic.** `scripts/build.ts` stamps `<html data-channel="beta">` whenever
   `registry:lint --release` has errors; the notice disappears only when the gate is green.

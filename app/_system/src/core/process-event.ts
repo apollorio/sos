@@ -57,11 +57,13 @@ export function processEvent(prev: SessionState, input: RawInput, reg: Reg = REG
   let events: DomainEvent[] = [];
   let explicitStep = false;
   let ingestNotice: Output["notice"];
+  let helpedCard: string | null = null;
 
   if (duplicate) rejected = "DUPLICATE";
   else {
     // L25: the time an ACCEPTED answer took (visible time only) feeds the derived fact `pace`. Taps on help cards do not
     // count (doing an exercise for a minute is not hesitation), nor do rejected or stale taps.
+    helpedCard = s.card && s.card.kind === "action" && (s.card.skill === "grounding" || s.card.skill === "care") ? s.card.instanceId : null;
     const answering = input.kind === "tap" && s.card?.kind === "question" && s.card.instanceId === input.cardInstanceId
       ? Math.max(0, now - Math.max(s.card.shownAt, s.visibility.since)) : null;
     const ing = ingest(s, input, now, reg);
@@ -101,8 +103,16 @@ export function processEvent(prev: SessionState, input: RawInput, reg: Reg = REG
 
   effects.push({ type: "KEEP_AWAKE", on: decision.band === "P0" });
   // L22: silence on a help card brings presence, not a question. (HR-008 still watches silence when there is medical risk.)
-  const presence = decision.band !== "P0" && card.kind === "action" && s.silence.count >= 1;
-  const notice = notes.notice ?? ingestNotice ?? (rejected === "STALE_CARD" ? ("STALE_TAP" as const) : presence ? PRESENCE_LINES[s.seq % PRESENCE_LINES.length] : undefined);
+  // L28: on a question, silence means thinking: say so, never hurry.
+  const quiet = decision.band !== "P0" && s.silence.count >= 1;
+  const presence = quiet ? (card.kind === "question" ? ("THINKING" as const) : PRESENCE_LINES[s.seq % PRESENCE_LINES.length]) : undefined;
+  // A question asked again (its answer aged out, a safety re-check): say why, so it never feels like a jump.
+  const recheck = card.kind === "question" && card.questionId && (s.questions[card.questionId]?.asks ?? 0) >= 2 ? ("RECHECK" as const) : undefined;
+  // The live flows' voice (v1): after a "Fiz" on a technique or a care tip, one line of reassurance, rotating.
+  const didIt = explicitStep && helpedCard !== null && input.kind === "tap" && input.cardInstanceId === helpedCard
+    && events.some((e) => e.type === "STRATEGY_OUTCOME" && e.outcome === "done");
+  const done = didIt ? AFTER_DONE[Object.values(s.strategies).filter((m) => m.doneAt != null).length % AFTER_DONE.length] : undefined;
+  const notice = notes.notice ?? ingestNotice ?? (rejected === "STALE_CARD" ? ("STALE_TAP" as const) : presence ?? recheck ?? done);
   const finalFacts = buildFacts(s, now, reg).facts;
   const amb = reg.data.ambient.breath;
   const breath = decision.band !== "P0" && evaluate(amb.when, finalFacts).ok ? { inhaleSec: amb.inhaleSec, holdSec: amb.holdSec, exhaleSec: amb.exhaleSec } : null;
@@ -119,6 +129,8 @@ export function processEvent(prev: SessionState, input: RawInput, reg: Reg = REG
 
 /** L22: quiet lines of presence, one per card (rotating by card, stable while the card stays). */
 const PRESENCE_LINES = ["PRESENCE", "PRESENCE_WAVE", "PRESENCE_MINUTE"] as const;
+/** After "Fiz" (audit 012, lines from the live v1 flows `torto`/`panico`). */
+const AFTER_DONE = ["DONE_1", "DONE_2", "DONE_3", "DONE_4", "DONE_5"] as const;
 
 /* ───────────────────────────── bookkeeping ───────────────────────────── */
 
@@ -151,7 +163,9 @@ function buildCardView(s: SessionState, pick: SkillPick, band: Band, now: number
 
 function applyDecision(s: SessionState, d: Decision, now: number, reg: Reg, effects: Effect[]): CardView {
   const key = pickKey(d.pick);
-  const same = s.card !== null && s.card.key === key && s.card.band === d.band;
+  // L28: the same card in another non-P0 band is still the same card (same instance: a tap in flight stays valid).
+  const same = s.card !== null && s.card.key === key && (s.card.band === d.band || (s.card.band !== "P0" && d.band !== "P0"));
+  if (same && s.card) s.card = { ...s.card, band: d.band };
 
   if (!same) {
     // New foreground card → new instance id (old taps become stale, INV-015).

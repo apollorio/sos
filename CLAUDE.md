@@ -65,7 +65,7 @@ npm run review:summary -- <file> # a clinician's exported review (lab) → Markd
    help comes before questions and at most one question sits between two helps (L21); silence brings presence, never
    "how are you?" (L22); a menu of techniques and people on every non-P0 card (L23); no question repeated within its interval (L24);
    pace is read, never reported (L25); what was used only adds care, never P0 by itself, no dose (L26); breathing is the orb
-   behind the card, never a card (L27).
+   behind the card, never a card (L27); only the person moves the screen, time never replaces a card except P0 (L28).
 4. **No LLM anywhere in the decision loop or in any summary** (ADR-0001, ADR-0008). Summaries are deterministic templates.
 5. **Never store PII, raw free text, precise location history or IPs in the health state.** Text is matched and discarded.
    The same applies to the legacy page: its persisted progress/risk expires after 12 h.

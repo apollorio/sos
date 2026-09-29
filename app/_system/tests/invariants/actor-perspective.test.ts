@@ -37,19 +37,25 @@ describe("actor perspective (L10)", () => {
     expect(body(d.pick.cardId, d.pick.variantKeys)).toMatch(/^Leve a pessoa/);
   });
 
-  it("helper in P3 with a reported stimulant → tips about the person (substance.actor key wins)", () => {
-    const d = decideCore(state({ actor: "helper", company: "with_someone", responsiveness: "responsive", breathing: "normal", seizure: "no", chest: "no", anxiety: 1, noise: "quiet", substanceClass: "stim" }), NOW, REG).decision;
-    expect(`${d.pick.skill}.${d.pick.strategy}`).toBe("steady_check.tips");
+  it("helper in P3 with a reported stimulant → the care tip speaks about the person (class.actor key wins; audit 012)", () => {
+    const afterHelp = (sig: Record<string, string | number>) => {
+      const s = state(sig);
+      // A technique was on screen: the care loop comes next (help.last = grounding).
+      s.card = { instanceId: "g", key: "g", cardId: "CARD_GROUNDING_FEET", kind: "action", band: "P3", skill: "grounding", strategy: "feet_floor", variantKeys: [], actions: [], shownAt: NOW - 5000 };
+      return s;
+    };
+    const d = decideCore(afterHelp({ actor: "helper", company: "with_someone", responsiveness: "responsive", breathing: "normal", seizure: "no", chest: "no", anxiety: 1, noise: "quiet", substanceClass: "stim" }), NOW, REG).decision;
+    expect(`${d.pick.skill}.${d.pick.strategy}`).toBe("care.cool_body");
     expect(d.pick.variantKeys[0]).toBe("stim.helper");
-    expect(body(d.pick.cardId, d.pick.variantKeys)).toMatch(/^Ajude a pessoa/);
-    const self = decideCore(state({ actor: "self", company: "with_someone", responsiveness: "responsive", breathing: "normal", chest: "no", anxiety: 1, noise: "quiet", substanceClass: "stim" }), NOW, REG).decision;
-    expect(body(self.pick.cardId, self.pick.variantKeys)).toBe(pickText(loc.cards["CARD_STEADY_TIPS"]!.body as never, ["stim"]));
+    expect(body(d.pick.cardId, d.pick.variantKeys)).toMatch(/^Ajuda ela/);
+    const self = decideCore(afterHelp({ actor: "self", company: "with_someone", responsiveness: "responsive", breathing: "normal", chest: "no", anxiety: 1, noise: "quiet", substanceClass: "stim" }), NOW, REG).decision;
+    expect(body(self.pick.cardId, self.pick.variantKeys)).toMatch(/^Para de se mexer/);
   });
 
   it("the substance question asks a helper about the person", () => {
     const s = state({ actor: "helper", company: "with_someone" });
     const pick = SKILLS.assess.select({ state: s, facts: buildFacts(s, NOW, REG).facts, band: "P3", now: NOW, reg: REG, questionId: "Q_SUBSTANCE" })!;
-    expect(title(pick.cardId, pick.variantKeys)).toBe("Como bateu no corpo da pessoa?");
+    expect(title(pick.cardId, pick.variantKeys)).toBe("O que a pessoa usou?");
   });
 
   it("sweep: every non-P0 card a helper can reach resolves to helper copy or is declared actor-neutral", () => {

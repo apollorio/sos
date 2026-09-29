@@ -28,10 +28,13 @@ export function checkInvariants(state: SessionState, decision: Decision, card: C
     if (st && facts["signal.physicallyUnsafe"] === "yes" && st.requires.some((r) => r === "movement" || r === "safe_location")) {
       v.push(`INV-006 unsafe ∧ ${key}`);
     }
-    if (pick.skill === "grounding" && pick.strategy === "breath_pacer" && (facts["signal.breathing"] !== "normal" || facts["signal.responsiveness"] !== "responsive")) v.push(`INV-027 breath_pacer with breathing=${String(facts["signal.breathing"])} responsiveness=${String(facts["signal.responsiveness"])}`);
-    if (pick.skill === "grounding" && pick.strategy === "five_senses" && facts["signal.responsiveness"] !== "responsive") v.push(`INV-027 five_senses with responsiveness=${String(facts["signal.responsiveness"])}`);
+    // A card KEPT by L28 was checked when it was shown; on a step without input its answers can only have aged out
+    // (a real contraindication arrives with a human input, which never keeps a card).
+    const kept = decision.why.policyRule === "KEEP_HELP";
+    if (!kept && pick.skill === "grounding" && pick.strategy === "breath_pacer" && (facts["signal.breathing"] !== "normal" || facts["signal.responsiveness"] !== "responsive")) v.push(`INV-027 breath_pacer with breathing=${String(facts["signal.breathing"])} responsiveness=${String(facts["signal.responsiveness"])}`);
+    if (!kept && pick.skill === "grounding" && pick.strategy === "five_senses" && facts["signal.responsiveness"] !== "responsive") v.push(`INV-027 five_senses with responsiveness=${String(facts["signal.responsiveness"])}`);
     // INV-027 (general form): every strategy shown, including one picked from the menu (L23), meets its requirements.
-    if (st && !st.alwaysEligible) for (const r of st.requires) {
+    if (st && !st.alwaysEligible && !kept) for (const r of st.requires) {
       const pred = reg.requirement.get(r);
       if (pred && !evaluate(pred, facts).ok) v.push(`INV-027 ${key} shown without requirement ${r}`);
     }

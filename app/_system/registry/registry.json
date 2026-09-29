@@ -36,7 +36,7 @@
       "Every card copy lives in registry/locales/<locale>.json and carries a review status.",
       "Retired IDs stay listed in conventions.retiredIds and are never reused."
     ],
-    "retiredIds": ["grounding.breath_pacer", "CHIP_TOOL_BREATH", "P3-012"]
+    "retiredIds": ["grounding.breath_pacer", "CHIP_TOOL_BREATH", "P3-012", "steady_check.tips"]
   },
   "laws": [
     {
@@ -105,11 +105,15 @@
     },
     {
       "id": "L26",
-      "text": "What was used only adds care. Substances and combinations are asked body-first, one question between two helps, and help never waits for them. A dangerous combination raises attention (band), never P0 by itself; the app never suggests a dose, a second substance or an 'antidote'."
+      "text": "What was used only adds care. Substances and combinations are asked directly (one tap may answer two things, e.g. «Bala + álcool»), one question between two helps, and help never waits for them. A dangerous combination raises attention (band), never P0 by itself; the app never suggests a dose, a second substance or an 'antidote'."
     },
     {
       "id": "L27",
       "text": "Breathing is the background, not a step: a slow orb paces the breath behind every non-P0 card while breathing is normal and the person responds. It never takes a card's place, never gates anything and disappears in P0."
+    },
+    {
+      "id": "L28",
+      "text": "Only the person moves the screen. A timer, an answer ageing out, a follow-up falling due or returning to the app never replaces a card, question or help; it waits for the next tap. The one exception is an emergency (P0). A question may be thought about for as long as the person needs."
     }
   ],
   "regions": {
@@ -148,17 +152,25 @@
       "domain": ["responsive", "impaired", "unresponsive", "unknown"],
       "ttlSec": 600,
       "latched": ["unresponsive"],
-      "critical": true
+      "critical": true,
+      "ttlByValue": { "responsive": 1800 }
     },
     {
       "id": "breathing",
       "domain": ["normal", "abnormal", "severely_abnormal", "unknown"],
       "ttlSec": 600,
-      "ttlByValue": { "abnormal": 180 },
+      "ttlByValue": { "abnormal": 180, "normal": 1200 },
       "latched": ["severely_abnormal"],
       "critical": true
     },
-    { "id": "chest", "domain": ["no", "yes", "unknown"], "ttlSec": 900, "latched": ["yes"], "critical": true },
+    {
+      "id": "chest",
+      "domain": ["no", "yes", "unknown"],
+      "ttlSec": 900,
+      "latched": ["yes"],
+      "critical": true,
+      "ttlByValue": { "no": 1800 }
+    },
     { "id": "seizure", "domain": ["no", "yes", "unknown"], "ttlSec": 900, "latched": ["yes"], "critical": true },
     {
       "id": "syncope",
@@ -536,9 +548,10 @@
           "answers": [
             { "id": "stim", "set": { "substanceClass": "stim" } },
             { "id": "downer", "set": { "substanceClass": "downer" } },
+            { "id": "alcohol_only", "set": { "substanceClass": "downer", "substance": "alcohol", "alcohol": "yes" } },
             { "id": "psychedelic", "set": { "substanceClass": "psychedelic" } },
             { "id": "none", "set": { "substanceClass": "none" } },
-            { "id": "unknown", "unknown": true, "set": { "substanceClass": "unknown" } }
+            { "id": "unknown", "set": { "substanceClass": "unknown" }, "unknown": true }
           ]
         }
       },
@@ -555,9 +568,11 @@
         "any": {
           "card": "CARD_Q_WHICH_STIM",
           "answers": [
-            { "id": "coke", "set": { "substance": "coke" } },
-            { "id": "md", "set": { "substance": "md" } },
-            { "id": "unknown", "unknown": true, "set": { "substance": "unknown" } }
+            { "id": "md", "set": { "substance": "md", "alcohol": "no" } },
+            { "id": "md_alcohol", "set": { "substance": "md", "alcohol": "yes" } },
+            { "id": "coke", "set": { "substance": "coke", "alcohol": "no" } },
+            { "id": "coke_alcohol", "set": { "substance": "coke", "alcohol": "yes" } },
+            { "id": "unknown", "set": { "substance": "unknown" }, "unknown": true }
           ]
         }
       }
@@ -573,10 +588,11 @@
         "any": {
           "card": "CARD_Q_WHICH_DOWNER",
           "answers": [
-            { "id": "alcohol", "set": { "substance": "alcohol", "alcohol": "yes" } },
-            { "id": "ghb", "set": { "substance": "ghb" } },
-            { "id": "downer_pill", "set": { "substance": "downer_pill" } },
-            { "id": "unknown", "unknown": true, "set": { "substance": "unknown" } }
+            { "id": "ghb", "set": { "substance": "ghb", "alcohol": "no" } },
+            { "id": "ghb_alcohol", "set": { "substance": "ghb", "alcohol": "yes" } },
+            { "id": "downer_pill", "set": { "substance": "downer_pill", "alcohol": "no" } },
+            { "id": "downer_pill_alcohol", "set": { "substance": "downer_pill", "alcohol": "yes" } },
+            { "id": "unknown", "set": { "substance": "unknown" }, "unknown": true }
           ]
         }
       }
@@ -1025,7 +1041,7 @@
     "P1": {
       "maxActions": 3,
       "maxLowEmphasis": 1,
-      "maxAnswers": 4,
+      "maxAnswers": 5,
       "maxChars": 220,
       "education": false,
       "questionBudget": 2,
@@ -1036,7 +1052,7 @@
     "P2": {
       "maxActions": 3,
       "maxLowEmphasis": 1,
-      "maxAnswers": 4,
+      "maxAnswers": 5,
       "maxChars": 260,
       "education": false,
       "questionBudget": 2,
@@ -1047,7 +1063,7 @@
     "P3": {
       "maxActions": 3,
       "maxLowEmphasis": 1,
-      "maxAnswers": 4,
+      "maxAnswers": 5,
       "maxChars": 320,
       "education": true,
       "questionBudget": 2,
@@ -1057,10 +1073,10 @@
     }
   },
   "pace": {
-    "doc": "L25. Only the time to answer a QUESTION counts (visible time), never the time spent on an exercise. pace = slow when the last minSamples answers each took ≥ slowSec; quick when each took ≤ quickSec; samples older than windowSec are forgotten. A slow pace means no question between two helps and simpler techniques first (deferWhen); nothing else.",
+    "doc": "L25. Only the time to answer a QUESTION counts (visible time), never the time spent on an exercise. pace = slow when the last minSamples answers each took ≥ slowSec (90 s since audit 012: thinking before answering is normal, only real struggle counts); quick when each took ≤ quickSec; samples older than windowSec are forgotten. A slow pace means no question between two helps and simpler techniques first (deferWhen); nothing else.",
     "windowSec": 600,
     "minSamples": 2,
-    "slowSec": 20,
+    "slowSec": 90,
     "quickSec": 4
   },
   "ambient": {
@@ -1484,6 +1500,15 @@
           "blockSec": 3600
         },
         {
+          "id": "settle",
+          "when": { "always": true },
+          "requires": [],
+          "card": "CARD_CARE_SETTLE",
+          "onShow": [],
+          "cooldownSec": 1800,
+          "blockSec": 1800
+        },
+        {
           "id": "sip_water",
           "when": { "always": true },
           "requires": ["can_swallow"],
@@ -1554,7 +1579,9 @@
           "card": "CARD_STEADY_TIPS",
           "onShow": [],
           "cooldownSec": 1800,
-          "blockSec": 1800
+          "blockSec": 1800,
+          "retired": true,
+          "doc": "Retired (audit 012, owner): «Tá mais tranquilo. Umas dicas curtas» assumed calm and offered «Me chama em 10 min». Replaced by the care loop, which knows what was used."
         },
         {
           "id": "check_later",
@@ -2184,6 +2211,16 @@
       ]
     },
     {
+      "id": "CARD_CARE_SETTLE",
+      "kind": "action",
+      "bands": ["P1", "P2", "P3"],
+      "variantKeys": ["actor"],
+      "actions": [
+        { "id": "done", "emphasis": "primary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }] },
+        { "id": "not_this", "emphasis": "secondary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "declined" }] }
+      ]
+    },
+    {
       "id": "CARD_CARE_SIPS",
       "kind": "action",
       "bands": ["P1", "P2", "P3"],
@@ -2255,11 +2292,6 @@
       "actions": [
         { "id": "ok", "emphasis": "primary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }] },
         {
-          "id": "check_later",
-          "emphasis": "secondary",
-          "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }, { "op": "COMMITMENT_CREATED", "kind": "CHECK_IN" }]
-        },
-        {
           "id": "call_poison",
           "emphasis": "low",
           "handoff": { "channel": "tel", "target": "poison" },
@@ -2272,11 +2304,7 @@
       "kind": "action",
       "bands": ["P3"],
       "actions": [
-        {
-          "id": "check_later",
-          "emphasis": "primary",
-          "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }, { "op": "COMMITMENT_CREATED", "kind": "CHECK_IN" }]
-        },
+        { "id": "keep_going", "emphasis": "primary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }] },
         { "id": "im_fine_end", "emphasis": "secondary", "ops": [{ "op": "SESSION_END" }] }
       ]
     },
@@ -2803,6 +2831,11 @@
       "id": "INV-032",
       "text": "The ambient breathing orb is never shown in P0, nor unless breathing = normal and responsiveness = responsive (L27, INV-027).",
       "enforcedBy": ["runtime", "property", "e2e"]
+    },
+    {
+      "id": "INV-033",
+      "text": "A step without human input never changes the card on screen (same instance, taps stay valid) unless the new band is P0 (L28).",
+      "enforcedBy": ["runtime", "property", "scenario"]
     }
   ],
   "storage": {

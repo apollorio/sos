@@ -27,7 +27,14 @@
     "ACK_WORSE": "Obrigado por me dizer. Vamos com calma, uma coisa de cada vez. Se tiver falta de ar ou dor no peito, ligue 192.",
     "PRESENCE_WAVE": "Isso tem pico.. e depois baixa. Tô aqui.",
     "PRESENCE_MINUTE": "Só o próximo minuto. Só a próxima respiração.",
-    "ACK_BODY": "Valeu por me contar. Vamos cuidar disso primeiro."
+    "ACK_BODY": "Valeu por me contar. Vamos cuidar disso primeiro.",
+    "THINKING": "Sem pressa. Pode pensar com calma.. eu espero.",
+    "RECHECK": "Só conferindo de novo, rapidinho. Faz parte do cuidado.",
+    "DONE_1": "Isso. O corpo já está processando, mesmo que você não sinta ainda.",
+    "DONE_2": "O que você sente agora é intenso.. não é permanente.",
+    "DONE_3": "O efeito vai passando.. às vezes sobe, às vezes baixa. A direção é o fim.",
+    "DONE_4": "Você fez o que deu. Isso já é muito. Tô aqui.",
+    "DONE_5": "Não precisa estar bem agora. Só o próximo minuto."
   },
   "handoff": { "trusted_message": "Oi, não tô muito bem e preciso de alguém comigo. Pode vir ou me ligar agora?" },
   "chips": {
@@ -148,17 +155,18 @@
     "CARD_Q_SUBSTANCE": {
       "review": "draft",
       "clinical": true,
-      "title": { "default": "Como bateu no corpo?", "helper": "Como bateu no corpo da pessoa?" },
+      "title": { "default": "O que você usou?", "helper": "O que a pessoa usou?" },
       "body": {
-        "default": "Se usou alguma coisa, me conta sem medo.. só pra eu cuidar melhor de você. Fica só neste aparelho.",
-        "helper": "Se ela usou alguma coisa, me conta sem medo.. só pra eu te ajudar a cuidar dela. Fica só neste aparelho."
+        "default": "Sem julgamento.. só pra eu saber como cuidar de você. Fica só neste aparelho.",
+        "helper": "Sem julgamento.. só pra eu saber como te ajudar a cuidar dela. Fica só neste aparelho."
       },
       "actions": {
-        "stim": "Acelerado, calor, coração batendo",
-        "downer": "Pesado, lento, com sono",
-        "psychedelic": "Estranho, visual, em loop",
-        "none": "Nada foi usado",
-        "unknown": "Não sei / foi mistura"
+        "stim": "Bala, MD ou pó",
+        "downer": "G, calmante ou remédio",
+        "alcohol_only": "Só álcool",
+        "psychedelic": "Ácido, cogumelo, ket, erva ou lança",
+        "none": "Nada",
+        "unknown": "Não sei / misturei muita coisa"
       }
     },
     "CARD_Q_HOW_NOW": {
@@ -369,13 +377,13 @@
         "downer.helper": "Não deixe a pessoa misturar com mais nada nem ficar sozinha. Se der sono forte, deite-a de lado.",
         "psychedelic.helper": "Lugar calmo, luz baixa e alguém sóbrio perto dela. Fale com calma: isso passa."
       },
-      "actions": { "ok": "Valeu", "check_later": "Me chama em 10 min", "call_poison": "Dúvida? 0800 722 6001" }
+      "actions": { "ok": "Valeu", "call_poison": "Dúvida? 0800 722 6001" }
     },
     "CARD_STEADY_CHECK": {
       "review": "draft",
       "title": "Tô aqui com você.",
-      "body": "Se quiser, escolha uma técnica abaixo. Também posso te chamar daqui a 10 minutos pra ver como você está.",
-      "actions": { "check_later": "Me chama daqui a pouco", "im_fine_end": "Tô bem, encerrar" }
+      "body": "Se quiser, escolha uma técnica ou um cuidado abaixo. Eu fico aqui, sem pressa.",
+      "actions": { "keep_going": "Quero continuar aqui", "im_fine_end": "Tô bem, encerrar" }
     },
     "CARD_HOLD": {
       "review": "draft",
@@ -430,32 +438,33 @@
     "CARD_Q_WHICH_STIM": {
       "review": "draft",
       "clinical": true,
-      "title": { "default": "Foi o quê, mais ou menos?", "helper": "Foi o quê, mais ou menos?" },
-      "body": {
-        "default": "Cada um pede um cuidado diferente. Sem julgamento.",
-        "helper": "Cada um pede um cuidado diferente. Sem julgamento."
-      },
-      "actions": { "coke": "Pó (cocaína)", "md": "Bala, MD, ecstasy", "unknown": "Outra coisa / não sei" }
+      "title": { "default": "Qual deles? Teve álcool junto?", "helper": "Qual deles? Teve álcool junto?" },
+      "body": { "default": "Um toque só responde as duas coisas.", "helper": "Um toque só responde as duas coisas." },
+      "actions": {
+        "md": "Só bala / MD",
+        "md_alcohol": "Bala + álcool",
+        "coke": "Só pó",
+        "coke_alcohol": "Pó + álcool",
+        "unknown": "Outro / não sei"
+      }
     },
     "CARD_Q_WHICH_DOWNER": {
       "review": "draft",
       "clinical": true,
-      "title": { "default": "Foi o quê, mais ou menos?", "helper": "Foi o quê, mais ou menos?" },
-      "body": {
-        "default": "Cada um pede um cuidado diferente. Sem julgamento.",
-        "helper": "Cada um pede um cuidado diferente. Sem julgamento."
-      },
+      "title": { "default": "Qual deles? Teve álcool junto?", "helper": "Qual deles? Teve álcool junto?" },
+      "body": { "default": "Um toque só responde as duas coisas.", "helper": "Um toque só responde as duas coisas." },
       "actions": {
-        "alcohol": "Só álcool",
-        "ghb": "G (GHB, GBL)",
-        "downer_pill": "Calmante, remédio ou opioide",
-        "unknown": "Outra coisa / não sei"
+        "ghb": "Só G",
+        "ghb_alcohol": "G + álcool",
+        "downer_pill": "Só calmante ou remédio",
+        "downer_pill_alcohol": "Calmante + álcool",
+        "unknown": "Outro / não sei"
       }
     },
     "CARD_Q_WHICH_PSY": {
       "review": "draft",
       "clinical": true,
-      "title": { "default": "Foi o quê, mais ou menos?", "helper": "Foi o quê, mais ou menos?" },
+      "title": { "default": "Qual deles?", "helper": "Qual deles?" },
       "body": {
         "default": "Cada um pede um cuidado diferente. Sem julgamento.",
         "helper": "Cada um pede um cuidado diferente. Sem julgamento."
@@ -756,6 +765,15 @@
         "helper": "O álcool esconde o efeito e o corpo aguenta menos do que parece. **Nada mais pra ela hoje.** Lugar fresco, sentada, goles de água. Dor no peito ou coração disparado: 192."
       },
       "actions": { "ok": "Entendi", "not_this": "Quero outra coisa", "call_poison": "Tirar dúvida: 0800 722 6001" }
+    },
+    "CARD_CARE_SETTLE": {
+      "review": "draft",
+      "title": { "default": "Um lugar firme pro corpo..", "helper": "Um lugar firme pro corpo dela.." },
+      "body": {
+        "default": "Senta ou deita em algo firme: chão, cadeira, sofá. Vira o celular com a tela pra baixo um segundo.. e volta quando quiser. Tô aqui.",
+        "helper": "Ajuda a pessoa a sentar ou deitar em algo firme. Menos estímulo em volta. Fica do lado dela."
+      },
+      "actions": { "done": "Fiz", "not_this": "Quero outra" }
     }
   },
   "continuity": {
@@ -858,7 +876,8 @@
       "combination.coke_alcohol": "aviso: pó com álcool",
       "combination.md_alcohol": "aviso: bala com álcool",
       "combination.stim_sex": "aviso: estimulante com azulzinho ou poppers",
-      "combination.stim_alcohol": "aviso: estimulante com álcool"
+      "combination.stim_alcohol": "aviso: estimulante com álcool",
+      "care.settle": "sentar ou deitar num lugar firme"
     },
     "outcomePhrases": { "done": "feito", "failed": "não conseguiu", "declined": "não quis" },
     "bandPhrases": {

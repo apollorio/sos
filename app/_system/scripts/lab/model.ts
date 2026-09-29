@@ -295,9 +295,12 @@ export const MISSIONS: MissionDef[] = [
   { scenario: "calm-end-and-wipe", who: "self", title: "Tô bem: encerrar e apagar",
     story: "Você está tranquilo(a) e quer encerrar e apagar tudo do aparelho.",
     watch: "Ficou claro que nada ficou guardado? O app recomeçou do zero?" },
+  { scenario: "no-timer-jumps", who: "self", title: "Pensando com calma",
+    story: "Você está sozinho(a), chama alguém pelo WhatsApp e depois fica vários minutos pensando antes de responder o que usou.",
+    watch: "A tela ficou parada enquanto você pensava? Apareceu «Sem pressa. Pode pensar com calma»? Sua resposta foi aceita, sem «Essa tela já mudou»?" },
   { scenario: "pista-bala-alcool-azulzinho", who: "self", title: "Bala, álcool e azulzinho",
     story: "Você tomou bala, bebeu e tomou um azulzinho. Bateu um pânico e o nariz está ardendo. Responda com a verdade: é só um teste.",
-    watch: "As perguntas vieram uma de cada vez, sempre com uma ajuda entre elas? Os avisos de mistura apareceram na hora certa, sem julgamento e sem dose?" },
+    watch: "Um toque só («Bala + álcool») respondeu as duas coisas? Os avisos de mistura apareceram na hora, sem julgamento e sem dose?" },
   { scenario: "pista-g-alcool-helper", who: "helper", title: "Amigo(a) com G e álcool",
     story: "Seu amigo(a) tomou G e bebeu. Está acordado(a), respira normal, mas está ansioso(a).",
     watch: "O aviso de «de lado, não deixa sozinho(a)» chegou logo que você contou do álcool? Os textos falam com você, que está ajudando?" },
@@ -308,7 +311,7 @@ export const MISSIONS: MissionDef[] = [
     story: "Seu nariz está ardendo. Você não quer esperar uma pergunta: usa o menu «Cuidar do corpo».",
     watch: "O app agradeceu e mostrou o cuidado (soro) logo em seguida?" },
   { scenario: "slow-pace-asks-less", who: "self", title: "Respondendo devagar",
-    story: "Você está muito mal e demora pra conseguir tocar nas respostas (espere uns 25 s antes de cada resposta).",
+    story: "Você está muito mal e demora muito pra conseguir tocar nas respostas (espere 1 minuto e meio antes de cada resposta).",
     watch: "Depois das primeiras respostas, o app parou de perguntar e só foi ajudando? A bola de respiração ficou ao fundo o tempo todo?" },
 ];
 

@@ -11,6 +11,7 @@ import { buildFacts } from "../../src/core/logic/facts";
 import { evaluate } from "../../src/core/logic/predicate";
 import { SCENARIOS, runScenario } from "../scenarios/scenarios";
 import type { StepResult } from "../../src/core/domain/decision";
+import { processEvent } from "../../src/core/process-event";
 
 const NOW = 1_800_000_000_000;
 const sessions = Object.keys(PERSONAS).map((p) => ({ p, steps: converse(p, 90).steps }));
@@ -78,6 +79,7 @@ describe("pista: discovery, care loop, pace and the breathing orb (audit 011)", 
     for (const r of everyStep) {
       const c = r.output.card;
       if (c.skill !== "care" || !byMouth.has(c.strategy ?? "")) continue;
+      if (r.log.why.policyRule === "KEEP_HELP") continue; // kept by L28: checked when shown, answers only aged since
       const f = buildFacts(r.state, r.state.lastAt, REG).facts;
       expect([f["signal.breathing"], f["signal.responsiveness"]], `${c.strategy}`).toEqual(["normal", "responsive"]);
     }
@@ -93,8 +95,8 @@ describe("pista: discovery, care loop, pace and the breathing orb (audit 011)", 
       set("anxiety", anxiety); set("company", actor === "self" ? "with_someone" : "with_someone"); set("noise", "quiet");
       if (substanceClass !== "unknown") { set("substanceClass", substanceClass); set("alcohol", alcohol); }
       const quick = decideCore(s, NOW, REG);
-      const slow = decideCore({ ...s, answerPace: [{ ms: 60_000, at: NOW - 2000 }, { ms: 60_000, at: NOW - 1000 }] }, NOW, REG);
-      expect(buildFacts({ ...s, answerPace: [{ ms: 60_000, at: NOW - 2000 }, { ms: 60_000, at: NOW - 1000 }] }, NOW, REG).facts["pace"]).toBe("slow");
+      const slow = decideCore({ ...s, answerPace: [{ ms: 120_000, at: NOW - 2000 }, { ms: 120_000, at: NOW - 1000 }] }, NOW, REG);
+      expect(buildFacts({ ...s, answerPace: [{ ms: 120_000, at: NOW - 2000 }, { ms: 120_000, at: NOW - 1000 }] }, NOW, REG).facts["pace"]).toBe("slow");
       expect(slow.band, `${actor}/${anxiety}/${substanceClass}`).toBe(quick.band);
       expect(slow.decision.pick.skill).toBe(quick.decision.pick.skill);
     }
@@ -117,6 +119,27 @@ describe("pista: discovery, care loop, pace and the breathing orb (audit 011)", 
       expect(d.band, JSON.stringify(c)).not.toBe("P0");
       expect(["P1", "P2"], JSON.stringify(c)).toContain(d.band);
       expect(d.pick.skill, JSON.stringify(c)).toBe("combination");
+    }
+  });
+
+  it("L28 / INV-033: time alone never changes a non-P0 card, from any state of any story, after 30 s, 10 min or 30 min", () => {
+    let checked = 0;
+    for (const sc of SCENARIOS) for (const r of runScenario(sc)) {
+      if (r.state.status !== "active" || r.log.band === "P0") continue;
+      for (const wait of [30_000, 600_000, 1_800_000]) {
+        const next = processEvent(r.state, { kind: "runtime", id: `tick-${checked}`, at: r.state.lastAt + wait, event: "TICK" });
+        if (next.log.band === "P0") continue; // the one exception: an emergency (e.g. HR-008 silence after medical risk)
+        expect(next.output.card.instanceId, `${sc.name} +${wait / 1000}s`).toBe(r.output.card.instanceId);
+        checked++;
+      }
+    }
+    expect(checked).toBeGreaterThan(300);
+  });
+
+  it("no card promises to call back later, and the retired 'Tá mais tranquilo' tips never show (audit 012)", () => {
+    for (const r of everyStep) {
+      expect(r.output.card.strategy).not.toBe("tips");
+      expect(r.output.card.actions.map((a) => a.id)).not.toContain("check_later");
     }
   });
 });

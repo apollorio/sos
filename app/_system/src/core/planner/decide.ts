@@ -24,7 +24,6 @@ import { evaluateHardRules, type Commander } from "../safety/hard-rules";
 import { determineBand, type BandOutcome } from "../safety/band-engine";
 import { askable, rankQuestions, type CoreOutcome } from "./voi";
 import { requestedPick } from "./chips";
-import { strategyIneligibility } from "./eligibility";
 import type { StrategyPriors } from "../continuity/types";
 
 export class EngineError extends Error {}
@@ -63,13 +62,24 @@ function prerequisite(facts: Facts, reg: Reg): QuestionId | null {
   return null;
 }
 
-/** The help card on screen, if time alone must not replace it (L22). */
-function keepHelp(ctx: SkillCtx): SkillPick | null {
+/**
+ * L28 (audit 012): only the person moves the screen. On a step without human input (a timer, an answer ageing out, a
+ * commitment falling due, returning to the app) the card on screen stays, question or help, exactly as it is. Re-checks
+ * and follow-ups wait for the next tap. The one exception is P0, decided above this point.
+ */
+function keepCard(ctx: SkillCtx): SkillPick | null {
   const c = ctx.state.card;
-  if (!c || c.kind !== "action" || !c.strategy || c.skill === "emergency_escalation" || c.skill === "terminal" || c.skill === "confirm_commitment") return null;
-  const st = ctx.reg.strategy.get(`${c.skill}.${c.strategy}`);
-  if (!st || strategyIneligibility(c.skill, st, ctx, true) !== null) return null;
-  return { skill: c.skill, strategy: c.strategy, cardId: c.cardId, variantKeys: c.variantKeys, onShow: [], ...(c.interactive ? { interactive: c.interactive } : {}) };
+  if (!c || c.band === "P0" || c.skill === "emergency_escalation" || c.skill === "terminal") return null;
+  return {
+    skill: c.skill as SkillPick["skill"],
+    strategy: c.strategy,
+    cardId: c.cardId,
+    variantKeys: c.variantKeys,
+    onShow: [],
+    ...(c.questionId ? { questionId: c.questionId } : {}),
+    ...(c.commitmentId ? { commitmentId: c.commitmentId } : {}),
+    ...(c.interactive ? { interactive: c.interactive } : {}),
+  };
 }
 
 /** Pipeline without questions (used by VOI simulation and by the exhaustive tests). */
@@ -133,8 +143,8 @@ export function decide(state: SessionState, now: number, reg: Reg, explicit = fa
   // L22: time alone never takes a help card off the screen. Only a human input, P0 (above), a lost
   // contraindication (the strategy is no longer eligible) or a safety re-check while someone is being watched
   // (below) can replace it: no check-in or follow-up interrupts an exercise on a timer; they come after the next tap.
-  const keep = explicit ? null : keepHelp(ctx);
-  const keepWhy = () => whyFor(band, bo, "KEEP_HELP", [{ path: `card.${state.card!.cardId}`, op: "keep", expected: null, actual: null }]);
+  const keep = explicit ? null : keepCard(ctx);
+  const keepWhy = () => whyFor(band, bo, keep?.questionId ? "KEEP_QUESTION" : "KEEP_HELP", [{ path: `card.${state.card!.cardId}`, op: "keep", expected: null, actual: null }]);
 
   // 2. Prerequisite: who is holding the phone.
   const pre = keep ? null : prerequisite(facts, reg);
@@ -157,10 +167,8 @@ export function decide(state: SessionState, now: number, reg: Reg, explicit = fa
   // Simulated answers ARE explicit human inputs, so they may release hysteresis.
   const ranked = rankQuestions(state, facts, band, base, now, reg, (s, t, r) => decideCore(s, t, r, true, priors));
   const top = ranked[0];
-  // A question that could reveal P0 may interrupt help on a timer only while someone's body is being watched:
-  // the phone holder helps another person, or there is already medical risk. Otherwise it waits for the next tap.
-  const watchful = facts["signal.actor"] === "helper" || Number(facts["risk.medical"] ?? 0) >= 2;
-  if (top?.cls === "critical" && (!keep || watchful)) {
+  // A question that could reveal P0 waits for the next tap too (L28); a real emergency on a timer is a hard rule (HR-008).
+  if (top?.cls === "critical" && !keep) {
     const d = asQuestion(top.q.id, "VOI_CRITICAL", "critical");
     if (d) return d;
   }

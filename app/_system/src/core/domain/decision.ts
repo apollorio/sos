@@ -23,7 +23,7 @@ export interface Why {
   commander?: HardRuleId;
   bandRule?: BandRuleId;
   heldByHysteresis?: boolean;
-  policyRule?: PolicyRuleId | "PREREQUISITE" | "VOI_CRITICAL" | "VOI_DECISIVE" | "FORCED_QUESTION" | "USER_REQUEST" | "KEEP_HELP" | "TERMINAL";
+  policyRule?: PolicyRuleId | "PREREQUISITE" | "VOI_CRITICAL" | "VOI_DECISIVE" | "FORCED_QUESTION" | "USER_REQUEST" | "KEEP_HELP" | "KEEP_QUESTION" | "TERMINAL";
   voi?: { questionId: QuestionId; class: VoiClass };
   /** Leaves of the hard rule / policy rule that fired. Generated from the SAME predicate that decided. */
   because: TraceLeaf[];
@@ -77,7 +77,7 @@ export interface Output {
    * One quiet line above the card. PRESENCE* replace "how are you?" after silence (L22), rotating by card so the
    * person does not read the same line again and again; ACK_* answer a report or body chip.
    */
-  notice?: "TEXT_UNMATCHED" | "STALE_TAP" | "PRESENCE" | "PRESENCE_WAVE" | "PRESENCE_MINUTE" | "ACK_BETTER" | "ACK_WORSE" | "ACK_BODY";
+  notice?: "TEXT_UNMATCHED" | "STALE_TAP" | "PRESENCE" | "PRESENCE_WAVE" | "PRESENCE_MINUTE" | "THINKING" | "RECHECK" | "DONE_1" | "DONE_2" | "DONE_3" | "DONE_4" | "DONE_5" | "ACK_BETTER" | "ACK_WORSE" | "ACK_BODY";
   effects: Effect[];
   /** Earliest instant at which the decision could change without new input. The shell sets ONE timer. */
   nextWakeAt: number | null;

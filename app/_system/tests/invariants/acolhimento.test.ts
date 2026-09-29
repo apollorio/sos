@@ -90,7 +90,7 @@ describe("acolhimento: help-first rhythm (audit 010)", () => {
       r = processEvent(r.state, { kind: "runtime", id: `tick${i}`, at: t, event: "TICK" });
       expect(r.output.card.cardId).toBe(help.cardId);
     }
-    expect(r.output.notice).toBe("PRESENCE");
+    expect(["PRESENCE", "PRESENCE_WAVE", "PRESENCE_MINUTE"]).toContain(r.output.notice);
   });
 
   it("the menu is empty in P0 and every chip on offer opens its own strategy (L23)", () => {

@@ -224,7 +224,7 @@ export function lintRegistry(opts: { release?: boolean; reg?: Reg; locales?: Rec
     checkOps(`${c.id}.onMissed`, c.onMissed);
   }
   /* Chips (L23): pending chips need a commitment; tools/talk chips request exactly one strategy; notices exist. */
-  const NOTICE_IDS = ["TEXT_UNMATCHED", "STALE_TAP", "PRESENCE", "PRESENCE_WAVE", "PRESENCE_MINUTE", "ACK_BETTER", "ACK_WORSE", "ACK_BODY"];
+  const NOTICE_IDS = ["TEXT_UNMATCHED", "STALE_TAP", "PRESENCE", "PRESENCE_WAVE", "PRESENCE_MINUTE", "THINKING", "RECHECK", "DONE_1", "DONE_2", "DONE_3", "DONE_4", "DONE_5", "ACK_BETTER", "ACK_WORSE", "ACK_BODY"];
   const NOTICES = new Set(NOTICE_IDS);
   for (const c of d.chips) {
     checkOps(`${c.id}.action`, c.action.ops);

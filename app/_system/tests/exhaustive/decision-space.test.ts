@@ -71,7 +71,7 @@ function mkState(c: Record<string, Primitive>): SessionState | null {
     // Every technique and care tip was refused (blocked): what is left must still be help (contact, then the fallback).
     for (const sk of REG.data.skills) if (sk.id === "grounding" || sk.id === "care") for (const st of sk.strategies) s.strategies[`${sk.id}.${st.id}`] = { doneAt: null, blockedUntil: NOW + 1e6, shows: 1 };
   }
-  if (c["pace"] === "slow") s.answerPace = [{ ms: 60_000, at: NOW - 2000 }, { ms: 60_000, at: NOW - 1000 }];
+  if (c["pace"] === "slow") s.answerPace = [{ ms: 120_000, at: NOW - 2000 }, { ms: 120_000, at: NOW - 1000 }];
   if (typeof c["prevBand"] === "string" && c["prevBand"] !== "none") s.band = { current: c["prevBand"] as "P1", since: NOW - 30_000, ruleId: "prev", sticky: true };
   return s;
 }
@@ -342,12 +342,14 @@ describe("exhaustive decision space", () => {
       ["contact_trusted_person.message_whatsapp", "self-alone-friend-coming"],
       ["contact_trusted_person.message_sms", "prefers-sms"],
       ["contact_trusted_person.crisis_line", "nobody-to-call"],
-      // Audit 011: everyday care tips come after water and fresh air (rotation), so only a session reaches them.
+      // Audits 011–012: everyday care tips come after «Um lugar firme pro corpo» (rotation), so only a session reaches them.
       ["care.put_away", "pista-bala-alcool-azulzinho"],
       ["care.eat_something", "grounding-rotation"],
       ["care.brush_teeth", "grounding-rotation"],
       ["care.cool_shower", "grounding-rotation"],
-      ["care.soft_music", "grounding-rotation"],
+      ["care.soft_music", "slow-pace-asks-less"],
+      ["care.sip_water", "grounding-rotation"],
+      ["care.fresh_air", "grounding-rotation"],
     ]);
     const stale = [...HISTORY_ONLY.keys()].filter((id) => coverage.has(id));
     const deadPreview = expected.filter((id) => !coverage.has(id) && !HISTORY_ONLY.has(id));
