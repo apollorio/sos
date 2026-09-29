@@ -57,6 +57,8 @@ export interface QuestionDef {
   /** L24: minimum time between two asks of this question, whatever made it askable again. */
   minIntervalSec?: number;
   bands: string[];
+  /** Akinator: the question exists only while this holds (e.g. "which one?" only after "how did it hit?"). */
+  when?: Pred;
   variants: Record<string, QuestionVariantDef>; // "self" | "helper" | "any"
 }
 
@@ -97,6 +99,8 @@ export interface EngagementDef {
   questionBudget: number;
   /** L21: once any help has been shown, at most this many questions stand between two helps. */
   questionsBetweenHelps?: number;
+  /** L25: when the person answers slowly (derived `pace` = slow), at most this many questions between two helps. */
+  slowQuestionsBetweenHelps?: number;
   askBeforeAct: boolean;
 }
 
@@ -121,6 +125,12 @@ export interface StrategyDef {
   alwaysEligible?: boolean;
   repeatable?: boolean;
   interactive?: string;
+  /** L25: while this holds, the strategy moves to the end of its skill's order (simpler things first). Never excludes it. */
+  deferWhen?: Pred;
+  /** Never selected, never requestable; kept so the ID is never reused (conventions.retiredIds). */
+  retired?: boolean;
+  /** In a rotating skill, this strategy is never pushed back by rotation (safety warnings, what the person just reported). */
+  keepFirst?: boolean;
 }
 
 export interface SkillDef {
@@ -129,6 +139,8 @@ export interface SkillDef {
   bands: string[];
   strategies: StrategyDef[];
   phases?: Record<string, Record<string, string>>;
+  /** Least-shown first (stable), so every technique gets its turn before one repeats. `keepFirst` strategies keep their place. */
+  rotate?: boolean;
   doc?: string;
 }
 
@@ -156,7 +168,7 @@ export interface CardDef {
 export interface ChipDef {
   id: string;
   bands: string[];
-  group: "pending" | "tools" | "talk" | "report";
+  group: "pending" | "body" | "tools" | "talk" | "report";
   whenPending?: string;
   notice?: string;
   action: { id: string; ops: Op[] };
@@ -195,6 +207,10 @@ export interface RegistryData {
   hysteresis: { minDwellSec: Record<string, number> };
   requirements: Record<string, Pred | string>;
   engagement: Record<string, EngagementDef>;
+  /** L25: how the time a person takes to answer becomes the derived fact `pace` (never a reported signal, L15). */
+  /** L27: the breathing orb behind the card. */
+  ambient: { breath: { when: Pred; inhaleSec: number; holdSec: number; exhaleSec: number } };
+  pace: { windowSec: number; minSamples: number; slowSec: number; quickSec: number };
   silence: { P0: { afterSec: number }; P1: { afterSec: number }; P2: { afterSec: number }; P3: { afterSec: number } | null; maxCount: number; resumeGapSec: number };
   commitments: CommitmentDef[];
   skills: SkillDef[];

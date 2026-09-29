@@ -23,6 +23,7 @@ import { decide, pickKey } from "./planner/decide";
 import { variantFor } from "./planner/voi";
 import { chipsFor, REQUEST_TTL_MS } from "./planner/chips";
 import { buildFacts } from "./logic/facts";
+import { evaluate } from "./logic/predicate";
 import type { DomainEvent } from "./domain/events";
 import type { StrategyPriors } from "./continuity/types";
 
@@ -59,7 +60,12 @@ export function processEvent(prev: SessionState, input: RawInput, reg: Reg = REG
 
   if (duplicate) rejected = "DUPLICATE";
   else {
+    // L25: the time an ACCEPTED answer took (visible time only) feeds the derived fact `pace`. Taps on help cards do not
+    // count (doing an exercise for a minute is not hesitation), nor do rejected or stale taps.
+    const answering = input.kind === "tap" && s.card?.kind === "question" && s.card.instanceId === input.cardInstanceId
+      ? Math.max(0, now - Math.max(s.card.shownAt, s.visibility.since)) : null;
     const ing = ingest(s, input, now, reg);
+    if (answering !== null && !ing.rejected) s.answerPace = [...(s.answerPace ?? []), { ms: answering, at: now }].slice(-5);
     summary = ing.summary;
     if (ing.rejected) rejected = ing.rejected;
     if (ing.human) {
@@ -96,16 +102,23 @@ export function processEvent(prev: SessionState, input: RawInput, reg: Reg = REG
   effects.push({ type: "KEEP_AWAKE", on: decision.band === "P0" });
   // L22: silence on a help card brings presence, not a question. (HR-008 still watches silence when there is medical risk.)
   const presence = decision.band !== "P0" && card.kind === "action" && s.silence.count >= 1;
-  const notice = notes.notice ?? ingestNotice ?? (rejected === "STALE_CARD" ? ("STALE_TAP" as const) : presence ? ("PRESENCE" as const) : undefined);
+  const notice = notes.notice ?? ingestNotice ?? (rejected === "STALE_CARD" ? ("STALE_TAP" as const) : presence ? PRESENCE_LINES[s.seq % PRESENCE_LINES.length] : undefined);
+  const finalFacts = buildFacts(s, now, reg).facts;
+  const amb = reg.data.ambient.breath;
+  const breath = decision.band !== "P0" && evaluate(amb.when, finalFacts).ok ? { inhaleSec: amb.inhaleSec, holdSec: amb.holdSec, exhaleSec: amb.exhaleSec } : null;
   const output: Output = {
     card,
-    chips: decision.band === "P0" ? [] : chipsFor(s, buildFacts(s, now, reg).facts, decision.band, now, reg),
+    chips: decision.band === "P0" ? [] : chipsFor(s, finalFacts, decision.band, now, reg),
+    ...(breath ? { breath } : {}),
     ...(notice ? { notice } : {}),
     effects,
     nextWakeAt: nextWakeAt(s, now, reg),
   };
   return { state: s, output, log: logEntry(s, now, summary, eventTypes, decision.band, decision.pick, decision.why, [], notes), events, ...(rejected ? { rejected } : {}) };
 }
+
+/** L22: quiet lines of presence, one per card (rotating by card, stable while the card stays). */
+const PRESENCE_LINES = ["PRESENCE", "PRESENCE_WAVE", "PRESENCE_MINUTE"] as const;
 
 /* ───────────────────────────── bookkeeping ───────────────────────────── */
 
@@ -202,6 +215,7 @@ function nextWakeAt(s: SessionState, now: number, reg: Reg): number | null {
     if (q && mem?.lastUnknownAt != null && mem.lastUnknownAt + q.cooldownSec * 1000 > now) cands.push(mem.lastUnknownAt + q.cooldownSec * 1000);
     if (q?.minIntervalSec && mem?.lastAskedAt != null) cands.push(mem.lastAskedAt + q.minIntervalSec * 1000); // L24 boundary
   }
+  for (const p of s.answerPace ?? []) cands.push(p.at + reg.data.pace.windowSec * 1000); // a sample leaves the pace window
   if (s.requested) cands.push(s.requested.at + REQUEST_TTL_MS + 1); // a menu pick stops being in force
   const future = cands.filter((x): x is number => x !== null && x > now);
   return future.length ? Math.min(...future) : null;

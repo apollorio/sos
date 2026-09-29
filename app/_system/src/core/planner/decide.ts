@@ -179,7 +179,12 @@ export function decide(state: SessionState, now: number, reg: Reg, explicit = fa
   // re-deciding without new input must never make the current question disappear.
   // L21: a short triage on entry (questionBudget); once help has started, at most questionsBetweenHelps between two helps.
   const helped = Object.values(state.strategies).some((m) => m.shows > 0);
-  const budget = helped ? (eng.questionsBetweenHelps ?? eng.questionBudget) : eng.questionBudget;
+  // L25: a slow pace (derived from answer times, never reported) means fewer questions, never more.
+  // …unless the only help left is the bare fallback: then one answer is worth more than another "Tô aqui".
+  const onlyFallback = base.decision.pick.skill === "steady_check" && base.decision.pick.strategy === "hold";
+  const slow = facts["pace"] === "slow" && eng.slowQuestionsBetweenHelps !== undefined && !onlyFallback;
+  const between = eng.questionsBetweenHelps ?? eng.questionBudget;
+  const budget = helped ? (slow ? Math.min(between, eng.slowQuestionsBetweenHelps!) : between) : eng.questionBudget;
   const budgetOk = !!decisive && (state.questionsInARow < budget || state.card?.questionId === decisive.q.id);
 
   // 6. Policy table.

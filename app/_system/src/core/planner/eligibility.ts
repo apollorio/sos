@@ -11,13 +11,15 @@ export type Ineligible =
   | `requires:${string}`
   | "blocked"
   | "satisfied"
-  | "repeat";
+  | "repeat"
+  | "retired";
 
 /**
  * `requested`: the person picked this technique from the menu (L23). Their choice lifts the
  * "already done recently" and "shown too often" checks, never a contraindication, a perspective rule or a block.
  */
 export function strategyIneligibility(skillId: string, st: StrategyDef, ctx: SkillCtx, requested = false): Ineligible | null {
+  if (st.retired) return "retired";
   if (st.alwaysEligible) return null;
   if (st.bandsOnly && !st.bandsOnly.includes(ctx.band)) return "band";
   if (!evaluate(st.when, ctx.facts).ok) return "when";

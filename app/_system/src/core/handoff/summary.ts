@@ -43,9 +43,9 @@ export interface SummaryLocale {
   professional: Record<string, string>;
 }
 
-const EXPOSURE_SIGNALS = new Set(["substanceClass"]);
+const EXPOSURE_SIGNALS = new Set(["substanceClass", "substance", "alcohol", "sexEnhancer"]); // only with the EXPOSURE_CONTEXT scope (L26)
 const COURSE_EVENTS = new Set(["EMERGENCY_CALL_REPORTED", "HELP_ON_SCENE", "CORRECTION", "APP_HIDDEN", "APP_VISIBLE", "EPISODE_STARTED", "EPISODE_ENDED"]);
-const INTERVENTION_SKILLS = new Set(["reduce_stimulation", "contact_trusted_person", "grounding", "steady_check"]);
+const INTERVENTION_SKILLS = new Set(["reduce_stimulation", "contact_trusted_person", "grounding", "care", "combination", "steady_check"]);
 
 export function allowedScopes(audience: ShareAudience, reg: Reg): AccessScope[] {
   return [...(reg.data.continuity.share.audiences[audience] ?? []), ...reg.data.continuity.share.optionalScopes] as AccessScope[];

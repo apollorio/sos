@@ -57,6 +57,8 @@ export interface SessionState {
 
   questions: Partial<Record<QuestionId, QuestionMemory>>;
   questionsInARow: number;
+  /** L25: how long the last answers took (ms, visible time only). Becomes the derived fact `pace`; never a signal. */
+  answerPace?: { ms: number; at: number }[];
   forcedQuestion: string | null;
   /** A technique the person picked from the menu (L23). Shown next if still eligible; cleared by its outcome. */
   requested?: { key: string; at: number } | null;
@@ -91,6 +93,7 @@ export function initialState(sessionId: string, now: number): SessionState {
     cardHistory: [],
     questions: {},
     questionsInARow: 0,
+    answerPace: [],
     forcedQuestion: null,
     requested: null,
     strategies: {},

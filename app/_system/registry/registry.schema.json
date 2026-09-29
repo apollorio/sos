@@ -23,6 +23,8 @@
     "hysteresis",
     "requirements",
     "engagement",
+    "pace",
+    "ambient",
     "silence",
     "commitments",
     "skills",
@@ -45,7 +47,7 @@
     },
     "path": {
       "type": "string",
-      "pattern": "^(signal\\.[a-zA-Z]+|risk\\.[a-z]+|trend|connectivity|silence\\.count|session\\.[a-zA-Z]+|commitment\\.(due|pending\\.[A-Z_]+)|skill\\.[a-z_]+\\.done)$"
+      "pattern": "^(signal\\.[a-zA-Z]+|risk\\.[a-z]+|trend|pace|help\\.last|connectivity|silence\\.count|session\\.[a-zA-Z]+|commitment\\.(due|pending\\.[A-Z_]+)|skill\\.[a-z_]+\\.done|question\\.Q_[A-Z_]+\\.asked)$"
     },
     "pred": {
       "oneOf": [
@@ -380,6 +382,10 @@
         },
         "askBeforeAct": {
           "type": "boolean"
+        },
+        "slowQuestionsBetweenHelps": {
+          "type": "integer",
+          "minimum": 0
         }
       },
       "additionalProperties": false
@@ -438,7 +444,15 @@
       "required": [
         "idPatterns",
         "rules"
-      ]
+      ],
+      "properties": {
+        "retiredIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
     },
     "laws": {
       "type": "array",
@@ -743,6 +757,9 @@
                 }
               }
             }
+          },
+          "when": {
+            "$ref": "#/$defs/pred"
           }
         }
       }
@@ -874,6 +891,76 @@
         "$ref": "#/$defs/engagement"
       }
     },
+    "pace": {
+      "type": "object",
+      "required": [
+        "windowSec",
+        "minSamples",
+        "slowSec",
+        "quickSec"
+      ],
+      "properties": {
+        "doc": {
+          "type": "string"
+        },
+        "windowSec": {
+          "type": "integer",
+          "minimum": 60
+        },
+        "minSamples": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "slowSec": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "quickSec": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "ambient": {
+      "type": "object",
+      "required": [
+        "breath"
+      ],
+      "properties": {
+        "doc": {
+          "type": "string"
+        },
+        "breath": {
+          "type": "object",
+          "required": [
+            "when",
+            "inhaleSec",
+            "holdSec",
+            "exhaleSec"
+          ],
+          "properties": {
+            "when": {
+              "$ref": "#/$defs/pred"
+            },
+            "inhaleSec": {
+              "type": "integer",
+              "minimum": 2,
+              "maximum": 8
+            },
+            "holdSec": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 4
+            },
+            "exhaleSec": {
+              "type": "integer",
+              "minimum": 3,
+              "maximum": 10
+            }
+          }
+        }
+      }
+    },
     "silence": {
       "type": "object",
       "required": [
@@ -959,9 +1046,21 @@
                   "items": {
                     "$ref": "#/$defs/op"
                   }
+                },
+                "deferWhen": {
+                  "$ref": "#/$defs/pred"
+                },
+                "retired": {
+                  "type": "boolean"
+                },
+                "keepFirst": {
+                  "type": "boolean"
                 }
               }
             }
+          },
+          "rotate": {
+            "type": "boolean"
           }
         }
       }
@@ -1079,6 +1178,7 @@
           "group": {
             "enum": [
               "pending",
+              "body",
               "tools",
               "talk",
               "report"

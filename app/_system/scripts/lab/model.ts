@@ -17,6 +17,8 @@ const L = LOCALES["pt-BR"]!;
 const D = REG.data as any;
 
 type Pred = Record<string, unknown>;
+/** The app renders **x** as bold; the lab pages show plain text. */
+const plain = (t: string) => t.replace(/\*\*(.+?)\*\*/g, "$1");
 const hash = (v: unknown) => createHash("sha256").update(JSON.stringify(v)).digest("hex").slice(0, 10);
 
 /* ───────────────────────────── readable conditions (display only) ───────────────────────────── */
@@ -30,8 +32,17 @@ const NAMES: Record<string, string> = {
   "risk.medical": "risco médico", "risk.impairment": "comprometimento", "risk.isolation": "isolamento", "risk.emotional": "risco emocional",
   "risk.environmental": "ambiente", "risk.uncertainty": "incerteza", "silence.count": "janelas sem resposta",
   "session.emergencyEngaged": "emergência já acionada", connectivity: "conexão", trend: "tendência",
+  "signal.substance": "qual substância", "signal.alcohol": "álcool junto", "signal.sexEnhancer": "azulzinho/poppers",
+  "signal.discomfort": "o que incomoda no corpo", "risk.mixing": "mistura", "help.last": "última ajuda mostrada",
+  pace: "ritmo das respostas (derivado)",
 };
-const name = (path: string) => NAMES[path] ?? path;
+const name = (path: string) => {
+  const asked = /^question\.(Q_[A-Z_]+)\.asked$/.exec(path);
+  if (asked) return `já perguntou ${asked[1]}`;
+  const done = /^skill\.([a-z_]+)\.done$/.exec(path);
+  if (done) return `já fez alguma técnica de ${done[1]}`;
+  return NAMES[path] ?? path;
+};
 
 /** "signal.X=value" → the answer labels that record it, so a clinician reads the words the person tapped. */
 function answerIndex(): Map<string, string[]> {
@@ -133,8 +144,8 @@ const statusLabel = (s: string | undefined) => (s ? STATUS[s] ?? s : "—");
 
 function textFields(t: LocaleCard["title"] | undefined, label: string): ReviewField[] {
   if (t === undefined) return [];
-  if (typeof t === "string") return t ? [{ label, text: t }] : [];
-  return Object.entries(t).filter(([, v]) => v).map(([k, v]) => ({ label: k === "default" ? label : `${label} · ${variantLabel(k)}`, text: v }));
+  if (typeof t === "string") return t ? [{ label, text: plain(t) }] : [];
+  return Object.entries(t).filter(([, v]) => v).map(([k, v]) => ({ label: k === "default" ? label : `${label} · ${variantLabel(k)}`, text: plain(v) }));
 }
 function variantLabel(k: string): string {
   return k.split(".").map((p) => ({ self: "a própria pessoa", helper: "quem ajuda", stim: "estimulantes", downer: "depressores",
@@ -170,8 +181,9 @@ export function reviewSections(): ReviewSection[] {
   const p0 = cards.filter((c) => c.id.startsWith("CARD_P0_")).map((c) => item(c.id, c.id, L.cards[c.id]?.review, cardFields(c.id)));
 
   const questionCards = new Map<string, { id: string; set: Record<string, unknown> }[]>();
-  for (const q of D.questions as { variants: Record<string, { card: string; answers: { id: string; set: Record<string, unknown> }[] }> }[])
-    for (const v of Object.values(q.variants)) questionCards.set(v.card, v.answers);
+  const questionWhen = new Map<string, Pred>();
+  for (const q of D.questions as { when?: Pred; variants: Record<string, { card: string; answers: { id: string; set: Record<string, unknown> }[] }> }[])
+    for (const v of Object.values(q.variants)) { questionCards.set(v.card, v.answers); if (q.when) questionWhen.set(v.card, q.when); }
   // Wider than the release lint on purpose: every question can move the triage, so every question is asked to be signed.
   const triageIds = cards.filter((c) => c.kind === "question").map((c) => c.id);
   const triage = triageIds.map((id) => {
@@ -179,6 +191,7 @@ export function reviewSections(): ReviewSection[] {
     const answers = questionCards.get(id) ?? [];
     return item(id, id, lc.review, [
       ...textFields(lc.title, "Pergunta"), ...textFields(lc.body, "Texto"),
+      ...(questionWhen.has(id) ? [{ label: "Só pergunta quando", text: describePredicate(questionWhen.get(id)!) }] : []),
       ...answers.map((a) => ({ label: `«${lc.actions[a.id] ?? a.id}»`, text: `registra: ${Object.entries(a.set).map(([k, v]) => `${name(`signal.${k}`)} = ${String(v)}`).join(", ") || "nada"}` })),
     ]);
   });
@@ -282,6 +295,21 @@ export const MISSIONS: MissionDef[] = [
   { scenario: "calm-end-and-wipe", who: "self", title: "Tô bem: encerrar e apagar",
     story: "Você está tranquilo(a) e quer encerrar e apagar tudo do aparelho.",
     watch: "Ficou claro que nada ficou guardado? O app recomeçou do zero?" },
+  { scenario: "pista-bala-alcool-azulzinho", who: "self", title: "Bala, álcool e azulzinho",
+    story: "Você tomou bala, bebeu e tomou um azulzinho. Bateu um pânico e o nariz está ardendo. Responda com a verdade: é só um teste.",
+    watch: "As perguntas vieram uma de cada vez, sempre com uma ajuda entre elas? Os avisos de mistura apareceram na hora certa, sem julgamento e sem dose?" },
+  { scenario: "pista-g-alcool-helper", who: "helper", title: "Amigo(a) com G e álcool",
+    story: "Seu amigo(a) tomou G e bebeu. Está acordado(a), respira normal, mas está ansioso(a).",
+    watch: "O aviso de «de lado, não deixa sozinho(a)» chegou logo que você contou do álcool? Os textos falam com você, que está ajudando?" },
+  { scenario: "poppers-com-azulzinho", who: "self", title: "Poppers com azulzinho",
+    story: "Você usou poppers e tomou azulzinho.",
+    watch: "O aviso foi claro e rápido? Dava pra ligar pro Disque-Intoxicação?" },
+  { scenario: "body-chip-nose", who: "self", title: "Dizendo o que incomoda pelo menu",
+    story: "Seu nariz está ardendo. Você não quer esperar uma pergunta: usa o menu «Cuidar do corpo».",
+    watch: "O app agradeceu e mostrou o cuidado (soro) logo em seguida?" },
+  { scenario: "slow-pace-asks-less", who: "self", title: "Respondendo devagar",
+    story: "Você está muito mal e demora pra conseguir tocar nas respostas (espere uns 25 s antes de cada resposta).",
+    watch: "Depois das primeiras respostas, o app parou de perguntar e só foi ajudando? A bola de respiração ficou ao fundo o tempo todo?" },
 ];
 
 function fmtWait(sec: number): string {
@@ -330,7 +358,7 @@ export function missions(): Mission[] {
       const see = after.state.status === "wiped" ? "Tudo é apagado do aparelho e o app recomeça pela primeira pergunta."
         : hidden ? "Nada: o app está em segundo plano e não conta esse tempo como silêncio."
         : "chip" in st && after.rejected ? "Não está lá: o app tirou essa opção do menu."
-        : `${notice ? `«${notice}» ` : ""}«${res.title}»${res.body ? ` · ${res.body}` : ""}`;
+        : `${notice ? `«${notice}» ` : ""}«${res.title}»${res.body ? ` · ${plain(res.body)}` : ""}`;
       return { act, see, p0: after.log.band === "P0" && !hidden, ...(warn ? { warn } : {}) };
     });
     const minutes = Math.max(1, Math.round(sc.steps.reduce((t, s) => t + (s.after ?? 20), 0) / 60));

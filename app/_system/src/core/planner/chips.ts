@@ -1,6 +1,7 @@
 /**
  * CHIPS — what sits beside the card (L23: "a way out and a menu, always").
  *   pending  shown while a commitment is pending (e.g. "Chegou alguém? Toque aqui")
+ *   body     what bothers the body (nose, throat, heat, nausea): reports it and opens its care tip
  *   tools    a calming technique the person can pick at any time
  *   talk     a person to reach (message someone, CVV 188) the person can pick at any time
  *   report   "how I am" (better / worse), said when THEY want, never asked again and again (L22)
@@ -16,6 +17,8 @@ import type { Band, CardId, ChipId } from "../../generated/registry.gen";
 import type { Facts } from "../logic/predicate";
 import { strategyIneligibility } from "./eligibility";
 import { variantKeysFor } from "../skills/variants";
+import { buildFacts } from "../logic/facts";
+import { applySignals } from "../state/signals-apply";
 
 /** How long a pick from the menu stays in force if the person does nothing with it. */
 export const REQUEST_TTL_MS = 10 * 60_000;
@@ -45,13 +48,25 @@ export function chipAvailable(chip: ChipDef, state: SessionState, facts: Facts, 
   const req = requestOf(chip);
   if (req) {
     if (state.card?.skill === req.skill && state.card.strategy === req.strategy) return false; // already on screen
-    return requestable(req.skill, req.strategy, state, facts, band, now, reg);
+    // A body chip says what hurts AND asks for its care tip: judge the tip on the state after the report.
+    const view = reportedPreview(chip, state, now, reg);
+    const f = view === state ? facts : buildFacts(view, now, reg).facts;
+    return requestable(req.skill, req.strategy, view, f, band, now, reg);
   }
   return true;
 }
 
+/** The state as it would be once the chip's own SIGNALS_REPORTED ops are applied (copy-on-write; pure). */
+function reportedPreview(chip: ChipDef, state: SessionState, now: number, reg: Reg): SessionState {
+  const sets = chip.action.ops.filter((o) => o.op === "SIGNALS_REPORTED");
+  if (!sets.length) return state;
+  const sim: SessionState = { ...state, signals: { ...state.signals }, anxietyHistory: [...state.anxietyHistory] };
+  for (const o of sets) if (o.op === "SIGNALS_REPORTED") applySignals(sim, o.set, "user_explicit", now, reg);
+  return sim;
+}
+
 export function chipsFor(state: SessionState, facts: Facts, band: Band, now: number, reg: Reg): ChipView[] {
-  const order: ChipDef["group"][] = ["pending", "tools", "talk", "report"];
+  const order: ChipDef["group"][] = ["pending", "body", "tools", "talk", "report"];
   return order.flatMap((g) => reg.data.chips
     .filter((c) => c.group === g && chipAvailable(c, state, facts, band, now, reg))
     .map((c) => ({ chipId: c.id as ChipId, actionId: c.action.id, group: c.group })));

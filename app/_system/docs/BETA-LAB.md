@@ -30,7 +30,7 @@ Everything under `app/lab/` and the stamped parts of `app/` are build output: `n
   example phrases. Every item carries a content hash; a verdict given on an older text is flagged as "changed".
 - **Its required scope is wider than the release lint.** The lint requires sign-off on the 16 cards flagged `clinical`,
   the proposed hard rules and `meta.status`. The sheet also asks for every triage question and every strategy card,
-  including the grounding exercises whose contraindications were audit 003's first blocker (63 required items, 6 optional since audit 010).
+  including the grounding exercises whose contraindications were audit 003's first blocker (95 required items, 6 optional since audit 011: substance questions, combination warnings and care tips were added).
   Whether those cards should also be flagged `clinical` in `pt-BR.json` (making the lint match) is an owner decision.
 - **The beta notice is automatic.** `scripts/build.ts` stamps `<html data-channel="beta">` whenever
   `registry:lint --release` has errors; the notice disappears only when the gate is green.
@@ -77,6 +77,6 @@ text changed since the verdict are marked "O texto deste item mudou" and must be
 npm run build          # app/ shell + dist/simulator.html + app/lab/
 npm run build:check    # all three are up to date
 npm test               # includes tests/lab (coverage of the sheet, missions = passing scenarios, freshness)
-npm run e2e            # shell (21 checks) + lab (13 checks) in Chromium, served from the repository root
+npm run e2e            # shell (24 checks) + lab (13 checks) in Chromium, served from the repository root
 npm run e2e:legacy     # the previous production page at /app/legacy.html
 ```

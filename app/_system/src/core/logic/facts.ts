@@ -29,6 +29,30 @@ export function trendOf(state: SessionState, now: number): "improving" | "stable
   return reported === "same" ? "stable" : "unknown";
 }
 
+/** Skills whose cards count as "a help" for the alternation of techniques and care tips (help.last). */
+const HELP_SKILLS = new Set(["grounding", "care", "combination", "steady_check"]);
+
+/** The last help on screen (current card first, then history): what the loop alternates away from. */
+export function lastHelp(state: SessionState): string {
+  const cards = [state.card, ...[...state.cardHistory].reverse()];
+  for (const c of cards) if (c && c.kind === "action" && HELP_SKILLS.has(c.skill)) return c.skill;
+  return "none";
+}
+
+/**
+ * L25 — pace: how long the person takes to answer a question (visible time), over the recent window.
+ * Derived, never reported (L15): it can make the app ask less and offer simpler things first; it never becomes
+ * anxiety, never raises a band and never diagnoses (L16).
+ */
+export function paceOf(state: SessionState, now: number, reg: Reg): "quick" | "steady" | "slow" | "unknown" {
+  const cfg = reg.data.pace;
+  const recent = (state.answerPace ?? []).filter((p) => now - p.at < cfg.windowSec * 1000).slice(-cfg.minSamples);
+  if (recent.length < cfg.minSamples) return "unknown";
+  if (recent.every((p) => p.ms >= cfg.slowSec * 1000)) return "slow";
+  if (recent.every((p) => p.ms <= cfg.quickSec * 1000)) return "quick";
+  return "steady";
+}
+
 export interface FactsWithRisk {
   facts: Facts;
   risk: RiskVector;
@@ -51,6 +75,10 @@ export function buildFacts(state: SessionState, now: number, reg: Reg): FactsWit
     if (c.dueAt <= now) due = true;
   }
   f["commitment.due"] = due;
+  // question.<id>.asked: the conversation's own order (Akinator: "which one?" before "with alcohol?").
+  for (const q of reg.data.questions) f[`question.${q.id}.asked`] = (state.questions[q.id as keyof typeof state.questions]?.asks ?? 0) > 0;
+  f["help.last"] = lastHelp(state);
+  f["pace"] = paceOf(state, now, reg);
   // skill.<id>.done: this skill already helped in this session (L21: the first help is a technique, then the rest).
   for (const sk of reg.data.skills) {
     if (!sk.strategies.length) continue;
@@ -69,5 +97,6 @@ export function factCatalog(reg: Reg): Map<string, Primitive[]> {
   for (const d of reg.data.risk.dimensions) m.set(`risk.${d}`, [0, 1, 2, 3, 4]);
   for (const c of reg.data.commitments) m.set(`commitment.pending.${c.id}`, [true, false]);
   for (const sk of reg.data.skills) if (sk.strategies.length) m.set(`skill.${sk.id}.done`, [true, false]);
+  for (const q of reg.data.questions) m.set(`question.${q.id}.asked`, [true, false]);
   return m;
 }

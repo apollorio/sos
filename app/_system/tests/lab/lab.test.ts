@@ -43,7 +43,7 @@ describe("clinical review sheet", () => {
       expect(f.text, `${i.id} · ${f.label}`).not.toMatch(/^\{|⚠/);
       expect(f.text.length, `${i.id} · ${f.label}`).toBeGreaterThan(0);
     }
-    expect(describePredicate({ all: [{ gte: ["risk.isolation", 2] }, { eq: ["signal.substanceClass", "downer"] }] })).toBe("isolamento ≥ 2 e substância = downer («Álcool ou calmante»)");
+    expect(describePredicate({ all: [{ gte: ["risk.isolation", 2] }, { eq: ["signal.substanceClass", "downer"] }] })).toBe("isolamento ≥ 2 e substância = downer («Pesado, lento, com sono»)");
     expect(describePredicate({ all: [{ any: [{ eq: ["signal.noise", "loud"] }, { gte: ["risk.medical", 3] }] }, { always: true }] })).toBe("(barulho = loud («Muito barulho ou luz») ou risco médico ≥ 3) e sempre");
   });
 

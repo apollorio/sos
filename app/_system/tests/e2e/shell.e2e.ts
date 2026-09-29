@@ -55,6 +55,7 @@ try {
   inlineBlocked ? ok("CSP control: an injected inline script is refused") : fail("CSP is not enforced: inline script ran");
 
   (await p.locator(".menu").count()) === 0 ? ok("P0: no menu beside the emergency card (INV-029)") : fail("menu shown in P0");
+  (await p.locator(".ambient-breath.on").count()) === 0 ? ok("P0: no breathing orb behind the emergency card (L27, INV-032)") : fail("orb shown in P0");
 
   // 3b. L21–L23 (audit 010): help first, the menu is there, and a pick opens that technique.
   const pm = await (await browser.newContext({ viewport: { width: 390, height: 780 } })).newPage();
@@ -63,7 +64,14 @@ try {
   for (const label of ["Eu", "Respiro bem, sem dor no peito", "Consigo", "Muita, pânico"]) await pm.getByRole("button", { name: label, exact: true }).click();
   (await pm.locator(".card .title").textContent()) === "Água gelada no rosto." && (await pm.locator(".menu .chip").count()) >= 8
     ? ok("self in panic: the first help is cold water after 4 taps, with the menu of techniques and people below it") : fail(`first help ${await pm.locator(".card .title").textContent()}`);
+  const orb = pm.locator(".breath-line.on");
+  await pm.waitForTimeout(600);
+  (await orb.count()) === 1 && /Inspira|Segura|Solta/.test((await orb.textContent()) ?? "") && (await pm.locator(".card .pacer").count()) === 0
+    ? ok("the breathing orb breathes behind the card with its line, and no card is spent on breathing (L27)") : fail("ambient orb missing or a breathing card shown");
+  const before = await pm.locator(".ambient-breath").elementHandle();
   await pm.getByRole("button", { name: "Hmmm (vibração)" }).click();
+  (await pm.locator(".ambient-breath").elementHandle().then(async (h) => h && before ? h.evaluate((a, b) => a === b, before) : false))
+    ? ok("the orb survives a card change (same node: the rhythm does not restart)") : fail("orb recreated on card change");
   (await pm.locator(".card .title").textContent()) === "Hmmm de boca fechada." ? ok("menu: picking «Hmmm (vibração)» opens that technique (L23)") : fail("menu pick did not open the technique");
   if (shots) await pm.screenshot({ path: `${shots}/5-menu.png`, fullPage: true });
 

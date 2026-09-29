@@ -49,7 +49,7 @@ describe("actor perspective (L10)", () => {
   it("the substance question asks a helper about the person", () => {
     const s = state({ actor: "helper", company: "with_someone" });
     const pick = SKILLS.assess.select({ state: s, facts: buildFacts(s, NOW, REG).facts, band: "P3", now: NOW, reg: REG, questionId: "Q_SUBSTANCE" })!;
-    expect(title(pick.cardId, pick.variantKeys)).toBe("A pessoa usou alguma coisa?");
+    expect(title(pick.cardId, pick.variantKeys)).toBe("Como bateu no corpo da pessoa?");
   });
 
   it("sweep: every non-P0 card a helper can reach resolves to helper copy or is declared actor-neutral", () => {

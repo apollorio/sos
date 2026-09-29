@@ -61,7 +61,7 @@ export interface CardView {
   interactive?: string;
 }
 
-export interface ChipView { chipId: ChipId; actionId: string; group: "pending" | "tools" | "talk" | "report" }
+export interface ChipView { chipId: ChipId; actionId: string; group: "pending" | "body" | "tools" | "talk" | "report" }
 
 export type Effect =
   | { type: "KEEP_AWAKE"; on: boolean }
@@ -71,8 +71,13 @@ export type Effect =
 export interface Output {
   card: CardView;
   chips: ChipView[];
-  /** One quiet line above the card. PRESENCE replaces "how are you?" after silence (L22); ACK_* answer a report chip. */
-  notice?: "TEXT_UNMATCHED" | "STALE_TAP" | "PRESENCE" | "ACK_BETTER" | "ACK_WORSE";
+  /** L27: the breathing orb behind the card (seconds). Absent in P0 and whenever breathing/responsiveness are not normal. */
+  breath?: { inhaleSec: number; holdSec: number; exhaleSec: number };
+  /**
+   * One quiet line above the card. PRESENCE* replace "how are you?" after silence (L22), rotating by card so the
+   * person does not read the same line again and again; ACK_* answer a report or body chip.
+   */
+  notice?: "TEXT_UNMATCHED" | "STALE_TAP" | "PRESENCE" | "PRESENCE_WAVE" | "PRESENCE_MINUTE" | "ACK_BETTER" | "ACK_WORSE" | "ACK_BODY";
   effects: Effect[];
   /** Earliest instant at which the decision could change without new input. The shell sets ONE timer. */
   nextWakeAt: number | null;

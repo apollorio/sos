@@ -122,6 +122,17 @@ every minute of silence, and no calming technique at all for a person alone. Fou
 | L23 | **A way out and a menu, always.** Every non-P0 card offers techniques, people to reach and "how I am", filtered by the same contraindications and perspective rules. |
 | L24 | **No question repeated within its interval** (`minIntervalSec`); "Prefiro só continuar" is always an answer. |
 
+### 2c · Pista: laws L25–L27 (audit 011)
+
+| | Law |
+|---|---|
+| L25 | **Pace is read, never reported.** The time a person takes to answer (derived `pace`) may make the app ask less and offer simpler things first; it never becomes anxiety, never moves a band, never diagnoses. |
+| L26 | **What was used only adds care.** Asked body-first, one question between two helps, never before the first help; a dangerous combination raises the band (P1/P2) and brings its warning at once, never P0 by itself; no dose, no second substance, no antidote (INV-030). |
+| L27 | **Breathing is the background, not a step.** A slow orb (in 4 · hold 1 · out 6) paces the breath behind every non-P0 card while breathing is normal and the person responds; the breathing card is retired. |
+
+Anxiety is asked **once** per session (`Q_ANXIETY maxAsks 1`, answer valid 1 h). The loop alternates a technique and a
+care tip (`help.last`), rotating least-shown first, forever: see `app/_audit/011-pista/` and `scripts/converse.ts`.
+
 ---
 
 ## 3 · Architecture
@@ -329,7 +340,7 @@ registry/
 
 ---
 
-## 10 · Skills catalog (7 skills, 12 strategies)
+## 10 · Skills catalog (9 skills, 45 strategies; 1 retired)
 
 | Skill | Bands | Strategies (in order) | Notes |
 |---|---|---|---|
@@ -338,7 +349,9 @@ registry/
 | `reduce_stimulation` | P1–P2 | `relocate` (needs movement + safe location) → `in_place` | "Não consigo" blocks `relocate` for 30 min |
 | `contact_trusted_person` | P1–P2 | `stay_close` → `message_whatsapp` (network) → `message_sms` → `crisis_line` (CVV 188, self only) | "Não tenho ninguém" blocks both message strategies |
 | `confirm_commitment` | P1–P3 | per commitment kind | generalizes `confirm_arrival` |
-| `grounding` | P1–P2 (any band from the menu) | `cold_water` → `breath_pacer` (the human step) → `feet_floor` → `double_sigh` → `five_senses` → `humming` → `press_wall` | since audit 010 "done" no longer expires anxiety (L24); breathing exercises and cold water need normal breathing + responsive (INV-027) |
+| `grounding` | P1–P3 | `cold_water` → `feet_floor` → `double_sigh` → `five_senses` → `humming` → `press_wall`, **rotating** least-shown first (`breath_pacer` retired: the orb, L27) | breathing exercises and cold water need normal breathing + responsive (INV-027); `five_senses` deferred while pace = slow (L25) |
+| `combination` | P1–P3 | `downers` · `poppers_pill` · `coke_alcohol` · `md_alcohol` · `stim_alcohol` · `stim_sex` | audit 011: the warning for what was mixed, the moment it is known; never alternates, never P0 by itself |
+| `care` | P1–P3 | what the person reported first (`cool_body`, `inhalant_air`, `nose_rinse`, `throat_soothe`, `nausea_care`, `jaw_ease`), then safety notes (`poppers_care`, `pill_care`), then the substance (`side_safe`, `ride_wave`, `put_away`), then everyday care (`sip_water`, `fresh_air`, `eat_something`, `brush_teeth`, `cool_shower`, `soft_music`), rotating | nothing by mouth unless `can_swallow`; shower only when `awake`; copy per substance (`drug` variant) |
 | `steady_check` | P1–P3 | `tips` (P3, by substance class) → `check_later` (P3) → **`hold`** (always eligible) | **new**: without it P3 had no skill and totality could not be proven |
 
 **Why 7 and not 6:** the latest brainstorm fixed 6 skills. The audit found no skill for P3 and no guaranteed fallback anywhere, which leaves a blank screen as a possible outcome. `steady_check.hold` closes that hole and makes totality provable. Decision D10 asks you to approve it.
@@ -351,14 +364,18 @@ registry/
 |---|---|---|---|---|---|---|
 | P1-005 | commitment due | confirm_commitment | | P2-005 | commitment due | confirm_commitment |
 | P1-010 | resumed (not silence, L22) | assess · Q_HOW_NOW | | P2-010 | resumed (not silence, L22) | assess · Q_HOW_NOW |
+| P1-012 | mixing ≥ 2 | combination (L26) | | P2-012 | mixing ≥ 2 | combination (L26) |
 | P1-015 | self ∧ no grounding done yet | grounding (L21) | | | | |
 | P1-020 | alone ∧ ¬friend coming ∧ ¬contact pending | contact_trusted_person | | P2-020 | loud ∧ emotional ≥3 | reduce_stimulation |
-| P1-030 | loud | reduce_stimulation | | P2-040 | emotional ≥3 | grounding |
-| P1-040 | emotional ≥3 | grounding | | P2-050 | loud | reduce_stimulation |
-| P1-050 | always | contact_trusted_person | | P2-060 | always | grounding |
+| P1-030 | loud | reduce_stimulation | | P2-035 | a help shown ∧ last help ≠ care | care |
+| P1-032 | helper ∧ a help shown | contact_trusted_person (stay close) | | P2-040 | emotional ≥3 | grounding |
+| P1-035 | a help shown ∧ last help ≠ care | care | | P2-050 | loud | reduce_stimulation |
+| P1-040 | emotional ≥3 | grounding | | P2-060 | always | grounding |
+| P1-045 | last help ≠ grounding | grounding | | | | |
+| P1-050 | always | contact_trusted_person | | | | |
 | P1-099 | always | steady_check (hold) | | P2-099 | always | steady_check (hold) |
 
-P3: `P3-005` commitment due → confirm · `P3-010` resumed → Q_HOW_NOW · `P3-099` always → steady_check.
+P3: `P3-005` commitment due → confirm · `P3-010` resumed → Q_HOW_NOW · `P3-050` a help shown ∧ last ≠ care → care · `P3-060` a help shown ∧ last ≠ grounding → grounding · `P3-099` always → steady_check.
 
 **Hard rules (precedence = order):** HR-001 unresponsive · HR-002 severe breathing · HR-003 seizure · HR-004 chest · HR-005 physically unsafe · HR-006 fainted *(proposed)* · HR-007 self-harm *(proposed)* · HR-008 medical risk + 2 visible silences *(proposed, not latched)* · HR-009 user tapped 192.
 

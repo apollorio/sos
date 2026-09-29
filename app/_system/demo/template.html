@@ -60,8 +60,14 @@ code,.num{font-family:var(--mono);font-size:.86em}
 .phone .free-text{display:grid;grid-template-columns:1fr auto;gap:8px}
 .phone .free-text input{min-height:42px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--ink);padding:0 12px;font:16px var(--body);min-width:0}
 .phone .free-text .btn{width:auto;min-height:42px}
-.pacer{display:grid;place-items:center;height:150px}.pacer-dot{width:130px;height:130px;border-radius:50%;background:radial-gradient(circle,var(--p2),transparent 70%);transform:scale(.45);transition:transform 4s ease-in-out}
-.pacer-label{margin-top:-86px;color:var(--muted);font-size:14px}
+/* L27: the breathing orb behind the card (inside the phone frame). */
+.phone .ambient-breath{position:absolute;inset:0;z-index:0;display:grid;place-items:center;pointer-events:none;opacity:0;transition:opacity 1.2s ease}
+.phone .ambient-breath.on{opacity:1}
+.phone .ambient-breath .orb{width:360px;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--p2) 60%,transparent) 0%,color-mix(in srgb,var(--p2) 26%,transparent) 42%,transparent 70%);transform:scale(.5);transition:transform 4s ease-in-out}
+.phone .breath-line{display:none}.phone .breath-line.on{display:block}
+.phone .breath-line{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:5;margin:0;padding:5px 14px;border-radius:999px;background:var(--phone);border:1px solid color-mix(in srgb,var(--p2) 45%,var(--line));color:var(--fg);font-size:14px}
+.phone:has(.ambient-breath.on) #phone-screen{padding-bottom:56px}
+.phone .card{position:relative;z-index:1;background:color-mix(in srgb,var(--panel) 45%,transparent)}
 #toast{position:absolute;left:12px;right:12px;bottom:12px;background:var(--ink);color:var(--panel);padding:10px 12px;border-radius:12px;font-size:14px}
 /* Brain */
 .brain{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
@@ -103,7 +109,7 @@ pre.summary{white-space:pre-wrap;font:13px/1.45 var(--mono);background:var(--sof
 .pill[data-band="P0"]{background:var(--p0)}.pill[data-band="P1"]{background:var(--p1)}.pill[data-band="P2"]{background:var(--p2)}
 .dim{color:var(--muted)}
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-@media (prefers-reduced-motion:reduce){.pacer-dot{transition:none!important}}
+@media (prefers-reduced-motion:reduce){.phone .ambient-breath .orb{transition:none!important;transform:scale(.75)!important}}
 </style>
 
 <div class="wrap">

@@ -20,6 +20,7 @@ import type { Facts } from "../logic/predicate";
 import type { NonP0Band } from "../../generated/registry.gen";
 import { applySignals } from "../state/signals-apply";
 import { signalValue } from "../logic/facts";
+import { evaluate } from "../logic/predicate";
 
 export interface QuestionScore {
   q: QuestionDef;
@@ -44,6 +45,8 @@ export function askable(
   const variant = variantFor(q, facts);
   if (!variant) return null;
   if (!q.bands.includes(band)) return null;
+  // Akinator: a follow-up exists only once what it depends on is known ("which one?" after "how did it hit?").
+  if (q.when && !evaluate(q.when, facts).ok) return null;
   const mem = state.questions[q.id as keyof typeof state.questions];
   // The question already on screen is not a re-ask: it stays until answered (its own display counted as an ask).
   const onScreen = state.card?.questionId === q.id;
@@ -52,8 +55,11 @@ export function askable(
   // L24: never ask the same thing again too soon, whatever made it askable (TTL, a policy, a resume).
   if (!onScreen && q.minIntervalSec && mem?.lastAskedAt != null && now - mem.lastAskedAt < q.minIntervalSec * 1000) return null;
   if (pinned) return variant;
-  // At least one of the signals this variant can set must be unknown (and therefore not latched).
-  const touched = new Set(variant.answers.flatMap((a) => Object.keys(a.set)));
+  // The question's own subject must still be unknown (and therefore not latched). The subject is what its "Não sei"
+  // answer resets: an answer that ALSO sets something else ("Só álcool" → alcohol = yes) does not keep the question
+  // askable once its subject is known (found by audit 011: "which one?" came back to learn alcohol).
+  const unknownAnswer = variant.answers.find((a) => a.unknown);
+  const touched = new Set(unknownAnswer ? Object.keys(unknownAnswer.set) : variant.answers.flatMap((a) => Object.keys(a.set)));
   for (const sig of touched) {
     if (!reg.signal.has(sig)) continue;
     if (signalValue(state, sig, now) === "unknown") return variant;
