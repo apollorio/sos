@@ -109,6 +109,19 @@ These live in `registry.json → laws` and are cited by id in code and tests.
 | L11 | **Emergency does not depend on JavaScript staying alive.** The app fails to the shell. |
 | L12 | **The real world beats the app.** Nothing (captcha, network, onboarding) ever gates help. |
 
+### 2b · Acolhimento: laws L21–L24 (audit 010)
+
+The owner's field test showed the v0.1 rhythm felt like an interrogation: "how are you now?" after every exercise and after
+every minute of silence, and no calming technique at all for a person alone. Four laws now bind the rhythm (registry
+`laws`, enforced by lint, runtime and tests; details in `app/_audit/010-acolhimento/`):
+
+| | Law |
+|---|---|
+| L21 | **Help comes before questions.** After a short triage, at most one question stands between two helps (`questionsBetweenHelps`). |
+| L22 | **Never interrupt help to ask how the person is.** Silence on a help card adds "Tô aqui com você. Sem pressa."; a timer never replaces a help card (except P0, a lost contraindication, or a safety re-check while someone is watched). |
+| L23 | **A way out and a menu, always.** Every non-P0 card offers techniques, people to reach and "how I am", filtered by the same contraindications and perspective rules. |
+| L24 | **No question repeated within its interval** (`minIntervalSec`); "Prefiro só continuar" is always an answer. |
+
 ---
 
 ## 3 · Architecture
@@ -206,7 +219,7 @@ flowchart LR
 Three behaviours emerge without a line of flow code:
 
 - **Triage order emerges from risk.** For a helper, the first question is "A pessoa responde quando você chama ou toca nela?". It is critical because one answer reveals P0. For a self user, the first question is the red-flag card.
-- **Monitoring emerges from TTL.** `breathing = normal` expires after 10 minutes. It becomes `unknown`, which is critical again, so it is re-asked, the way a harm-reduction team re-checks breathing.
+- **Monitoring emerges from TTL.** `breathing = normal` expires after 10 minutes. It becomes `unknown`, which is critical again, so it is re-asked, the way a harm-reduction team re-checks breathing. Since audit 010 (L22) the re-check interrupts a help card on a timer only while someone is being watched (helper, or medical risk); otherwise it comes right after the next tap.
 - **Asking stops when it stops mattering.** The budget caps questions in a row, and a question never interrupts an intervention already on screen.
 
 Cost: about 20 pure evaluations per step, around **0.7 ms** on a laptop. Target on low-end Android: under 16 ms.
@@ -278,7 +291,7 @@ sequenceDiagram
 
 | | Condition | Effect |
 |---|---|---|
-| **SILENCE** | card visible for the whole window with no human input | uncertainty rises. Only with a known medical risk (HR-008) can it lead to P0 bystander mode. |
+| **SILENCE** | card visible for the whole window with no human input | uncertainty rises and a help card shows "Tô aqui com você. Sem pressa." (L22: never a question). Only with a known medical risk (HR-008) can it lead to P0 bystander mode. |
 | **APP_UNAVAILABLE** | hidden, frozen or closed | nothing accrues. On return, `resumedAfterGap` triggers a check-in. |
 | **CONNECTIVITY_LOST** | offline | only strategies that need network are affected (WhatsApp → SMS). |
 
@@ -325,7 +338,7 @@ registry/
 | `reduce_stimulation` | P1–P2 | `relocate` (needs movement + safe location) → `in_place` | "Não consigo" blocks `relocate` for 30 min |
 | `contact_trusted_person` | P1–P2 | `stay_close` → `message_whatsapp` (network) → `message_sms` → `crisis_line` (CVV 188, self only) | "Não tenho ninguém" blocks both message strategies |
 | `confirm_commitment` | P1–P3 | per commitment kind | generalizes `confirm_arrival` |
-| `grounding` | P1–P2 | `breath_pacer` (the human step) → `feet_floor` → `five_senses` | "done" expires anxiety on purpose, so it is re-asked |
+| `grounding` | P1–P2 (any band from the menu) | `cold_water` → `breath_pacer` (the human step) → `feet_floor` → `double_sigh` → `five_senses` → `humming` → `press_wall` | since audit 010 "done" no longer expires anxiety (L24); breathing exercises and cold water need normal breathing + responsive (INV-027) |
 | `steady_check` | P1–P3 | `tips` (P3, by substance class) → `check_later` (P3) → **`hold`** (always eligible) | **new**: without it P3 had no skill and totality could not be proven |
 
 **Why 7 and not 6:** the latest brainstorm fixed 6 skills. The audit found no skill for P3 and no guaranteed fallback anywhere, which leaves a blank screen as a possible outcome. `steady_check.hold` closes that hole and makes totality provable. Decision D10 asks you to approve it.
@@ -337,7 +350,8 @@ registry/
 | P1 | when | skill | | P2 | when | skill |
 |---|---|---|---|---|---|---|
 | P1-005 | commitment due | confirm_commitment | | P2-005 | commitment due | confirm_commitment |
-| P1-010 | silence ≥1 ∨ resumed | assess · Q_HOW_NOW | | P2-010 | silence ≥1 ∨ resumed | assess · Q_HOW_NOW |
+| P1-010 | resumed (not silence, L22) | assess · Q_HOW_NOW | | P2-010 | resumed (not silence, L22) | assess · Q_HOW_NOW |
+| P1-015 | self ∧ no grounding done yet | grounding (L21) | | | | |
 | P1-020 | alone ∧ ¬friend coming ∧ ¬contact pending | contact_trusted_person | | P2-020 | loud ∧ emotional ≥3 | reduce_stimulation |
 | P1-030 | loud | reduce_stimulation | | P2-040 | emotional ≥3 | grounding |
 | P1-040 | emotional ≥3 | grounding | | P2-050 | loud | reduce_stimulation |

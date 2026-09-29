@@ -15,6 +15,8 @@
 | Harm-reduction tips | CARD_STEADY_TIPS (stim / downer / psychedelic) | Accurate, non-judgmental, no dosing advice? |
 | Triage labels | Q_RED_FLAGS, Q_RESPONDS, Q_BREATHING | Does each label mean exactly what its `set` records? (label ↔ data parity) |
 | Text triggers | TT-001…TT-007 | Missing common regional phrasings? False positives? |
+| Techniques (audit 010) | CARD_GROUNDING_COLD (cold water on face/neck/wrists: diving reflex), _SIGH (double sigh), _HUM (humming), _WALL (push a wall) | Safe for a lay person in panic? Cold water is gated by normal breathing + responsive: are more contraindications needed (heart disease, stimulant intoxication, eating disorders)? |
+| Rhythm (audit 010) | L21–L24, `minIntervalSec`, `questionsBetweenHelps`, PRESENCE note | Is one question between helps, and "how are you" at most every 10 min, clinically adequate? |
 
 ## How to review: the beta lab
 Open `/app/lab/revisao.html` (see `docs/BETA-LAB.md`). It lists every item above, read from the registry and the locale,
