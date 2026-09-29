@@ -8,6 +8,7 @@ import type { Reg } from "../registry";
 import type { SessionState } from "../domain/state";
 import type { CardView, Decision } from "../domain/decision";
 import { buildFacts } from "../logic/facts";
+import { evaluate } from "../logic/predicate";
 
 export function checkInvariants(state: SessionState, decision: Decision, card: CardView, now: number, reg: Reg): string[] {
   const v: string[] = [];
@@ -16,6 +17,7 @@ export function checkInvariants(state: SessionState, decision: Decision, card: C
 
   if (band === "P0" && pick.skill !== "emergency_escalation") v.push("INV-001 P0 without emergency_escalation");
   if (band === "P0" && pick.skill === "assess") v.push("INV-017 P0 asked a question");
+  if (decision.why.policyRule === "USER_REQUEST" && band === "P0") v.push("INV-029 a menu pick displaced P0");
   if (facts["signal.companion"] === "arrived" && facts["signal.company"] === "alone") v.push("INV-004 arrived ∧ alone");
 
   if (pick.strategy && pick.skill !== "emergency_escalation" && pick.skill !== "confirm_commitment") {
@@ -28,6 +30,11 @@ export function checkInvariants(state: SessionState, decision: Decision, card: C
     }
     if (pick.skill === "grounding" && pick.strategy === "breath_pacer" && (facts["signal.breathing"] !== "normal" || facts["signal.responsiveness"] !== "responsive")) v.push(`INV-027 breath_pacer with breathing=${String(facts["signal.breathing"])} responsiveness=${String(facts["signal.responsiveness"])}`);
     if (pick.skill === "grounding" && pick.strategy === "five_senses" && facts["signal.responsiveness"] !== "responsive") v.push(`INV-027 five_senses with responsiveness=${String(facts["signal.responsiveness"])}`);
+    // INV-027 (general form): every strategy shown, including one picked from the menu (L23), meets its requirements.
+    if (st && !st.alwaysEligible) for (const r of st.requires) {
+      const pred = reg.requirement.get(r);
+      if (pred && !evaluate(pred, facts).ok) v.push(`INV-027 ${key} shown without requirement ${r}`);
+    }
   }
 
   const eng = reg.data.engagement[band];

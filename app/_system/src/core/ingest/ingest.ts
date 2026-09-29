@@ -10,12 +10,15 @@ import { opToEvents } from "../state/reducer";
 import { matchTriggers } from "./text-triggers";
 import { variantFor } from "../planner/voi";
 import { buildFacts } from "../logic/facts";
+import { chipAvailable } from "../planner/chips";
+import type { Output } from "../domain/decision";
 
 export interface Ingested {
   events: DomainEvent[];
   human: boolean;
   rejected?: "STALE_CARD" | "UNKNOWN_ACTION";
   summary: string;
+  notice?: Output["notice"];
 }
 
 export function ingest(state: SessionState, input: RawInput, now: number, reg: Reg): Ingested {
@@ -39,10 +42,16 @@ export function ingest(state: SessionState, input: RawInput, now: number, reg: R
       return { events: [{ type: "HANDOFF_OPENED", channel: "tel", target: "emergency" }], human, summary: "shell:call_192" };
 
     case "chip": {
+      // Only a chip that is on offer right now can be used (same pure rule that rendered it).
       const chip = reg.chip.get(input.chipId);
-      const pending = chip && state.commitments.some((c) => c.kind === chip.whenPending && c.status === "pending");
-      if (!chip || !pending) return { events: [], human, rejected: "UNKNOWN_ACTION", summary: `chip:${input.chipId}:rejected` };
-      return { events: chip.action.ops.flatMap((op) => opToEvents(op, state)), human, summary: `chip:${input.chipId}` };
+      const ok = chip && chipAvailable(chip, state, buildFacts(state, now, reg).facts, state.shownBand, now, reg);
+      if (!chip || !ok) return { events: [], human, rejected: "UNKNOWN_ACTION", summary: `chip:${input.chipId}:rejected` };
+      return {
+        events: chip.action.ops.flatMap((op) => opToEvents(op, state)),
+        human,
+        summary: `chip:${input.chipId}`,
+        ...(chip.notice ? { notice: chip.notice as Output["notice"] } : {}),
+      };
     }
 
     case "text": {

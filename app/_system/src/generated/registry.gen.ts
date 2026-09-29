@@ -4,7 +4,7 @@
 // Source of truth: registry/registry.json
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const REGISTRY_HASH = "0641dbc0d316481f";
+export const REGISTRY_HASH = "18243c1465af3ba9";
 export const REGISTRY_VERSION = "0.1.0";
 
 export type Band = "P0" | "P1" | "P2" | "P3";
@@ -33,23 +33,23 @@ export interface SignalDomain {
 }
 
 export type QuestionId = "Q_ACTOR" | "Q_RESPONDS" | "Q_BREATHING" | "Q_RED_FLAGS" | "Q_CLARITY" | "Q_COMPANY" | "Q_ANXIETY" | "Q_NOISE" | "Q_SUBSTANCE" | "Q_HOW_NOW";
-export type CardId = "CARD_Q_ACTOR" | "CARD_Q_RESPONDS" | "CARD_Q_BREATHING" | "CARD_Q_RED_FLAGS_SELF" | "CARD_Q_RED_FLAGS_HELPER" | "CARD_Q_CLARITY" | "CARD_Q_COMPANY" | "CARD_Q_ANXIETY_SELF" | "CARD_Q_ANXIETY_HELPER" | "CARD_Q_NOISE" | "CARD_Q_SUBSTANCE" | "CARD_Q_HOW_NOW" | "CARD_P0_CALL" | "CARD_P0_CALL_CRISIS" | "CARD_P0_WAITING" | "CARD_P0_BYSTANDER" | "CARD_P0_HANDOVER" | "CARD_RELOCATE" | "CARD_IN_PLACE" | "CARD_STAY_CLOSE" | "CARD_CONTACT_WHATSAPP" | "CARD_CONTACT_SMS" | "CARD_CRISIS_LINE" | "CARD_GROUNDING_BREATH" | "CARD_GROUNDING_FEET" | "CARD_GROUNDING_SENSES" | "CARD_STEADY_TIPS" | "CARD_STEADY_CHECK" | "CARD_HOLD" | "CARD_CONFIRM_FRIEND" | "CARD_CONFIRM_RELOCATION" | "CARD_CONFIRM_CONTACT" | "CARD_CONFIRM_CHECKIN" | "CARD_SESSION_CLOSED" | "CARD_SAFE_FALLBACK";
+export type CardId = "CARD_Q_ACTOR" | "CARD_Q_RESPONDS" | "CARD_Q_BREATHING" | "CARD_Q_RED_FLAGS_SELF" | "CARD_Q_RED_FLAGS_HELPER" | "CARD_Q_CLARITY" | "CARD_Q_COMPANY" | "CARD_Q_ANXIETY_SELF" | "CARD_Q_ANXIETY_HELPER" | "CARD_Q_NOISE" | "CARD_Q_SUBSTANCE" | "CARD_Q_HOW_NOW" | "CARD_P0_CALL" | "CARD_P0_CALL_CRISIS" | "CARD_P0_WAITING" | "CARD_P0_BYSTANDER" | "CARD_P0_HANDOVER" | "CARD_RELOCATE" | "CARD_IN_PLACE" | "CARD_STAY_CLOSE" | "CARD_CONTACT_WHATSAPP" | "CARD_CONTACT_SMS" | "CARD_CRISIS_LINE" | "CARD_GROUNDING_BREATH" | "CARD_GROUNDING_FEET" | "CARD_GROUNDING_SENSES" | "CARD_GROUNDING_COLD" | "CARD_GROUNDING_SIGH" | "CARD_GROUNDING_HUM" | "CARD_GROUNDING_WALL" | "CARD_STEADY_TIPS" | "CARD_STEADY_CHECK" | "CARD_HOLD" | "CARD_CONFIRM_FRIEND" | "CARD_CONFIRM_RELOCATION" | "CARD_CONFIRM_CONTACT" | "CARD_CONFIRM_CHECKIN" | "CARD_SESSION_CLOSED" | "CARD_SAFE_FALLBACK";
 export type SkillId = "assess" | "emergency_escalation" | "reduce_stimulation" | "contact_trusted_person" | "confirm_commitment" | "grounding" | "steady_check";
 export const SKILL_IDS = ["assess", "emergency_escalation", "reduce_stimulation", "contact_trusted_person", "confirm_commitment", "grounding", "steady_check"] as const;
-export type StrategyKey = "reduce_stimulation.relocate" | "reduce_stimulation.in_place" | "contact_trusted_person.stay_close" | "contact_trusted_person.message_whatsapp" | "contact_trusted_person.message_sms" | "contact_trusted_person.crisis_line" | "grounding.breath_pacer" | "grounding.feet_floor" | "grounding.five_senses" | "steady_check.tips" | "steady_check.check_later" | "steady_check.hold";
+export type StrategyKey = "reduce_stimulation.relocate" | "reduce_stimulation.in_place" | "contact_trusted_person.stay_close" | "contact_trusted_person.message_whatsapp" | "contact_trusted_person.message_sms" | "contact_trusted_person.crisis_line" | "grounding.cold_water" | "grounding.breath_pacer" | "grounding.feet_floor" | "grounding.double_sigh" | "grounding.five_senses" | "grounding.humming" | "grounding.press_wall" | "steady_check.tips" | "steady_check.check_later" | "steady_check.hold";
 export type CommitmentKind = "FRIEND_ARRIVAL" | "RELOCATION" | "CONTACT_REPLY" | "CHECK_IN";
 export type HardRuleId = "HR-001" | "HR-002" | "HR-003" | "HR-004" | "HR-005" | "HR-006" | "HR-007" | "HR-008" | "HR-009";
 export type HardRuleReason = "unresponsive" | "breathing" | "seizure" | "chest" | "unsafe" | "fainted" | "self_harm" | "silent_after_risk" | "user_initiated";
 export type BandRuleId = "BR-P1-01" | "BR-P1-03" | "BR-P1-04" | "BR-P1-05" | "BR-P1-06" | "BR-P2-01" | "BR-P2-02" | "BR-P3-99";
-export type PolicyRuleId = "P1-005" | "P1-010" | "P1-020" | "P1-030" | "P1-040" | "P1-050" | "P1-099" | "P2-005" | "P2-010" | "P2-020" | "P2-040" | "P2-050" | "P2-060" | "P2-099" | "P3-005" | "P3-010" | "P3-099";
+export type PolicyRuleId = "P1-005" | "P1-010" | "P1-015" | "P1-020" | "P1-030" | "P1-040" | "P1-050" | "P1-099" | "P2-005" | "P2-010" | "P2-020" | "P2-040" | "P2-050" | "P2-060" | "P2-099" | "P3-005" | "P3-010" | "P3-099";
 export type TextTriggerId = "TT-001" | "TT-002" | "TT-003" | "TT-004" | "TT-005" | "TT-006" | "TT-007";
-export type InvariantId = "INV-001" | "INV-002" | "INV-003" | "INV-004" | "INV-005" | "INV-006" | "INV-007" | "INV-008" | "INV-009" | "INV-010" | "INV-011" | "INV-012" | "INV-013" | "INV-014" | "INV-015" | "INV-016" | "INV-017" | "INV-018" | "INV-019" | "INV-020" | "INV-021" | "INV-022" | "INV-023" | "INV-024" | "INV-025" | "INV-026" | "INV-027";
-export type ChipId = "CHIP_FRIEND_ARRIVED";
-export type EventId = "SESSION_STARTED" | "SIGNALS_REPORTED" | "SIGNALS_EXPIRED" | "STRATEGY_OUTCOME" | "COMMITMENT_CREATED" | "COMMITMENT_RESOLVED" | "HANDOFF_OPENED" | "EMERGENCY_CALL_REPORTED" | "HELP_ON_SCENE" | "CORRECTION" | "QUESTION_FORCED" | "TEXT_UNMATCHED" | "SESSION_END" | "WIPE" | "APP_HIDDEN" | "APP_VISIBLE" | "CONNECTIVITY" | "TICK";
+export type InvariantId = "INV-001" | "INV-002" | "INV-003" | "INV-004" | "INV-005" | "INV-006" | "INV-007" | "INV-008" | "INV-009" | "INV-010" | "INV-011" | "INV-012" | "INV-013" | "INV-014" | "INV-015" | "INV-016" | "INV-017" | "INV-018" | "INV-019" | "INV-020" | "INV-021" | "INV-022" | "INV-023" | "INV-024" | "INV-025" | "INV-026" | "INV-027" | "INV-028" | "INV-029";
+export type ChipId = "CHIP_FRIEND_ARRIVED" | "CHIP_TOOL_COLD" | "CHIP_TOOL_BREATH" | "CHIP_TOOL_SIGH" | "CHIP_TOOL_FEET" | "CHIP_TOOL_SENSES" | "CHIP_TOOL_HUM" | "CHIP_TOOL_WALL" | "CHIP_TOOL_QUIET" | "CHIP_TALK_STAY" | "CHIP_TALK_MESSAGE" | "CHIP_TALK_CVV" | "CHIP_REPORT_BETTER" | "CHIP_REPORT_WORSE";
+export type EventId = "SESSION_STARTED" | "SIGNALS_REPORTED" | "SIGNALS_EXPIRED" | "STRATEGY_OUTCOME" | "STRATEGY_REQUESTED" | "COMMITMENT_CREATED" | "COMMITMENT_RESOLVED" | "HANDOFF_OPENED" | "EMERGENCY_CALL_REPORTED" | "HELP_ON_SCENE" | "CORRECTION" | "QUESTION_FORCED" | "TEXT_UNMATCHED" | "SESSION_END" | "WIPE" | "APP_HIDDEN" | "APP_VISIBLE" | "CONNECTIVITY" | "TICK";
 export type RiskDimension = "medical" | "impairment" | "isolation" | "emotional" | "environmental" | "uncertainty";
 export type HandoffTarget = "emergency" | "crisis_line" | "poison" | "police" | "fire" | "trusted";
 export type Requirement = "movement" | "safe_location" | "network" | "breathing_normal" | "responsive";
-export type LawId = "L01" | "L02" | "L03" | "L04" | "L05" | "L06" | "L07" | "L08" | "L09" | "L10" | "L11" | "L12" | "L13" | "L14" | "L15" | "L16" | "L17" | "L18" | "L19" | "L20";
+export type LawId = "L01" | "L02" | "L03" | "L04" | "L05" | "L06" | "L07" | "L08" | "L09" | "L10" | "L11" | "L12" | "L13" | "L14" | "L15" | "L16" | "L17" | "L18" | "L19" | "L20" | "L21" | "L22" | "L23" | "L24";
 export type JournalKind = "EPISODE_STARTED" | "EPISODE_ENDED" | "SIGNAL_REPORTED" | "SIGNAL_EXPIRED" | "CARD_SHOWN" | "BAND_CHANGED" | "STRATEGY_OUTCOME" | "COMMITMENT_CREATED" | "COMMITMENT_RESOLVED" | "HANDOFF_OPENED" | "EMERGENCY_CALL_REPORTED" | "HELP_ON_SCENE" | "CORRECTION" | "QUESTION_FORCED" | "TEXT_UNMATCHED" | "APP_HIDDEN" | "APP_VISIBLE" | "CONNECTIVITY";
 export const JOURNAL_KINDS = ["EPISODE_STARTED", "EPISODE_ENDED", "SIGNAL_REPORTED", "SIGNAL_EXPIRED", "CARD_SHOWN", "BAND_CHANGED", "STRATEGY_OUTCOME", "COMMITMENT_CREATED", "COMMITMENT_RESOLVED", "HANDOFF_OPENED", "EMERGENCY_CALL_REPORTED", "HELP_ON_SCENE", "CORRECTION", "QUESTION_FORCED", "TEXT_UNMATCHED", "APP_HIDDEN", "APP_VISIBLE", "CONNECTIVITY"] as const;
 export type Provenance = "user_explicit" | "helper_explicit" | "runtime_observed" | "derived";

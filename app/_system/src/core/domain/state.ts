@@ -58,6 +58,8 @@ export interface SessionState {
   questions: Partial<Record<QuestionId, QuestionMemory>>;
   questionsInARow: number;
   forcedQuestion: string | null;
+  /** A technique the person picked from the menu (L23). Shown next if still eligible; cleared by its outcome. */
+  requested?: { key: string; at: number } | null;
 
   strategies: Record<string, StrategyMemory>;
   repeat: { key: string; count: number };
@@ -90,6 +92,7 @@ export function initialState(sessionId: string, now: number): SessionState {
     questions: {},
     questionsInARow: 0,
     forcedQuestion: null,
+    requested: null,
     strategies: {},
     repeat: { key: "", count: 0 },
     commitments: [],

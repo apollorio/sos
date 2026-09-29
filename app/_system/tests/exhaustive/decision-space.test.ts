@@ -14,6 +14,7 @@
 import { describe, it, expect } from "vitest";
 import { REG } from "../../src/core/registry";
 import { initialState, type SessionState } from "../../src/core/domain/state";
+import { SCENARIOS, runScenario } from "../scenarios/scenarios";
 import { decide, decideCore } from "../../src/core/planner/decide";
 import { determineBand } from "../../src/core/safety/band-engine";
 import { buildFacts } from "../../src/core/logic/facts";
@@ -258,13 +259,30 @@ describe("exhaustive decision space", () => {
       ...Object.values(REG.data.policies).flat().map((p) => p.id),
       ...REG.data.skills.flatMap((s) => s.strategies.map((st) => `${s.id}.${st.id}`)),
     ];
-    // Reachable only through a SEQUENCE (one strategy refused, the next one offered), never from a
-    // single abstract state. Each one is pinned by a golden scenario instead. The list must stay honest:
-    const HISTORY_ONLY = new Set(["grounding.five_senses", "contact_trusted_person.crisis_line"]);
-    const stale = [...HISTORY_ONLY].filter((id) => coverage.has(id));
+    // Reachable only through a SEQUENCE, never from a single abstract state: a strategy offered after an earlier one
+    // was done or refused, or (L21, audit 010) contact for a person helping themselves, which comes after a first
+    // technique. Each one names the golden scenario that exercises it, and that is checked below. The list must stay honest:
+    const HISTORY_ONLY = new Map<string, string>([
+      ["grounding.five_senses", "grounding-rotation"],
+      ["grounding.breath_pacer", "self-club-panic-loud"],
+      ["grounding.double_sigh", "grounding-rotation"],
+      ["grounding.humming", "grounding-rotation"],
+      ["grounding.press_wall", "impaired-no-five-senses"],
+      ["P1-020", "self-alone-friend-coming"],
+      ["contact_trusted_person.message_whatsapp", "self-alone-friend-coming"],
+      ["contact_trusted_person.message_sms", "prefers-sms"],
+      ["contact_trusted_person.crisis_line", "nobody-to-call"],
+    ]);
+    const stale = [...HISTORY_ONLY.keys()].filter((id) => coverage.has(id));
     expect(stale, "HISTORY_ONLY lists rules that ARE reachable — remove them").toEqual([]);
+    for (const [id, name] of HISTORY_ONLY) {
+      const sc = SCENARIOS.find((x) => x.name === name);
+      expect(sc, `${id}: no golden scenario ${name}`).toBeDefined();
+      const hit = runScenario(sc!).some((r) => `${r.output.card.skill}.${r.output.card.strategy}` === id || r.log.why.policyRule === id);
+      expect(hit, `${id} is history-only but ${name} never reaches it`).toBe(true);
+    }
     const dead = expected.filter((id) => !coverage.has(id) && !HISTORY_ONLY.has(id));
-    console.log(`coverage: ${expected.length - dead.length}/${expected.length} rules reachable from single states (+${HISTORY_ONLY.size} history-only)`);
+    console.log(`coverage: ${expected.length - dead.length}/${expected.length} rules covered: ${expected.length - dead.length - HISTORY_ONLY.size} from single states + ${HISTORY_ONLY.size} through pinned scenarios${dead.length ? ` — dead: ${dead.join(", ")}` : ""}`);
     expect(dead).toEqual([]);
   });
 });

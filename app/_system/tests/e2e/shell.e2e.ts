@@ -54,6 +54,19 @@ try {
   const inlineBlocked = await p.evaluate(() => { const s = document.createElement("script"); s.textContent = "window.__inline = 1"; document.head.append(s); return (window as unknown as { __inline?: number }).__inline === undefined; });
   inlineBlocked ? ok("CSP control: an injected inline script is refused") : fail("CSP is not enforced: inline script ran");
 
+  (await p.locator(".menu").count()) === 0 ? ok("P0: no menu beside the emergency card (INV-029)") : fail("menu shown in P0");
+
+  // 3b. L21–L23 (audit 010): help first, the menu is there, and a pick opens that technique.
+  const pm = await (await browser.newContext({ viewport: { width: 390, height: 780 } })).newPage();
+  await pm.goto(APP);
+  await pm.waitForSelector("html.js-ok .card");
+  for (const label of ["Eu", "Respiro bem, sem dor no peito", "Consigo", "Muita, pânico"]) await pm.getByRole("button", { name: label, exact: true }).click();
+  (await pm.locator(".card .title").textContent()) === "Água gelada no rosto." && (await pm.locator(".menu .chip").count()) >= 8
+    ? ok("self in panic: the first help is cold water after 4 taps, with the menu of techniques and people below it") : fail(`first help ${await pm.locator(".card .title").textContent()}`);
+  await pm.getByRole("button", { name: "Hmmm (vibração)" }).click();
+  (await pm.locator(".card .title").textContent()) === "Hmmm de boca fechada." ? ok("menu: picking «Hmmm (vibração)» opens that technique (L23)") : fail("menu pick did not open the technique");
+  if (shots) await pm.screenshot({ path: `${shots}/5-menu.png`, fullPage: true });
+
   // 3. Engine crash → fail to shell.
   await p.evaluate(() => { setTimeout(() => { throw new Error("boom"); }); });
   await p.waitForTimeout(100);

@@ -114,6 +114,7 @@ export function lintRegistry(opts: { release?: boolean; reg?: Reg; locales?: Rec
         case "SIGNALS_REPORTED": checkSet(where, op.set); if (op.set["substanceClass"] !== undefined) err(`${where}: substanceClass may only come from a question (INV-012)`); break;
         case "SIGNALS_EXPIRED": op.signals.forEach((s) => REG.signal.has(s) || err(`${where}: unknown signal ${s}`)); break;
         case "STRATEGY_OUTCOME": if (op.skill && !REG.strategy.has(`${op.skill}.${op.strategy}`)) err(`${where}: unknown strategy ${op.skill}.${op.strategy}`); break;
+        case "STRATEGY_REQUESTED": if (!REG.strategy.has(`${op.skill}.${op.strategy}`)) err(`${where}: requests unknown strategy ${op.skill}.${op.strategy}`); break;
         case "COMMITMENT_CREATED": case "COMMITMENT_RESOLVED": if (!REG.commitment.has(op.kind)) err(`${where}: unknown commitment ${op.kind}`); break;
         case "HANDOFF_OPENED": if (op.target !== "trusted" && !REG.numbers[op.target]) err(`${where}: no number for target ${op.target}`); break;
         default: break;
@@ -216,7 +217,22 @@ export function lintRegistry(opts: { release?: boolean; reg?: Reg; locales?: Rec
     if (!REG.card.has(c.confirmCard)) err(`${c.id}: unknown confirmCard ${c.confirmCard}`);
     checkOps(`${c.id}.onMissed`, c.onMissed);
   }
-  for (const c of d.chips) if (!REG.commitment.has(c.whenPending)) err(`${c.id}: unknown commitment ${c.whenPending}`);
+  /* Chips (L23): pending chips need a commitment; tools/talk chips request exactly one strategy; notices exist. */
+  const NOTICES = new Set(["TEXT_UNMATCHED", "STALE_TAP", "PRESENCE", "ACK_BETTER", "ACK_WORSE"]);
+  for (const c of d.chips) {
+    checkOps(`${c.id}.action`, c.action.ops);
+    if (c.bands.includes("P0")) err(`${c.id}: chips never appear in P0 (INV-029)`);
+    const requests = c.action.ops.filter((o) => o.op === "STRATEGY_REQUESTED");
+    if (c.group === "pending" && (!c.whenPending || !REG.commitment.has(c.whenPending))) err(`${c.id}: pending chip needs a known whenPending commitment`);
+    if (c.group !== "pending" && c.whenPending) err(`${c.id}: only pending chips may wait on a commitment`);
+    if ((c.group === "tools" || c.group === "talk") && requests.length !== 1) err(`${c.id}: a ${c.group} chip requests exactly one strategy`);
+    if (c.group === "report" && requests.length) err(`${c.id}: a report chip reports, it does not request`);
+    if (c.notice && !NOTICES.has(c.notice)) err(`${c.id}: unknown notice ${c.notice}`);
+  }
+  /* L22 / INV-028: silence never pins a question; it only adds presence. */
+  for (const b of nonP0) for (const r of d.policies[b] ?? []) {
+    if (r.skill === "assess" && JSON.stringify(r.when).includes("silence.count")) err(`${r.id}: asks a question because of silence (L22, INV-028)`);
+  }
   for (const t of d.textTriggers.rules) {
     t.patterns.forEach((p) => { try { new RegExp(p); } catch { err(`${t.id}: invalid regex ${p}`); } if (/[A-ZÀ-ÿ]/.test(p.replace(/\\[a-zA-Z]/g, ""))) err(`${t.id}: pattern must be written in normalized form (lowercase, no accents): ${p}`); });
     checkSet(t.id, t.set);
@@ -253,6 +269,8 @@ export function lintRegistry(opts: { release?: boolean; reg?: Reg; locales?: Rec
       if (lc.clinical && lc.review !== "clinical") (release ? err : warn)(`${code}: ${c.id} clinical copy is "${lc.review}" (needs clinical review)`);
     }
     for (const c of d.chips) if (!loc.chips[c.id]) err(`${code}: missing chip label ${c.id}`);
+    for (const n of ["TEXT_UNMATCHED", "STALE_TAP", "PRESENCE", "ACK_BETTER", "ACK_WORSE"]) if (!loc.notices[n]) err(`${code}: missing notice ${n}`);
+    for (const k of ["menuTools", "menuTalk", "menuReport"]) if (!loc.shell[k]) err(`${code}: missing shell.${k} (menu heading, L23)`);
     for (const k of Object.keys(loc.cards)) if (!REG.card.has(k)) warn(`${code}: orphan copy ${k}`);
   }
 
@@ -260,6 +278,9 @@ export function lintRegistry(opts: { release?: boolean; reg?: Reg; locales?: Rec
   for (const s of d.skills) for (const st of s.strategies) {
     if (st.interactive === "breath_pacer" && !st.requires.includes("breathing_normal")) err(`${s.id}.${st.id}: breath pacer without the breathing_normal requirement (INV-027)`);
     if (st.id === "five_senses" && !st.requires.includes("responsive")) err(`${s.id}.${st.id}: five_senses without the responsive requirement (INV-027)`);
+    // Anything that changes breathing, and the cold-water shock, needs normal breathing and a responsive person.
+    if (["double_sigh", "humming"].includes(st.id) && !(st.requires.includes("breathing_normal") && st.requires.includes("responsive"))) err(`${s.id}.${st.id}: breathing exercise without breathing_normal + responsive (INV-027)`);
+    if (st.id === "cold_water" && !(st.requires.includes("breathing_normal") && st.requires.includes("responsive"))) err(`${s.id}.${st.id}: cold water without breathing_normal + responsive (INV-027)`);
   }
 
   /* ── Continuity (v0.2): journal kinds documented, scopes consistent, retention within law, lexicon present ── */

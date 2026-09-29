@@ -10,8 +10,8 @@ import { REG, type Reg } from "./registry";
 import type { RawInput } from "./domain/events";
 import type { SessionState } from "./domain/state";
 import { initialState } from "./domain/state";
-import type { CardView, ChipView, Decision, Effect, LogEntry, Output, SkillPick, StepResult, Why } from "./domain/decision";
-import type { Band, CardId, ChipId } from "../generated/registry.gen";
+import type { CardView, Decision, Effect, LogEntry, Output, SkillPick, StepResult, Why } from "./domain/decision";
+import type { Band, CardId } from "../generated/registry.gen";
 import { REGISTRY_HASH } from "../generated/registry.gen";
 import { ingest } from "./ingest/ingest";
 import { reduce, opToEvents, type ReduceNotes } from "./state/reducer";
@@ -21,6 +21,7 @@ import { nextCommitmentDue, pruneCommitments } from "./state/commitments";
 import { checkInvariants } from "./state/invariants";
 import { decide, pickKey } from "./planner/decide";
 import { variantFor } from "./planner/voi";
+import { chipsFor, REQUEST_TTL_MS } from "./planner/chips";
 import { buildFacts } from "./logic/facts";
 import type { DomainEvent } from "./domain/events";
 import type { StrategyPriors } from "./continuity/types";
@@ -54,6 +55,7 @@ export function processEvent(prev: SessionState, input: RawInput, reg: Reg = REG
   let eventTypes: string[] = [];
   let events: DomainEvent[] = [];
   let explicitStep = false;
+  let ingestNotice: Output["notice"];
 
   if (duplicate) rejected = "DUPLICATE";
   else {
@@ -66,6 +68,7 @@ export function processEvent(prev: SessionState, input: RawInput, reg: Reg = REG
       if (s.forcedQuestion && s.card?.questionId === s.forcedQuestion) s.forcedQuestion = null;
     }
     explicitStep = ing.human && !ing.rejected;
+    if (ing.notice) ingestNotice = ing.notice;
     for (const ev of ing.events) reduce(s, ev, now, reg, notes);
     eventTypes = ing.events.map((e) => e.type);
     events = ing.events;
@@ -91,10 +94,13 @@ export function processEvent(prev: SessionState, input: RawInput, reg: Reg = REG
   }
 
   effects.push({ type: "KEEP_AWAKE", on: decision.band === "P0" });
+  // L22: silence on a help card brings presence, not a question. (HR-008 still watches silence when there is medical risk.)
+  const presence = decision.band !== "P0" && card.kind === "action" && s.silence.count >= 1;
+  const notice = notes.notice ?? ingestNotice ?? (rejected === "STALE_CARD" ? ("STALE_TAP" as const) : presence ? ("PRESENCE" as const) : undefined);
   const output: Output = {
     card,
-    chips: chipsFor(s, decision.band, reg),
-    ...(notes.notice ? { notice: notes.notice } : rejected === "STALE_CARD" ? { notice: "STALE_TAP" as const } : {}),
+    chips: decision.band === "P0" ? [] : chipsFor(s, buildFacts(s, now, reg).facts, decision.band, now, reg),
+    ...(notice ? { notice } : {}),
     effects,
     nextWakeAt: nextWakeAt(s, now, reg),
   };
@@ -179,16 +185,6 @@ function stripShown(c: CardView & { shownAt?: number }): CardView {
   return view;
 }
 
-function chipsFor(s: SessionState, band: Band, reg: Reg): ChipView[] {
-  if (band === "P0") return [];
-  const out: ChipView[] = [];
-  for (const chip of reg.data.chips) {
-    if (!chip.bands.includes(band)) continue;
-    if (s.commitments.some((c) => c.kind === chip.whenPending && c.status === "pending")) out.push({ chipId: chip.id as ChipId, actionId: chip.action.id });
-  }
-  return out.slice(0, 1);
-}
-
 /** Earliest instant at which the decision could change with no new input (piecewise-constant guarantee). */
 function nextWakeAt(s: SessionState, now: number, reg: Reg): number | null {
   const cands: (number | null)[] = [
@@ -204,7 +200,9 @@ function nextWakeAt(s: SessionState, now: number, reg: Reg): number | null {
   for (const [qid, mem] of Object.entries(s.questions)) {
     const q = reg.question.get(qid);
     if (q && mem?.lastUnknownAt != null && mem.lastUnknownAt + q.cooldownSec * 1000 > now) cands.push(mem.lastUnknownAt + q.cooldownSec * 1000);
+    if (q?.minIntervalSec && mem?.lastAskedAt != null) cands.push(mem.lastAskedAt + q.minIntervalSec * 1000); // L24 boundary
   }
+  if (s.requested) cands.push(s.requested.at + REQUEST_TTL_MS + 1); // a menu pick stops being in force
   const future = cands.filter((x): x is number => x !== null && x > now);
   return future.length ? Math.min(...future) : null;
 }

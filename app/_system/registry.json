@@ -80,7 +80,23 @@
       "text": "Sharing is scoped, expiring and auditable, and always initiated by the person or the current helper."
     },
     { "id": "L19", "text": "Emergency access never depends on network or backend." },
-    { "id": "L20", "text": "Memory exists to reduce burden, not to increase surveillance." }
+    { "id": "L20", "text": "Memory exists to reduce burden, not to increase surveillance." },
+    {
+      "id": "L21",
+      "text": "Help comes before questions. Once help has started, at most one question stands between two helps."
+    },
+    {
+      "id": "L22",
+      "text": "Never interrupt help to ask how the person is. Silence brings presence, not a question; the person says how they are when they want to."
+    },
+    {
+      "id": "L23",
+      "text": "A way out and a menu, always: every non-emergency screen offers other techniques and a person to reach, beside the 192 that never leaves the screen."
+    },
+    {
+      "id": "L24",
+      "text": "The same question is not repeated within its interval, and 'I'd rather just continue' is always an answer."
+    }
   ],
   "regions": {
     "BR": {
@@ -153,7 +169,7 @@
       "latched": ["yes"],
       "critical": true
     },
-    { "id": "anxiety", "domain": [0, 1, 2, 3, 4, "unknown"], "ttlSec": 300, "latched": [], "critical": false },
+    { "id": "anxiety", "domain": [0, 1, 2, 3, 4, "unknown"], "ttlSec": 900, "latched": [], "critical": false },
     {
       "id": "noise",
       "domain": ["quiet", "moderate", "loud", "unknown"],
@@ -232,6 +248,11 @@
       "doc": "An action made a signal stale on purpose (e.g. after grounding, re-check anxiety)."
     },
     { "id": "STRATEGY_OUTCOME", "origin": "human", "doc": "done | failed ('Não consigo') | declined ('Agora não')." },
+    {
+      "id": "STRATEGY_REQUESTED",
+      "origin": "human",
+      "doc": "The person picked a technique or a contact from the menu (L23). Shown next if still eligible; its outcome clears it."
+    },
     {
       "id": "COMMITMENT_CREATED",
       "origin": "human",
@@ -403,7 +424,7 @@
       "id": "Q_ANXIETY",
       "priority": 60,
       "cooldownSec": 120,
-      "maxAsks": 12,
+      "maxAsks": 4,
       "bands": ["P1", "P2", "P3"],
       "variants": {
         "self": {
@@ -424,7 +445,8 @@
             { "id": "unknown", "unknown": true, "set": { "anxiety": "unknown" } }
           ]
         }
-      }
+      },
+      "minIntervalSec": 600
     },
     {
       "id": "Q_NOISE",
@@ -467,7 +489,7 @@
       "id": "Q_HOW_NOW",
       "priority": 90,
       "cooldownSec": 120,
-      "maxAsks": 20,
+      "maxAsks": 3,
       "bands": ["P1", "P2", "P3"],
       "variants": {
         "any": {
@@ -479,7 +501,8 @@
             { "id": "unknown", "unknown": true, "set": { "reportedTrend": "unknown" } }
           ]
         }
-      }
+      },
+      "minIntervalSec": 600
     }
   ],
   "textTriggers": {
@@ -765,7 +788,8 @@
       "maxChars": 220,
       "education": false,
       "questionBudget": 2,
-      "askBeforeAct": true
+      "askBeforeAct": true,
+      "questionsBetweenHelps": 1
     },
     "P2": {
       "maxActions": 3,
@@ -773,8 +797,9 @@
       "maxAnswers": 4,
       "maxChars": 260,
       "education": false,
-      "questionBudget": 3,
-      "askBeforeAct": true
+      "questionBudget": 2,
+      "askBeforeAct": true,
+      "questionsBetweenHelps": 1
     },
     "P3": {
       "maxActions": 3,
@@ -783,7 +808,8 @@
       "maxChars": 320,
       "education": true,
       "questionBudget": 2,
-      "askBeforeAct": true
+      "askBeforeAct": true,
+      "questionsBetweenHelps": 1
     }
   },
   "silence": {
@@ -934,6 +960,15 @@
       "bands": ["P1", "P2"],
       "strategies": [
         {
+          "id": "cold_water",
+          "when": { "always": true },
+          "requires": ["breathing_normal", "responsive"],
+          "card": "CARD_GROUNDING_COLD",
+          "onShow": [],
+          "cooldownSec": 300,
+          "blockSec": 3600
+        },
+        {
           "id": "breath_pacer",
           "when": { "always": true },
           "requires": ["breathing_normal", "responsive"],
@@ -953,6 +988,15 @@
           "blockSec": 900
         },
         {
+          "id": "double_sigh",
+          "when": { "always": true },
+          "requires": ["breathing_normal", "responsive"],
+          "card": "CARD_GROUNDING_SIGH",
+          "onShow": [],
+          "cooldownSec": 300,
+          "blockSec": 900
+        },
+        {
           "id": "five_senses",
           "when": { "always": true },
           "requires": ["responsive"],
@@ -960,9 +1004,27 @@
           "onShow": [],
           "cooldownSec": 300,
           "blockSec": 900
+        },
+        {
+          "id": "humming",
+          "when": { "always": true },
+          "requires": ["breathing_normal", "responsive"],
+          "card": "CARD_GROUNDING_HUM",
+          "onShow": [],
+          "cooldownSec": 300,
+          "blockSec": 900
+        },
+        {
+          "id": "press_wall",
+          "when": { "always": true },
+          "requires": [],
+          "card": "CARD_GROUNDING_WALL",
+          "onShow": [],
+          "cooldownSec": 300,
+          "blockSec": 900
         }
       ],
-      "doc": "Contraindications are data (INV-027): breath_pacer needs breathing=normal and responsiveness=responsive; five_senses needs responsiveness=responsive; feet_floor is the simple fallback."
+      "doc": "Contraindications are data (INV-027): anything that paces or changes breathing (breath_pacer, double_sigh, humming) and the cold-water shock (cold_water) needs breathing=normal and responsiveness=responsive; five_senses needs responsiveness=responsive; feet_floor and press_wall are the simple fallbacks. 'Não tenho água aqui' blocks cold_water for an hour (L09)."
     },
     {
       "id": "steady_check",
@@ -1009,9 +1071,14 @@
       { "id": "P1-005", "when": { "eq": ["commitment.due", true] }, "skill": "confirm_commitment" },
       {
         "id": "P1-010",
-        "when": { "any": [{ "gte": ["silence.count", 1] }, { "eq": ["session.resumedAfterGap", true] }] },
+        "when": { "eq": ["session.resumedAfterGap", true] },
         "skill": "assess",
         "question": "Q_HOW_NOW"
+      },
+      {
+        "id": "P1-015",
+        "when": { "all": [{ "eq": ["signal.actor", "self"] }, { "eq": ["skill.grounding.done", false] }] },
+        "skill": "grounding"
       },
       {
         "id": "P1-020",
@@ -1033,7 +1100,7 @@
       { "id": "P2-005", "when": { "eq": ["commitment.due", true] }, "skill": "confirm_commitment" },
       {
         "id": "P2-010",
-        "when": { "any": [{ "gte": ["silence.count", 1] }, { "eq": ["session.resumedAfterGap", true] }] },
+        "when": { "eq": ["session.resumedAfterGap", true] },
         "skill": "assess",
         "question": "Q_HOW_NOW"
       },
@@ -1181,13 +1248,9 @@
     {
       "id": "CARD_IN_PLACE",
       "kind": "action",
-      "bands": ["P1", "P2"],
+      "bands": ["P1", "P2", "P3"],
       "actions": [
-        {
-          "id": "did_it",
-          "emphasis": "primary",
-          "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }, { "op": "SIGNALS_EXPIRED", "signals": ["anxiety"] }]
-        },
+        { "id": "did_it", "emphasis": "primary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }] },
         { "id": "didnt_help", "emphasis": "secondary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "failed" }] }
       ],
       "variantKeys": ["actor"]
@@ -1195,7 +1258,7 @@
     {
       "id": "CARD_STAY_CLOSE",
       "kind": "action",
-      "bands": ["P1", "P2"],
+      "bands": ["P1", "P2", "P3"],
       "actions": [
         { "id": "did_it", "emphasis": "primary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }] },
         { "id": "not_now", "emphasis": "secondary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "declined" }] }
@@ -1205,7 +1268,7 @@
     {
       "id": "CARD_CONTACT_WHATSAPP",
       "kind": "action",
-      "bands": ["P1", "P2"],
+      "bands": ["P1", "P2", "P3"],
       "actions": [
         {
           "id": "open_whatsapp",
@@ -1242,7 +1305,7 @@
     {
       "id": "CARD_CONTACT_SMS",
       "kind": "action",
-      "bands": ["P1", "P2"],
+      "bands": ["P1", "P2", "P3"],
       "actions": [
         {
           "id": "open_sms",
@@ -1278,7 +1341,7 @@
     {
       "id": "CARD_CRISIS_LINE",
       "kind": "action",
-      "bands": ["P1", "P2"],
+      "bands": ["P1", "P2", "P3"],
       "actions": [
         {
           "id": "call_188",
@@ -1295,13 +1358,9 @@
     {
       "id": "CARD_GROUNDING_BREATH",
       "kind": "action",
-      "bands": ["P1", "P2"],
+      "bands": ["P1", "P2", "P3"],
       "actions": [
-        {
-          "id": "done",
-          "emphasis": "primary",
-          "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }, { "op": "SIGNALS_EXPIRED", "signals": ["anxiety"] }]
-        },
+        { "id": "done", "emphasis": "primary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }] },
         { "id": "not_this", "emphasis": "secondary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "declined" }] }
       ],
       "variantKeys": ["actor"]
@@ -1309,13 +1368,9 @@
     {
       "id": "CARD_GROUNDING_FEET",
       "kind": "action",
-      "bands": ["P1", "P2"],
+      "bands": ["P1", "P2", "P3"],
       "actions": [
-        {
-          "id": "done",
-          "emphasis": "primary",
-          "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }, { "op": "SIGNALS_EXPIRED", "signals": ["anxiety"] }]
-        },
+        { "id": "done", "emphasis": "primary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }] },
         { "id": "not_this", "emphasis": "secondary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "declined" }] }
       ],
       "variantKeys": ["actor"]
@@ -1323,13 +1378,50 @@
     {
       "id": "CARD_GROUNDING_SENSES",
       "kind": "action",
-      "bands": ["P1", "P2"],
+      "bands": ["P1", "P2", "P3"],
       "actions": [
-        {
-          "id": "done",
-          "emphasis": "primary",
-          "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }, { "op": "SIGNALS_EXPIRED", "signals": ["anxiety"] }]
-        },
+        { "id": "done", "emphasis": "primary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }] },
+        { "id": "not_this", "emphasis": "secondary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "declined" }] }
+      ],
+      "variantKeys": ["actor"]
+    },
+    {
+      "id": "CARD_GROUNDING_COLD",
+      "kind": "action",
+      "bands": ["P1", "P2", "P3"],
+      "actions": [
+        { "id": "done", "emphasis": "primary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }] },
+        { "id": "not_this", "emphasis": "secondary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "declined" }] },
+        { "id": "no_water", "emphasis": "low", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "failed" }] }
+      ],
+      "variantKeys": ["actor"]
+    },
+    {
+      "id": "CARD_GROUNDING_SIGH",
+      "kind": "action",
+      "bands": ["P1", "P2", "P3"],
+      "actions": [
+        { "id": "done", "emphasis": "primary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }] },
+        { "id": "not_this", "emphasis": "secondary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "declined" }] }
+      ],
+      "variantKeys": ["actor"]
+    },
+    {
+      "id": "CARD_GROUNDING_HUM",
+      "kind": "action",
+      "bands": ["P1", "P2", "P3"],
+      "actions": [
+        { "id": "done", "emphasis": "primary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }] },
+        { "id": "not_this", "emphasis": "secondary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "declined" }] }
+      ],
+      "variantKeys": ["actor"]
+    },
+    {
+      "id": "CARD_GROUNDING_WALL",
+      "kind": "action",
+      "bands": ["P1", "P2", "P3"],
+      "actions": [
+        { "id": "done", "emphasis": "primary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }] },
         { "id": "not_this", "emphasis": "secondary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "declined" }] }
       ],
       "variantKeys": ["actor"]
@@ -1533,7 +1625,118 @@
           { "op": "COMMITMENT_RESOLVED", "kind": "FRIEND_ARRIVAL", "outcome": "done" },
           { "op": "SIGNALS_REPORTED", "set": { "companion": "arrived" } }
         ]
+      },
+      "group": "pending"
+    },
+    {
+      "id": "CHIP_TOOL_COLD",
+      "bands": ["P1", "P2", "P3"],
+      "group": "tools",
+      "action": {
+        "id": "pick",
+        "ops": [{ "op": "STRATEGY_REQUESTED", "skill": "grounding", "strategy": "cold_water" }]
       }
+    },
+    {
+      "id": "CHIP_TOOL_BREATH",
+      "bands": ["P1", "P2", "P3"],
+      "group": "tools",
+      "action": {
+        "id": "pick",
+        "ops": [{ "op": "STRATEGY_REQUESTED", "skill": "grounding", "strategy": "breath_pacer" }]
+      }
+    },
+    {
+      "id": "CHIP_TOOL_SIGH",
+      "bands": ["P1", "P2", "P3"],
+      "group": "tools",
+      "action": {
+        "id": "pick",
+        "ops": [{ "op": "STRATEGY_REQUESTED", "skill": "grounding", "strategy": "double_sigh" }]
+      }
+    },
+    {
+      "id": "CHIP_TOOL_FEET",
+      "bands": ["P1", "P2", "P3"],
+      "group": "tools",
+      "action": {
+        "id": "pick",
+        "ops": [{ "op": "STRATEGY_REQUESTED", "skill": "grounding", "strategy": "feet_floor" }]
+      }
+    },
+    {
+      "id": "CHIP_TOOL_SENSES",
+      "bands": ["P1", "P2", "P3"],
+      "group": "tools",
+      "action": {
+        "id": "pick",
+        "ops": [{ "op": "STRATEGY_REQUESTED", "skill": "grounding", "strategy": "five_senses" }]
+      }
+    },
+    {
+      "id": "CHIP_TOOL_HUM",
+      "bands": ["P1", "P2", "P3"],
+      "group": "tools",
+      "action": { "id": "pick", "ops": [{ "op": "STRATEGY_REQUESTED", "skill": "grounding", "strategy": "humming" }] }
+    },
+    {
+      "id": "CHIP_TOOL_WALL",
+      "bands": ["P1", "P2", "P3"],
+      "group": "tools",
+      "action": {
+        "id": "pick",
+        "ops": [{ "op": "STRATEGY_REQUESTED", "skill": "grounding", "strategy": "press_wall" }]
+      }
+    },
+    {
+      "id": "CHIP_TOOL_QUIET",
+      "bands": ["P1", "P2", "P3"],
+      "group": "tools",
+      "action": {
+        "id": "pick",
+        "ops": [{ "op": "STRATEGY_REQUESTED", "skill": "reduce_stimulation", "strategy": "in_place" }]
+      }
+    },
+    {
+      "id": "CHIP_TALK_STAY",
+      "bands": ["P1", "P2", "P3"],
+      "group": "talk",
+      "action": {
+        "id": "pick",
+        "ops": [{ "op": "STRATEGY_REQUESTED", "skill": "contact_trusted_person", "strategy": "stay_close" }]
+      }
+    },
+    {
+      "id": "CHIP_TALK_MESSAGE",
+      "bands": ["P1", "P2", "P3"],
+      "group": "talk",
+      "action": {
+        "id": "pick",
+        "ops": [{ "op": "STRATEGY_REQUESTED", "skill": "contact_trusted_person", "strategy": "message_whatsapp" }]
+      }
+    },
+    {
+      "id": "CHIP_TALK_CVV",
+      "bands": ["P1", "P2", "P3"],
+      "group": "talk",
+      "action": {
+        "id": "pick",
+        "ops": [{ "op": "STRATEGY_REQUESTED", "skill": "contact_trusted_person", "strategy": "crisis_line" }]
+      }
+    },
+    {
+      "id": "CHIP_REPORT_BETTER",
+      "bands": ["P1", "P2", "P3"],
+      "group": "report",
+      "notice": "ACK_BETTER",
+      "action": { "id": "better", "ops": [{ "op": "SIGNALS_REPORTED", "set": { "reportedTrend": "better" } }] }
+    },
+    {
+      "id": "CHIP_REPORT_WORSE",
+      "bands": ["P1", "P2", "P3"],
+      "group": "report",
+      "notice": "ACK_WORSE",
+      "action": { "id": "worse", "ops": [{ "op": "SIGNALS_REPORTED", "set": { "reportedTrend": "worse" } }] }
     }
   ],
   "handoffTemplates": { "trusted": "trusted_message" },
@@ -1668,6 +1871,16 @@
       "id": "INV-027",
       "text": "Grounding respects physiology: breath_pacer is never selected unless breathing=normal and responsiveness=responsive; five_senses never unless responsiveness=responsive.",
       "enforcedBy": ["requirements", "runtime", "exhaustive", "scenario", "lint"]
+    },
+    {
+      "id": "INV-028",
+      "text": "No policy asks a question because of silence (L22): silence on a help card only adds the PRESENCE notice; HR-008 keeps watching silence when there is medical risk.",
+      "enforcedBy": ["lint", "scenario"]
+    },
+    {
+      "id": "INV-029",
+      "text": "The menu (chips) is empty in P0, and a technique picked from it never displaces P0, a critical question, a contraindication or a perspective rule (L23).",
+      "enforcedBy": ["runtime", "property", "scenario"]
     }
   ],
   "storage": {

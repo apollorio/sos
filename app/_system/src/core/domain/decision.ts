@@ -23,7 +23,7 @@ export interface Why {
   commander?: HardRuleId;
   bandRule?: BandRuleId;
   heldByHysteresis?: boolean;
-  policyRule?: PolicyRuleId | "PREREQUISITE" | "VOI_CRITICAL" | "VOI_DECISIVE" | "FORCED_QUESTION" | "TERMINAL";
+  policyRule?: PolicyRuleId | "PREREQUISITE" | "VOI_CRITICAL" | "VOI_DECISIVE" | "FORCED_QUESTION" | "USER_REQUEST" | "KEEP_HELP" | "TERMINAL";
   voi?: { questionId: QuestionId; class: VoiClass };
   /** Leaves of the hard rule / policy rule that fired. Generated from the SAME predicate that decided. */
   because: TraceLeaf[];
@@ -61,7 +61,7 @@ export interface CardView {
   interactive?: string;
 }
 
-export interface ChipView { chipId: ChipId; actionId: string }
+export interface ChipView { chipId: ChipId; actionId: string; group: "pending" | "tools" | "talk" | "report" }
 
 export type Effect =
   | { type: "KEEP_AWAKE"; on: boolean }
@@ -71,7 +71,8 @@ export type Effect =
 export interface Output {
   card: CardView;
   chips: ChipView[];
-  notice?: "TEXT_UNMATCHED" | "STALE_TAP";
+  /** One quiet line above the card. PRESENCE replaces "how are you?" after silence (L22); ACK_* answer a report chip. */
+  notice?: "TEXT_UNMATCHED" | "STALE_TAP" | "PRESENCE" | "ACK_BETTER" | "ACK_WORSE";
   effects: Effect[];
   /** Earliest instant at which the decision could change without new input. The shell sets ONE timer. */
   nextWakeAt: number | null;

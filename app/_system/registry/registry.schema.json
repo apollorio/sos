@@ -45,7 +45,7 @@
     },
     "path": {
       "type": "string",
-      "pattern": "^(signal\\.[a-zA-Z]+|risk\\.[a-z]+|trend|connectivity|silence\\.count|session\\.[a-zA-Z]+|commitment\\.(due|pending\\.[A-Z_]+))$"
+      "pattern": "^(signal\\.[a-zA-Z]+|risk\\.[a-z]+|trend|connectivity|silence\\.count|session\\.[a-zA-Z]+|commitment\\.(due|pending\\.[A-Z_]+)|skill\\.[a-z_]+\\.done)$"
     },
     "pred": {
       "oneOf": [
@@ -255,6 +255,7 @@
             "SIGNALS_REPORTED",
             "SIGNALS_EXPIRED",
             "STRATEGY_OUTCOME",
+            "STRATEGY_REQUESTED",
             "COMMITMENT_CREATED",
             "COMMITMENT_RESOLVED",
             "HANDOFF_OPENED",
@@ -371,6 +372,11 @@
           "type": "integer",
           "minimum": 0,
           "maximum": 5
+        },
+        "questionsBetweenHelps": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 2
         },
         "askBeforeAct": {
           "type": "boolean"
@@ -682,6 +688,10 @@
           "maxAsks": {
             "type": "integer",
             "minimum": 1
+          },
+          "minIntervalSec": {
+            "type": "integer",
+            "minimum": 0
           },
           "bands": {
             "type": "array",
@@ -1046,7 +1056,62 @@
       }
     },
     "chips": {
-      "type": "array"
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "bands",
+          "group",
+          "action"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "pattern": "^CHIP_[A-Z_]+$"
+          },
+          "bands": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/nonP0"
+            }
+          },
+          "group": {
+            "enum": [
+              "pending",
+              "tools",
+              "talk",
+              "report"
+            ]
+          },
+          "whenPending": {
+            "type": "string"
+          },
+          "notice": {
+            "type": "string"
+          },
+          "action": {
+            "type": "object",
+            "required": [
+              "id",
+              "ops"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "ops": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/$defs/op"
+                }
+              }
+            },
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      }
     },
     "handoffTemplates": {
       "type": "object"

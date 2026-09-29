@@ -45,8 +45,12 @@ export function askable(
   if (!variant) return null;
   if (!q.bands.includes(band)) return null;
   const mem = state.questions[q.id as keyof typeof state.questions];
-  if (mem && mem.asks >= q.maxAsks) return null;
+  // The question already on screen is not a re-ask: it stays until answered (its own display counted as an ask).
+  const onScreen = state.card?.questionId === q.id;
+  if (mem && mem.asks >= q.maxAsks && !onScreen) return null;
   if (mem?.lastUnknownAt != null && now - mem.lastUnknownAt < q.cooldownSec * 1000) return null;
+  // L24: never ask the same thing again too soon, whatever made it askable (TTL, a policy, a resume).
+  if (!onScreen && q.minIntervalSec && mem?.lastAskedAt != null && now - mem.lastAskedAt < q.minIntervalSec * 1000) return null;
   if (pinned) return variant;
   // At least one of the signals this variant can set must be unknown (and therefore not latched).
   const touched = new Set(variant.answers.flatMap((a) => Object.keys(a.set)));

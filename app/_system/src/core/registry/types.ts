@@ -14,6 +14,7 @@ export type Op =
   | { op: "SIGNALS_REPORTED"; set: Record<string, Primitive>; source?: string }
   | { op: "SIGNALS_EXPIRED"; signals: string[] }
   | { op: "STRATEGY_OUTCOME"; outcome: "done" | "failed" | "declined"; skill?: string; strategy?: string }
+  | { op: "STRATEGY_REQUESTED"; skill: string; strategy: string }
   | { op: "COMMITMENT_CREATED"; kind: string }
   | { op: "COMMITMENT_RESOLVED"; kind: string; outcome: "done" | "snooze" | "cancel" }
   | { op: "HANDOFF_OPENED"; channel: Channel; target: string }
@@ -53,6 +54,8 @@ export interface QuestionDef {
   priority: number;
   cooldownSec: number;
   maxAsks: number;
+  /** L24: minimum time between two asks of this question, whatever made it askable again. */
+  minIntervalSec?: number;
   bands: string[];
   variants: Record<string, QuestionVariantDef>; // "self" | "helper" | "any"
 }
@@ -92,6 +95,8 @@ export interface EngagementDef {
   maxChars: number;
   education: boolean;
   questionBudget: number;
+  /** L21: once any help has been shown, at most this many questions stand between two helps. */
+  questionsBetweenHelps?: number;
   askBeforeAct: boolean;
 }
 
@@ -144,7 +149,18 @@ export interface CardDef {
   doc?: string;
 }
 
-export interface ChipDef { id: string; bands: string[]; whenPending: string; action: { id: string; ops: Op[] } }
+/**
+ * Chips live beside the card. pending: shown while a commitment is pending. tools / talk: a technique or a person the
+ * person can pick at any time (L23), shown only while that strategy is eligible. report: "how I am", said when THEY want.
+ */
+export interface ChipDef {
+  id: string;
+  bands: string[];
+  group: "pending" | "tools" | "talk" | "report";
+  whenPending?: string;
+  notice?: string;
+  action: { id: string; ops: Op[] };
+}
 
 export interface ContinuityDef {
   doc?: string;

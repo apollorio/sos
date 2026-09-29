@@ -51,6 +51,11 @@ export function buildFacts(state: SessionState, now: number, reg: Reg): FactsWit
     if (c.dueAt <= now) due = true;
   }
   f["commitment.due"] = due;
+  // skill.<id>.done: this skill already helped in this session (L21: the first help is a technique, then the rest).
+  for (const sk of reg.data.skills) {
+    if (!sk.strategies.length) continue;
+    f[`skill.${sk.id}.done`] = sk.strategies.some((st) => state.strategies[`${sk.id}.${st.id}`]?.doneAt != null);
+  }
   const risk = computeRisk(f, reg);
   for (const [d, lvl] of Object.entries(risk)) f[`risk.${d}`] = lvl;
   return { facts: f, risk };
@@ -63,5 +68,6 @@ export function factCatalog(reg: Reg): Map<string, Primitive[]> {
   for (const f of reg.data.facts) m.set(f.path, f.domain);
   for (const d of reg.data.risk.dimensions) m.set(`risk.${d}`, [0, 1, 2, 3, 4]);
   for (const c of reg.data.commitments) m.set(`commitment.pending.${c.id}`, [true, false]);
+  for (const sk of reg.data.skills) if (sk.strategies.length) m.set(`skill.${sk.id}.done`, [true, false]);
   return m;
 }

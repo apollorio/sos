@@ -273,6 +273,12 @@ export const MISSIONS: MissionDef[] = [
   { scenario: "shell-192-anytime", who: "self", title: "A barra do 192 a qualquer momento",
     story: "No meio das perguntas, você decide que precisa ligar pro SAMU.",
     watch: "A barra vermelha estava sempre visível? O app respeitou a decisão sem perguntar mais nada?" },
+  { scenario: "silence-brings-presence", who: "self", title: "Fazendo um exercício com calma",
+    story: "Você está fazendo uma técnica e fica alguns minutos sem tocar em nada.",
+    watch: "O app esperou você, sem perguntar «tudo bem?» e sem trocar de tela?" },
+  { scenario: "menu-pick-and-blocks", who: "self", title: "Escolhendo pelo menu",
+    story: "Você não tem água por perto e prefere escolher a técnica você mesmo(a).",
+    watch: "Dava pra escolher outra técnica a qualquer momento? O app respeitou o que você disse?" },
   { scenario: "calm-end-and-wipe", who: "self", title: "Tô bem: encerrar e apagar",
     story: "Você está tranquilo(a) e quer encerrar e apagar tudo do aparelho.",
     watch: "Ficou claro que nada ficou guardado? O app recomeçou do zero?" },
@@ -314,11 +320,17 @@ export function missions(): Mission[] {
       } else if ("shell" in st) {
         act = "Toque na barra vermelha «Ligar 192» no topo";
         warn = "Abre o discador (192). Cancele: não complete a ligação em teste.";
-      } else if ("chip" in st) act = `${wait ? `Espere ${wait}. Depois toque` : "Toque"} no atalho «${L.chips[st.chip]?.label ?? st.chip}»`;
+      } else if ("chip" in st) {
+        const label = L.chips[st.chip]?.label ?? st.chip;
+        const where = REG.chip.get(st.chip)?.group === "pending" ? "" : " no menu";
+        act = after.rejected ? `Procure «${label}» no menu abaixo do cartão` : `${wait ? `Espere ${wait}. Depois toque` : "Toque"} em «${label}»${where}`;
+      }
       else throw new Error(`mission ${m.scenario}: step kind not supported for testers`);
+      const notice = after.output.notice ? L.notices[after.output.notice] : "";
       const see = after.state.status === "wiped" ? "Tudo é apagado do aparelho e o app recomeça pela primeira pergunta."
         : hidden ? "Nada: o app está em segundo plano e não conta esse tempo como silêncio."
-        : `«${res.title}»${res.body ? ` · ${res.body}` : ""}`;
+        : "chip" in st && after.rejected ? "Não está lá: o app tirou essa opção do menu."
+        : `${notice ? `«${notice}» ` : ""}«${res.title}»${res.body ? ` · ${res.body}` : ""}`;
       return { act, see, p0: after.log.band === "P0" && !hidden, ...(warn ? { warn } : {}) };
     });
     const minutes = Math.max(1, Math.round(sc.steps.reduce((t, s) => t + (s.after ?? 20), 0) / 60));

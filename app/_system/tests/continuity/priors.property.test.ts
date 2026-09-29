@@ -95,7 +95,7 @@ describe("strategy priors (longitudinal personalization)", () => {
     const out = reorderByPriors("steady_check", def, { "steady_check.hold": "helpful", "steady_check.check_later": "helpful" });
     expect(out.map((s) => s.id)).toEqual(["check_later", "tips", "hold"]);
     const g = REG.skill.get("grounding")!.strategies;
-    expect(reorderByPriors("grounding", g, { "grounding.breath_pacer": "unhelpful", "grounding.five_senses": "helpful" }).map((s) => s.id)).toEqual(["five_senses", "feet_floor", "breath_pacer"]);
+    expect(reorderByPriors("grounding", g, { "grounding.breath_pacer": "unhelpful", "grounding.five_senses": "helpful" }).map((s) => s.id)).toEqual(["five_senses", "cold_water", "feet_floor", "double_sigh", "humming", "press_wall", "breath_pacer"]);
   });
 
   it("a real history changes the FIRST grounding strategy offered, and only that", () => {
@@ -109,7 +109,7 @@ describe("strategy priors (longitudinal personalization)", () => {
     const plain = run(steps).at(-1)!.output.card;
     const withHist = run(steps, priors).at(-1)!.output.card;
     if (plain.skill === "grounding" && withHist.skill === "grounding") {
-      expect(plain.strategy).toBe("breath_pacer");
+      expect(plain.strategy).toBe("cold_water"); // the registry's first technique (audit 010)
       expect(withHist.strategy).toBe("five_senses");
     }
     expect(withHist.band).toBe(plain.band);

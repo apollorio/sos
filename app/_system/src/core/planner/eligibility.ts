@@ -13,7 +13,11 @@ export type Ineligible =
   | "satisfied"
   | "repeat";
 
-export function strategyIneligibility(skillId: string, st: StrategyDef, ctx: SkillCtx): Ineligible | null {
+/**
+ * `requested`: the person picked this technique from the menu (L23). Their choice lifts the
+ * "already done recently" and "shown too often" checks, never a contraindication, a perspective rule or a block.
+ */
+export function strategyIneligibility(skillId: string, st: StrategyDef, ctx: SkillCtx, requested = false): Ineligible | null {
   if (st.alwaysEligible) return null;
   if (st.bandsOnly && !st.bandsOnly.includes(ctx.band)) return "band";
   if (!evaluate(st.when, ctx.facts).ok) return "when";
@@ -24,6 +28,7 @@ export function strategyIneligibility(skillId: string, st: StrategyDef, ctx: Ski
   const key = `${skillId}.${st.id}`;
   const mem = ctx.state.strategies[key];
   if (mem?.blockedUntil != null && mem.blockedUntil > ctx.now) return "blocked";
+  if (requested) return null;
   if (mem?.doneAt != null && ctx.now < mem.doneAt + st.cooldownSec * 1000) return "satisfied";
   if (!st.repeatable && ctx.state.repeat.key === key && ctx.state.repeat.count >= 3 && ctx.state.card?.strategy !== st.id) return "repeat";
   return null;

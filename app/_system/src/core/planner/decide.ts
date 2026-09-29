@@ -23,6 +23,8 @@ import { evaluate, type Facts } from "../logic/predicate";
 import { evaluateHardRules, type Commander } from "../safety/hard-rules";
 import { determineBand, type BandOutcome } from "../safety/band-engine";
 import { askable, rankQuestions, type CoreOutcome } from "./voi";
+import { requestedPick } from "./chips";
+import { strategyIneligibility } from "./eligibility";
 import type { StrategyPriors } from "../continuity/types";
 
 export class EngineError extends Error {}
@@ -59,6 +61,15 @@ function prerequisite(facts: Facts, reg: Reg): QuestionId | null {
     if (sigs.some((s) => (facts[`signal.${s}`] ?? "unknown") === "unknown")) return q.id as QuestionId;
   }
   return null;
+}
+
+/** The help card on screen, if time alone must not replace it (L22). */
+function keepHelp(ctx: SkillCtx): SkillPick | null {
+  const c = ctx.state.card;
+  if (!c || c.kind !== "action" || !c.strategy || c.skill === "emergency_escalation" || c.skill === "terminal" || c.skill === "confirm_commitment") return null;
+  const st = ctx.reg.strategy.get(`${c.skill}.${c.strategy}`);
+  if (!st || strategyIneligibility(c.skill, st, ctx, true) !== null) return null;
+  return { skill: c.skill, strategy: c.strategy, cardId: c.cardId, variantKeys: c.variantKeys, onShow: [], ...(c.interactive ? { interactive: c.interactive } : {}) };
 }
 
 /** Pipeline without questions (used by VOI simulation and by the exhaustive tests). */
@@ -119,8 +130,14 @@ export function decide(state: SessionState, now: number, reg: Reg, explicit = fa
     };
   };
 
+  // L22: time alone never takes a help card off the screen. Only a human input, P0 (above), a lost
+  // contraindication (the strategy is no longer eligible) or a safety re-check while someone is being watched
+  // (below) can replace it: no check-in or follow-up interrupts an exercise on a timer; they come after the next tap.
+  const keep = explicit ? null : keepHelp(ctx);
+  const keepWhy = () => whyFor(band, bo, "KEEP_HELP", [{ path: `card.${state.card!.cardId}`, op: "keep", expected: null, actual: null }]);
+
   // 2. Prerequisite: who is holding the phone.
-  const pre = prerequisite(facts, reg);
+  const pre = keep ? null : prerequisite(facts, reg);
   if (pre) {
     const d = asQuestion(pre, "PREREQUISITE");
     if (d) return d;
@@ -140,15 +157,30 @@ export function decide(state: SessionState, now: number, reg: Reg, explicit = fa
   // Simulated answers ARE explicit human inputs, so they may release hysteresis.
   const ranked = rankQuestions(state, facts, band, base, now, reg, (s, t, r) => decideCore(s, t, r, true, priors));
   const top = ranked[0];
-  if (top?.cls === "critical") {
+  // A question that could reveal P0 may interrupt help on a timer only while someone's body is being watched:
+  // the phone holder helps another person, or there is already medical risk. Otherwise it waits for the next tap.
+  const watchful = facts["signal.actor"] === "helper" || Number(facts["risk.medical"] ?? 0) >= 2;
+  if (top?.cls === "critical" && (!keep || watchful)) {
     const d = asQuestion(top.q.id, "VOI_CRITICAL", "critical");
     if (d) return d;
   }
+  if (keep) return { band, pick: keep, nextBand: bo.next, why: keepWhy() };
+  // 5b. The person picked a technique from the menu (L23). Only P0 and a critical question come first;
+  // their choice is never displaced by a decisive question or a policy rule.
+  const req = requestedPick(state, facts, band, now, reg);
+  if (req) {
+    const leaf = { path: `requested.${state.requested!.key}`, op: "picked", expected: null, actual: null };
+    return { band, pick: req, nextBand: bo.next, why: whyFor(band, bo, "USER_REQUEST", [leaf]) };
+  }
+
   const eng = reg.data.engagement[band]!;
   const decisive = ranked.find((r) => r.cls === "decisive");
   // The question already on screen does not consume budget again (stable card identity):
   // re-deciding without new input must never make the current question disappear.
-  const budgetOk = !!decisive && (state.questionsInARow < eng.questionBudget || state.card?.questionId === decisive.q.id);
+  // L21: a short triage on entry (questionBudget); once help has started, at most questionsBetweenHelps between two helps.
+  const helped = Object.values(state.strategies).some((m) => m.shows > 0);
+  const budget = helped ? (eng.questionsBetweenHelps ?? eng.questionBudget) : eng.questionBudget;
+  const budgetOk = !!decisive && (state.questionsInARow < budget || state.card?.questionId === decisive.q.id);
 
   // 6. Policy table.
   for (const rule of reg.data.policies[band] ?? []) {

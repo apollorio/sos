@@ -41,11 +41,26 @@ export function renderStep(root: HTMLElement, r: StepResult, locale: Locale, reg
   section.append(actions);
   if (c.aside) section.append(el("p", "aside", c.aside));
 
-  for (const chip of r.output.chips) {
-    const b = el("button", "chip", locale.chips[chip.chipId]?.label ?? chip.chipId);
-    b.addEventListener("click", () => on.chip(chip.chipId));
-    section.append(b);
+  const chipButton = (chipId: string) => {
+    const b = el("button", "chip", locale.chips[chipId]?.label ?? chipId);
+    b.setAttribute("type", "button");
+    b.addEventListener("click", () => on.chip(chipId));
+    return b;
+  };
+  for (const chip of r.output.chips.filter((c) => c.group === "pending")) section.append(chipButton(chip.chipId));
+
+  // L23: a way out and a menu, always (never in P0: the engine sends no chips there).
+  const groups: [string, string][] = [["tools", "menuTools"], ["talk", "menuTalk"], ["report", "menuReport"]];
+  const menu = el("nav", "menu");
+  menu.setAttribute("aria-label", locale.shell["menuTools"] ?? "menu");
+  for (const [g, heading] of groups) {
+    const chips = r.output.chips.filter((c) => c.group === g);
+    if (!chips.length) continue;
+    const row = el("div", "menu-row");
+    for (const chip of chips) row.append(chipButton(chip.chipId));
+    menu.append(el("p", "menu-h", locale.shell[heading] ?? ""), row);
   }
+  if (menu.childElementCount) section.append(menu);
 
   if (card.band !== "P0") {
     const form = el("form", "free-text") as HTMLFormElement;
