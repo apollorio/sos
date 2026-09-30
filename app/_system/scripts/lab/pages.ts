@@ -127,6 +127,9 @@ ${SAFETY}
 <h2>Para profissionais de saúde</h2>
 <div class="grid">
   <a class="tile" href="revisao.html"><strong>Revisão clínica</strong><span>${nReview} itens: regras de emergência, perguntas, orientações e frases de alerta. Aprove, ajuste ou reprove item por item.</span></a>
+  <a class="tile" href="../medico.html?cenario=pista-bala-alcool-azulzinho"><strong>Modo Médico · cenários</strong><span>O resumo de crise para a equipe de saúde (tela e PDF A4), gerado pelo motor a partir de histórias de teste. Troque o cenário no topo da página.</span></a>
+  <a class="tile" href="../medico.html"><strong>Modo Médico · ao vivo</strong><span>Abra o app em outra aba, responda algumas telas e veja este resumo se atualizar em tempo real. Tudo fica neste aparelho.</span></a>
+  <a class="tile" href="../relatorio.html"><strong>Relatório de Emergência</strong><span>A linha do tempo da crise, na visão da própria pessoa (sem dados de substâncias), com botão de compartilhar.</span></a>
   <a class="tile" href="../legacy.html"><strong>Versão anterior</strong><span>A página que está no ar hoje, para comparar.</span></a>
 </div>
 

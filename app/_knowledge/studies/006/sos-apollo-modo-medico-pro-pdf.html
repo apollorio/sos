@@ -1,0 +1,1203 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#101828">
+<title>SOS Apollo · Modo Médico · Resumo para Profissional de Saúde</title>
+
+<style>
+  :root{
+    --ink:#101828;
+    --muted:#667085;
+    --soft:#f7f8fa;
+    --line:#d7dde5;
+    --line-2:#eaecf0;
+    --paper:#fff;
+    --screen:#e9edf2;
+    --red:#b42318;
+    --red-bg:#fff1f0;
+    --amber:#9a6700;
+    --amber-bg:#fff8e6;
+    --green:#067647;
+    --green-bg:#ecfdf3;
+    --blue:#175cd3;
+    --blue-bg:#eff6ff;
+    --violet:#5925dc;
+    --violet-bg:#f4f0ff;
+    --slate:#344054;
+    --radius:3.2mm;
+  }
+
+  *{box-sizing:border-box}
+  html{background:var(--screen);color:var(--ink)}
+  body{
+    margin:0;
+    font-family:Arial,Helvetica,sans-serif;
+    font-size:10pt;
+    line-height:1.32;
+    background:var(--screen);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+
+  button{font:inherit}
+
+  .screen-toolbar{
+    position:sticky;
+    top:0;
+    z-index:50;
+    display:flex;
+    justify-content:center;
+    gap:8px;
+    padding:10px;
+    background:rgba(16,24,40,.96);
+    border-bottom:1px solid rgba(255,255,255,.12);
+    backdrop-filter:blur(12px);
+  }
+  .screen-toolbar button{
+    appearance:none;
+    border:1px solid #475467;
+    background:#1d2939;
+    color:#fff;
+    border-radius:8px;
+    padding:8px 12px;
+    cursor:pointer;
+  }
+  .screen-toolbar button.primary{
+    background:#fff;
+    color:#101828;
+    border-color:#fff;
+    font-weight:700;
+  }
+
+  .document{
+    padding:18px 0 32px;
+  }
+
+  .sheet{
+    width:210mm;
+    min-height:297mm;
+    margin:0 auto 14px;
+    padding:11mm 11mm 10mm;
+    background:var(--paper);
+    box-shadow:0 8px 28px rgba(16,24,40,.12);
+    position:relative;
+    overflow:hidden;
+  }
+
+  .page-footer{
+    position:absolute;
+    left:11mm;
+    right:11mm;
+    bottom:6mm;
+    display:flex;
+    justify-content:space-between;
+    gap:10px;
+    padding-top:2.4mm;
+    border-top:.3mm solid var(--line-2);
+    color:var(--muted);
+    font-size:7.5pt;
+  }
+
+  .doc-head{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:12mm;
+    align-items:start;
+    border-bottom:.55mm solid var(--ink);
+    padding-bottom:4mm;
+    margin-bottom:4mm;
+  }
+  .brandline{
+    font-size:8pt;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    font-weight:700;
+    color:var(--muted);
+    margin-bottom:1.3mm;
+  }
+  h1{
+    margin:0;
+    font-size:19pt;
+    line-height:1.04;
+    letter-spacing:-.02em;
+  }
+  .subtitle{
+    margin:1.7mm 0 0;
+    color:var(--muted);
+    font-size:9pt;
+  }
+  .episode-box{
+    min-width:47mm;
+    border-left:.8mm solid var(--ink);
+    padding-left:3mm;
+  }
+  .episode-box .k{
+    color:var(--muted);
+    font-size:7pt;
+    text-transform:uppercase;
+    letter-spacing:.09em;
+    font-weight:700;
+  }
+  .episode-box .v{
+    font-size:10.5pt;
+    font-weight:700;
+    margin-top:.6mm;
+  }
+  .episode-box .sub{
+    font-size:7.5pt;
+    color:var(--muted);
+    margin-top:.5mm;
+  }
+
+  .integrity{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:3mm;
+    align-items:start;
+    border:.35mm solid #b2ccff;
+    background:var(--blue-bg);
+    border-radius:2.2mm;
+    padding:3mm 3.5mm;
+    margin-bottom:4mm;
+  }
+  .integrity .badge{
+    font-size:7pt;
+    text-transform:uppercase;
+    letter-spacing:.08em;
+    font-weight:800;
+    color:var(--blue);
+    white-space:nowrap;
+  }
+  .integrity strong{font-size:9pt}
+  .integrity p{margin:.6mm 0 0;color:#344054;font-size:8pt}
+
+  .section{
+    margin-top:4mm;
+    break-inside:avoid;
+  }
+  .section-title{
+    display:flex;
+    align-items:flex-end;
+    justify-content:space-between;
+    gap:8mm;
+    border-bottom:.35mm solid var(--line);
+    padding-bottom:1.3mm;
+    margin-bottom:2.3mm;
+  }
+  .section-title h2{
+    margin:0;
+    font-size:10.7pt;
+    letter-spacing:.01em;
+  }
+  .section-title span{
+    color:var(--muted);
+    font-size:7.3pt;
+    text-align:right;
+  }
+
+  .scan-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:2.2mm;
+  }
+  .scan{
+    border:.35mm solid var(--line);
+    border-radius:2.4mm;
+    padding:3mm;
+    min-height:22mm;
+    break-inside:avoid;
+  }
+  .scan .label{
+    color:var(--muted);
+    font-size:7pt;
+    text-transform:uppercase;
+    letter-spacing:.07em;
+    font-weight:800;
+  }
+  .scan .value{
+    margin-top:1.3mm;
+    font-size:11.2pt;
+    line-height:1.14;
+    font-weight:800;
+  }
+  .scan .note{
+    margin-top:1.1mm;
+    color:var(--muted);
+    font-size:7.4pt;
+  }
+  .scan.good{background:var(--green-bg);border-color:#abefc6}
+  .scan.warn{background:var(--amber-bg);border-color:#fedf89}
+  .scan.info{background:var(--blue-bg);border-color:#b2ccff}
+
+  .unknown-strip{
+    margin-top:2.2mm;
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1.8mm;
+  }
+  .unknown{
+    background:#f9fafb;
+    border:.3mm solid var(--line-2);
+    border-radius:2mm;
+    padding:2.3mm;
+  }
+  .unknown b{
+    display:block;
+    font-size:7.6pt;
+  }
+  .unknown span{
+    display:block;
+    margin-top:.7mm;
+    color:var(--muted);
+    font-size:7pt;
+  }
+
+  .exposure{
+    width:100%;
+    border-collapse:collapse;
+    table-layout:fixed;
+  }
+  .exposure th{
+    text-align:left;
+    color:var(--muted);
+    font-size:7pt;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    border-bottom:.35mm solid var(--line);
+    padding:1.6mm 1.5mm;
+  }
+  .exposure td{
+    vertical-align:top;
+    border-bottom:.3mm solid var(--line-2);
+    padding:2.2mm 1.5mm;
+    font-size:8.2pt;
+  }
+  .exposure tr:last-child td{border-bottom:0}
+  .exposure strong{font-size:8.7pt}
+  .tag{
+    display:inline-block;
+    border-radius:99px;
+    padding:.8mm 1.8mm;
+    font-size:6.7pt;
+    font-weight:800;
+    letter-spacing:.03em;
+    white-space:nowrap;
+  }
+  .tag.reported{background:#dbeafe;color:#1849a9}
+  .tag.unknown{background:#f2f4f7;color:#475467}
+  .tag.derived{background:var(--violet-bg);color:var(--violet)}
+
+  .mix-alerts{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:2mm;
+    margin-top:2.4mm;
+  }
+  .mix{
+    border:.35mm solid #fedf89;
+    background:var(--amber-bg);
+    border-radius:2.4mm;
+    padding:2.7mm 3mm;
+  }
+  .mix small{
+    display:block;
+    color:var(--amber);
+    text-transform:uppercase;
+    font-weight:800;
+    letter-spacing:.06em;
+    font-size:6.7pt;
+  }
+  .mix strong{
+    display:block;
+    margin-top:1mm;
+    font-size:8.7pt;
+  }
+  .mix p{
+    margin:.9mm 0 0;
+    color:#5f4a16;
+    font-size:7.2pt;
+  }
+
+  .handoff-box{
+    background:#101828;
+    color:white;
+    border-radius:2.6mm;
+    padding:3.5mm 4mm;
+  }
+  .handoff-box .label{
+    color:#98a2b3;
+    font-size:6.8pt;
+    text-transform:uppercase;
+    letter-spacing:.09em;
+    font-weight:800;
+  }
+  .handoff-box p{
+    margin:1.3mm 0 0;
+    font-size:9pt;
+    line-height:1.32;
+  }
+
+  .meta-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:2mm;
+  }
+  .meta{
+    border:.3mm solid var(--line-2);
+    background:var(--soft);
+    border-radius:2.2mm;
+    padding:2.5mm 3mm;
+  }
+  .meta .k{
+    color:var(--muted);
+    font-size:6.8pt;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    font-weight:800;
+  }
+  .meta .v{
+    margin-top:.8mm;
+    font-size:8pt;
+    font-weight:700;
+  }
+
+  /* PAGE 2 */
+  .timeline{
+    list-style:none;
+    padding:0;
+    margin:0;
+  }
+  .timeline li{
+    display:grid;
+    grid-template-columns:18mm 1fr 27mm;
+    gap:3mm;
+    align-items:start;
+    padding:2mm 0;
+    border-bottom:.3mm solid var(--line-2);
+    break-inside:avoid;
+  }
+  .timeline li:last-child{border-bottom:0}
+  .time{
+    font-family:"Courier New",monospace;
+    font-size:7.7pt;
+    font-weight:700;
+    color:#344054;
+  }
+  .tl-main strong{display:block;font-size:8.5pt}
+  .tl-main span{display:block;margin-top:.4mm;color:var(--muted);font-size:7.2pt}
+  .tl-state{
+    text-align:right;
+    font-size:6.6pt;
+    color:var(--muted);
+  }
+
+  .care-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1.8mm;
+  }
+  .care{
+    border:.3mm solid var(--line-2);
+    border-radius:2mm;
+    padding:2.3mm 2.7mm;
+    break-inside:avoid;
+  }
+  .care-head{
+    display:flex;
+    justify-content:space-between;
+    gap:3mm;
+    align-items:start;
+  }
+  .care strong{font-size:8pt}
+  .care p{margin:.8mm 0 0;color:var(--muted);font-size:7pt}
+  .done{
+    color:var(--green);
+    font-size:6.7pt;
+    font-weight:800;
+    white-space:nowrap;
+  }
+  .shown{
+    color:var(--blue);
+    font-size:6.7pt;
+    font-weight:800;
+    white-space:nowrap;
+  }
+
+  .source-table{
+    width:100%;
+    border-collapse:collapse;
+  }
+  .source-table th,.source-table td{
+    padding:1.6mm 1.5mm;
+    border-bottom:.3mm solid var(--line-2);
+    text-align:left;
+    font-size:7.3pt;
+  }
+  .source-table th{
+    color:var(--muted);
+    text-transform:uppercase;
+    font-size:6.5pt;
+    letter-spacing:.05em;
+  }
+  .source-table tr:last-child td{border-bottom:0}
+
+  .statement{
+    border:.4mm solid var(--red);
+    background:var(--red-bg);
+    color:#7a271a;
+    border-radius:2.4mm;
+    padding:3mm 3.5mm;
+    font-size:8pt;
+  }
+  .statement strong{color:var(--red)}
+
+  /* PAGE 3 */
+  .tech-banner{
+    border:.35mm solid #d6bbfb;
+    background:var(--violet-bg);
+    border-radius:2.4mm;
+    padding:3mm 3.5mm;
+    color:#3e1c96;
+    margin-bottom:4mm;
+    font-size:8pt;
+  }
+
+  .risk-grid{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1.7mm;
+  }
+  .risk-card{
+    border:.3mm solid var(--line);
+    border-radius:2mm;
+    padding:2.2mm;
+  }
+  .risk-card .name{
+    color:var(--muted);
+    font-size:6.4pt;
+    text-transform:uppercase;
+    font-weight:800;
+    letter-spacing:.04em;
+  }
+  .risk-card .score{
+    font-size:13pt;
+    font-weight:800;
+    margin-top:.7mm;
+  }
+  .risk-card .scale{
+    color:var(--muted);
+    font-size:6.3pt;
+  }
+
+  .signal-table{
+    width:100%;
+    border-collapse:collapse;
+    table-layout:fixed;
+  }
+  .signal-table th,.signal-table td{
+    border-bottom:.3mm solid var(--line-2);
+    padding:1.45mm 1.3mm;
+    text-align:left;
+    vertical-align:top;
+    font-size:6.9pt;
+  }
+  .signal-table th{
+    color:var(--muted);
+    font-size:6.2pt;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+  }
+  .signal-table code{
+    font-family:"Courier New",monospace;
+    font-size:6.6pt;
+  }
+  .yes{color:var(--green);font-weight:800}
+  .no{color:var(--muted);font-weight:700}
+  .unk{color:#7a5d00;font-weight:800}
+
+  .audit-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:2mm;
+  }
+  .audit-box{
+    border:.3mm solid var(--line);
+    border-radius:2mm;
+    padding:2.5mm 3mm;
+  }
+  .audit-box h3{
+    margin:0 0 1.5mm;
+    font-size:8.2pt;
+  }
+  .audit-box ul{
+    margin:0;
+    padding-left:4mm;
+  }
+  .audit-box li{
+    margin:1mm 0;
+    font-size:7.2pt;
+  }
+
+  .mono{
+    font-family:"Courier New",monospace;
+  }
+
+  .print-only{display:none}
+
+  @page{
+    size:A4 portrait;
+    margin:10mm 10mm 11mm;
+  }
+
+  @media print{
+    html,body{background:#fff}
+    body{font-size:9.5pt}
+    .screen-toolbar{display:none!important}
+    .document{padding:0}
+    .sheet{
+      width:auto;
+      min-height:auto;
+      margin:0;
+      padding:0 0 8mm;
+      box-shadow:none;
+      overflow:visible;
+      break-after:page;
+    }
+    .sheet:last-child{break-after:auto}
+    .page-footer{
+      position:static;
+      margin-top:5mm;
+      padding-top:2mm;
+    }
+    .print-only{display:block}
+    .no-print{display:none!important}
+    .section,.scan,.mix,.care,.audit-box,.statement,.integrity,.handoff-box{
+      break-inside:avoid;
+    }
+    table{break-inside:auto}
+    tr{break-inside:avoid;break-after:auto}
+    *{
+      -webkit-print-color-adjust:exact!important;
+      print-color-adjust:exact!important;
+    }
+  }
+
+  @media(max-width:900px){
+    .sheet{
+      width:calc(100% - 20px);
+      min-height:auto;
+      padding:18px;
+    }
+    .scan-grid{grid-template-columns:1fr}
+    .unknown-strip{grid-template-columns:1fr 1fr}
+    .mix-alerts,.care-grid,.meta-grid,.audit-grid{grid-template-columns:1fr}
+    .risk-grid{grid-template-columns:1fr 1fr}
+    .page-footer{position:static;margin-top:18px}
+  }
+</style>
+</head>
+
+<body>
+  <div class="screen-toolbar no-print">
+    <button class="primary" onclick="window.print()">Salvar / imprimir PDF</button>
+    <button onclick="copyProfessionalSummary()">Copiar resumo clínico</button>
+  </div>
+
+  <main class="document">
+
+    <!-- =========================================================
+         PÁGINA 1 · HANDOFF CLÍNICO
+         ========================================================= -->
+    <section class="sheet">
+
+      <header class="doc-head">
+        <div>
+          <div class="brandline">SOS Apollo · Modo Médico</div>
+          <h1>Resumo de crise para profissional de saúde</h1>
+          <p class="subtitle">Handoff estruturado do episódio · dados do simulador / autorrelato · sem diagnóstico</p>
+        </div>
+
+        <div class="episode-box">
+          <div class="k">História simulada</div>
+          <div class="v">pista-bala-alcool-azulzinho</div>
+          <div class="sub">snapshot em t+09:38</div>
+        </div>
+      </header>
+
+      <div class="integrity">
+        <div class="badge">Origem dos dados</div>
+        <div>
+          <strong>Relato da própria pessoa + interpretação operacional do aplicativo.</strong>
+          <p>Identificação, idade, peso, dose, via de uso e sinais vitais numéricos não constam neste episódio e não foram preenchidos por inferência.</p>
+        </div>
+      </div>
+
+      <section class="section">
+        <div class="section-title">
+          <h2>Leitura rápida · situação conhecida no snapshot</h2>
+          <span>Fatos explícitos do episódio</span>
+        </div>
+
+        <div class="scan-grid">
+          <article class="scan good">
+            <div class="label">Responsividade</div>
+            <div class="value">Respondia normalmente</div>
+            <div class="note">Relatado pela pessoa · registro explícito</div>
+          </article>
+
+          <article class="scan good">
+            <div class="label">Respiração</div>
+            <div class="value">Normal</div>
+            <div class="note">Relatado pela pessoa · registro explícito</div>
+          </article>
+
+          <article class="scan good">
+            <div class="label">Dor / aperto no peito</div>
+            <div class="value">Não relatado</div>
+            <div class="note">Resposta explícita “não”</div>
+          </article>
+
+          <article class="scan warn">
+            <div class="label">Ansiedade</div>
+            <div class="value">Muito alta</div>
+            <div class="note">Valor 4/4 no vocabulário interno do SOS</div>
+          </article>
+
+          <article class="scan info">
+            <div class="label">Companhia</div>
+            <div class="value">Com alguém</div>
+            <div class="note">Relato explícito no episódio</div>
+          </article>
+
+          <article class="scan info">
+            <div class="label">Ambiente</div>
+            <div class="value">Lugar calmo</div>
+            <div class="note">Ruído classificado como “quiet” pelo autorrelato</div>
+          </article>
+        </div>
+
+        <div class="unknown-strip" aria-label="Informações não disponíveis">
+          <div class="unknown"><b>Convulsão</b><span>não informada / unknown</span></div>
+          <div class="unknown"><b>Desmaio</b><span>não informado / unknown</span></div>
+          <div class="unknown"><b>Intenção de se machucar</b><span>não informada / unknown</span></div>
+          <div class="unknown"><b>Segurança física do local</b><span>não informada / unknown</span></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-title">
+          <h2>Contexto de exposição relatado</h2>
+          <span>EXPOSURE_CONTEXT · não equivale a confirmação toxicológica</span>
+        </div>
+
+        <table class="exposure">
+          <thead>
+            <tr>
+              <th style="width:27%">Item</th>
+              <th style="width:28%">O que foi relatado</th>
+              <th style="width:25%">O que não consta</th>
+              <th style="width:20%">Proveniência</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Classe de substância</strong></td>
+              <td>Estimulante</td>
+              <td>Quantidade e via não coletadas</td>
+              <td><span class="tag reported">user_explicit</span></td>
+            </tr>
+            <tr>
+              <td><strong>Qual estimulante</strong></td>
+              <td>“bala / MD”</td>
+              <td>Composição química não confirmada</td>
+              <td><span class="tag reported">user_explicit</span></td>
+            </tr>
+            <tr>
+              <td><strong>Álcool junto</strong></td>
+              <td>Sim</td>
+              <td>Quantidade / horário não informados</td>
+              <td><span class="tag reported">user_explicit</span></td>
+            </tr>
+            <tr>
+              <td><strong>Produto para ereção</strong></td>
+              <td>“azulzinho”</td>
+              <td>Princípio ativo, dose e horário não informados</td>
+              <td><span class="tag reported">user_explicit</span></td>
+            </tr>
+            <tr>
+              <td><strong>Incômodo corporal</strong></td>
+              <td>Nariz ardendo</td>
+              <td>Causa não inferida pelo aplicativo</td>
+              <td><span class="tag reported">user_explicit</span></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="mix-alerts">
+          <div class="mix">
+            <small>Aviso exibido pelo aplicativo</small>
+            <strong>“bala / MD” + álcool</strong>
+            <p>O motor mostrou o cartão de combinação assim que os dois relatos ficaram conhecidos.</p>
+          </div>
+          <div class="mix">
+            <small>Aviso exibido pelo aplicativo</small>
+            <strong>estimulante + “azulzinho”</strong>
+            <p>Segundo aviso de combinação exibido após o relato do produto para ereção.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-title">
+          <h2>Resumo para passagem de caso</h2>
+          <span>Texto enxuto · apenas fatos disponíveis</span>
+        </div>
+
+        <div class="handoff-box">
+          <div class="label">Síntese</div>
+          <p>
+            Pessoa usando o SOS por conta própria, responsiva, relatando respiração normal e ausência de dor/aperto no peito,
+            com ansiedade muito alta, acompanhada e em ambiente calmo. Relatou uso de estimulante identificado no aplicativo
+            como “bala / MD”, com álcool, além de “azulzinho”, e posteriormente nariz ardendo. O aplicativo apresentou avisos
+            de combinação e orientações de redução de danos. Convulsão, desmaio, intenção de se machucar e segurança física
+            do local permaneceram sem informação registrada neste snapshot.
+          </p>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="meta-grid">
+          <div class="meta">
+            <div class="k">Identificação da pessoa</div>
+            <div class="v">Não informada neste episódio</div>
+          </div>
+          <div class="meta">
+            <div class="k">Histórico anterior no cofre de 180 dias</div>
+            <div class="v">Não incorporado · continuidade desligada</div>
+          </div>
+          <div class="meta">
+            <div class="k">Localização</div>
+            <div class="v">Não compartilhada no resumo</div>
+          </div>
+          <div class="meta">
+            <div class="k">Confirmação clínica / toxicológica</div>
+            <div class="v">Não disponível no aplicativo</div>
+          </div>
+        </div>
+      </section>
+
+      <footer class="page-footer">
+        <span>ESTE RESUMO CONTÉM DADOS RELATADOS PELA PESSOA. Verificação clínica é necessária.</span>
+        <span>Página 1 / 3</span>
+      </footer>
+    </section>
+
+
+    <!-- =========================================================
+         PÁGINA 2 · CURSO DO EPISÓDIO
+         ========================================================= -->
+    <section class="sheet">
+
+      <header class="doc-head">
+        <div>
+          <div class="brandline">SOS Apollo · Modo Médico</div>
+          <h1>Curso do episódio</h1>
+          <p class="subtitle">Eventos relevantes do journal · cronologia relativa do simulador</p>
+        </div>
+
+        <div class="episode-box">
+          <div class="k">Janela observada</div>
+          <div class="v">t+00:00 → t+09:38</div>
+          <div class="sub">horário civil não fornecido nesta história</div>
+        </div>
+      </header>
+
+      <section class="section" style="margin-top:0">
+        <div class="section-title">
+          <h2>Linha do tempo condensada</h2>
+          <span>Eventos de maior utilidade para handoff</span>
+        </div>
+
+        <ol class="timeline">
+          <li>
+            <div class="time">t+00:00</div>
+            <div class="tl-main"><strong>Episódio iniciado</strong><span>Motor iniciado; a própria pessoa está usando o SOS.</span></div>
+            <div class="tl-state">runtime / explícito</div>
+          </li>
+          <li>
+            <div class="time">t+00:12</div>
+            <div class="tl-main"><strong>Ansiedade muito alta relatada</strong><span>Valor interno 4/4. O aplicativo passa a alternar ajuda prática e perguntas úteis.</span></div>
+            <div class="tl-state">user_explicit</div>
+          </li>
+          <li>
+            <div class="time">t+01:16</div>
+            <div class="tl-main"><strong>Relatou estar com alguém</strong><span>Contexto de companhia atualizado pelo próprio usuário.</span></div>
+            <div class="tl-state">user_explicit</div>
+          </li>
+          <li>
+            <div class="time">t+02:19</div>
+            <div class="tl-main"><strong>Relatou lugar calmo</strong><span>Ruído classificado como “quiet”.</span></div>
+            <div class="tl-state">user_explicit</div>
+          </li>
+          <li>
+            <div class="time">t+03:23</div>
+            <div class="tl-main"><strong>Relatou uso de estimulante</strong><span>A informação é operacional e explícita; o motor não infere substância por sintomas.</span></div>
+            <div class="tl-state">user_explicit</div>
+          </li>
+          <li>
+            <div class="time">t+04:27</div>
+            <div class="tl-main"><strong>Relatou “bala / MD” + álcool</strong><span>Um único toque respondeu qual estimulante e presença de álcool.</span></div>
+            <div class="tl-state">user_explicit</div>
+          </li>
+          <li>
+            <div class="time">t+04:58</div>
+            <div class="tl-main"><strong>Aviso de combinação reconhecido</strong><span>Cartão “aviso: bala com álcool” foi exibido e marcado como concluído.</span></div>
+            <div class="tl-state">estratégia / done</div>
+          </li>
+          <li>
+            <div class="time">t+05:01</div>
+            <div class="tl-main"><strong>Relatou “azulzinho”</strong><span>O app registra a categoria operacional “pill”; não registra princípio ativo nem dose.</span></div>
+            <div class="tl-state">user_explicit</div>
+          </li>
+          <li>
+            <div class="time">t+05:32</div>
+            <div class="tl-main"><strong>Segundo aviso de combinação reconhecido</strong><span>Cartão “aviso: estimulante com azulzinho ou poppers” marcado como concluído.</span></div>
+            <div class="tl-state">estratégia / done</div>
+          </li>
+          <li>
+            <div class="time">t+05:35</div>
+            <div class="tl-main"><strong>Relatou nariz ardendo</strong><span>Incômodo corporal explícito; nenhuma causa foi inferida.</span></div>
+            <div class="tl-state">user_explicit</div>
+          </li>
+          <li>
+            <div class="time">t+06:36</div>
+            <div class="tl-main"><strong>Orientação de cuidado nasal concluída</strong><span>Cartão “soro no nariz” marcado como feito.</span></div>
+            <div class="tl-state">estratégia / done</div>
+          </li>
+          <li>
+            <div class="time">t+09:38</div>
+            <div class="tl-main"><strong>Snapshot atual</strong><span>Após “cinco sentidos” concluído; próximo cartão mostrado: guardar o resto longe.</span></div>
+            <div class="tl-state">journal atual</div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="section">
+        <div class="section-title">
+          <h2>Apoios e cuidados apresentados pelo aplicativo</h2>
+          <span>Não são descritos como tratamento médico</span>
+        </div>
+
+        <div class="care-grid">
+          <div class="care">
+            <div class="care-head"><strong>Água gelada no rosto</strong><span class="done">FEITO</span></div>
+            <p>Técnica de grounding registrada no início do episódio.</p>
+          </div>
+
+          <div class="care">
+            <div class="care-head"><strong>Sentar ou deitar em lugar firme</strong><span class="done">FEITO</span></div>
+            <p>Orientação de cuidado exibida após o contexto de companhia.</p>
+          </div>
+
+          <div class="care">
+            <div class="care-head"><strong>Pés no chão</strong><span class="done">FEITO</span></div>
+            <p>Técnica de grounding intercalada com os cuidados.</p>
+          </div>
+
+          <div class="care">
+            <div class="care-head"><strong>Esfriar o corpo</strong><span class="done">FEITO</span></div>
+            <p>Orientação exibida após o relato de estimulante.</p>
+          </div>
+
+          <div class="care">
+            <div class="care-head"><strong>Aviso: bala com álcool</strong><span class="done">RECONHECIDO</span></div>
+            <p>Aviso mostrado quando a combinação ficou conhecida.</p>
+          </div>
+
+          <div class="care">
+            <div class="care-head"><strong>Aviso: estimulante + azulzinho/poppers</strong><span class="done">RECONHECIDO</span></div>
+            <p>Aviso mostrado após o relato do produto para sexo.</p>
+          </div>
+
+          <div class="care">
+            <div class="care-head"><strong>Soro no nariz</strong><span class="done">FEITO</span></div>
+            <p>Resposta direta ao incômodo “nariz ardendo”.</p>
+          </div>
+
+          <div class="care">
+            <div class="care-head"><strong>Suspiro duplo</strong><span class="done">FEITO</span></div>
+            <p>Técnica de grounding registrada pelo journal.</p>
+          </div>
+
+          <div class="care">
+            <div class="care-head"><strong>Cuidados com “azulzinho”</strong><span class="done">FEITO</span></div>
+            <p>Cartão de cuidado específico concluído.</p>
+          </div>
+
+          <div class="care">
+            <div class="care-head"><strong>Cinco sentidos</strong><span class="done">FEITO</span></div>
+            <p>Técnica de grounding concluída imediatamente antes do snapshot.</p>
+          </div>
+
+          <div class="care">
+            <div class="care-head"><strong>Guardar o resto longe</strong><span class="shown">MOSTRADO</span></div>
+            <p>Próximo cartão ativo no snapshot; não há resultado registrado ainda.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-title">
+          <h2>Proveniência e limites</h2>
+          <span>Separação exigida pelo próprio motor</span>
+        </div>
+
+        <table class="source-table">
+          <thead>
+            <tr>
+              <th>Categoria</th>
+              <th>Como este PDF usa</th>
+              <th>Exemplo do episódio</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="tag reported">user_explicit</span></td>
+              <td>Mostrado como “relatado pela pessoa”.</td>
+              <td>respiração normal; ansiedade 4; MD; álcool; azulzinho; nariz ardendo</td>
+            </tr>
+            <tr>
+              <td><span class="tag derived">derived</span></td>
+              <td>Mostrado apenas como interpretação operacional do app.</td>
+              <td>prioridade interna, vetor de risco, escolha do próximo cartão</td>
+            </tr>
+            <tr>
+              <td><span class="tag unknown">unknown</span></td>
+              <td>Permanece explicitamente desconhecido; nunca vira “não”.</td>
+              <td>convulsão; desmaio; autoagressão; segurança física</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <div class="statement" style="margin-top:4mm">
+        <strong>Importante:</strong> o SOS Apollo registra o que observou ou o que a pessoa informou. O relatório não converte ausência de dado em ausência de risco e não confirma composição de substâncias.
+      </div>
+
+      <footer class="page-footer">
+        <span>Resumo profissional · curso e rastreabilidade do episódio</span>
+        <span>Página 2 / 3</span>
+      </footer>
+    </section>
+
+
+    <!-- =========================================================
+         PÁGINA 3 · ANEXO TÉCNICO / AUDITÁVEL
+         ========================================================= -->
+    <section class="sheet">
+
+      <header class="doc-head">
+        <div>
+          <div class="brandline">SOS Apollo · Anexo técnico</div>
+          <h1>Rastreabilidade do motor</h1>
+          <p class="subtitle">Dados internos do simulador · não equivalem a diagnóstico, escore clínico ou prognóstico</p>
+        </div>
+
+        <div class="episode-box">
+          <div class="k">Motor</div>
+          <div class="v">determinístico</div>
+          <div class="sub">sem IA · sem servidor · sem login no v1</div>
+        </div>
+      </header>
+
+      <div class="tech-banner">
+        <strong>Por que este anexo existe:</strong> o journal é append-only, cada evento carrega provenance, e o resumo profissional deve manter “relatado” separado de “derivado”. As bandas P0–P3 e o vetor 0–4 são lógica operacional do aplicativo e não classificações médicas.
+      </div>
+
+      <section class="section">
+        <div class="section-title">
+          <h2>Estado interno no snapshot</h2>
+          <span>Somente para auditoria / engenharia clínica</span>
+        </div>
+
+        <div class="meta-grid">
+          <div class="meta">
+            <div class="k">Banda interna exibida</div>
+            <div class="v">P2 · sofrimento significativo, ainda interagindo</div>
+          </div>
+          <div class="meta">
+            <div class="k">Regra / decisão atual</div>
+            <div class="v"><span class="mono">P2-035 → care.put_away</span></div>
+          </div>
+          <div class="meta">
+            <div class="k">Ritmo de respostas</div>
+            <div class="v">quick · derivado do tempo de resposta</div>
+          </div>
+          <div class="meta">
+            <div class="k">Regra P0 acionada?</div>
+            <div class="v">Não neste snapshot · isso não significa “sem risco clínico”</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-title">
+          <h2>Vetor de risco interno · 0 a 4</h2>
+          <span>Máximo de regras correspondentes · sem pesos / probabilidades</span>
+        </div>
+
+        <div class="risk-grid">
+          <div class="risk-card"><div class="name">medical</div><div class="score">0</div><div class="scale">de 4</div></div>
+          <div class="risk-card"><div class="name">impairment</div><div class="score">1</div><div class="scale">de 4</div></div>
+          <div class="risk-card"><div class="name">isolation</div><div class="score">0</div><div class="scale">de 4</div></div>
+          <div class="risk-card"><div class="name">emotional</div><div class="score">4</div><div class="scale">de 4</div></div>
+          <div class="risk-card"><div class="name">environmental</div><div class="score">0</div><div class="scale">de 4</div></div>
+          <div class="risk-card"><div class="name">uncertainty</div><div class="score">0</div><div class="scale">de 4</div></div>
+          <div class="risk-card"><div class="name">mixing</div><div class="score">2</div><div class="scale">de 4</div></div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-title">
+          <h2>Sinais registrados no snapshot</h2>
+          <span>Valor · origem · validade restante no simulador</span>
+        </div>
+
+        <table class="signal-table">
+          <thead>
+            <tr>
+              <th style="width:22%">Sinal</th>
+              <th style="width:24%">Valor</th>
+              <th style="width:23%">Origem</th>
+              <th style="width:16%">Validade</th>
+              <th style="width:15%">Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td><code>actor</code></td><td>self</td><td>user explicit</td><td>∞</td><td class="yes">conhecido</td></tr>
+            <tr><td><code>responsiveness</code></td><td>responsive</td><td>user explicit</td><td>20:30</td><td class="yes">conhecido</td></tr>
+            <tr><td><code>breathing</code></td><td>normal</td><td>user explicit</td><td>10:28</td><td class="yes">conhecido</td></tr>
+            <tr><td><code>chest</code></td><td>no</td><td>user explicit</td><td>20:28</td><td class="yes">conhecido</td></tr>
+            <tr><td><code>seizure</code></td><td>unknown</td><td>—</td><td>—</td><td class="unk">desconhecido</td></tr>
+            <tr><td><code>syncope</code></td><td>unknown</td><td>—</td><td>—</td><td class="unk">desconhecido</td></tr>
+            <tr><td><code>selfHarm</code></td><td>unknown</td><td>—</td><td>—</td><td class="unk">desconhecido</td></tr>
+            <tr><td><code>physicallyUnsafe</code></td><td>unknown</td><td>—</td><td>—</td><td class="unk">desconhecido</td></tr>
+            <tr><td><code>anxiety</code></td><td>4</td><td>user explicit</td><td>50:33</td><td class="yes">conhecido</td></tr>
+            <tr><td><code>noise</code></td><td>quiet</td><td>user explicit</td><td>02:41</td><td class="yes">conhecido</td></tr>
+            <tr><td><code>company</code></td><td>with_someone</td><td>user explicit</td><td>06:37</td><td class="yes">conhecido</td></tr>
+            <tr><td><code>companion</code></td><td>unknown</td><td>—</td><td>—</td><td class="unk">desconhecido</td></tr>
+            <tr><td><code>substanceClass</code></td><td>stim</td><td>user explicit</td><td>233:45</td><td class="yes">conhecido</td></tr>
+            <tr><td><code>substance</code></td><td>md</td><td>user explicit</td><td>234:49</td><td class="yes">conhecido</td></tr>
+            <tr><td><code>alcohol</code></td><td>yes</td><td>user explicit</td><td>234:49</td><td class="yes">conhecido</td></tr>
+            <tr><td><code>sexEnhancer</code></td><td>pill</td><td>user explicit</td><td>235:23</td><td class="yes">conhecido</td></tr>
+            <tr><td><code>discomfort</code></td><td>nose</td><td>user explicit</td><td>25:56</td><td class="yes">conhecido</td></tr>
+            <tr><td><code>reportedTrend</code></td><td>unknown</td><td>—</td><td>—</td><td class="unk">desconhecido</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="section">
+        <div class="section-title">
+          <h2>Garantias relevantes do desenho</h2>
+          <span>Do blueprint / journal / handoff do próprio repositório</span>
+        </div>
+
+        <div class="audit-grid">
+          <div class="audit-box">
+            <h3>Coleta e inferência</h3>
+            <ul>
+              <li>Substância, álcool e “azulzinho” são <strong>explicitOnly</strong>; não são inferidos por sintomas.</li>
+              <li>Um dado desconhecido permanece desconhecido; silêncio não cria sintoma.</li>
+              <li>O journal registra enums, ids e números — não texto livre.</li>
+              <li>Cada evento leva origem, provenance e classe de confiança.</li>
+            </ul>
+          </div>
+
+          <div class="audit-box">
+            <h3>Resumo profissional</h3>
+            <ul>
+              <li>Escopos padrão: episódio atual, histórico recente, estratégias e contexto de exposição.</li>
+              <li>Histórico de 180 dias só entra quando há snapshot / continuidade disponível.</li>
+              <li>Localização é opcional e só entra quando escolhida no compartilhamento.</li>
+              <li>O vocabulário do resumo bloqueia inferências diagnósticas definidas no registry.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <div class="statement" style="margin-top:4mm">
+        <strong>Protótipo de engenharia:</strong> o próprio blueprint do SOS Apollo marca o conteúdo clínico como rascunho até revisão profissional. Este mockup melhora a apresentação do dado existente; não valida clinicamente as orientações do aplicativo.
+      </div>
+
+      <footer class="page-footer">
+        <span>Dados técnicos internos separados da leitura clínica principal</span>
+        <span>Página 3 / 3</span>
+      </footer>
+    </section>
+
+  </main>
+
+<script>
+const PROFESSIONAL_SUMMARY = `SOS APOLLO · RESUMO DE CRISE RELATADO PELA PESSOA
+
+História simulada: pista-bala-alcool-azulzinho
+Snapshot: t+09:38
+
+RELATADO PELA PESSOA:
+• a própria pessoa está usando o SOS
+• respondia normalmente
+• respiração normal
+• sem dor ou aperto no peito
+• ansiedade muito alta
+• com alguém
+• lugar calmo
+• relatou uso de estimulante
+• disse ter usado bala/MD
+• disse que bebeu álcool junto
+• disse ter tomado azulzinho
+• nariz ardendo
+
+SEM INFORMAÇÃO REGISTRADA NO SNAPSHOT:
+• convulsão
+• desmaio
+• intenção de se machucar
+• segurança física do local
+• pessoa de apoio/companion
+• tendência relatada
+
+CURSO RELEVANTE:
+• aviso: bala com álcool — reconhecido
+• aviso: estimulante com azulzinho ou poppers — reconhecido
+• água gelada no rosto — feito
+• sentar ou deitar num lugar firme — feito
+• pés no chão — feito
+• esfriar o corpo — feito
+• soro no nariz — feito
+• suspiro duplo — feito
+• cuidados com azulzinho — feito
+• cinco sentidos — feito
+• guardar o resto longe — mostrado, sem resultado registrado
+
+LIMITES:
+Identificação, idade, peso, dose, via de uso e sinais vitais numéricos não foram fornecidos neste episódio.
+A composição das substâncias não foi confirmada.
+O relatório não constitui diagnóstico.
+
+ESTE RESUMO CONTÉM DADOS RELATADOS PELA PESSOA. Verificação clínica é necessária.`;
+
+async function copyProfessionalSummary(){
+  try{
+    await navigator.clipboard.writeText(PROFESSIONAL_SUMMARY);
+    const b = document.querySelectorAll('.screen-toolbar button')[1];
+    const old = b.textContent;
+    b.textContent = 'Resumo copiado';
+    setTimeout(()=>b.textContent=old,1600);
+  }catch(e){
+    alert('Não foi possível copiar automaticamente.');
+  }
+}
+</script>
+</body>
+</html>

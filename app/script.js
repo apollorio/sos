@@ -12,6 +12,8 @@
   const SOS = window.SOS = {};
   const TARGET_VOLUME = 0.85;
   const FADE_DURATION = 12;
+  /* the menu volume slider (calm-nav.js) sets SOS.userVolume; the fade targets it */
+  const targetVolume = () => (typeof SOS.userVolume === 'number' ? SOS.userVolume : TARGET_VOLUME);
 
   /** Clinical 4-2-6 · 12s orb loop */
   const BREATH_PATTERN = Object.freeze({
@@ -83,11 +85,9 @@
   const progressFill = document.getElementById('progress-fill');
   const flowIndicator = document.getElementById('flow-indicator');
   const audioEl = document.getElementById('relaxAudio');
-  const iconAudioPlay = document.getElementById('icon-audio-play');
-  const iconAudioPause = document.getElementById('icon-audio-pause');
   const iconZen = document.getElementById('icon-zen');
   const btnZen = document.getElementById('btn-zen');
-  const btnAudio = document.getElementById('btn-audio');
+  const btnAudio = document.getElementById('btn-audio') || document.getElementById('burger');
   const toastEl = document.getElementById('warm-toast');
 
   let isZen = false;
@@ -160,8 +160,7 @@
       paused: audioEl.paused,
       volume: Math.round(audioEl.volume * 1000) / 1000,
       muted: audioEl.muted,
-      playOpacity: iconAudioPlay ? getComputedStyle(iconAudioPlay).opacity : null,
-      pauseOpacity: iconAudioPause ? getComputedStyle(iconAudioPause).opacity : null,
+      audioShape: btnAudio ? btnAudio.classList.contains('is-playing') ? 'pause' : 'play' : null,
       ariaPressed: btnAudio ? btnAudio.getAttribute('aria-pressed') : null
     };
   }
@@ -530,6 +529,9 @@
   function ensureOrbBoot(attempt) {
     const n = attempt || 0;
     if (typeof gsap === 'undefined') {
+      /* The iframe has its own gentle CSS breathing loop. Bind the pause
+         control immediately so the offline shell is still fully usable. */
+      if (n === 0) setupOrb();
       if (n < 60) return setTimeout(() => ensureOrbBoot(n + 1), 100);
       return;
     }
@@ -577,6 +579,11 @@
   function bindStaticOptions() {
     optionsZone.querySelectorAll('[data-flow]').forEach(box => {
       box.addEventListener('click', () => startFlow(box.dataset.flow));
+      box.addEventListener('keydown', event => {
+        if (event.key !== 'Enter' && event.key !== ' ') return;
+        event.preventDefault();
+        startFlow(box.dataset.flow);
+      });
     });
   }
 
@@ -690,7 +697,7 @@
   function startAmbientAudio(fromGesture) {
     if (!audioEl) return;
     const snap = audioSnapshot();
-    const earlyReturn = audioUnlocked && audioPlaying && !audioEl.paused && audioEl.volume >= TARGET_VOLUME * 0.85;
+    const earlyReturn = audioUnlocked && audioPlaying && !audioEl.paused && audioEl.volume >= targetVolume() * 0.85;
     plogAudio('startAmbientAudio', { fromGesture, earlyReturn, runId: 'post-fix', ...snap }, 'A');
     if (earlyReturn) return;
 
@@ -706,18 +713,18 @@
       plogAudio('beginFade', audioSnapshot(), 'C');
       if (typeof gsap !== 'undefined') {
         volumeFadeTween = gsap.to(audioEl, {
-          volume: TARGET_VOLUME,
+          volume: targetVolume(),
           duration: FADE_DURATION,
           ease: 'power1.inOut',
           onComplete: () => { volumeFadeTween = null; }
         });
       } else {
         const steps = 60;
-        const stepVol = TARGET_VOLUME / steps;
+        const stepVol = targetVolume() / steps;
         let n = 0;
         const iv = setInterval(() => {
           n++;
-          audioEl.volume = Math.min(TARGET_VOLUME, stepVol * n);
+          audioEl.volume = Math.min(targetVolume(), stepVol * n);
           if (n >= steps) clearInterval(iv);
         }, (FADE_DURATION * 1000) / steps);
       }
@@ -738,16 +745,12 @@
   }
 
   function setAudioIconState(playing) {
-    if (!iconAudioPlay || !iconAudioPause || !btnAudio) return;
+    if (!btnAudio) return;
     if (audioIconState === playing && !audioIconTween) {
       plogAudio('setAudioIconState-skipped', { playing, ...audioSnapshot() }, 'D');
       return;
     }
-
     plogAudio('setAudioIconState', { playing, ...audioSnapshot() }, 'D');
-
-    const outEl = playing ? iconAudioPlay : iconAudioPause;
-    const inEl = playing ? iconAudioPause : iconAudioPlay;
 
     audioIconState = playing;
     btnAudio.setAttribute('aria-pressed', playing ? 'true' : 'false');
@@ -755,21 +758,21 @@
 
     if (audioIconTween) audioIconTween.kill();
 
-    if (typeof gsap === 'undefined') {
-      iconAudioPlay.style.opacity = playing ? '0' : '1';
-      iconAudioPause.style.opacity = playing ? '1' : '0';
-      return;
-    }
-
+    btnAudio.classList.toggle('is-playing', playing);
+    /* The two bars are the compact menu mark from the design system. Their
+       geometry changes into a quiet X while audio is on, so the control keeps
+       one visual language in both states. */
+    if (typeof gsap === 'undefined') return;
+    const bars = btnAudio.querySelectorAll('.audio-bar');
+    if (!bars.length) return;
+    if (audioIconTween) audioIconTween.kill();
     audioIconTween = gsap.timeline({
       defaults: { duration: 0.35, ease: 'sine.inOut' },
       onComplete: () => { audioIconTween = null; }
     });
-    audioIconTween
-      .to(outEl, { opacity: 0, scale: 0.88 }, 0)
-      .fromTo(inEl, { opacity: 0, scale: 0.88 }, { opacity: 1, scale: 1 }, 0.08);
+    audioIconTween.to(bars[0], { width: 20, y: playing ? 3.75 : 0, rotate: playing ? 45 : 0 }, 0)
+      .to(bars[1], { width: playing ? 20 : 12, y: playing ? -3.75 : 0, rotate: playing ? -45 : 0 }, 0);
   }
-
   SOS.toggleAudio = () => {
     if (!ambientMedia()) return;
     const resumeBranch = !audioUnlocked || !audioPlaying;
@@ -891,15 +894,17 @@
   let orbInitialized = false;
 
   function setupOrb() {
-    if (!orb || typeof gsap === 'undefined') return;
+    if (!orb) return;
     if (orbInitialized) return;
     orbInitialized = true;
 
     syncBreathCssVars();
     buildBreathePhrasePools();
-    breatheTl = buildBreatheTimeline();
-    if (breatheTl.paused()) breatheTl.play();
-    hookOrbGlowTicker();
+    if (typeof gsap !== 'undefined') {
+      breatheTl = buildBreatheTimeline();
+      if (breatheTl.paused()) breatheTl.play();
+      hookOrbGlowTicker();
+    }
 
     orb.addEventListener('click', e => {
       e.stopPropagation();
@@ -909,18 +914,22 @@
         if (breatheTl) breatheTl.resume();
         setIsoFlowPaused(false);
         breatheSub.textContent = 'respiração ativa';
-        gsap.to(breatheSub, { opacity: 0.4, duration: 0.6 });
+        orb.setAttribute('aria-pressed', 'false');
+        orb.setAttribute('aria-label', 'Pausar a esfera de respiração');
+        if (typeof gsap !== 'undefined') gsap.to(breatheSub, { opacity: 0.4, duration: 0.6 });
       } else {
         orb.classList.add('paused');
         if (breatheTl) breatheTl.pause();
         setIsoFlowPaused(true);
         breatheSub.textContent = 'em pausa · toque para retomar';
-        gsap.to(breatheSub, { opacity: 0.65, duration: 0.6 });
+        orb.setAttribute('aria-pressed', 'true');
+        orb.setAttribute('aria-label', 'Retomar a esfera de respiração');
+        if (typeof gsap !== 'undefined') gsap.to(breatheSub, { opacity: 0.65, duration: 0.6 });
       }
     });
 
     setTimeout(() => {
-      if (breatheSub) gsap.to(breatheSub, { opacity: 0.36, duration: 1.8 });
+      if (breatheSub && typeof gsap !== 'undefined') gsap.to(breatheSub, { opacity: 0.36, duration: 1.8 });
     }, 4800);
   }
 
@@ -974,19 +983,35 @@
     }
     isZen = !isZen;
     if (isZen) {
-      gsap.to(optionsZone, { opacity: 0, y: 16, duration: 0.7, ease: 'power2.inOut', onComplete: () => { optionsZone.style.pointerEvents = 'none'; } });
-      gsap.to(header, { opacity: 0.12, duration: 0.6 });
+      if (typeof gsap !== 'undefined') {
+        gsap.killTweensOf([optionsZone, header]);
+        gsap.to(optionsZone, { opacity: 0, y: 16, duration: 0.7, ease: 'power2.inOut', onComplete: () => { optionsZone.style.pointerEvents = 'none'; } });
+        gsap.to(header, { opacity: 0.42, duration: 0.6 });
+      } else {
+        optionsZone.style.opacity = '0';
+        optionsZone.style.pointerEvents = 'none';
+        header.style.opacity = '.42';
+      }
       btnZen.classList.add('zen');
       btnZen.setAttribute('aria-pressed', 'true');
+      btnZen.setAttribute('aria-label', 'Sair do modo foco');
       iconZen.className = 'ri-eye-line';
       enterFocusChrome();
       if (overlay.style.visibility === 'visible') closeFlow();
     } else {
       optionsZone.style.pointerEvents = 'auto';
-      gsap.to(optionsZone, { opacity: 1, y: 0, duration: 0.75, ease: 'power2.out' });
-      gsap.to(header, { opacity: 1, duration: 0.55 });
+      if (typeof gsap !== 'undefined') {
+        gsap.killTweensOf([optionsZone, header]);
+        gsap.to(optionsZone, { opacity: 1, y: 0, duration: 0.75, ease: 'power2.out' });
+        gsap.to(header, { opacity: 1, duration: 0.55 });
+      } else {
+        optionsZone.style.opacity = '1';
+        optionsZone.style.transform = 'none';
+        header.style.opacity = '1';
+      }
       btnZen.classList.remove('zen');
       btnZen.setAttribute('aria-pressed', 'false');
+      btnZen.setAttribute('aria-label', 'Entrar no modo foco');
       iconZen.className = 'ri-eye-off-line';
       exitFocusChrome();
     }

@@ -43,8 +43,8 @@ try {
   await page.goto(`${BASE}/app/lab/`);
   const tiles = await page.locator("a.tile").evaluateAll((as) => as.map((a) => (a as HTMLAnchorElement).href));
   const statuses = await Promise.all(tiles.map(async (h) => (await page.request.get(h)).status()));
-  tiles.length === 5 && statuses.every((s) => s === 200)
-    ? ok(`lab hub: ${tiles.length} links resolve (app, missions, simulator, clinical review, previous version)`) : fail(`lab links ${tiles.map((t, i) => `${t}=${statuses[i]}`).join(" ")}`);
+  tiles.length === 8 && statuses.every((s) => s === 200)
+    ? ok(`lab hub: ${tiles.length} links resolve (app, missions, simulator, clinical review, Modo Médico scenarios + live, Relatório, previous version)`) : fail(`lab links ${tiles.map((t, i) => `${t}=${statuses[i]}`).join(" ")}`);
 
   // 3. Clinical review: every item is there, answers survive a reload, the export is what review:summary reads.
   const total = reviewSections().reduce((n, s) => n + s.items.length, 0);

@@ -4,6 +4,7 @@
  *   revisao.html    clinical review sheet generated from registry + pt-BR.json (every rule, question and text)
  *   roteiros.html   tester missions: golden scenarios replayed through the real engine
  *   simulador.html  dist/simulator.html (the engineering simulator with the "why" panel)
+ *   cenarios.json   golden scenarios as journals, for the Modo Médico lab mode (../medico.html?cenario=…)
  * Run after `scripts/build.ts` and `scripts/build-demo.ts` (npm run build does all three).
  *
  *   npx tsx scripts/build-lab.ts            write
@@ -12,7 +13,7 @@
 import { readFileSync, writeFileSync, mkdirSync, existsSync, readdirSync } from "node:fs";
 import { join } from "node:path";
 import { SITE } from "./build";
-import { labFacts, missions, offlineMission, reviewSections } from "./lab/model";
+import { labFacts, missions, offlineMission, reviewSections, medicoScenarios } from "./lab/model";
 import { hubPage, missionsPage, reviewPage } from "./lab/pages";
 
 export const LAB = join(SITE, "lab");
@@ -36,8 +37,10 @@ export function labFiles(): Record<string, string> {
     "index.html": hubPage(facts, ms.length, nReview),
     "revisao.html": reviewPage(facts, sections),
     "roteiros.html": missionsPage(facts, ms),
+    // Modo Médico lab mode (app/medico.html?cenario=…): golden scenarios replayed into the journal the app writes.
+    "cenarios.json": `${JSON.stringify(medicoScenarios())}\n`,
     // The lab promises no third-party request: the copy drops the simulator's web fonts (system fonts take over).
-    "simulador.html": sim.replace(CHARSET, `${CHARSET}\n<meta name="robots" content="noindex, nofollow">`).replace(/^<link[^>]+https:\/\/fonts\.[^>]*>\n/gm, ""),
+    "simulador.html": sim.replace(CHARSET, `${CHARSET}\n<meta name="robots" content="noindex, nofollow">`).replace(/^<link[^>]+https:\/\/fonts\.[^>]*>\r?\n/gm, ""),
   };
 }
 

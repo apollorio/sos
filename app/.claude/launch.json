@@ -3,14 +3,24 @@
   "configurations": [
     {
       "name": "sos-app",
-      "runtimeExecutable": "node",
-      "runtimeArgs": ["C:/Users/User/AppData/Local/Temp/claude/D--dev--dev-web-systems-sos-app/024aa7bc-3e31-4a0a-9195-ac6336759ea4/scratchpad/serve.js", "D:/dev/_dev web/systems/sos/app", "5178"],
+      "runtimeExecutable": "python",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "5178",
+        "--directory",
+        "D:/dev/_dev web/systems/sos/app"
+      ],
       "port": 5178
     },
     {
       "name": "audit-scratch",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["C:/Users/User/AppData/Local/Temp/claude/D--dev--dev-web-systems-sos-app/024aa7bc-3e31-4a0a-9195-ac6336759ea4/scratchpad/serve.js", "C:/Users/User/AppData/Local/Temp/claude/D--dev--dev-web-systems-sos-app/024aa7bc-3e31-4a0a-9195-ac6336759ea4/scratchpad", "5179"],
+      "runtimeArgs": [
+        "C:/Users/User/AppData/Local/Temp/claude/D--dev--dev-web-systems-sos-app/024aa7bc-3e31-4a0a-9195-ac6336759ea4/scratchpad/serve.js",
+        "C:/Users/User/AppData/Local/Temp/claude/D--dev--dev-web-systems-sos-app/024aa7bc-3e31-4a0a-9195-ac6336759ea4/scratchpad",
+        "5179"
+      ],
       "port": 5179
     }
   ]

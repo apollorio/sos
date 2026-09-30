@@ -5,6 +5,7 @@
  */
 import type { SessionState } from "../../core/domain/state";
 import type { LogEntry } from "../../core/domain/decision";
+import type { Journal } from "../../core/journal/journal";
 
 const DB = "sos-apollo";
 const STORE = "kv";
@@ -16,6 +17,13 @@ export interface Store {
   appendLog(e: LogEntry): Promise<void>;
   readLogs(): Promise<LogEntry[]>;
   wipe(): Promise<void>;
+  /**
+   * The current episode's journal, for the live Relatório / Modo Médico pages (same origin, same device).
+   * Acute plane: enums and ids only (guardPayload), the same 12 h retention and the same wipe as the state.
+   * Optional so a store without it (tests, memory) still runs the engine.
+   */
+  saveJournal?(j: Journal): Promise<void>;
+  loadJournal?(): Promise<Journal | null>;
 }
 
 export async function openStore(retentionHours: number, maxLogs: number, clock: () => number): Promise<Store> {
@@ -38,6 +46,12 @@ export async function openStore(retentionHours: number, maxLogs: number, clock: 
       await put("logs", [...logs, e].slice(-maxLogs));
     },
     async readLogs() { return (await get<LogEntry[]>("logs")) ?? []; },
+    saveJournal: (j) => put("journal", j),
+    async loadJournal() {
+      const s = await store.loadState(); // retention: an expired state takes its journal with it
+      const j = await get<Journal>("journal");
+      return s && j && j.episodeId === s.sessionId ? j : null;
+    },
     async wipe() {
       mem.clear();
       if (idb) await idbClear(idb).catch(() => undefined);

@@ -16,7 +16,11 @@ export interface Locale {
   handoff: Record<string, string>;
   chips: Record<string, { label: string }>;
   cards: Record<string, LocaleCard>;
-  continuity: SummaryLocale & { consentCard: { title: string; body: string; actions: Record<string, string> } };
+  continuity: SummaryLocale & {
+    consentCard: { title: string; body: string; actions: Record<string, string> };
+    /** Relatório / Modo Médico page templates (deterministic, INV-023 lexicon-checked with the rest of `continuity`). */
+    report: Record<string, string>;
+  };
 }
 
 export const LOCALES: Record<string, Locale> = { "pt-BR": ptBR as unknown as Locale };

@@ -45,13 +45,21 @@ export interface ContinuityHooks {
   onWipe?: (episodeId: string) => void | Promise<void>;
 }
 
+/** Called after every committed step, with the episode journal so far. Read-only, fire-and-forget, never awaited. */
+export type StepObserver = (r: StepResult, journal: Journal | null) => void;
+
 export class EngineLoop {
   private state: SessionState | null = null;
   private chain: Promise<void> = Promise.resolve();
   private persistChain: Promise<void> = Promise.resolve();
   private readonly scheduler: DeadlineScheduler;
   private journal: Journal | null = null;
+  private readonly observers: StepObserver[] = [];
   hooks: ContinuityHooks = {};
+
+  /** Live views (Relatório, Modo Médico, share) subscribe here. They can read; they can never change a decision. */
+  observe(f: StepObserver): void { this.observers.push(f); }
+  get episodeJournal(): Journal | null { return this.journal; }
 
   constructor(
     private readonly store: Store,
@@ -72,7 +80,9 @@ export class EngineLoop {
     const r = input.kind === "boot"
       ? startSession(input.sessionId, input.at, REG, { mode: "prod", priors: this.hooks.priors?.() })
       : processEvent(saved!, input, REG, { mode: "prod", priors: this.hooks.priors?.() });
-    this.journal = emptyJournal(r.state.sessionId);
+    // A resumed episode keeps its journal (same 12 h retention as the state), so its report stays whole.
+    const kept = input.kind === "boot" || !this.store.loadJournal ? null : ((await bounded(this.store.loadJournal(), BOOT_READ_BUDGET_MS)) ?? null);
+    this.journal = kept && kept.episodeId === r.state.sessionId ? kept : emptyJournal(r.state.sessionId);
     await this.commit(r, saved, input);
   }
 
@@ -91,6 +101,11 @@ export class EngineLoop {
 
   /** Resolves once everything committed so far has reached storage (or used up its time budget). */
   flushed(): Promise<void> { return this.persistChain; }
+
+  /** A best-effort extra write, serialized with the state writes and the wipe (so "Apagar agora" always runs after it). */
+  persistAlso(f: () => Promise<void>): void {
+    this.persistChain = this.persistChain.then(async () => { await bounded(Promise.resolve().then(f), PERSIST_BUDGET_MS); });
+  }
 
   private async commit(r: StepResult, prev: SessionState | null, input: RawInput): Promise<void> {
     this.state = r.state;
@@ -127,5 +142,6 @@ export class EngineLoop {
         if (evs.length) void Promise.resolve(this.hooks.onJournal?.(evs, this.journal)).catch(() => undefined);
       }
     } catch { /* the journal can never break the loop */ }
+    for (const f of this.observers) { try { f(r, this.journal); } catch { /* a view can never break the loop */ } }
   }
 }

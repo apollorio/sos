@@ -49,8 +49,8 @@ export function renderStep(root: HTMLElement, r: StepResult, locale: Locale, reg
   section.append(actions);
   if (c.aside) section.append(el("p", "aside", c.aside));
 
-  const chipButton = (chipId: string) => {
-    const b = el("button", "chip", locale.chips[chipId]?.label ?? chipId);
+  const chipButton = (chipId: string, group = "pending") => {
+    const b = el("button", `chip g-${group}`, locale.chips[chipId]?.label ?? chipId); // g-*: one hue per area (app.css)
     b.setAttribute("type", "button");
     b.addEventListener("click", () => on.chip(chipId));
     return b;
@@ -64,9 +64,9 @@ export function renderStep(root: HTMLElement, r: StepResult, locale: Locale, reg
   for (const [g, heading] of groups) {
     const chips = r.output.chips.filter((c) => c.group === g);
     if (!chips.length) continue;
-    const row = el("div", "menu-row");
-    for (const chip of chips) row.append(chipButton(chip.chipId));
-    menu.append(el("p", "menu-h", locale.shell[heading] ?? ""), row);
+    const row = el("div", `menu-row g-${g}`);
+    for (const chip of chips) row.append(chipButton(chip.chipId, g));
+    menu.append(el("p", `menu-h g-${g}`, locale.shell[heading] ?? ""), row);
   }
   if (menu.childElementCount) section.append(menu);
 

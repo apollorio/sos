@@ -120,7 +120,7 @@ try {
   const site = mkdtempSync(join(tmpdir(), "sos-deploy-"));
   const shell = join(site, "app");
   mkdirSync(shell);
-  for (const f of ["index.html", "app.css", "sw.js", "manifest.webmanifest", "assets"]) cpSync(join(REPO_ROOT, "app", f), join(shell, f), { recursive: true });
+  for (const f of ["index.html", "app.css", "sw.js", "manifest.webmanifest", "assets", "medico.html", "relatorio.html", "report.css", "file-boot.js"]) cpSync(join(REPO_ROOT, "app", f), join(shell, f), { recursive: true });
   const srv2 = serve(site, 4174, { "cache-control": "no-cache" });
   try {
     const uctx = await browser.newContext({ viewport: { width: 390, height: 780 } });

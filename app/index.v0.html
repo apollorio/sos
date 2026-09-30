@@ -1,756 +1,160 @@
 <!DOCTYPE html>
 <html lang="pt-BR" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <!-- CRISIS VIEWPORT: Bloqueado, sem zoom, imersivo -->
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#030303">
-    
-    <!-- Mandatory Apollo CORE.JS & Libs -->
-    <link rel="preconnect" href="https://cdn.apollo.rio.br">
-    <link rel="preconnect" href="https://assets.apollo.rio.br" crossorigin>
-    <script src="https://cdn.apollo.rio.br/v1.0.0/core.js?vers=999" fetchpriority="high"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
-    
-    <title>Espaço Seguro :: SOS Apollo</title>
-  
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=SUSE+Mono:ital,wght@0,100..800;1,100..800&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
-    
-    <style>
-        :root {
-            --bg: #030303;
-            --rgb-diff: 255, 255, 255;
-            --safe-top: env(safe-area-inset-top, 20px);
-            --safe-bottom: env(safe-area-inset-bottom, 20px);
-            --s-2: 8px; --s-3: 12px; --s-4: 16px; --s-5: 24px; --s-6: 32px;
-            --r-md: 16px; --r-lg: 24px; --r-pill: 999px;
-            --ff-main: 'Space Grotesk', system-ui, sans-serif;
-            --ff-heading: 'Bricolage Grotesque', system-ui, sans-serif;
-            --fs-p4: 0.75rem; --fs-p3: 0.85rem; --fs-p2: 1rem; --fs-p1: 1.15rem; 
-            --fs-h3: 1.5rem; --fs-h2: 2rem;
-            
-            /* Theme Colors */
-            --c-magenta: #f0f;
-            --c-cyan: #0ff;
-            --c-purple: #a855f7;
-            --c-blue: #3b82f6;
-            --c-red: #ef4444;
-            --c-success: #34d399;
-        }
-
-        body { 
-            background: radial-gradient(circle at 50% 50%, rgba(var(--rgb-diff),.03) 0%, var(--bg) 100%);
-            color: rgba(var(--rgb-diff), 0.6); 
-            font-family: var(--ff-main); 
-            display: flex; 
-            flex-direction: column; 
-            height: 100dvh; width: 100dvw; 
-            max-width: 100%; max-height: 100%;
-            margin: 0; padding: 0;
-            overflow: hidden; 
-            -webkit-user-select: none;
-            user-select: none;
-            position: relative;
-        }
-        i { transition: all .65s ease !important; }
-        
-        /* --- GLOBAL HEADER --- */
-        .global-header {
-            position: absolute; top: 0; left: 0; right: 0; width: 100dvw;
-            display: flex; justify-content: space-between; align-items: flex-start;
-            padding: var(--safe-top) 15px 15px 15px;
-            z-index: 10;
-            will-change: opacity;
-        }
-        .header-controls { display: flex; gap: var(--s-2); flex-direction: column; }
-
-        .btn-icon {
-            width: 40px; height: 40px;
-            border-radius: 50%; 
-            display: flex; align-items: center; justify-content: center;
-            font-size: 1.2rem; cursor: pointer;
-            transition: background 0.4s, transform 0.4s;
-        }
-        .btn-icon:active { transform: scale(0.9); background: rgba(255,255,255,0.08); }
-
-        /* --- THE BREATHING ORB --- */
-        .orb-zone {
-            position: absolute; top: 10%; left: 0;
-            width: 100%; height: 50%;
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            padding-top: var(--s-6);
-        }
-
-        .magic-ball {
-            width: 55%; aspect-ratio: 1!important; height: auto;
-            border-radius: 100%;
-            box-shadow:
-                inset 0 0 50px rgba(255,255,255,0.5),
-                inset 20px 0 30px rgba(255,0,255,0.6),
-                inset -20px 0 80px rgba(0,255,255,0.6),
-                inset 20px 0 300px rgba(255,0,255,0.6),
-                inset -20px 0 300px rgba(0,255,255,0.6),
-                0 0 20px rgba(255,255,255,0.05),
-                -10px 0 100px rgba(255,0,255,0.15),
-                10px 0 100px rgba(0,255,255,0.15);
-            margin-bottom: var(--s-6);
-            will-change: transform, box-shadow;
-        }
-
-        .breathe-text {
-            font-family: var(--ff-heading);
-            font-size: var(--fs-h3);
-            color: rgba(var(--rgb-diff), .4); 
-            font-weight: 300; opacity: 0; text-align: center;
-            letter-spacing: -0.02em;
-        }
-
-        /* --- THE OPTIONS GRID --- */
-        .options-zone {
-            position: absolute; 
-            bottom: 0; 
-            left: 0; 
-            right: 0;
-            width: 100%; 
-            height: auto; 
-            padding: 9px;
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            grid-template-rows: auto; 
-            gap: 8px;
-            will-change: opacity, transform;
-            align-content: end; 
-        }
-
-        .option-box {
-            background: rgba(255,255,255, 0.02);
-            border: 1px solid rgba(255,255,255, 0.03);
-            border-radius: var(--r-md);
-            display: flex; flex-direction: column;
-            align-items: center; justify-content: center; gap: var(--s-2);
-            cursor: pointer; aspect-ratio:  1/1;
-            transition: background 0.3s ease, border-color 0.3s ease, transform 0.1s;
-        }
-        .option-box:active {
-            transform: scale(0.96);
-            background: rgba(255,255,255, 0.06);
-            border-color: rgba(255,255,255, .15);
-        }
-        .option-box i { font-size: 1.8rem; opacity: 0.8; }
-        .option-box span {
-            font-family: var(--ff-main); font-size: 0.75rem; 
-            color: rgba(var(--rgb-diff), 0.6); line-height: 1.2; 
-            text-align: center; font-weight: 500;
-        }
-
-        /* --- THE INFO OVERLAY (GLASS BOTTOM SHEET) --- */
-        .info-overlay {
-            position: absolute; top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
-            z-index: 50;
-            display: flex; flex-direction: column; justify-content: flex-end;
-            visibility: hidden; opacity: 0;
-        }
-
-        .info-content {
-            background: rgba(20, 20, 20, 0.6);
-            border-top: 1px solid rgba(255,255,255,0.1);
-            padding: var(--s-5) var(--s-4) calc(var(--safe-bottom) + var(--s-4)) var(--s-4);
-            border-radius: var(--r-lg) var(--r-lg) 0 0;
-            transform: translateY(100%);
-            max-height: 85dvh;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        .close-area { position: absolute; top: 0; left: 0; width: 100%; height: 100%; cursor: pointer; }
-
-        /* --- COMPLEX FLOW COMPONENTS --- */
-        .flow-header { margin-bottom: var(--s-4); display: flex; align-items: center; gap: var(--s-3); }
-        .flow-header i { font-size: 2rem; }
-        .flow-header h2 { margin: 0; font-family: var(--ff-heading); font-size: var(--fs-h3); color: #fff; }
-
-        .info-msg {
-            font-size: var(--fs-p2); color: rgba(var(--rgb-diff), 0.7);
-            line-height: 1.5; margin-bottom: var(--s-4); font-weight: 300;
-        }
-        .info-msg strong { color: #fff; font-weight: 600; }
-
-        .exact-phrase {
-            background: rgba(0, 0, 0, 0.4);
-            border-left: 2px solid var(--c-cyan);
-            padding: var(--s-3) var(--s-4);
-            border-radius: 0 var(--r-md) var(--r-md) 0;
-            font-size: var(--fs-p2); font-style: italic;
-            color: #fff; margin-bottom: var(--s-5);
-            box-shadow: inset 0 0 20px rgba(255,255,255,0.01);
-        }
-
-        /* --- DOPAMINERGIC TASK CHECKLIST --- */
-        .task-list { display: flex; flex-direction: column; gap: var(--s-3); margin-bottom: var(--s-5); }
-        
-        .task-card {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.05);
-            padding: var(--s-3) var(--s-4);
-            border-radius: var(--r-md);
-            display: flex; gap: var(--s-3); align-items: center;
-            cursor: pointer; text-decoration: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .task-card:active { transform: scale(0.97); }
-
-        .task-check {
-            width: 28px; height: 28px; flex-shrink: 0;
-            border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.2);
-            display: flex; align-items: center; justify-content: center;
-            transition: all 0.3s;
-        }
-        .task-check i {
-            opacity: 0; color: #000; font-size: 1.2rem;
-            transform: scale(0.5); transition: all 0.3s;
-        }
-
-        .task-content { flex: 1; }
-        .task-content h4 { margin: 0 0 4px 0; font-size: var(--fs-p2); color: #fff; transition: color 0.3s; font-family: var(--ff-heading);}
-        .task-content p { margin: 0; font-size: var(--fs-p3); color: rgba(var(--rgb-diff), 0.5); line-height: 1.3;}
-
-        /* Completed Task State (Dopamine Trigger) */
-        .task-card.completed {
-            background: rgba(52, 211, 153, 0.05); /* Soft success tint */
-            border-color: rgba(52, 211, 153, 0.4);
-            box-shadow: 0 0 15px rgba(52, 211, 153, 0.1);
-        }
-        .task-card.completed .task-check { background: var(--c-success); border-color: var(--c-success); }
-        .task-card.completed .task-check i { opacity: 1; transform: scale(1); }
-        .task-card.completed .task-content h4 { color: var(--c-success); }
-
-        /* Next Step Unlocked */
-        .unlockable-next {
-            display: none; opacity: 0; transform: translateY(10px); margin-bottom: var(--s-4);
-        }
-
-        /* Buttons */
-        .btn-soft {
-            display: flex; align-items: center; justify-content: center; gap: var(--s-2);
-            width: 100%; padding: var(--s-4);
-            border-radius: var(--r-pill);
-            background: rgba(255,255,255, 0.04);
-            border: 1px solid rgba(255,255,255, 0.08);
-            color: #fff; font-size: var(--fs-p2); font-family: var(--ff-heading);
-            text-decoration: none; cursor: pointer;
-            margin-bottom: var(--s-3); transition: background 0.2s, transform 0.1s;
-        }
-        .btn-soft:active { background: rgba(255,255,255, 0.1); transform: scale(0.98); }
-        .btn-soft.primary { background: var(--c-cyan); color: #000; border-color: var(--c-cyan); font-weight: 600; }
-        .btn-soft.danger { background: rgba(239, 68, 68, 0.2); border-color: var(--c-red); color: #fff; }
-        
-        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s-3); margin-bottom: var(--s-4); }
-        .big-cat-btn {
-            background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
-            border-radius: var(--r-md); padding: var(--s-4) var(--s-3);
-            text-align: center; color: #fff; cursor: pointer; transition: background 0.2s;
-            display: flex; flex-direction: column; align-items: center; gap: var(--s-2);
-        }
-        .big-cat-btn i { font-size: 2rem; }
-        .big-cat-btn:active { background: rgba(255,255,255,0.1); }
-
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#060508">
+  <title>Espaço Seguro · SOS Apollo v2</title>
+  <meta name="description" content="Um lugar calmo para respirar, desacelerar e encontrar apoio imediato em momentos de ansiedade, pânico ou sobrecarga. Você não está só. 🤍">
+  <meta name="keywords" content="ansiedade, crise de panico, exercicio de respiracao, saude mental, apoio emocional, bad trip, sos apollo">
+  <meta name="robots" content="index, follow">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://apollo.rio.br/"> 
+  <meta property="og:title" content="Espaço Seguro · SOS Apollo">
+  <meta property="og:description" content="Precisa de uma pausa? Venha respirar fundo, acalmar a mente e encontrar acolhimento. Um porto seguro digital para momentos difíceis. 🤍">
+  <meta property="og:image" content="https://apollo.rio.br/thumb.png">
+  <meta property="og:image:secure_url" content="https://apollo.rio.br/thumb.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Espaço Seguro - Tela com âncora de respiração e opções de suporte emergencial do SOS Apollo.">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:site_name" content="SOS Apollo">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://apollo.rio.br/">
+  <meta name="twitter:title" content="Espaço Seguro · SOS Apollo">
+  <meta name="twitter:description" content="Um lugar calmo para respirar, desacelerar e encontrar apoio imediato em momentos de ansiedade, pânico ou sobrecarga. Você não está só. 🤍">
+  <meta name="twitter:image" content="https://apollo.rio.br/thumb.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="https://doc.apollo.rio.br/media/logo/logo-a.v2.white-32px.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="https://doc.apollo.rio.br/media/logo/logo-a.v2.white-512px.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="https://doc.apollo.rio.br/media/logo/logo-a.v2.white-512px.png">
+  <script src="./preloader.js?v=1.002"></script>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="preconnect" href="https://assets.apollo.rio.br" crossorigin>
+  <script src="https://cdn.apollo.rio.br/v1.0.0/core.js?ed=1.0.0" fetchpriority="high"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js" defer></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-
-    <!-- AUDIO: Preloaded, waits for gentle unlock -->
-    <audio id="relaxAudio" src="https://assets.apollo.rio.br/audio/flac/clocks.flac" loop preload="auto"></audio>
-
-    <!-- FADEABLE HEADER -->
-    <div class="global-header" id="ui-header">
-        <div class="header-controls">
-            <div class="btn-icon" id="btn-zen" onclick="toggleZen()">
-                <i class="ri-eye-off-line" id="icon-zen"></i>
-            </div>
-            <div class="btn-icon" id="btn-audio" onclick="toggleAudio()">
-                <i class="ri-mv-ai-line" id="icon-audio"></i>
-            </div>
-        </div>
+<div class="ambient noise-texture" aria-hidden="true">
+  <div class="aurora"></div>
+  <div class="mote" style="width:2px;height:2px;top:14%;left:11%;--dur:22s;animation-delay:-5s"></div>
+  <div class="mote" style="width:1px;height:1px;top:27%;left:77%;--dur:29s;animation-delay:-13s"></div>
+  <div class="mote" style="width:2px;height:2px;top:43%;left:24%;--dur:19s;animation-delay:-4s"></div>
+  <div class="mote" style="width:1px;height:1px;top:56%;left:67%;--dur:33s;animation-delay:-20s"></div>
+  <div class="mote" style="width:2px;height:2px;top:71%;left:41%;--dur:21s;animation-delay:-9s"></div>
+  <div class="mote" style="width:1px;height:1px;top:19%;left:54%;--dur:26s;animation-delay:-16s"></div>
+  <div class="mote" style="width:2px;height:2px;top:82%;left:89%;--dur:24s;animation-delay:-7s"></div>
+</div>
+<!-- Ambient: piano clocks only — never autoplay; fade starts on tap -->
+<audio id="relaxAudio"
+  src="https://assets.apollo.rio.br/audio/clocks.flac"
+  loop preload="metadata" playsinline></audio>
+<header class="global-header" id="ui-header">
+  <!-- Blcoked not display!!! 
+   <div class="logo-mark">
+    <i class="ri-heart-pulse-line" aria-hidden="true"></i>
+    <span>Espaço Seguro</span>
+  </div> --> 
+  <div class="hdr-btns">
+    
+    <button type="button" class="btn-icon" id="btn-zen" style="font-size:120% !important" aria-label="Modo foco">
+      <i class="ri-eye-off-line" id="icon-zen" aria-hidden="true"></i>
+    </button>
+    <button type="button" class="btn-icon btn-audio" id="btn-audio" aria-label="Tocar som ambiente" aria-pressed="false">
+      <span class="audio-icon-wrap">
+        <i class="ri-disc-line audio-icon audio-icon--play" id="icon-audio-play" aria-hidden="true"></i>
+        <i class="ri-album-line audio-icon audio-icon--pause" id="icon-audio-pause" aria-hidden="true"></i>
+      </span>
+    </button>
+  </div>
+</header>
+<section class="orb-zone" id="orb-zone" aria-label="Âncora de respiração">
+  <div class="breathe-label" id="breathe-txt" aria-live="polite"></div>
+  <div class="orb-shell">
+    <div class="orb-stage" id="orb-stage">
+      <div class="orb-aura" id="orb-aura" aria-hidden="true"></div>
+      <iframe
+        class="magic-ball breathe"
+        id="orb"
+        src="./isos.html"
+        title=""
+        role="img"
+        aria-label="Esfera de respiração"
+        tabindex="-1"
+        loading="eager"></iframe>
+      <div class="orb-rim" id="orb-rim" aria-hidden="true"></div>
     </div>
-
-    <!-- THE ANCHOR -->
-    <div class="orb-zone"> 
-        <div class="breathe-text" id="breathe-txt">tô aqui com você.</div>
-        <div class="magic-ball" id="orb"></div>
+  </div>
+  <p class="breathe-sub" id="breathe-sub">toque em qualquer lugar para começar</p>
+</section>
+<div class="warm-toast" id="warm-toast" role="status" aria-live="polite"></div>
+<!-- Static fallback buttons — always visible even if JS fetch fails -->
+<nav class="options-zone" id="ui-options" aria-label="Opções de suporte">
+  <div class="option-box" data-flow="torto">
+    <div class="opt-icon" style="background:rgba(255,0,255,.1)">
+      <i class="ri-capsule-fill" style="color:var(--c-magenta)"></i>
     </div>
-
-    <!-- MAIN TRIAGE GRID -->
-    <div class="options-zone" id="ui-options">
-        <div class="option-box" onclick="openFlow('triage-torto')">
-            <i class="ri-capsule-line" style="color: var(--c-magenta);"></i>
-            <span>Bateu forte<br><font style="opacity:.5">Usei algo</font></span>
-        </div>
-        <div class="option-box" onclick="openFlow('triage-panico')">
-            <i class="ri-heart-pulse-line" style="color: var(--c-cyan);"></i>
-            <span>Pânico /<br>Ansiedade</span>
-        </div>
-        <div class="option-box" onclick="openFlow('triage-realidade')">
-            <i class="ri-planet-line" style="color: var(--c-purple);"></i>
-            <span>Onde eu tô?<br><font style="opacity:.5">Irrealidade</font></span>
-        </div>
-        <div class="option-box" onclick="openFlow('triage-trava')">
-            <i class="ri-body-scan-line" style="color: rgba(255,255,255,0.6);"></i>
-            <span>Travei /<br>Paranoia</span>
-        </div>
-        <div class="option-box" onclick="openFlow('triage-falar')">
-            <i class="ri-user-smile-line" style="color: var(--c-blue);"></i>
-            <span>Desespero /<br>Solidão</span>
-        </div>
-        <div class="option-box" onclick="openFlow('triage-samu')">
-            <i class="ri-first-aid-kit-line" style="color: var(--c-red);"></i>
-            <span>Resgate /<br>Urgência</span>
-        </div>
+    <div class="opt-title">Bateu Forte</div>
+    <div class="opt-sub">Usei algo..</div>
+  </div>
+  <div class="option-box" data-flow="panico">
+    <div class="opt-icon" style="background:rgba(0,255,255,.1)">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="color:var(--c-cyan)" aria-hidden="true"><path d="M 18.799 8.963 L 21.05 12.502 C 21.198 12.735 21.168 13.083 20.825 13.23 L 18.865 14.07 L 18.865 16.999 C 18.865 18.103 17.97 18.999 16.865 18.999 L 14.866 18.999 L 14.865 21.999 L 5.865 21.999 L 5.866 18.305 C 5.866 17.124 5.429 16.007 4.621 15 C 3.523 13.63 2.865 11.891 2.865 9.999 C 2.865 5.643 6.345 2.102 10.676 2.001 L 6.332 8.276 L 10.269 8.276 L 10.269 13.339 L 15.332 6.026 L 11.394 6.026 L 11.394 2.016 C 15.221 2.266 18.313 5.205 18.799 8.963 Z"></path></svg>
     </div>
-
-    <!-- THE GENTLE OVERLAY (GLASS BOTTOM SHEET) -->
-    <div class="info-overlay" id="overlay">
-        <div class="close-area" onclick="closeInfo()"></div>
-        <div class="info-content" id="info-box">
-            <!-- Dynamic Content Injected Here -->
-            <div id="dynamic-content"></div>
-            
-            <button class="btn-soft" onclick="closeInfo()" style="border: none; background: transparent; margin-top: var(--s-2); color: rgba(255,255,255,0.4);">
-                <i class="ri-arrow-down-s-line"></i> recolher painel
-            </button>
-        </div>
+    <div class="opt-title">Pânico</div>
+    <div class="opt-sub">Ansiedade</div>
+  </div>
+  <div class="option-box" data-flow="realidade">
+    <div class="opt-icon" style="background:rgba(168,85,247,.12)">
+      <i class="ri-treasure-map-fill" style="color:var(--c-purple)"></i>
     </div>
-
-    <script data-apollo-when="ready">
-        // --- 1. ZEN MODE LOGIC ---
-        let isZen = false;
-        const uiHeader = document.getElementById('ui-header');
-        const uiOptions = document.getElementById('ui-options');
-        const iconZen = document.getElementById('icon-zen');
-
-        window.toggleZen = () => {
-            isZen = !isZen;
-            if (isZen) {
-                gsap.to(uiOptions, { opacity: 0, y: 20, pointerEvents: 'none', duration: 0.8, ease: "power2.inOut" });
-                gsap.to('#btn-audio', { opacity: 0, pointerEvents: 'none', duration: 0.8, ease: "power2.inOut" });
-                gsap.to('#btn-zen', { background: 'transparent', border: '1px solid transparent', color: 'rgba(255,255,255,0.2)', duration: 0.8 });
-                iconZen.className = 'ri-eye-line';
-                // Automatically close overlay if open
-                if(document.getElementById('overlay').style.visibility === 'visible') closeInfo();
-            } else {
-                gsap.to(uiOptions, { opacity: 1, y: 0, pointerEvents: 'all', duration: 0.8, ease: "power2.inOut" });
-                gsap.to('#btn-audio', { opacity: 1, pointerEvents: 'all', duration: 0.8, ease: "power2.inOut" });
-                gsap.to('#btn-zen', { background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.05)', color: 'rgba(255,255,255,0.6)', duration: 0.8 });
-                iconZen.className = 'ri-eye-off-line';
-            }
-        };
-
-        // --- 2. AUDIO LOGIC ---
-        let audioUnlocked = false;
-        const bgAudio = document.getElementById('relaxAudio');
-        const iconAudio = document.getElementById('icon-audio');
-        bgAudio.volume = 0; 
-
-        document.body.addEventListener('pointerdown', () => {
-            if (!audioUnlocked) {
-                audioUnlocked = true;
-                bgAudio.play().then(() => {
-                    iconAudio.className = 'ri-mv-fill';
-                    gsap.to(bgAudio, { volume: 0.85, duration: 6, ease: "none" });
-                }).catch(() => {});
-            }
-        }, { once: true });
-
-        window.toggleAudio = () => {
-            if (bgAudio.paused) {
-                bgAudio.play();
-                iconAudio.className = 'ri-mv-fill';
-                gsap.to(bgAudio, { volume: 0.85, duration: 2 });
-            } else {
-                gsap.to(bgAudio, { volume: 0, duration: 2, onComplete: () => {
-                    bgAudio.pause();
-                    iconAudio.className = 'ri-mv-ai-line';
-                }});
-            }
-        };
-
-        // --- 3. THE HYPNOTIC ORB (GSAP) ---
-        const orb = document.getElementById('orb');
-        const bText = document.getElementById('breathe-txt');
-
-        gsap.to(orb, { rotation: 360, duration: 30, repeat: -1, ease: "none" });
-
-        const breatheTl = gsap.timeline({ repeat: -1, delay: 1 });
-
-        function crossfadeText(newText) {
-            gsap.to(bText, {
-                opacity: 0, duration: 0.8, ease: "power2.inOut",
-                onComplete: () => {
-                    bText.innerText = newText;
-                    gsap.to(bText, { opacity: 0.8, duration: 0.8, ease: "power2.inOut" });
-                }
-            });
-        }
-
-        breatheTl.to(orb, {
-            scale: 0.9, duration: 4, ease: "sine.inOut",
-            onStart: () => crossfadeText("inspira pelo nariz...")
-        })
-        .to(orb, { 
-            scale: 0.9, duration: 2,
-            onStart: () => crossfadeText("segura um pouquinho...")
-        })
-        .to(orb, {
-            scale: 0.5, duration: 6, ease: "sine.inOut",
-            onStart: () => crossfadeText("solta o ar devagarzinho...")
-        });
-
-        // --- 4. COMPLEX FLOWS DATA DICTIONARY ---
-        const flows = {
-            'triage-torto': `
-                <div class="flow-header">
-                    <i class="ri-capsule-fill" style="color: var(--c-magenta)"></i>
-                    <h2>O que você usou?</h2>
-                </div>
-                <div class="info-msg">O efeito é puramente químico e temporário. Seu corpo já sabe como limpar isso. Escolha para eu te ajudar:</div>
-                <div class="grid-2">
-                    <div class="big-cat-btn" onclick="injectFlow('flow-stim')">
-                        <i class="ri-flashlight-line" style="color: #fbbf24"></i>
-                        <span>Estimulantes<br><small style="opacity:0.6;font-size:0.75rem;">Raio, Bala, Cristal</small></span>
-                    </div>
-                    <div class="big-cat-btn" onclick="injectFlow('flow-psych')">
-                        <i class="ri-aliens-line" style="color: var(--c-purple)"></i>
-                        <span>Psicodélicos<br><small style="opacity:0.6;font-size:0.75rem;">Doce, Cogu, Erva</small></span>
-                    </div>
-                </div>
-            `,
-            
-            'flow-stim': `
-                <div class="flow-header">
-                    <i class="ri-flashlight-fill" style="color: #fbbf24"></i>
-                    <h2>Acelerou demais</h2>
-                </div>
-                <div class="exact-phrase" style="border-color: #fbbf24;">"Estou sob efeito de química. Isso vai passar. O barulho alto na mente é só o corpo processando."</div>
-                <div class="info-msg">Toque em cada tarefa conforme você for fazendo para se acalmar:</div>
-                
-                <div class="task-list" id="tl-stim">
-                    <div class="task-card" onclick="markTask(this, 'tl-stim', 'next-stim')">
-                        <div class="task-check"><i class="ri-check-line"></i></div>
-                        <div class="task-content">
-                            <h4>Choque Térmico no Rosto</h4>
-                            <p>Jogue água muito gelada no rosto. Isso força os batimentos a baixarem imediatamente (Reflexo de Mergulho).</p>
-                        </div>
-                    </div>
-                    <div class="task-card" onclick="markTask(this, 'tl-stim', 'next-stim')">
-                        <div class="task-check"><i class="ri-check-line"></i></div>
-                        <div class="task-content">
-                            <h4>Reduzir Estímulos</h4>
-                            <p>Vá para um lugar mais escuro. Desligue música agitada. Ligue um ventilador direto em você.</p>
-                        </div>
-                    </div>
-                    <div class="task-card" onclick="markTask(this, 'tl-stim', 'next-stim')">
-                        <div class="task-check"><i class="ri-check-line"></i></div>
-                        <div class="task-content">
-                            <h4>Guardar tudo</h4>
-                            <p>Afaste qualquer substância de perto. Não misture com calmantes por conta própria. Apenas espere.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="unlockable-next" id="next-stim">
-                    <button class="btn-soft primary" onclick="closeInfo(); setTimeout(toggleZen, 500);">
-                        <i class="ri-shield-check-fill"></i> Consegui. Focar na luz.
-                    </button>
-                </div>
-            `,
-
-            'flow-psych': `
-                <div class="flow-header">
-                    <i class="ri-aliens-fill" style="color: var(--c-purple)"></i>
-                    <h2>Bad Trip / Ansiedade</h2>
-                </div>
-                <div class="exact-phrase" style="border-color: var(--c-purple);">"Eu aceito me sentir estranho agora. É só o pico da onda. Isso sempre passa."</div>
-                <div class="info-msg">Você está seguro. A droga apenas exagera seus sentimentos. Não lute contra. Siga os passos:</div>
-                
-                <div class="task-list" id="tl-psych">
-                    <div class="task-card" onclick="markTask(this, 'tl-psych', 'next-psych')">
-                        <div class="task-check"><i class="ri-check-line"></i></div>
-                        <div class="task-content">
-                            <h4>Mudar o som do ambiente</h4>
-                            <p>Tire a música atual. Coloque uma música instrumental familiar muito baixinha ou Ruído Marrom.</p>
-                        </div>
-                    </div>
-                    <div class="task-card" onclick="markTask(this, 'tl-psych', 'next-psych')">
-                        <div class="task-check"><i class="ri-check-line"></i></div>
-                        <div class="task-content">
-                            <h4>Mudar de Cômodo/Luz</h4>
-                            <p>Levante e vá para outro canto tranquilo. Acenda uma luz suave se o escuro te der medo.</p>
-                        </div>
-                    </div>
-                    <div class="task-card" onclick="markTask(this, 'tl-psych', 'next-psych')">
-                        <div class="task-check"><i class="ri-check-line"></i></div>
-                        <div class="task-content">
-                            <h4>Comer algo doce</h4>
-                            <p>Coloque um pedaço de chocolate ou açúcar na boca. Ajuda a trazer a mente para o corpo físico.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="unlockable-next" id="next-psych">
-                    <button class="btn-soft primary" onclick="closeInfo(); setTimeout(toggleZen, 500);">
-                        <i class="ri-shield-check-fill"></i> Você conseguiu. Voltar a respirar.
-                    </button>
-                </div>
-            `,
-
-            'triage-panico': `
-                <div class="flow-header">
-                    <i class="ri-windy-line" style="color: var(--c-cyan)"></i>
-                    <h2>Crise de Pânico</h2>
-                </div>
-                <div class="info-msg">O pânico engana o cérebro dizendo que há perigo imediato. <strong>Vamos enviar o sinal físico de que você está a salvo.</strong></div>
-                
-                <div class="task-list" id="tl-panic">
-                    <div class="task-card" onclick="markTask(this, 'tl-panic', 'next-panic')">
-                        <div class="task-check"><i class="ri-check-line"></i></div>
-                        <div class="task-content">
-                            <h4>Suspiro Duplo (Faça 3x)</h4>
-                            <p>Puxe o ar pelo nariz. Antes de soltar, <b>dê mais uma puxada curta</b>. Solte tudo pela boca num alívio.</p>
-                        </div>
-                    </div>
-                    <div class="task-card" onclick="markTask(this, 'tl-panic', 'next-panic')">
-                        <div class="task-check"><i class="ri-check-line"></i></div>
-                        <div class="task-content">
-                            <h4>Vibração Suave (Humming)</h4>
-                            <p>Feche a boca e faça um som contínuo de "Hummmmm". Sinta vibrar no peito para regular o nervo vago.</p>
-                        </div>
-                    </div>
-                    <div class="task-card" onclick="markTask(this, 'tl-panic', 'next-panic')">
-                        <div class="task-check"><i class="ri-check-line"></i></div>
-                        <div class="task-content">
-                            <h4>Segurar algo muito frio</h4>
-                            <p>Segure uma pedra de gelo com força até derreter ou jogue água gelada na nuca.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="unlockable-next" id="next-panic">
-                    <button class="btn-soft primary" onclick="closeInfo(); setTimeout(toggleZen, 500);">
-                        <i class="ri-heart-pulse-fill"></i> O pico já passou. Focar na luz.
-                    </button>
-                </div>
-            `,
-
-            'triage-falar': `
-                <div class="flow-header">
-                    <i class="ri-user-smile-line" style="color: var(--c-blue)"></i>
-                    <h2>Você não está sozinho</h2>
-                </div>
-                <div class="exact-phrase" style="border-color: var(--c-blue);">"A dor parece insuportável e permanente agora, mas a intensidade abaixa. Dê tempo ao tempo."</div>
-                
-                <div class="task-list" id="tl-alone">
-                    <div class="task-card" onclick="markTask(this, 'tl-alone', 'next-alone')">
-                        <div class="task-check"><i class="ri-check-line"></i></div>
-                        <div class="task-content">
-                            <h4>Mudar a temperatura do corpo</h4>
-                            <p>Enrole-se num cobertor pesado ou tome banho morno. O frio agrava o desespero.</p>
-                        </div>
-                    </div>
-
-                    <!-- SPECIAL VIDEO CARD : OPENS IN NEW TAB -->
-                    <a href="https://assets.apollo.rio.br/vid/the-voice/" target="_blank" class="task-card" style="border-color: rgba(59, 130, 246, 0.4); background: rgba(59, 130, 246, 0.05);" onclick="markTask(this, 'tl-alone', 'next-alone')">
-                        <div class="task-check" style="border-color: var(--c-blue); background: rgba(59, 130, 246, 0.2);"><i class="ri-play-fill" style="opacity:1; transform:scale(1); color: #fff;"></i></div>
-                        <div class="task-content">
-                            <h4 style="color: #60a5fa;">Vamos assistir a um vídeo seguro?</h4>
-                            <p>Abre em nova aba. Confia em mim, é um conteúdo ótimo para distrair a mente agora.</p>
-                        </div>
-                    </a>
-
-                    <div class="task-card" onclick="markTask(this, 'tl-alone', 'next-alone')">
-                        <div class="task-check"><i class="ri-check-line"></i></div>
-                        <div class="task-content">
-                            <h4>Ouvir uma voz humana</h4>
-                            <p>Mande mensagem para um amigo pedindo companhia sem julgamentos, ou ligue 188.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="unlockable-next" id="next-alone">
-                    <a href="tel:188" class="btn-soft primary" style="background: var(--c-blue); border-color: var(--c-blue); color: #fff;">
-                        <i class="ri-phone-fill"></i> Ligar para o CVV (188) agora
-                    </a>
-                </div>
-            `,
-
-            'triage-samu': `
-                <div class="flow-header">
-                    <i class="ri-alarm-warning-fill" style="color: var(--c-red)"></i>
-                    <h2>Resgate Imediato</h2>
-                </div>
-                <div class="info-msg">O SAMU e Bombeiros são focados em <strong>salvar a vida</strong>. Eles prestam socorro humanizado e <strong>não acionam a polícia por uso de drogas em socorros médicos.</strong></div>
-                
-                <div style="background: rgba(239, 68, 68, 0.1); border-left: 2px solid var(--c-red); padding: 12px; border-radius: 0 12px 12px 0; margin-bottom: 24px;">
-                    <strong style="color: #fff;">Preso no alto com crise?</strong><br>
-                    Sente-se no chão agora. Olhe para a parede de dentro. Não tenha medo de pedir resgate.
-                </div>
-
-                <a href="tel:192" class="btn-soft danger">
-                    <i class="ri-heart-pulse-fill"></i> Ligar para o SAMU (192)
-                </a>
-                <a href="tel:193" class="btn-soft danger" style="margin-bottom: 0;">
-                    <i class="ri-fire-fill"></i> Ligar para os Bombeiros (193)
-                </a>
-            `,
-
-            'triage-realidade': `
-                <div class="flow-header">
-                    <i class="ri-planet-fill" style="color: var(--c-purple)"></i>
-                    <h2>Onde eu tô? (Irrealidade)</h2>
-                </div>
-                <div class="info-msg">As coisas parecem estranhas ou irreais? <strong>Isso é uma defesa natural (Despersonalização) da sua mente ao estresse.</strong> Você é real. O chão é real.</div>
-                
-                <div class="task-list" id="tl-real">
-                    <div class="task-card" onclick="markTask(this, 'tl-real', 'next-real')">
-                        <div class="task-check"><i class="ri-check-line"></i></div>
-                        <div class="task-content">
-                            <h4>Tocar na textura</h4>
-                            <p>Toque no tecido da sua roupa ou no chão firme. Sinta o atrito real da matéria.</p>
-                        </div>
-                    </div>
-                    <div class="task-card" onclick="markTask(this, 'tl-real', 'next-real')">
-                        <div class="task-check"><i class="ri-check-line"></i></div>
-                        <div class="task-content">
-                            <h4>Nomear 3 coisas</h4>
-                            <p>Olhe em volta e diga em voz alta o nome de 3 objetos físicos que você está vendo agora.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="unlockable-next" id="next-real">
-                    <button class="btn-soft primary" onclick="closeInfo(); setTimeout(toggleZen, 500);">
-                        <i class="ri-eye-off-line"></i> Consegui. Modo Foco na Luz.
-                    </button>
-                </div>
-            `,
-
-            'triage-trava': `
-                <div class="flow-header">
-                    <i class="ri-body-scan-fill" style="color: #fff"></i>
-                    <h2>Travei / Paranoia</h2>
-                </div>
-                <div class="info-msg">Se você paralisou achando que estão te olhando: <strong>ninguém está focando em você. Você está num espaço seguro.</strong></div>
-                
-                <div class="task-list" id="tl-trava">
-                    <div class="task-card" onclick="markTask(this, 'tl-trava', 'next-trava')">
-                        <div class="task-check"><i class="ri-check-line"></i></div>
-                        <div class="task-content">
-                            <h4>Postura Segura</h4>
-                            <p>Sente-se no chão encostado numa parede sólida. Abrace seus joelhos. Proteja seu núcleo.</p>
-                        </div>
-                    </div>
-                    <div class="task-card" onclick="markTask(this, 'tl-trava', 'next-trava')">
-                        <div class="task-check"><i class="ri-check-line"></i></div>
-                        <div class="task-content">
-                            <h4>Bloquear a Visão</h4>
-                            <p>Coloque capuz, boné ou óculos escuros se estiver na rua. Crie uma barreira visual que acalma o cérebro.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="unlockable-next" id="next-trava">
-                    <a href="sms:?body=Ei, tô travado de ansiedade num lugar e não tô conseguindo sair sozinho. Você pode me buscar ou ficar na linha comigo?" class="btn-soft primary">
-                        <i class="ri-message-3-fill"></i> SMS pedindo resgate amigo
-                    </a>
-                </div>
-            `
-        };
-
-        // --- 5. OVERLAY NAVIGATION & LOGIC ---
-        const overlay = document.getElementById('overlay');
-        const infoBox = document.getElementById('info-box');
-        const dynamicContent = document.getElementById('dynamic-content');
-
-        window.openFlow = (flowId) => {
-            // Se estiver no modo Zen, sai dele antes de abrir o menu
-            if(isZen) toggleZen();
-
-            dynamicContent.innerHTML = flows[flowId];
-            overlay.style.visibility = 'visible';
-            
-            gsap.to(overlay, { opacity: 1, duration: 0.55 });
-            gsap.to(infoBox, { y: 0, duration: 0.5, ease: "power3.out" });
-            
-            // Scroll to top of overlay
-            infoBox.scrollTop = 0;
-        };
-
-        window.injectFlow = (flowId) => {
-            // Transição suave dentro do overlay (Complex Flow)
-            gsap.to(dynamicContent, { 
-                opacity: 0, duration: 0.2, 
-                onComplete: () => {
-                    dynamicContent.innerHTML = flows[flowId];
-                    infoBox.scrollTop = 0;
-                    gsap.to(dynamicContent, { opacity: 1, duration: 0.55 });
-                }
-            });
-        };
-
-        window.closeInfo = () => {
-            gsap.to(infoBox, { y: '100%', duration: 0.55, ease: "power2.in" });
-            gsap.to(overlay, { 
-                opacity: 0, duration: 0.55, 
-                onComplete: () => {
-                    overlay.style.visibility = 'hidden';
-                    dynamicContent.innerHTML = '';
-                }
-            });
-        };
-
-        // --- 6. DOPAMINERGIC TASK CHECKER ---
-        window.markTask = (element, listId, nextBtnId) => {
-            // Se a tarefa já está completada, não reverte (para não frustrar na crise)
-            if(element.classList.contains('completed') && element.target !== "_blank") return;
-            
-            element.classList.add('completed');
-
-            // Feedback tátil visual super suave
-            gsap.fromTo(element, 
-                { scale: 0.95, backgroundColor: "rgba(255,255,255,0.1)" }, 
-                { scale: 1, backgroundColor: "rgba(52, 211, 153, 0.05)", duration: 0.55, ease: "back.out(2)" }
-            );
-
-            checkListCompletion(listId, nextBtnId);
-        };
-
-        function checkListCompletion(listId, nextBtnId) {
-            const list = document.getElementById(listId);
-            if(!list) return;
-
-            const allTasks = list.querySelectorAll('.task-card');
-            const completedTasks = list.querySelectorAll('.task-card.completed');
-            const nextBtnContainer = document.getElementById(nextBtnId);
-
-            if (allTasks.length === completedTasks.length) {
-                if (nextBtnContainer.style.display !== 'block') {
-                    nextBtnContainer.style.display = 'block';
-                    gsap.to(nextBtnContainer, {
-                        opacity: 1, y: 0, duration: 0.6, ease: "back.out(1.5)", delay: 0.4
-                    });
-                }
-            }
-        }
-    </script>
+    <div class="opt-title">Onde eu tô?</div>
+    <div class="opt-sub">Irrealidade</div>
+  </div>
+  <div class="option-box" data-flow="trava">
+    <div class="opt-icon" style="background:rgba(59,130,246,.12)">
+      <i class="ri-body-scan-fill" style="color:var(--c-blue)"></i>
+    </div>
+    <div class="opt-title">Paranoia</div>
+    <div class="opt-sub">Medo constante</div>
+  </div>
+  <div class="option-box" data-flow="falar">
+    <div class="opt-icon" style="background:rgba(52,211,153,.12)">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="color:var(--c-success)" aria-hidden="true"><path d="M12 2C17.5228 2 22 6.47715 22 12C22 13.6169 21.6162 15.1442 20.9348 16.4958C20.8633 16.2175 20.7307 15.9523 20.5374 15.7206L20.4142 15.5858L19 14.1716L17.5858 15.5858L17.469 15.713C16.8069 16.4988 16.8458 17.6743 17.5858 18.4142C18.014 18.8424 18.588 19.0358 19.148 18.9946C17.3323 20.8487 14.8006 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2ZM12 15C10.6199 15 9.37036 15.5592 8.46564 16.4633L8.30009 16.6368L9.24506 17.4961C10.035 17.1825 10.982 17 12 17C12.9049 17 13.7537 17.1442 14.4859 17.3965L14.7549 17.4961L15.6999 16.6368C14.7853 15.6312 13.4664 15 12 15ZM8.5 10C7.67157 10 7 10.6716 7 11.5C7 12.3284 7.67157 13 8.5 13C9.32843 13 10 12.3284 10 11.5C10 10.6716 9.32843 10 8.5 10ZM15.5 10C14.6716 10 14 10.6716 14 11.5C14 12.3284 14.6716 13 15.5 13C16.3284 13 17 12.3284 17 11.5C17 10.6716 16.3284 10 15.5 10Z"></path></svg>
+    </div>
+    <div class="opt-title">Solidão</div>
+    <div class="opt-sub">Desespero</div>
+  </div>
+  <div class="option-box" data-flow="samu">
+    <div class="opt-icon" style="background:rgba(239,68,68,.12)">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="color:var(--c-red)" aria-hidden="true"><path d="M 10.064 9.142 L 12.314 9.142 L 12.314 10.642 L 10.064 10.642 L 10.064 12.892 L 8.564 12.892 L 8.564 10.642 L 6.314 10.642 L 6.314 9.142 L 8.564 9.142 L 8.564 6.892 L 10.064 6.892 Z M 8.965 17 C 8.722 18.696 7.263 20 5.5 20 C 3.737 20 2.278 18.696 2.036 17 L 1 17 L 1 5 C 1 4.448 1.448 4 2 4 L 16 4 C 16.552 4 17 4.448 17 5 L 17 7 L 20 7 L 23 11.056 L 23 17 L 20.965 17 C 20.722 18.696 19.263 20 17.5 20 C 15.737 20 14.278 18.696 14.036 17 Z M 15 6 L 3 6 L 3 14.05 C 3.635 13.402 4.521 13 5.5 13 C 6.896 13 8.102 13.817 8.663 15 L 14.337 15 C 14.505 14.647 14.73 14.326 15 14.05 Z M 17 12 L 21 12 L 21 11.715 L 18.992 9 L 17 9 Z M 17.5 18 C 18.153 18 18.709 17.582 18.915 17 C 18.97 16.843 19 16.675 19 16.5 C 19 15.671 18.329 15 17.5 15 C 16.672 15 16 15.671 16 16.5 C 16 16.675 16.03 16.843 16.086 17 C 16.291 17.582 16.847 18 17.5 18 Z M 7 16.5 C 7 15.671 6.329 15 5.5 15 C 4.672 15 4 15.671 4 16.5 C 4 16.675 4.03 16.843 4.086 17 C 4.291 17.582 4.847 18 5.5 18 C 6.153 18 6.709 17.582 6.915 17 C 6.97 16.843 7 16.675 7 16.5 Z"></path></svg>
+    </div>
+    <div class="opt-title">Resgate</div>
+    <div class="opt-sub">Urgência</div>
+  </div>
+</nav>
+<div class="info-overlay" id="overlay" aria-hidden="true">
+  <div class="close-bg" id="close-bg"></div>
+  <div class="info-content" id="info-box" role="dialog" aria-modal="true" aria-labelledby="flow-indicator">
+    <div class="progress-track" aria-hidden="true">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+    <div class="sheet-handle" aria-hidden="true"></div>
+    <div class="flow-indicator" id="flow-indicator"></div>
+    <div id="node-area"></div>
+    <button type="button" class="sheet-close" id="sheet-close">
+      <i class="ri-arrow-down-s-line" aria-hidden="true"></i> recolher — fico por perto
+    </button>
+  </div>
+</div>
+<script src="./data.embed.js?v=1.0.0" defer></script>
+<script src="./script.js?v=1.0.1" defer></script>
 </body>
 </html>

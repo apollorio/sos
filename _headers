@@ -8,12 +8,25 @@
   Strict-Transport-Security: max-age=63072000; includeSubDomains
 # Everything that points at a bundle must always be revalidated, or a deploy can be shadowed by an old copy.
 /app/
-  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; media-src 'self' https://assets.apollo.rio.br; connect-src 'self'; font-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'
   Cross-Origin-Opener-Policy: same-origin
   Cache-Control: no-cache
 /app/index.html
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; media-src 'self' https://assets.apollo.rio.br; connect-src 'self'; font-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'
+  Cross-Origin-Opener-Policy: same-origin
+  Cache-Control: no-cache
+# Relatório / Modo Médico: read this device's episode locally; no network, no third party. Never indexed.
+/app/medico.html
   Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'
   Cross-Origin-Opener-Policy: same-origin
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-cache
+/app/relatorio.html
+  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; form-action 'none'
+  Cross-Origin-Opener-Policy: same-origin
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-cache
+/app/report.css
   Cache-Control: no-cache
 /app/sw.js
   Cache-Control: no-cache

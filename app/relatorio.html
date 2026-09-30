@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="pt-BR" data-channel="beta">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <meta name="color-scheme" content="dark">
+  <meta name="robots" content="noindex, nofollow">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>SOS Apollo · Relatório de Emergência</title>
+  <link rel="stylesheet" href="./report.css">
+</head>
+<body data-page="relatorio" class="page-relatorio">
+  <!-- Relatório de Emergência: the person's own timeline of this episode (no substance data: that is only in
+       Modo Médico). Read locally, updated live while the app is open; shared only on an explicit tap. -->
+  <div class="toolbar no-print">
+    <a class="tb-btn" href="./">Voltar ao app</a>
+    <span class="tb-status" id="live-status" role="status" aria-live="polite"></span>
+    <label class="scenario hidden"><span>Cenário</span> <select id="scenario"></select></label>
+    <button type="button" class="tb-btn primary" id="btn-copy">Compartilhar relatório</button>
+    <a class="tb-btn" href="./medico.html">Modo Médico</a>
+    <button type="button" class="tb-btn" id="btn-print">PDF</button>
+  </div>
+  <main class="rel" id="doc">
+    <noscript><p class="waiting">Esta página lê o episódio do app neste aparelho e precisa de JavaScript. Em emergência, ligue 192.</p></noscript>
+  </main>
+  <a class="rel-sos no-print" href="tel:192">Emergência? <strong>Ligar 192</strong></a>
+  <p class="channel no-print">Versão beta de teste. Os textos clínicos do app ainda estão em revisão.</p>
+  <script src="./file-boot.js" data-bundle="./assets/report.a573492be3b9.classic.js" defer></script>
+  <script type="module" src="./assets/report.ae807f98ab5f.js" integrity="sha384-OEpmW9VheyAVb4UMIjOIDMSa63ulT+pxltftsMsrZ6aX08dUUYrJjRvGVCPR3iuk"></script>
+</body>
+</html>

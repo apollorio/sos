@@ -10,6 +10,9 @@ import { REGISTRY_HASH } from "../../src/generated/registry.gen";
 import { LOCALES, resolveCard, type LocaleCard } from "../../src/ui/locale";
 import { SCENARIOS, runScenario, type Step } from "../../tests/scenarios/scenarios";
 import { lintRegistry } from "../registry-lint";
+import { emptyJournal, appendEvents, journalStep, type JournalEvent } from "../../src/core/journal/journal";
+import type { RawInput } from "../../src/core/domain/events";
+import type { SessionState } from "../../src/core/domain/state";
 
 const L = LOCALES["pt-BR"]!;
 // The registry JSON is typed loosely on purpose here: the lab only reads and displays it.
@@ -390,4 +393,35 @@ export function offlineMission(): Mission {
       { act: "Abra o app de novo pelo mesmo endereço", see: `A barra vermelha «Ligar 192» e «${first}», mesmo sem internet.`, p0: false },
     ],
   };
+}
+
+/* ───────────────────────────── Modo Médico: golden scenarios as journals ───────────────────────────── */
+
+/** Scenarios a clinician can open in app/medico.html?cenario=… (the same journal the live app would write). */
+export const MEDICO_SCENARIOS = [
+  "pista-bala-alcool-azulzinho", "slow-pace-asks-less", "helper-unresponsive", "pista-g-alcool-helper",
+  "self-club-panic-loud", "poppers-com-azulzinho", "text-trigger-and-correction", "self-alone-friend-coming",
+];
+export interface MedicoScenario { name: string; title: string; doc: string; episodeId: string; events: JournalEvent[]; state: SessionState; now: number }
+
+export function medicoScenarios(): MedicoScenario[] {
+  return MEDICO_SCENARIOS.map((name) => {
+    const sc = SCENARIOS.find((s) => s.name === name);
+    if (!sc) throw new Error(`medico scenario ${name}: no such golden scenario`);
+    const ran = runScenario(sc);
+    const failures = ran.flatMap((r) => r.failures);
+    if (failures.length) throw new Error(`medico scenario ${name}: scenario fails: ${failures.join("; ")}`);
+    let j = emptyJournal(ran[0]!.state.sessionId);
+    let prev: SessionState | null = null;
+    ran.forEach((r, i) => {
+      // journalStep only needs to know which step is the boot; the rest comes from the StepResult itself.
+      const input = (i === 0
+        ? { kind: "boot", id: `b-${name}`, at: r.state.lastAt, sessionId: r.state.sessionId }
+        : { kind: "runtime", id: `i${i}`, at: r.state.lastAt, event: "TICK" }) as RawInput;
+      j = appendEvents(j, journalStep(j, prev, r, input, REG));
+      prev = r.state;
+    });
+    const last = ran[ran.length - 1]!;
+    return { name, title: MISSIONS.find((m) => m.scenario === name)?.title ?? name, doc: sc.doc, episodeId: j.episodeId, events: j.events, state: last.state, now: last.state.lastAt };
+  });
 }

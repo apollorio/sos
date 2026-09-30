@@ -18,7 +18,7 @@
     "verify": "npm run registry:check && npm run typecheck && npm run test && npm run test:exhaustive && npm run build",
     "build": "npm run registry:check && tsx scripts/build.ts && tsx scripts/build-demo.ts && tsx scripts/build-lab.ts",
     "registry:format": "tsx scripts/registry-format.ts",
-    "e2e": "tsx tests/e2e/shell.e2e.ts && tsx tests/e2e/lab.e2e.ts",
+    "e2e": "tsx tests/e2e/shell.e2e.ts && tsx tests/e2e/file.e2e.ts && tsx tests/e2e/report.e2e.ts && tsx tests/e2e/lab.e2e.ts",
     "build:check": "tsx scripts/build.ts --check && tsx scripts/build-demo.ts --check && tsx scripts/build-lab.ts --check",
     "e2e:legacy": "tsx tests/e2e/legacy.e2e.ts",
     "review:summary": "tsx scripts/review-summary.ts"

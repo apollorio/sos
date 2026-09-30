@@ -44,6 +44,14 @@ export interface SummaryLocale {
 }
 
 const EXPOSURE_SIGNALS = new Set(["substanceClass", "substance", "alcohol", "sexEnhancer"]); // only with the EXPOSURE_CONTEXT scope (L26)
+/**
+ * Strategies whose very name tells what was used (combination warnings, substance-specific care).
+ * Same scope rule as the exposure signals: without EXPOSURE_CONTEXT they are left out, or a friend's summary
+ * would read «aviso: bala com álcool» even though the substance itself was withheld (L26).
+ */
+export function revealsExposure(skill: string, strategy: string): boolean {
+  return skill === "combination" || (skill === "care" && ["pill_care", "poppers_care", "inhalant_air"].includes(strategy));
+}
 const COURSE_EVENTS = new Set(["EMERGENCY_CALL_REPORTED", "HELP_ON_SCENE", "CORRECTION", "APP_HIDDEN", "APP_VISIBLE", "EPISODE_STARTED", "EPISODE_ENDED"]);
 const INTERVENTION_SKILLS = new Set(["reduce_stimulation", "contact_trusted_person", "grounding", "care", "combination", "steady_check"]);
 
@@ -101,10 +109,12 @@ export function buildCrisisSummary(events: JournalEvent[], episodeId: string, op
         case "CARD_SHOWN": {
           const skill = String(p["skill"]);
           if (p["kind"] !== "action" || !INTERVENTION_SKILLS.has(skill) || typeof p["strategy"] !== "string") break;
+          if (revealsExposure(skill, p["strategy"]) && !has("EXPOSURE_CONTEXT")) break;
           course.push({ at: e.clientObservedAt, provenance: "derived", key: `strategy:${skill}.${p["strategy"]}`, params: { outcome: "offered" } });
           break;
         }
         case "STRATEGY_OUTCOME":
+          if (revealsExposure(String(p["skill"]), String(p["strategy"])) && !has("EXPOSURE_CONTEXT")) break;
           course.push({ at: e.clientObservedAt, provenance: e.provenance, key: `strategy:${String(p["skill"])}.${String(p["strategy"])}`, params: { outcome: String(p["outcome"]) } });
           break;
         case "HANDOFF_OPENED":

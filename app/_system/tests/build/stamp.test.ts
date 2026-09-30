@@ -20,7 +20,48 @@ describe("app/ is a consistent, content-addressed deploy", () => {
     const js = readFileSync(at(file!));
     expect(createHash("sha256").update(js).digest("hex").slice(0, 12)).toBe(hash);
     expect(`sha384-${createHash("sha384").update(js).digest("base64")}`).toBe(integrity);
-    expect(readdirSync(at("assets")).filter((f) => f.endsWith(".js"))).toEqual([file!.slice("assets/".length)]);
+    const report = readdirSync(at("assets")).filter((f) => /^report\.[0-9a-f]{12}\.js$/.test(f));
+    const classic = readdirSync(at("assets")).filter((f) => /^(app|report)\.[0-9a-f]{12}\.classic\.js$/.test(f));
+    expect(readdirSync(at("assets")).filter((f) => f.endsWith(".js")).sort()).toEqual([file!.slice("assets/".length), ...report, ...classic].sort());
+    expect(report.length).toBe(1);
+    expect(classic.length).toBe(2);
+  });
+
+  it("opened from the disk (file://), a tiny classic loader adds the same engine; on http it does nothing", () => {
+    const js = readFileSync(at(m![1]!), "utf8");
+    const s = stamp(SITE, js, releaseChannel());
+    expect(readFileSync(at("file-boot.js"), "utf8")).toContain('if (location.protocol !== "file:") return;');
+    for (const [page, classic] of [["index.html", s.classic], ["medico.html", s.report!.classic], ["relatorio.html", s.report!.classic]] as const) {
+      const html = readFileSync(at(page), "utf8");
+      expect(classic, page).not.toBeNull();
+      expect(html, page).toContain(`<script src="./file-boot.js" data-bundle="./${classic}" defer></script>`);
+      expect(existsSync(at(classic!)), page).toBe(true);
+    }
+    expect(sw).toContain('"./file-boot.js"'); // precached: offline, it must never come back as index.html
+    expect(readFileSync("src/runtime/boot.ts", "utf8")).toContain("__sosEngine"); // one engine per page
+  });
+
+  it("Relatório and Modo Médico load the hashed report bundle with SRI, carry the same strict CSP, and are precached", () => {
+    const js = readFileSync(at(m![1]!), "utf8");
+    const s = stamp(SITE, js, releaseChannel());
+    expect(s.report).not.toBeNull();
+    for (const page of ["medico.html", "relatorio.html"]) {
+      const html = readFileSync(at(page), "utf8");
+      expect(html).toBe(s.report!.pages[page]);
+      const rm = /<script type="module" src="\.\/(assets\/report\.([0-9a-f]{12})\.js)" integrity="(sha384-[A-Za-z0-9+/=]+)"><\/script>/.exec(html);
+      expect(rm, page).not.toBeNull();
+      const bytes = readFileSync(at(rm![1]!));
+      expect(createHash("sha256").update(bytes).digest("hex").slice(0, 12)).toBe(rm![2]);
+      expect(`sha384-${createHash("sha384").update(bytes).digest("base64")}`).toBe(rm![3]);
+      const csp = /<meta http-equiv="Content-Security-Policy" content="([^"]+)">/.exec(html)?.[1] ?? "";
+      expect(csp).toContain("default-src 'self'");
+      expect(csp).toContain("script-src 'self'");
+      expect(csp).not.toContain("unsafe-inline");
+      expect(html).not.toMatch(/<script(?![^>]*\bsrc=)[^>]*>/);
+      expect(html).not.toMatch(/<style|style="/);
+      expect(sw).toContain(`"./${page}"`);
+    }
+    expect(sw).toContain(`"./${s.report!.file}"`);
   });
 
   it("every shell reference is relative, so the same files work at /app/ and on any preview host", () => {

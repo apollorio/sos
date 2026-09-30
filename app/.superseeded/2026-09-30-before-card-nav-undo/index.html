@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="dark" class="sos-app">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#000000">
+  <title>Espaço Seguro · SOS Apollo v2</title>
+  <meta name="description" content="Um lugar calmo para respirar, desacelerar e encontrar apoio imediato em momentos de ansiedade, pânico ou sobrecarga. Você não está só. 🤍">
+  <meta name="keywords" content="ansiedade, crise de panico, exercicio de respiracao, saude mental, apoio emocional, bad trip, sos apollo">
+  <meta name="robots" content="index, follow">
+
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://apollo.rio.br/"> 
+  <meta property="og:title" content="Espaço Seguro · SOS Apollo">
+  <meta property="og:description" content="Precisa de uma pausa? Venha respirar fundo, acalmar a mente e encontrar acolhimento. Um porto seguro digital para momentos difíceis. 🤍">
+  <meta property="og:image" content="https://apollo.rio.br/thumb.png">
+  <meta property="og:image:secure_url" content="https://apollo.rio.br/thumb.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Espaço Seguro - Tela com âncora de respiração e opções de suporte emergencial do SOS Apollo.">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:site_name" content="SOS Apollo">
+
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://apollo.rio.br/">
+  <meta name="twitter:title" content="Espaço Seguro · SOS Apollo">
+  <meta name="twitter:description" content="Um lugar calmo para respirar, desacelerar e encontrar apoio imediato em momentos de ansiedade, pânico ou sobrecarga. Você não está só. 🤍">
+  <meta name="twitter:image" content="https://apollo.rio.br/thumb.png">
+
+  <link rel="icon" type="image/png" sizes="32x32" href="https://doc.apollo.rio.br/media/logo/logo-a.v2.white-32px.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="https://doc.apollo.rio.br/media/logo/logo-a.v2.white-512px.png">
+  <link rel="apple-touch-icon" sizes="512x512" href="https://doc.apollo.rio.br/media/logo/logo-a.v2.white-512px.png">
+  <script src="./preloader.js?v=1.003"></script>
+
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="preconnect" href="https://assets.apollo.rio.br" crossorigin>
+  <script src="https://cdn.apollo.rio.br/v1.0.0/core.js?ed=1.0.0" fetchpriority="high"></script>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Space+Grotesk:wght@300..700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./calm-app.css?v=1.0.1">
+</head>
+<body>
+
+<!-- Ambient: piano clocks only — never autoplay; fade starts on tap -->
+<audio id="relaxAudio"
+  src="https://assets.apollo.rio.br/audio/clocks.flac"
+  loop preload="metadata" playsinline></audio>
+
+<header class="global-header" id="ui-header">
+  <nav class="card-nav" id="cardNav" aria-label="Menu principal" data-engine="gsap">
+    <div class="card-nav-top">
+      <a class="card-nav-logo" href="#orb-zone" aria-label="Voltar para a esfera">◌</a>
+      <button class="burger" id="burger" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="navContent">
+        <span class="menu-bar menu-bar--one"></span><span class="menu-bar menu-bar--two"></span>
+      </button>
+      <span class="card-nav-spacer" aria-hidden="true"></span>
+      <button type="button" class="btn-icon" id="btn-zen" aria-label="Entrar no modo foco" aria-pressed="false">
+        <svg id="icon-zen" viewBox="0 0 24 24" aria-hidden="true"><path class="focus-hide" d="M8 3H4a1 1 0 0 0-1 1v4m13-5h4a1 1 0 0 1 1 1v4M3 16v4a1 1 0 0 0 1 1h4m8 0h4a1 1 0 0 0 1-1v-4"/><path class="focus-show" d="M3 8h4a1 1 0 0 0 1-1V3m8 0v4a1 1 0 0 0 1 1h4M3 16h4a1 1 0 0 1 1 1v4m8 0v-4a1 1 0 0 1-1 1h4"/></svg>
+      </button>
+    </div>
+    <div class="card-nav-content" id="navContent" aria-hidden="true">
+      <div class="nav-card">
+        <div class="nav-card-label"><small>01 · Agora</small>Ficar no presente</div>
+        <div class="nav-card-links">
+          <a class="nav-card-link" href="#orb-zone">Respirar com a esfera</a>
+          <a class="nav-card-link" href="#ui-options" data-menu-flow="panico">Abrir Pânico</a>
+          <a class="nav-card-link" href="#ui-options" data-menu-flow="realidade">Onde eu tô?</a>
+        </div>
+      </div>
+      <div class="nav-card">
+        <div class="nav-card-label"><small>02 · Apoio</small>Não ficar sozinho</div>
+        <div class="nav-card-links">
+          <a class="nav-card-link" href="tel:188">Falar com alguém · 188</a>
+          <a class="nav-card-link" href="tel:192">Chamar SAMU · 192</a>
+          <a class="nav-card-link" href="#ui-options" data-menu-flow="falar">Abrir Solidão</a>
+        </div>
+      </div>
+      <div class="nav-card nav-card--primary">
+        <div class="nav-card-label"><small>03 · Atalhos</small>Escolher um caminho</div>
+        <div class="nav-card-links">
+          <a class="nav-card-link" href="#ui-options" data-menu-flow="torto">Bateu forte</a>
+          <a class="nav-card-link" href="#ui-options" data-menu-flow="trava">Paranoia</a>
+          <a class="nav-card-link" href="#ui-options" data-menu-flow="samu">Resgate</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <!-- Blcoked not display!!! 
+   <div class="logo-mark">
+    <i class="ri-heart-pulse-line" aria-hidden="true"></i>
+    <span>Espaço Seguro</span>
+  </div> --> 
+  <div class="hdr-btns">
+    
+    <button type="button" class="btn-icon legacy-btn" id="legacy-btn-zen" aria-label="Entrar no modo foco" aria-pressed="false">
+      <svg id="icon-zen" viewBox="0 0 24 24" aria-hidden="true"><path class="focus-hide" d="M8 3H4a1 1 0 0 0-1 1v4m13-5h4a1 1 0 0 1 1 1v4M3 16v4a1 1 0 0 0 1 1h4m8 0h4a1 1 0 0 0 1-1v-4"/><path class="focus-show" d="M3 8h4a1 1 0 0 0 1-1V3m8 0v4a1 1 0 0 0 1 1h4M3 16h4a1 1 0 0 1 1 1v4m8 0v-4a1 1 0 0 1 1-1h4"/></svg>
+    </button>
+
+    <button type="button" class="btn-icon btn-audio legacy-btn" id="legacy-btn-audio" aria-label="Tocar som ambiente" aria-pressed="false">
+      <span class="audio-bar audio-bar--one" aria-hidden="true"></span>
+      <span class="audio-bar audio-bar--two" aria-hidden="true"></span>
+    </button>
+
+  </div>
+</header>
+
+<section class="orb-zone" id="orb-zone" aria-label="Âncora de respiração">
+  <div class="breathe-label" id="breathe-txt" aria-live="polite">um momento<br>pra você</div>
+  <div class="orb-shell">
+    <div class="orb-stage" id="orb-stage">
+      <div class="orb-aura" id="orb-aura" aria-hidden="true"></div>
+      <button type="button" class="magic-ball breathe" id="orb" aria-label="Pausar a esfera de respiração" aria-pressed="false" aria-describedby="breathe-sub">
+        <iframe src="./calm-orb.html" title="Luz de respiração" aria-hidden="true" tabindex="-1" loading="eager"></iframe>
+      </button>
+      <div class="orb-rim" id="orb-rim" aria-hidden="true"></div>
+    </div>
+  </div>
+  <p class="breathe-sub" id="breathe-sub">toque na esfera para pausar</p>
+</section>
+
+<div class="warm-toast" id="warm-toast" role="status" aria-live="polite"></div>
+
+<!-- Static fallback buttons — always visible even if JS fetch fails -->
+<nav class="options-zone" id="ui-options" aria-label="Opções de suporte">
+  <div class="option-box" data-flow="torto" role="button" tabindex="0">
+    <div class="opt-icon" style="background:rgba(255,0,255,.1)">
+      <i class="ri-capsule-fill" style="color:var(--c-magenta)"></i>
+    </div>
+    <div class="opt-title">Bateu Forte</div>
+    <div class="opt-sub">Usei algo..</div>
+  </div>
+  <div class="option-box" data-flow="panico" role="button" tabindex="0">
+    <div class="opt-icon" style="background:rgba(0,255,255,.1)">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="color:var(--c-cyan)" aria-hidden="true"><path d="M 18.799 8.963 L 21.05 12.502 C 21.198 12.735 21.168 13.083 20.825 13.23 L 18.865 14.07 L 18.865 16.999 C 18.865 18.103 17.97 18.999 16.865 18.999 L 14.866 18.999 L 14.865 21.999 L 5.865 21.999 L 5.866 18.305 C 5.866 17.124 5.429 16.007 4.621 15 C 3.523 13.63 2.865 11.891 2.865 9.999 C 2.865 5.643 6.345 2.102 10.676 2.001 L 6.332 8.276 L 10.269 8.276 L 10.269 13.339 L 15.332 6.026 L 11.394 6.026 L 11.394 2.016 C 15.221 2.266 18.313 5.205 18.799 8.963 Z"></path></svg>
+    </div>
+    <div class="opt-title">Pânico</div>
+    <div class="opt-sub">Ansiedade</div>
+  </div>
+  <div class="option-box" data-flow="realidade" role="button" tabindex="0">
+    <div class="opt-icon" style="background:rgba(168,85,247,.12)">
+      <i class="ri-treasure-map-fill" style="color:var(--c-purple)"></i>
+    </div>
+    <div class="opt-title">Onde eu tô?</div>
+    <div class="opt-sub">Irrealidade</div>
+  </div>
+  <div class="option-box" data-flow="trava" role="button" tabindex="0">
+    <div class="opt-icon" style="background:rgba(59,130,246,.12)">
+      <i class="ri-body-scan-fill" style="color:var(--c-blue)"></i>
+    </div>
+    <div class="opt-title">Paranoia</div>
+    <div class="opt-sub">Medo constante</div>
+  </div>
+  <div class="option-box" data-flow="falar" role="button" tabindex="0">
+    <div class="opt-icon" style="background:rgba(52,211,153,.12)">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="color:var(--c-success)" aria-hidden="true"><path d="M12 2C17.5228 2 22 6.47715 22 12C22 13.6169 21.6162 15.1442 20.9348 16.4958C20.8633 16.2175 20.7307 15.9523 20.5374 15.7206L20.4142 15.5858L19 14.1716L17.5858 15.5858L17.469 15.713C16.8069 16.4988 16.8458 17.6743 17.5858 18.4142C18.014 18.8424 18.588 19.0358 19.148 18.9946C17.3323 20.8487 14.8006 22 12 22C6.47715 22 2 17.5228 2 12C2 6.47715 6.47715 2 12 2ZM12 15C10.6199 15 9.37036 15.5592 8.46564 16.4633L8.30009 16.6368L9.24506 17.4961C10.035 17.1825 10.982 17 12 17C12.9049 17 13.7537 17.1442 14.4859 17.3965L14.7549 17.4961L15.6999 16.6368C14.7853 15.6312 13.4664 15 12 15ZM8.5 10C7.67157 10 7 10.6716 7 11.5C7 12.3284 7.67157 13 8.5 13C9.32843 13 10 12.3284 10 11.5C10 10.6716 9.32843 10 8.5 10ZM15.5 10C14.6716 10 14 10.6716 14 11.5C14 12.3284 14.6716 13 15.5 13C16.3284 13 17 12.3284 17 11.5C17 10.6716 16.3284 10 15.5 10Z"></path></svg>
+    </div>
+    <div class="opt-title">Solidão</div>
+    <div class="opt-sub">Desespero</div>
+  </div>
+  <div class="option-box" data-flow="samu" role="button" tabindex="0">
+    <div class="opt-icon" style="background:rgba(239,68,68,.12)">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" style="color:var(--c-red)" aria-hidden="true"><path d="M 10.064 9.142 L 12.314 9.142 L 12.314 10.642 L 10.064 10.642 L 10.064 12.892 L 8.564 12.892 L 8.564 10.642 L 6.314 10.642 L 6.314 9.142 L 8.564 9.142 L 8.564 6.892 L 10.064 6.892 Z M 8.965 17 C 8.722 18.696 7.263 20 5.5 20 C 3.737 20 2.278 18.696 2.036 17 L 1 17 L 1 5 C 1 4.448 1.448 4 2 4 L 16 4 C 16.552 4 17 4.448 17 5 L 17 7 L 20 7 L 23 11.056 L 23 17 L 20.965 17 C 20.722 18.696 19.263 20 17.5 20 C 15.737 20 14.278 18.696 14.036 17 Z M 15 6 L 3 6 L 3 14.05 C 3.635 13.402 4.521 13 5.5 13 C 6.896 13 8.102 13.817 8.663 15 L 14.337 15 C 14.505 14.647 14.73 14.326 15 14.05 Z M 17 12 L 21 12 L 21 11.715 L 18.992 9 L 17 9 Z M 17.5 18 C 18.153 18 18.709 17.582 18.915 17 C 18.97 16.843 19 16.675 19 16.5 C 19 15.671 18.329 15 17.5 15 C 16.672 15 16 15.671 16 16.5 C 16 16.675 16.03 16.843 16.086 17 C 16.291 17.582 16.847 18 17.5 18 Z M 7 16.5 C 7 15.671 6.329 15 5.5 15 C 4.672 15 4 15.671 4 16.5 C 4 16.675 4.03 16.843 4.086 17 C 4.291 17.582 4.847 18 5.5 18 C 6.153 18 6.709 17.582 6.915 17 C 6.97 16.843 7 16.675 7 16.5 Z"></path></svg>
+    </div>
+    <div class="opt-title">Resgate</div>
+    <div class="opt-sub">Urgência</div>
+  </div>
+</nav>
+
+<section class="utility-bar" id="ui-utilities" aria-label="Controles rápidos">
+  <div class="font-tools" role="group" aria-label="Tamanho do texto">
+    <span class="utility-label">texto</span>
+    <button type="button" class="utility-btn" id="font-down" aria-label="Diminuir tamanho do texto">A−</button>
+    <button type="button" class="utility-btn utility-btn--active" id="font-reset" aria-label="Tamanho de texto padrão" aria-pressed="true">Aa</button>
+    <button type="button" class="utility-btn" id="font-up" aria-label="Aumentar tamanho do texto">A+</button>
+  </div>
+  <button type="button" class="audio-control" id="btn-audio" aria-label="Tocar som ambiente" aria-pressed="false">
+    <span class="audio-icon-wrap" aria-hidden="true">
+      <i class="ri-play-line audio-icon audio-icon--play" id="icon-audio-play"></i>
+      <i class="ri-pause-line audio-icon audio-icon--pause" id="icon-audio-pause"></i>
+    </span>
+    <span class="audio-control-label">som ambiente</span>
+  </button>
+</section>
+
+<nav class="sos-strip" aria-label="Ajuda por telefone">
+  <a href="tel:188"><b>188</b> falar com alguém</a>
+  <a href="tel:192"><b>192</b> SAMU</a>
+</nav>
+
+<div class="info-overlay" id="overlay" aria-hidden="true">
+  <div class="close-bg" id="close-bg"></div>
+  <div class="info-content" id="info-box" role="dialog" aria-modal="true" aria-labelledby="flow-indicator" tabindex="-1" data-lenis-prevent>
+    <div class="progress-track" aria-hidden="true">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+    <div class="sheet-handle" aria-hidden="true"></div>
+    <div class="flow-indicator" id="flow-indicator"></div>
+    <div id="node-area"></div>
+    <button type="button" class="sheet-close" id="sheet-close">
+      <i class="ri-arrow-down-s-line" aria-hidden="true"></i> recolher — fico por perto
+    </button>
+  </div>
+</div>
+
+<script src="./data.embed.js?v=1.0.0" defer></script>
+<script src="./script.js?v=1.2.0" defer></script>
+</body>
+</html>

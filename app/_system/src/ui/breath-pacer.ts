@@ -20,6 +20,13 @@ export function ambientBreath(root: HTMLElement, breath: Output["breath"], local
     layer.setAttribute("aria-hidden", "true");
     const ball = document.createElement("div");
     ball.className = "orb";
+    // The light inside the orb (pure decoration, app.css): three soft lights drifting through each other and a few
+    // embers. The orb's own scale is still the only thing that paces the breath.
+    for (const cls of ["glow glow--a", "glow glow--b", "glow glow--c", "ember e1", "ember e2", "ember e3", "ember e4", "veil"]) {
+      const d = document.createElement("span");
+      d.className = cls;
+      ball.append(d);
+    }
     const label = document.createElement("p");
     label.className = "breath-line";
     label.setAttribute("aria-hidden", "true");

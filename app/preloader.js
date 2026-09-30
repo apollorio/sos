@@ -20,7 +20,7 @@
   var TEXT_OUT_MS = REDUCE ? 300 : 1200;
   var FADE_OUT_MS = REDUCE ? 400 : 1800;
   var HINT_AFTER_MS = 2600;
-  var APP_THEME = '#060508';
+  var APP_THEME = ROOT.classList.contains('sos-app') ? '#000000' : '#060508';
 
   var fromGateway = false;
   var seenIntro = false;
@@ -209,7 +209,7 @@
     var skip = skipController(parts.pre);
 
     preload('./style.css?v=001-abraco', 'style');
-    preload('./isos.html?v=001', 'fetch');
+    preload(ROOT.classList.contains('sos-app') ? './calm-orb.html?v=1.0' : './isos.html?v=001', ROOT.classList.contains('sos-app') ? 'document' : 'fetch');
 
     /* Glow first. From the gateway it is already "on" — same breath, new page. */
     if (fromGateway) {

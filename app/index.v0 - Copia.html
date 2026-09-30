@@ -1,0 +1,104 @@
+
+<!doctype html>
+<html lang="pt-BR" data-channel="beta">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <meta name="color-scheme" content="dark">
+  <meta name="robots" content="noindex">
+  <!-- Host-independent: the same policy is also sent as a header where the host reads /_headers. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>SOS Apollo</title>
+  <meta name="description" content="Um lugar calmo para respirar, desacelerar e encontrar apoio imediato em momentos de ansiedade, pânico ou sobrecarga.">
+  <!-- Host-independent: the same policy is also sent as a header where the host reads /_headers.
+       media-src allows only the ambient piano (first-party Apollo host), fetched after the person's first tap. -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; media-src 'self' https://assets.apollo.rio.br; connect-src 'self'; font-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>SOS Apollo · Espaço Seguro</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./app.css">
+</head>
+<body>
+  <!--
+    EMERGENCY SHELL (L11) — this block is plain HTML. It renders before any JavaScript,
+    EMERGENCY SHELL (L11) — the 192 link is plain HTML. It renders before any JavaScript,
+    works offline (precached by sw.js) and survives a crashed engine. The engine can PROMOTE
+    the 192 action inside a P0 card, but it is never the only thing able to show it.
+    The menu around it is the Apollo DS CardNav (burger at the far right); it only adds, never gates.
+  -->
+  <a id="sos" class="sos" href="tel:192" aria-label="Emergência: ligar 192 (SAMU)">Emergência? <strong>Ligar 192</strong></a>
+  <header class="app-bar">
+    <nav class="card-nav" id="cardNav" aria-label="Menu">
+      <div class="card-nav-top">
+        <a id="sos" class="sos" href="tel:192" aria-label="Emergência: ligar 192 (SAMU)">Emergência? <strong>Ligar 192</strong></a>
+        <span class="card-nav-spacer" aria-hidden="true"></span>
+        <button type="button" class="btn-icon" id="btn-zen" aria-label="Entrar no modo foco" aria-pressed="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path class="focus-hide" d="M8 3H4a1 1 0 0 0-1 1v4m13-5h4a1 1 0 0 1 1 1v4M3 16v4a1 1 0 0 0 1 1h4m8 0h4a1 1 0 0 0 1-1v-4"/><path class="focus-show" d="M3 8h4a1 1 0 0 0 1-1V3m8 0v4a1 1 0 0 0 1 1h4M3 16h4a1 1 0 0 0 1 1v4m8 0v-4a1 1 0 0 1-1-1h4"/></svg>
+        </button>
+        <button class="burger" id="burger" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="navContent"><span></span><span></span></button>
+      </div>
+      <div class="card-nav-content" id="navContent" aria-hidden="true">
+        <div class="nav-card">
+          <div class="nav-card-label"><small>01 · Histórico da Urgência Atual - HDA</small>Linha do Tempo da Crise</div>
+          <div class="nav-card-links">
+            <a class="nav-card-link" href="./relatorio.html" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.0037 9.41421L7.39712 18.0208L5.98291 16.6066L14.5895 8H7.00373V6H18.0037V17H16.0037V9.41421Z"/></svg>Relatório de Emergência <small class="nav-elapsed" id="nav-elapsed" aria-label="tempo desde o início do episódio">[00h00m00s]</small></a>
+            <a class="nav-card-link" href="#compartilhar" id="nav-share"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.0037 9.41421L7.39712 18.0208L5.98291 16.6066L14.5895 8H7.00373V6H18.0037V17H16.0037V9.41421Z"/></svg>Compartilhar Relatório</a>
+            <a class="nav-card-link" href="./medico.html" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.0037 9.41421L7.39712 18.0208L5.98291 16.6066L14.5895 8H7.00373V6H18.0037V17H16.0037V9.41421Z"/></svg>Modo Médico</a>
+          </div>
+        </div>
+        <div class="nav-card">
+          <div class="nav-card-label"><small>02 · Rede de Apoio</small>Preciso de Ajuda agora!</div>
+          <div class="nav-card-links">
+            <a class="nav-card-link" id="nav-whatsapp" href="https://wa.me/?text=Oi%2C%20n%C3%A3o%20t%C3%B4%20muito%20bem%20e%20preciso%20de%20algu%C3%A9m%20comigo.%20Pode%20vir%20ou%20me%20ligar%20agora%3F" target="_blank" rel="noopener noreferrer"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.0037 9.41421L7.39712 18.0208L5.98291 16.6066L14.5895 8H7.00373V6H18.0037V17H16.0037V9.41421Z"/></svg>Enviar mensagem a amigo</a>
+            <a class="nav-card-link" id="nav-192" href="tel:192"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.0037 9.41421L7.39712 18.0208L5.98291 16.6066L14.5895 8H7.00373V6H18.0037V17H16.0037V9.41421Z"/></svg>Chamar SAMU agora (192)</a>
+            <a class="nav-card-link" href="tel:188"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.0037 9.41421L7.39712 18.0208L5.98291 16.6066L14.5895 8H7.00373V6H18.0037V17H16.0037V9.41421Z"/></svg>Apoio Psicológico agora (188)</a>
+          </div>
+        </div>
+        <div class="nav-card nav-card--primary">
+          <div class="nav-card-label"><small>03 · Está bem? </small>Dose de Consciência do Dia</div>
+          <div class="nav-card-links">
+            <a class="nav-card-link" href="#curiosidade" data-soon><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.0037 9.41421L7.39712 18.0208L5.98291 16.6066L14.5895 8H7.00373V6H18.0037V17H16.0037V9.41421Z"/></svg>Descobrir uma curiosidade que pode salvar</a>
+            <a class="nav-card-link" href="https://apollo.rio.br/" target="_blank" rel="noopener"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M16.0037 9.41421L7.39712 18.0208L5.98291 16.6066L14.5895 8H7.00373V6H18.0037V17H16.0037V9.41421Z"/></svg>Conhecer este projeto e apollo::rio</a>
+          </div>
+        </div>
+        <!-- Discreet footer: text size · volume · play/pause -->
+        <div class="nav-controls" role="group" aria-label="Leitura e som">
+          <div class="nav-ctl-pair" role="group" aria-label="Tamanho do texto">
+            <button type="button" class="nav-ctl" id="fs-up" aria-label="Aumentar texto"><span aria-hidden="true">A<sup>+</sup></span></button>
+            &nbsp;
+            <button type="button" class="nav-ctl" id="fs-down" aria-label="Diminuir texto"><small><span aria-hidden="true">A<sup>−</sup></span></small></button>
+            <output class="nav-ctl-read" id="fs-read" aria-live="polite">100%</output>
+          </div>
+          <span class="nav-ctl-spacer" aria-hidden="true"></span>
+          <input type="range" class="nav-vol" id="nav-vol" min="0" max="100" step="1" value="95" aria-label="Volume do som ambiente">
+          <button type="button" class="nav-ctl nav-ctl--play" id="btn-audio" aria-label="Tocar som ambiente" aria-pressed="false">
+            <svg class="ico-play" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13l10.5-6.5z"/></svg>
+            <svg class="ico-pause" viewBox="0 0 24 24" aria-hidden="true"><path d="M7 5h3.5v14H7zM13.5 5H17v14h-3.5z"/></svg>
+          </button>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <main id="app" aria-live="polite"></main>
+
+  <section id="static-help" class="static-help" aria-label="Ajuda sem aplicativo">
+    <h1>Precisa de ajuda agora?</h1>
+    <a class="btn primary" href="tel:192">SAMU · 192</a>
+    <a class="btn secondary" href="tel:188">CVV · 188 (apoio emocional, 24h)</a>
+    <a class="btn secondary" href="tel:08007226001">Disque-Intoxicação · 0800 722 6001</a>
+    <p class="aside">Sem login. Nada sai deste aparelho.</p>
+  </section>
+  <!-- Stamped by scripts/build.ts: data-channel stays "beta" while `registry:lint --release` is red (CLAUDE.md rule 8). -->
+  <p class="channel">Versão beta de teste. Os textos clínicos ainda estão em revisão. <a href="./lab/">Laboratório</a></p>
+
+  <script type="module" src="./assets/app.ebd78ac44e1a.js" integrity="sha384-ea6xiaMau0CDe2JM/SqfDDJc+5rIR4MwqcHqzJ2OmqY313EFd/8LDkhkZGq2eDMs"></script>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <!-- Ambient piano: never autoplays; nothing is fetched until the person's first tap. -->
+  <audio id="relaxAudio" src="https://assets.apollo.rio.br/audio/clocks.flac" loop preload="none"></audio>
+
+  <!-- Opened from the disk (file://)? Browsers refuse the module below there; this adds the same engine as a classic script. -->
+  <script src="./file-boot.js" data-bundle="./assets/app.625ac327565d.classic.js" defer></script>
+  <script type="module" src="./assets/app.0fbff1d5366f.js" integrity="sha384-qDNwbiJgseXWReos6pTUF81b2gwN0dawcEr1//byVqQzwlDkU6DawIFGaNqhE8Oo"></script>
+</body>
+</html>
