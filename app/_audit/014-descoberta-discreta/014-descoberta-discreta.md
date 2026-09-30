@@ -74,7 +74,7 @@ A onda baixa sozinha.»). A helper now hears helper lines after a help (`DONE_H1
 | `npm run registry:check` · `npm run typecheck` | 0 errors (56 draft-copy warnings, expected until clinical sign-off) · clean |
 | `npm test` | 214/214 (new: 6 L30 tests, 9 by-effect combinations, helper lines, mission names, no minutes in copy, local.html shell) |
 | Golden stories | `pista-energia-bebida-remedio` (warnings for bebida and remédio, urge wave, put away; P2) · `pista-despencou-bebida-helper` (side position → P1 «Dois pesos juntos somam.» → stay close) · `tontura-com-remedio-de-erecao` (fresh air → «Tomou algum remédio hoje?» → P1 warning) |
-| `npm run test:exhaustive` | see the row appended below after the final run |
+| `npm run test:exhaustive` | Tier A 3,151,872 (11,280,384 monotonicity checks) · Tier B 387,072 · **Tier D 1,363,392** (body feel × pattern × bebida × remédio × vontade × care loop × pace; never P0 by a combination, nothing by mouth when unsafe, no shower when heavy) · Tier C 2,304 · coverage **81/81** (68 from single states + 13 pinned scenarios; `care.urge_wave` pinned to `pista-energia-bebida-remedio`, `care.put_away` now reachable from a single state) |
 | `npm run build:check` · `npm run e2e` · `npm run e2e:legacy` | up to date · shell + lab green (new: body-first walk, never «o que você usou», Ctrl+H log and Pista, `local.html` boots from `file://`) · 9/9 |
 
 ## Open for the owner and the clinicians
