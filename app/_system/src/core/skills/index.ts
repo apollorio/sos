@@ -12,6 +12,8 @@ import { reduceStimulation } from "./intervention/reduce-stimulation";
 import { contactTrustedPerson } from "./intervention/contact-trusted-person";
 import { grounding } from "./intervention/grounding";
 import { steadyCheck } from "./intervention/steady-check";
+import { care } from "./intervention/care";
+import { combination } from "./intervention/combination";
 
 export const SKILLS: { readonly [K in SkillId]: Skill } = {
   assess,
@@ -21,4 +23,6 @@ export const SKILLS: { readonly [K in SkillId]: Skill } = {
   confirm_commitment: confirmCommitment,
   grounding,
   steady_check: steadyCheck,
+  care,
+  combination,
 };

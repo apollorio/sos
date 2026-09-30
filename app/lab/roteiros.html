@@ -1,0 +1,472 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="light dark">
+<title>SOS Apollo · Roteiros de teste</title>
+<style>
+:root{--bg:#f6f7f9;--fg:#0b0d10;--muted:#4a5561;--card:#fff;--line:#dde3ea;--accent:#0a5cb8;--p0:#c4000f;--ok:#1a7f37;--mid:#8a5a00;--soft:#eef2f6}
+@media (prefers-color-scheme:dark){:root{--bg:#0b0d10;--fg:#f4f6f8;--muted:#9aa4ae;--card:#151a20;--line:#26303a;--accent:#64b5ff;--p0:#ff5a4f;--ok:#3ddc6e;--mid:#ffcc4d;--soft:#1f2730}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:16px 16px 120px}
+a{color:var(--accent)}
+.top{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;justify-content:space-between;padding:8px 0 4px}
+.top a{font-size:15px}
+h1{font-size:28px;line-height:1.2;margin:8px 0}
+h2{font-size:21px;line-height:1.3;margin:28px 0 8px}
+h3{font-size:17px;margin:0}
+.lead{color:var(--muted);margin:0 0 16px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:12px 0}
+.safety{border-left:6px solid var(--p0)}
+.safety strong{color:var(--p0)}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.tile{display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;color:inherit;text-decoration:none}
+.tile strong{display:block;font-size:18px;margin-bottom:4px;color:var(--accent)}
+.tile span{color:var(--muted);font-size:15px}
+.meta{color:var(--muted);font-size:13px;word-break:break-all}
+.badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--muted);margin-left:6px;vertical-align:middle}
+.badge.p0{background:var(--p0);color:#fff;margin-left:0}
+.item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:12px 0}
+.item.done{border-left:6px solid var(--ok)}
+.item.changed{border-left:6px solid var(--mid)}
+dl{display:grid;grid-template-columns:minmax(120px,190px) 1fr;gap:6px 14px;margin:12px 0}
+dt{color:var(--muted);font-size:14px}
+dd{margin:0}
+@media (max-width:560px){dl{grid-template-columns:1fr}dt{margin-top:6px}}
+fieldset{border:0;padding:0;margin:10px 0 0;display:flex;flex-wrap:wrap;gap:8px}
+legend{font-size:14px;color:var(--muted);margin-bottom:4px;width:100%}
+label.opt{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;background:var(--bg)}
+label.opt:has(input:checked){border-color:var(--accent);outline:2px solid var(--accent)}
+textarea,input[type=text],select{width:100%;font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+textarea{min-height:64px;margin-top:10px}
+.who{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.who label{font-size:14px;color:var(--muted)}
+ol.steps{padding-left:22px}
+ol.steps li{margin:10px 0}
+.see{display:block;color:var(--muted);font-size:15px;margin-top:2px}
+.see q{color:var(--fg);quotes:none}
+.warn{display:block;color:var(--p0);font-size:14px;margin-top:2px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:8px 16px calc(8px + env(safe-area-inset-bottom))}
+.bar .in{max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center}
+.bar .grow{flex:1 1 100%;font-size:13px;color:var(--muted)}
+@media (min-width:640px){.bar .grow{flex-basis:200px}}
+.bar button{padding:6px 12px;font-size:15px}
+button{font:inherit;border-radius:10px;border:1px solid var(--line);background:var(--soft);color:var(--fg);padding:8px 14px;cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+nav.toc{display:flex;flex-wrap:wrap;gap:6px}
+nav.toc a{font-size:14px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 10px;text-decoration:none}
+.note{font-size:14px;color:var(--muted)}
+.hidden{display:none!important}
+@media print{.bar,.no-print,nav.toc{display:none!important}.wrap{padding-bottom:0}.item{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="top no-print"><a href="./">← Laboratório</a><span class="meta">Roteiros de teste</span></div>
+<h1>Roteiros de teste</h1>
+<p class="lead">Missões curtas para testar o app como alguém usaria de verdade. Cada passo diz o que tocar e o que deve aparecer. Se aparecer outra coisa, é exatamente isso que queremos saber.</p>
+<div class="box safety" role="note">
+  <p><strong>Versão de teste.</strong> Os textos clínicos ainda não foram aprovados por profissionais de saúde.</p>
+  <p>Em uma emergência real, ligue <a href="tel:192">192 (SAMU)</a>. Para apoio emocional, <a href="tel:188">188 (CVV)</a>.</p>
+  <p>Durante os testes, o app pode abrir o discador ou o WhatsApp. Cancele: não complete ligações nem envie mensagens.</p>
+</div>
+<div class="box">
+  <p class="note">As respostas ficam só neste navegador. Não escreva nomes, telefones ou informações de saúde reais.</p>
+  <div class="who">
+    <div><label for="t-nick">Apelido (opcional)</label><input type="text" id="t-nick"></div>
+    <div><label for="t-device">Aparelho</label><select id="t-device"><option value="">—</option><option>Android</option><option>iPhone</option><option>Computador</option><option>Outro</option></select></div>
+  </div>
+</div>
+
+<article class="item" data-id="helper-unresponsive">
+  <h2>Missão 1 · Um amigo não responde <span class="badge">você ajuda outra pessoa</span> <span class="badge">~7 min</span></h2>
+  <p>Você está numa festa e encontra um amigo caído. Você chama e ele não responde.</p>
+  <p class="note no-print">Comece com o app zerado. <a href="../" target="_blank" rel="noopener">Abrir o app</a> · <button type="button" onclick="sosResetApp(this.nextElementSibling)">Zerar o app</button><span class="note" role="status"></span></p>
+  <ol class="steps"><li>Toque em «Outra pessoa»<span class="see">Você deve ver: <q>«A pessoa responde quando você chama ou toca nela?»</q></span></li><li>Toque em «Não responde»<span class="see"><span class="badge p0">emergência</span> Você deve ver: <q>«Ligue 192 agora.» · A pessoa não responde. Ligue 192 e fique com ela.</q></span></li><li>Toque em «Ligar 192»<span class="warn">Abre o discador (192). Cancele: não complete a ligação em teste.</span><span class="see"><span class="badge p0">emergência</span> Você deve ver: <q>«Enquanto a ajuda chega:» · Fique com a pessoa. Se ela respira, deite-a de lado. Nada pela boca. Siga o atendente.</q></span></li><li>Saia do app (abra outro app ou bloqueie a tela)<span class="see">Você deve ver: <q>Nada: o app está em segundo plano e não conta esse tempo como silêncio.</q></span></li><li>Continue fora do app por cerca de 5 min<span class="see">Você deve ver: <q>Nada: o app está em segundo plano e não conta esse tempo como silêncio.</q></span></li><li>Volte ao app<span class="see"><span class="badge p0">emergência</span> Você deve ver: <q>«Enquanto a ajuda chega:» · Fique com a pessoa. Se ela respira, deite-a de lado. Nada pela boca. Siga o atendente.</q></span></li><li>Espere cerca de 25 s com o app aberto, sem tocar em nada<span class="see"><span class="badge p0">emergência</span> Você deve ver: <q>«ATENÇÃO: esta pessoa pode precisar de ajuda.» · O 192 já foi chamado. Fique com esta pessoa até a ajuda chegar.</q></span></li><li>Toque em «Tô aqui»<span class="see"><span class="badge p0">emergência</span> Você deve ver: <q>«Enquanto a ajuda chega:» · Fique com a pessoa. Se ela respira, deite-a de lado. Nada pela boca. Siga o atendente.</q></span></li><li>Toque em «A ajuda chegou»<span class="see"><span class="badge p0">emergência</span> Você deve ver: <q>«A ajuda chegou.» · Siga as orientações da equipe. Você fez a coisa certa.</q></span></li><li>Toque em «Encerrar»<span class="see"><span class="badge p0">emergência</span> Você deve ver: <q>«Que bom. Se cuida.» · O que foi respondido fica só neste aparelho e é apagado sozinho em até 12h.</q></span></li></ol>
+  <p><strong>O que observar:</strong> Chegou em «Ligue 192» em até 2 toques? Enquanto espera o SAMU, dá pra entender o que fazer?</p>
+  <fieldset><legend>Como foi?</legend>
+    <label class="opt"><input type="radio" name="r-helper-unresponsive" value="como_descrito"> Aconteceu como descrito</label>
+    <label class="opt"><input type="radio" name="r-helper-unresponsive" value="diferente"> Aconteceu diferente</label>
+    <label class="opt"><input type="radio" name="r-helper-unresponsive" value="nao_consegui"> Não consegui fazer</label>
+  </fieldset>
+  <fieldset><legend>Clareza dos textos (1 = confuso, 5 = muito claro)</legend>
+    <label class="opt"><input type="radio" name="q-helper-unresponsive" value="1"> 1</label><label class="opt"><input type="radio" name="q-helper-unresponsive" value="2"> 2</label><label class="opt"><input type="radio" name="q-helper-unresponsive" value="3"> 3</label><label class="opt"><input type="radio" name="q-helper-unresponsive" value="4"> 4</label><label class="opt"><input type="radio" name="q-helper-unresponsive" value="5"> 5</label>
+  </fieldset>
+  <textarea name="c-helper-unresponsive" aria-label="Comentário sobre a missão 1" placeholder="O que chamou atenção? (sem dados pessoais)"></textarea>
+</article>
+<article class="item" data-id="self-club-panic-loud">
+  <h2>Missão 2 · Pânico na pista, som alto <span class="badge">você é a pessoa em crise</span> <span class="badge">~4 min</span></h2>
+  <p>Você está numa festa com amigos por perto. Bateu um pânico forte e o som está muito alto.</p>
+  <p class="note no-print">Comece com o app zerado. <a href="../" target="_blank" rel="noopener">Abrir o app</a> · <button type="button" onclick="sosResetApp(this.nextElementSibling)">Zerar o app</button><span class="note" role="status"></span></p>
+  <ol class="steps"><li>Toque em «Eu»<span class="see">Você deve ver: <q>«Agora, algum destes?»</q></span></li><li>Toque em «Respiro bem, sem dor no peito»<span class="see">Você deve ver: <q>«Você consegue pensar e responder normalmente?»</q></span></li><li>Toque em «Consigo»<span class="see">Você deve ver: <q>«Quanto de ansiedade agora?»</q></span></li><li>Toque em «Muita, pânico»<span class="see">Você deve ver: <q>«Água gelada no rosto.» · Joga água bem fria no rosto, na nuca ou nos punhos. Ou segura um gelo. O frio ajuda o coração a desacelerar.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«O que você sente agora é intenso.. não é permanente.» «Tem alguém de confiança aí com você?»</q></span></li><li>Toque em «Sim, aqui comigo»<span class="see">Você deve ver: <q>«Um lugar firme pro corpo..» · Senta ou deita em algo firme: chão, cadeira, sofá. Vira o celular com a tela pra baixo um segundo.. e volta quando quiser. Tô aqui.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«O efeito vai passando.. às vezes sobe, às vezes baixa. A direção é o fim.» «Como está o lugar agora?»</q></span></li><li>Toque em «Muito barulho ou luz»<span class="see">Você deve ver: <q>«Menos estímulo agora.» · Vai pra um lugar mais quieto e com menos luz. Me avisa quando chegar.</q></span></li></ol>
+  <p><strong>O que observar:</strong> As perguntas pareceram necessárias? O exercício e a sugestão de sair do barulho fazem sentido?</p>
+  <fieldset><legend>Como foi?</legend>
+    <label class="opt"><input type="radio" name="r-self-club-panic-loud" value="como_descrito"> Aconteceu como descrito</label>
+    <label class="opt"><input type="radio" name="r-self-club-panic-loud" value="diferente"> Aconteceu diferente</label>
+    <label class="opt"><input type="radio" name="r-self-club-panic-loud" value="nao_consegui"> Não consegui fazer</label>
+  </fieldset>
+  <fieldset><legend>Clareza dos textos (1 = confuso, 5 = muito claro)</legend>
+    <label class="opt"><input type="radio" name="q-self-club-panic-loud" value="1"> 1</label><label class="opt"><input type="radio" name="q-self-club-panic-loud" value="2"> 2</label><label class="opt"><input type="radio" name="q-self-club-panic-loud" value="3"> 3</label><label class="opt"><input type="radio" name="q-self-club-panic-loud" value="4"> 4</label><label class="opt"><input type="radio" name="q-self-club-panic-loud" value="5"> 5</label>
+  </fieldset>
+  <textarea name="c-self-club-panic-loud" aria-label="Comentário sobre a missão 2" placeholder="O que chamou atenção? (sem dados pessoais)"></textarea>
+</article>
+<article class="item" data-id="cant-move">
+  <h2>Missão 3 · Não dá pra sair do lugar <span class="badge">você é a pessoa em crise</span> <span class="badge">~5 min</span></h2>
+  <p>Mesma festa, mesmo pânico. O app sugere ir pra um lugar mais calmo, mas você não consegue sair de onde está.</p>
+  <p class="note no-print">Comece com o app zerado. <a href="../" target="_blank" rel="noopener">Abrir o app</a> · <button type="button" onclick="sosResetApp(this.nextElementSibling)">Zerar o app</button><span class="note" role="status"></span></p>
+  <ol class="steps"><li>Toque em «Eu»<span class="see">Você deve ver: <q>«Agora, algum destes?»</q></span></li><li>Toque em «Respiro bem, sem dor no peito»<span class="see">Você deve ver: <q>«Você consegue pensar e responder normalmente?»</q></span></li><li>Toque em «Consigo»<span class="see">Você deve ver: <q>«Quanto de ansiedade agora?»</q></span></li><li>Toque em «Muita, pânico»<span class="see">Você deve ver: <q>«Água gelada no rosto.» · Joga água bem fria no rosto, na nuca ou nos punhos. Ou segura um gelo. O frio ajuda o coração a desacelerar.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«O que você sente agora é intenso.. não é permanente.» «Tem alguém de confiança aí com você?»</q></span></li><li>Toque em «Sim, aqui comigo»<span class="see">Você deve ver: <q>«Um lugar firme pro corpo..» · Senta ou deita em algo firme: chão, cadeira, sofá. Vira o celular com a tela pra baixo um segundo.. e volta quando quiser. Tô aqui.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«O efeito vai passando.. às vezes sobe, às vezes baixa. A direção é o fim.» «Como está o lugar agora?»</q></span></li><li>Toque em «Muito barulho ou luz»<span class="see">Você deve ver: <q>«Menos estímulo agora.» · Vai pra um lugar mais quieto e com menos luz. Me avisa quando chegar.</q></span></li><li>Toque em «Não consigo»<span class="see">Você deve ver: <q>«Dá pra baixar o volume daí mesmo.» · Senta ou encosta numa parede. Cobre os ouvidos ou fecha os olhos por um minuto.</q></span></li><li>Toque em «Não ajudou»<span class="see">Você deve ver: <q>«Pés no chão.» · Sente os pés firmes no chão. Aperta as mãos uma na outra por 5 segundos e solta. Repete 3 vezes.</q></span></li></ol>
+  <p><strong>O que observar:</strong> O app mudou de estratégia sem fazer você se sentir culpado(a)?</p>
+  <fieldset><legend>Como foi?</legend>
+    <label class="opt"><input type="radio" name="r-cant-move" value="como_descrito"> Aconteceu como descrito</label>
+    <label class="opt"><input type="radio" name="r-cant-move" value="diferente"> Aconteceu diferente</label>
+    <label class="opt"><input type="radio" name="r-cant-move" value="nao_consegui"> Não consegui fazer</label>
+  </fieldset>
+  <fieldset><legend>Clareza dos textos (1 = confuso, 5 = muito claro)</legend>
+    <label class="opt"><input type="radio" name="q-cant-move" value="1"> 1</label><label class="opt"><input type="radio" name="q-cant-move" value="2"> 2</label><label class="opt"><input type="radio" name="q-cant-move" value="3"> 3</label><label class="opt"><input type="radio" name="q-cant-move" value="4"> 4</label><label class="opt"><input type="radio" name="q-cant-move" value="5"> 5</label>
+  </fieldset>
+  <textarea name="c-cant-move" aria-label="Comentário sobre a missão 3" placeholder="O que chamou atenção? (sem dados pessoais)"></textarea>
+</article>
+<article class="item" data-id="self-alone-friend-coming">
+  <h2>Missão 4 · Sozinho(a), chamando alguém <span class="badge">você é a pessoa em crise</span> <span class="badge">~11 min</span></h2>
+  <p>Você está sozinho(a), bem ansioso(a), e decide chamar alguém de confiança.</p>
+  <p class="note no-print">Comece com o app zerado. <a href="../" target="_blank" rel="noopener">Abrir o app</a> · <button type="button" onclick="sosResetApp(this.nextElementSibling)">Zerar o app</button><span class="note" role="status"></span></p>
+  <ol class="steps"><li>Toque em «Eu»<span class="see">Você deve ver: <q>«Agora, algum destes?»</q></span></li><li>Toque em «Respiro bem, sem dor no peito»<span class="see">Você deve ver: <q>«Você consegue pensar e responder normalmente?»</q></span></li><li>Toque em «Consigo»<span class="see">Você deve ver: <q>«Quanto de ansiedade agora?»</q></span></li><li>Toque em «Bastante»<span class="see">Você deve ver: <q>«Água gelada no rosto.» · Joga água bem fria no rosto, na nuca ou nos punhos. Ou segura um gelo. O frio ajuda o coração a desacelerar.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«O que você sente agora é intenso.. não é permanente.» «Tem alguém de confiança aí com você?»</q></span></li><li>Toque em «Tô sozinho(a)»<span class="see">Você deve ver: <q>«Chama alguém de confiança.» · Vou abrir o WhatsApp com uma mensagem pronta. Você escolhe pra quem mandar.</q></span></li><li>Toque em «Abrir WhatsApp»<span class="warn">Abre o WhatsApp ou o SMS com uma mensagem pronta. Não envie: volte ao app.</span><span class="see">Você deve ver: <q>«O que você usou?» · Sem julgamento.. só pra eu saber como cuidar de você. Fica só neste aparelho.</q></span></li><li>Saia do app (abra outro app ou bloqueie a tela)<span class="see">Você deve ver: <q>Nada: o app está em segundo plano e não conta esse tempo como silêncio.</q></span></li><li>Volte ao app depois de cerca de 3 min<span class="see">Você deve ver: <q>«O que você usou?» · Sem julgamento.. só pra eu saber como cuidar de você. Fica só neste aparelho.</q></span></li><li>Toque em «Nada»<span class="see">Você deve ver: <q>«Conseguiu falar com alguém?»</q></span></li><li>Toque em «Alguém tá vindo»<span class="see">Você deve ver: <q>«Como está o lugar agora?»</q></span></li><li>Espere cerca de 4 min. Depois toque em «Chegou alguém? Toque aqui»<span class="see">Você deve ver: <q>«Como está o lugar agora?»</q></span></li></ol>
+  <p><strong>O que observar:</strong> O convite para mandar mensagem é claro? Quando você volta, o app lembra que alguém está vindo?</p>
+  <fieldset><legend>Como foi?</legend>
+    <label class="opt"><input type="radio" name="r-self-alone-friend-coming" value="como_descrito"> Aconteceu como descrito</label>
+    <label class="opt"><input type="radio" name="r-self-alone-friend-coming" value="diferente"> Aconteceu diferente</label>
+    <label class="opt"><input type="radio" name="r-self-alone-friend-coming" value="nao_consegui"> Não consegui fazer</label>
+  </fieldset>
+  <fieldset><legend>Clareza dos textos (1 = confuso, 5 = muito claro)</legend>
+    <label class="opt"><input type="radio" name="q-self-alone-friend-coming" value="1"> 1</label><label class="opt"><input type="radio" name="q-self-alone-friend-coming" value="2"> 2</label><label class="opt"><input type="radio" name="q-self-alone-friend-coming" value="3"> 3</label><label class="opt"><input type="radio" name="q-self-alone-friend-coming" value="4"> 4</label><label class="opt"><input type="radio" name="q-self-alone-friend-coming" value="5"> 5</label>
+  </fieldset>
+  <textarea name="c-self-alone-friend-coming" aria-label="Comentário sobre a missão 4" placeholder="O que chamou atenção? (sem dados pessoais)"></textarea>
+</article>
+<article class="item" data-id="nobody-to-call">
+  <h2>Missão 5 · Não tenho ninguém pra chamar <span class="badge">você é a pessoa em crise</span> <span class="badge">~3 min</span></h2>
+  <p>Você está sozinho(a) e ansioso(a), mas não tem ninguém pra quem mandar mensagem.</p>
+  <p class="note no-print">Comece com o app zerado. <a href="../" target="_blank" rel="noopener">Abrir o app</a> · <button type="button" onclick="sosResetApp(this.nextElementSibling)">Zerar o app</button><span class="note" role="status"></span></p>
+  <ol class="steps"><li>Toque em «Eu»<span class="see">Você deve ver: <q>«Agora, algum destes?»</q></span></li><li>Toque em «Respiro bem, sem dor no peito»<span class="see">Você deve ver: <q>«Você consegue pensar e responder normalmente?»</q></span></li><li>Toque em «Consigo»<span class="see">Você deve ver: <q>«Quanto de ansiedade agora?»</q></span></li><li>Toque em «Bastante»<span class="see">Você deve ver: <q>«Água gelada no rosto.» · Joga água bem fria no rosto, na nuca ou nos punhos. Ou segura um gelo. O frio ajuda o coração a desacelerar.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«O que você sente agora é intenso.. não é permanente.» «Tem alguém de confiança aí com você?»</q></span></li><li>Toque em «Tô sozinho(a)»<span class="see">Você deve ver: <q>«Chama alguém de confiança.» · Vou abrir o WhatsApp com uma mensagem pronta. Você escolhe pra quem mandar.</q></span></li><li>Toque em «Não tenho ninguém»<span class="see">Você deve ver: <q>«Dá pra conversar com alguém agora.» · O CVV atende no 188, grátis, 24h. É só ligar e falar como você está.</q></span></li></ol>
+  <p><strong>O que observar:</strong> O app ofereceu outro caminho sem beco sem saída?</p>
+  <fieldset><legend>Como foi?</legend>
+    <label class="opt"><input type="radio" name="r-nobody-to-call" value="como_descrito"> Aconteceu como descrito</label>
+    <label class="opt"><input type="radio" name="r-nobody-to-call" value="diferente"> Aconteceu diferente</label>
+    <label class="opt"><input type="radio" name="r-nobody-to-call" value="nao_consegui"> Não consegui fazer</label>
+  </fieldset>
+  <fieldset><legend>Clareza dos textos (1 = confuso, 5 = muito claro)</legend>
+    <label class="opt"><input type="radio" name="q-nobody-to-call" value="1"> 1</label><label class="opt"><input type="radio" name="q-nobody-to-call" value="2"> 2</label><label class="opt"><input type="radio" name="q-nobody-to-call" value="3"> 3</label><label class="opt"><input type="radio" name="q-nobody-to-call" value="4"> 4</label><label class="opt"><input type="radio" name="q-nobody-to-call" value="5"> 5</label>
+  </fieldset>
+  <textarea name="c-nobody-to-call" aria-label="Comentário sobre a missão 5" placeholder="O que chamou atenção? (sem dados pessoais)"></textarea>
+</article>
+<article class="item" data-id="text-trigger-and-correction">
+  <h2>Missão 6 · Escrevendo o que acontece <span class="badge">você é a pessoa em crise</span> <span class="badge">~1 min</span></h2>
+  <p>Em vez de tocar nas opções, você escreve o que está sentindo. Depois percebe que se enganou.</p>
+  <p class="note no-print">Comece com o app zerado. <a href="../" target="_blank" rel="noopener">Abrir o app</a> · <button type="button" onclick="sosResetApp(this.nextElementSibling)">Zerar o app</button><span class="note" role="status"></span></p>
+  <ol class="steps"><li>Toque em «Eu»<span class="see">Você deve ver: <q>«Agora, algum destes?»</q></span></li><li>Escreva «Não consigo respirar!!» no campo de texto e envie<span class="see"><span class="badge p0">emergência</span> Você deve ver: <q>«Ligue 192 agora.» · Falta de ar forte é emergência. Ligue 192 agora.</q></span></li><li>Toque em «Me enganei»<span class="see">Você deve ver: <q>«Só conferindo de novo, rapidinho. Faz parte do cuidado.» «Agora, algum destes?»</q></span></li></ol>
+  <p><strong>O que observar:</strong> A frase levou direto à emergência? O botão «Me enganei» desfez e perguntou de novo?</p>
+  <fieldset><legend>Como foi?</legend>
+    <label class="opt"><input type="radio" name="r-text-trigger-and-correction" value="como_descrito"> Aconteceu como descrito</label>
+    <label class="opt"><input type="radio" name="r-text-trigger-and-correction" value="diferente"> Aconteceu diferente</label>
+    <label class="opt"><input type="radio" name="r-text-trigger-and-correction" value="nao_consegui"> Não consegui fazer</label>
+  </fieldset>
+  <fieldset><legend>Clareza dos textos (1 = confuso, 5 = muito claro)</legend>
+    <label class="opt"><input type="radio" name="q-text-trigger-and-correction" value="1"> 1</label><label class="opt"><input type="radio" name="q-text-trigger-and-correction" value="2"> 2</label><label class="opt"><input type="radio" name="q-text-trigger-and-correction" value="3"> 3</label><label class="opt"><input type="radio" name="q-text-trigger-and-correction" value="4"> 4</label><label class="opt"><input type="radio" name="q-text-trigger-and-correction" value="5"> 5</label>
+  </fieldset>
+  <textarea name="c-text-trigger-and-correction" aria-label="Comentário sobre a missão 6" placeholder="O que chamou atenção? (sem dados pessoais)"></textarea>
+</article>
+<article class="item" data-id="negated-text-asks">
+  <h2>Missão 7 · Uma frase com «não» <span class="badge">você é a pessoa em crise</span> <span class="badge">~1 min</span></h2>
+  <p>Você escreve uma frase dizendo que NÃO tem um sintoma.</p>
+  <p class="note no-print">Comece com o app zerado. <a href="../" target="_blank" rel="noopener">Abrir o app</a> · <button type="button" onclick="sosResetApp(this.nextElementSibling)">Zerar o app</button><span class="note" role="status"></span></p>
+  <ol class="steps"><li>Toque em «Eu»<span class="see">Você deve ver: <q>«Agora, algum destes?»</q></span></li><li>Toque em «Respiro bem, sem dor no peito»<span class="see">Você deve ver: <q>«Você consegue pensar e responder normalmente?»</q></span></li><li>Escreva «nao estou com dor no peito» no campo de texto e envie<span class="see">Você deve ver: <q>«Só conferindo de novo, rapidinho. Faz parte do cuidado.» «Agora, algum destes?»</q></span></li></ol>
+  <p><strong>O que observar:</strong> O app entendeu a negação e perguntou, em vez de disparar uma emergência?</p>
+  <fieldset><legend>Como foi?</legend>
+    <label class="opt"><input type="radio" name="r-negated-text-asks" value="como_descrito"> Aconteceu como descrito</label>
+    <label class="opt"><input type="radio" name="r-negated-text-asks" value="diferente"> Aconteceu diferente</label>
+    <label class="opt"><input type="radio" name="r-negated-text-asks" value="nao_consegui"> Não consegui fazer</label>
+  </fieldset>
+  <fieldset><legend>Clareza dos textos (1 = confuso, 5 = muito claro)</legend>
+    <label class="opt"><input type="radio" name="q-negated-text-asks" value="1"> 1</label><label class="opt"><input type="radio" name="q-negated-text-asks" value="2"> 2</label><label class="opt"><input type="radio" name="q-negated-text-asks" value="3"> 3</label><label class="opt"><input type="radio" name="q-negated-text-asks" value="4"> 4</label><label class="opt"><input type="radio" name="q-negated-text-asks" value="5"> 5</label>
+  </fieldset>
+  <textarea name="c-negated-text-asks" aria-label="Comentário sobre a missão 7" placeholder="O que chamou atenção? (sem dados pessoais)"></textarea>
+</article>
+<article class="item" data-id="abnormal-breathing-no-pacer">
+  <h2>Missão 8 · Respiração estranha (ajudando alguém) <span class="badge">você ajuda outra pessoa</span> <span class="badge">~4 min</span></h2>
+  <p>Você está com uma pessoa que responde, mas respira de um jeito estranho e está ansiosa.</p>
+  <p class="note no-print">Comece com o app zerado. <a href="../" target="_blank" rel="noopener">Abrir o app</a> · <button type="button" onclick="sosResetApp(this.nextElementSibling)">Zerar o app</button><span class="note" role="status"></span></p>
+  <ol class="steps"><li>Toque em «Outra pessoa»<span class="see">Você deve ver: <q>«A pessoa responde quando você chama ou toca nela?»</q></span></li><li>Toque em «Responde normal»<span class="see">Você deve ver: <q>«Como está a respiração dela?»</q></span></li><li>Toque em «Estranha ou ofegante»<span class="see">Você deve ver: <q>«Está acontecendo algum destes?»</q></span></li><li>Toque em «Nenhum desses»<span class="see">Você deve ver: <q>«Como está o lugar agora?»</q></span></li><li>Toque em «Tranquilo»<span class="see">Você deve ver: <q>«Pés no chão.» · Ajude a pessoa a sentir os pés firmes no chão. Peça pra ela apertar as mãos por 5 segundos e soltar. Repitam 3 vezes.</q></span></li><li>Toque em «Quero outra»<span class="see">Você deve ver: <q>«Fica perto de quem está com você.» · Fica perto da pessoa. Não deixa ela sozinha, nem pra buscar algo.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Ok, fiz isso»<span class="see">Você deve ver: <q>«O que a pessoa usou?» · Sem julgamento.. só pra eu saber como te ajudar a cuidar dela. Fica só neste aparelho.</q></span></li><li>Toque em «Nada»<span class="see">Você deve ver: <q>«Um lugar firme pro corpo dela..» · Ajuda a pessoa a sentar ou deitar em algo firme. Menos estímulo em volta. Fica do lado dela.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«O efeito vai passando.. às vezes sobe, às vezes baixa. A direção é o fim.» «Olhem em volta, juntos.» · Peça pra pessoa dizer, no ritmo dela: 3 coisas que vê, 2 que ouve, 1 que toca.</q></span></li></ol>
+  <p><strong>O que observar:</strong> O app evitou exercício de respiração? Os textos falam com você (quem ajuda) e não com a pessoa em crise?</p>
+  <fieldset><legend>Como foi?</legend>
+    <label class="opt"><input type="radio" name="r-abnormal-breathing-no-pacer" value="como_descrito"> Aconteceu como descrito</label>
+    <label class="opt"><input type="radio" name="r-abnormal-breathing-no-pacer" value="diferente"> Aconteceu diferente</label>
+    <label class="opt"><input type="radio" name="r-abnormal-breathing-no-pacer" value="nao_consegui"> Não consegui fazer</label>
+  </fieldset>
+  <fieldset><legend>Clareza dos textos (1 = confuso, 5 = muito claro)</legend>
+    <label class="opt"><input type="radio" name="q-abnormal-breathing-no-pacer" value="1"> 1</label><label class="opt"><input type="radio" name="q-abnormal-breathing-no-pacer" value="2"> 2</label><label class="opt"><input type="radio" name="q-abnormal-breathing-no-pacer" value="3"> 3</label><label class="opt"><input type="radio" name="q-abnormal-breathing-no-pacer" value="4"> 4</label><label class="opt"><input type="radio" name="q-abnormal-breathing-no-pacer" value="5"> 5</label>
+  </fieldset>
+  <textarea name="c-abnormal-breathing-no-pacer" aria-label="Comentário sobre a missão 8" placeholder="O que chamou atenção? (sem dados pessoais)"></textarea>
+</article>
+<article class="item" data-id="impaired-no-five-senses">
+  <h2>Missão 9 · Pensamento confuso <span class="badge">você é a pessoa em crise</span> <span class="badge">~2 min</span></h2>
+  <p>Você está com dificuldade de pensar com clareza e muito ansioso(a).</p>
+  <p class="note no-print">Comece com o app zerado. <a href="../" target="_blank" rel="noopener">Abrir o app</a> · <button type="button" onclick="sosResetApp(this.nextElementSibling)">Zerar o app</button><span class="note" role="status"></span></p>
+  <ol class="steps"><li>Toque em «Eu»<span class="see">Você deve ver: <q>«Agora, algum destes?»</q></span></li><li>Toque em «Respiro bem, sem dor no peito»<span class="see">Você deve ver: <q>«Você consegue pensar e responder normalmente?»</q></span></li><li>Toque em «Tá difícil, confuso»<span class="see">Você deve ver: <q>«Pés no chão.» · Sente os pés firmes no chão. Aperta as mãos uma na outra por 5 segundos e solta. Repete 3 vezes.</q></span></li><li>Toque em «Quero outra»<span class="see">Você deve ver: <q>«Empurra a parede.» · Apoia as mãos numa parede e empurra com força por 5 segundos. Solta. Repete 3 vezes. Sente o peso do seu corpo.</q></span></li><li>Toque em «Quero outra»<span class="see">Você deve ver: <q>«Tem alguém de confiança aí com você?»</q></span></li></ol>
+  <p><strong>O que observar:</strong> Os exercícios propostos foram simples o bastante pra quem está confuso(a)?</p>
+  <fieldset><legend>Como foi?</legend>
+    <label class="opt"><input type="radio" name="r-impaired-no-five-senses" value="como_descrito"> Aconteceu como descrito</label>
+    <label class="opt"><input type="radio" name="r-impaired-no-five-senses" value="diferente"> Aconteceu diferente</label>
+    <label class="opt"><input type="radio" name="r-impaired-no-five-senses" value="nao_consegui"> Não consegui fazer</label>
+  </fieldset>
+  <fieldset><legend>Clareza dos textos (1 = confuso, 5 = muito claro)</legend>
+    <label class="opt"><input type="radio" name="q-impaired-no-five-senses" value="1"> 1</label><label class="opt"><input type="radio" name="q-impaired-no-five-senses" value="2"> 2</label><label class="opt"><input type="radio" name="q-impaired-no-five-senses" value="3"> 3</label><label class="opt"><input type="radio" name="q-impaired-no-five-senses" value="4"> 4</label><label class="opt"><input type="radio" name="q-impaired-no-five-senses" value="5"> 5</label>
+  </fieldset>
+  <textarea name="c-impaired-no-five-senses" aria-label="Comentário sobre a missão 9" placeholder="O que chamou atenção? (sem dados pessoais)"></textarea>
+</article>
+<article class="item" data-id="shell-192-anytime">
+  <h2>Missão 10 · A barra do 192 a qualquer momento <span class="badge">você é a pessoa em crise</span> <span class="badge">~1 min</span></h2>
+  <p>No meio das perguntas, você decide que precisa ligar pro SAMU.</p>
+  <p class="note no-print">Comece com o app zerado. <a href="../" target="_blank" rel="noopener">Abrir o app</a> · <button type="button" onclick="sosResetApp(this.nextElementSibling)">Zerar o app</button><span class="note" role="status"></span></p>
+  <ol class="steps"><li>Toque em «Eu»<span class="see">Você deve ver: <q>«Agora, algum destes?»</q></span></li><li>Toque em «Respiro bem, sem dor no peito»<span class="see">Você deve ver: <q>«Você consegue pensar e responder normalmente?»</q></span></li><li>Toque na barra vermelha «Ligar 192» no topo<span class="warn">Abre o discador (192). Cancele: não complete a ligação em teste.</span><span class="see"><span class="badge p0">emergência</span> Você deve ver: <q>«Enquanto a ajuda chega:» · Fique onde está. Siga o que o atendente do 192 disser.</q></span></li></ol>
+  <p><strong>O que observar:</strong> A barra vermelha estava sempre visível? O app respeitou a decisão sem perguntar mais nada?</p>
+  <fieldset><legend>Como foi?</legend>
+    <label class="opt"><input type="radio" name="r-shell-192-anytime" value="como_descrito"> Aconteceu como descrito</label>
+    <label class="opt"><input type="radio" name="r-shell-192-anytime" value="diferente"> Aconteceu diferente</label>
+    <label class="opt"><input type="radio" name="r-shell-192-anytime" value="nao_consegui"> Não consegui fazer</label>
+  </fieldset>
+  <fieldset><legend>Clareza dos textos (1 = confuso, 5 = muito claro)</legend>
+    <label class="opt"><input type="radio" name="q-shell-192-anytime" value="1"> 1</label><label class="opt"><input type="radio" name="q-shell-192-anytime" value="2"> 2</label><label class="opt"><input type="radio" name="q-shell-192-anytime" value="3"> 3</label><label class="opt"><input type="radio" name="q-shell-192-anytime" value="4"> 4</label><label class="opt"><input type="radio" name="q-shell-192-anytime" value="5"> 5</label>
+  </fieldset>
+  <textarea name="c-shell-192-anytime" aria-label="Comentário sobre a missão 10" placeholder="O que chamou atenção? (sem dados pessoais)"></textarea>
+</article>
+<article class="item" data-id="silence-brings-presence">
+  <h2>Missão 11 · Fazendo um exercício com calma <span class="badge">você é a pessoa em crise</span> <span class="badge">~8 min</span></h2>
+  <p>Você está fazendo uma técnica e fica alguns minutos sem tocar em nada.</p>
+  <p class="note no-print">Comece com o app zerado. <a href="../" target="_blank" rel="noopener">Abrir o app</a> · <button type="button" onclick="sosResetApp(this.nextElementSibling)">Zerar o app</button><span class="note" role="status"></span></p>
+  <ol class="steps"><li>Toque em «Eu»<span class="see">Você deve ver: <q>«Agora, algum destes?»</q></span></li><li>Toque em «Respiro bem, sem dor no peito»<span class="see">Você deve ver: <q>«Você consegue pensar e responder normalmente?»</q></span></li><li>Toque em «Consigo»<span class="see">Você deve ver: <q>«Quanto de ansiedade agora?»</q></span></li><li>Toque em «Muita, pânico»<span class="see">Você deve ver: <q>«Água gelada no rosto.» · Joga água bem fria no rosto, na nuca ou nos punhos. Ou segura um gelo. O frio ajuda o coração a desacelerar.</q></span></li><li>Espere cerca de 3 min com o app aberto, sem tocar em nada<span class="see">Você deve ver: <q>«Só o próximo minuto. Só a próxima respiração.» «Água gelada no rosto.» · Joga água bem fria no rosto, na nuca ou nos punhos. Ou segura um gelo. O frio ajuda o coração a desacelerar.</q></span></li><li>Espere cerca de 3 min com o app aberto, sem tocar em nada<span class="see">Você deve ver: <q>«Só o próximo minuto. Só a próxima respiração.» «Água gelada no rosto.» · Joga água bem fria no rosto, na nuca ou nos punhos. Ou segura um gelo. O frio ajuda o coração a desacelerar.</q></span></li><li>Toque em «Fiz»<span class="see">Você deve ver: <q>«O que você sente agora é intenso.. não é permanente.» «Tem alguém de confiança aí com você?»</q></span></li></ol>
+  <p><strong>O que observar:</strong> O app esperou você, sem perguntar «tudo bem?» e sem trocar de tela?</p>
+  <fieldset><legend>Como foi?</legend>
+    <label class="opt"><input type="radio" name="r-silence-brings-presence" value="como_descrito"> Aconteceu como descrito</label>
+    <label class="opt"><input type="radio" name="r-silence-brings-presence" value="diferente"> Aconteceu diferente</label>
+    <label class="opt"><input type="radio" name="r-silence-brings-presence" value="nao_consegui"> Não consegui fazer</label>
+  </fieldset>
+  <fieldset><legend>Clareza dos textos (1 = confuso, 5 = muito claro)</legend>
+    <label class="opt"><input type="radio" name="q-silence-brings-presence" value="1"> 1</label><label class="opt"><input type="radio" name="q-silence-brings-presence" value="2"> 2</label><label class="opt"><input type="radio" name="q-silence-brings-presence" value="3"> 3</label><label class="opt"><input type="radio" name="q-silence-brings-presence" value="4"> 4</label><label class="opt"><input type="radio" name="q-silence-brings-presence" value="5"> 5</label>
+  </fieldset>
+  <textarea name="c-silence-brings-presence" aria-label="Comentário sobre a missão 11" placeholder="O que chamou atenção? (sem dados pessoais)"></textarea>
+</article>
+<article class="item" data-id="menu-pick-and-blocks">
+  <h2>Missão 12 · Escolhendo pelo menu <span class="badge">você é a pessoa em crise</span> <span class="badge">~3 min</span></h2>
+  <p>Você não tem água por perto e prefere escolher a técnica você mesmo(a).</p>
+  <p class="note no-print">Comece com o app zerado. <a href="../" target="_blank" rel="noopener">Abrir o app</a> · <button type="button" onclick="sosResetApp(this.nextElementSibling)">Zerar o app</button><span class="note" role="status"></span></p>
+  <ol class="steps"><li>Toque em «Eu»<span class="see">Você deve ver: <q>«Agora, algum destes?»</q></span></li><li>Toque em «Respiro bem, sem dor no peito»<span class="see">Você deve ver: <q>«Você consegue pensar e responder normalmente?»</q></span></li><li>Toque em «Consigo»<span class="see">Você deve ver: <q>«Quanto de ansiedade agora?»</q></span></li><li>Toque em «Muita, pânico»<span class="see">Você deve ver: <q>«Água gelada no rosto.» · Joga água bem fria no rosto, na nuca ou nos punhos. Ou segura um gelo. O frio ajuda o coração a desacelerar.</q></span></li><li>Toque em «Não tenho água aqui»<span class="see">Você deve ver: <q>«Tem alguém de confiança aí com você?»</q></span></li><li>Procure «Água gelada no rosto» no menu abaixo do cartão<span class="see">Você deve ver: <q>Não está lá: o app tirou essa opção do menu.</q></span></li><li>Toque em «Hmmm (vibração)» no menu<span class="see">Você deve ver: <q>«Hmmm de boca fechada.» · Fecha a boca e faz um 'hmmmm' longo, de 15 a 20 segundos. Sente vibrar no peito e na garganta. Repete se quiser.</q></span></li><li>Espere cerca de 30 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«Só conferindo de novo, rapidinho. Faz parte do cuidado.» «Tem alguém de confiança aí com você?»</q></span></li><li>Toque em «Tô bem, quero encerrar» no menu<span class="see">Você deve ver: <q>«Que bom. Se cuida.» · O que foi respondido fica só neste aparelho e é apagado sozinho em até 12h.</q></span></li></ol>
+  <p><strong>O que observar:</strong> Dava pra escolher outra técnica a qualquer momento? O app respeitou o que você disse?</p>
+  <fieldset><legend>Como foi?</legend>
+    <label class="opt"><input type="radio" name="r-menu-pick-and-blocks" value="como_descrito"> Aconteceu como descrito</label>
+    <label class="opt"><input type="radio" name="r-menu-pick-and-blocks" value="diferente"> Aconteceu diferente</label>
+    <label class="opt"><input type="radio" name="r-menu-pick-and-blocks" value="nao_consegui"> Não consegui fazer</label>
+  </fieldset>
+  <fieldset><legend>Clareza dos textos (1 = confuso, 5 = muito claro)</legend>
+    <label class="opt"><input type="radio" name="q-menu-pick-and-blocks" value="1"> 1</label><label class="opt"><input type="radio" name="q-menu-pick-and-blocks" value="2"> 2</label><label class="opt"><input type="radio" name="q-menu-pick-and-blocks" value="3"> 3</label><label class="opt"><input type="radio" name="q-menu-pick-and-blocks" value="4"> 4</label><label class="opt"><input type="radio" name="q-menu-pick-and-blocks" value="5"> 5</label>
+  </fieldset>
+  <textarea name="c-menu-pick-and-blocks" aria-label="Comentário sobre a missão 12" placeholder="O que chamou atenção? (sem dados pessoais)"></textarea>
+</article>
+<article class="item" data-id="calm-end-and-wipe">
+  <h2>Missão 13 · Tô bem: encerrar e apagar <span class="badge">você é a pessoa em crise</span> <span class="badge">~2 min</span></h2>
+  <p>Você está tranquilo(a) e quer encerrar e apagar tudo do aparelho.</p>
+  <p class="note no-print">Comece com o app zerado. <a href="../" target="_blank" rel="noopener">Abrir o app</a> · <button type="button" onclick="sosResetApp(this.nextElementSibling)">Zerar o app</button><span class="note" role="status"></span></p>
+  <ol class="steps"><li>Toque em «Eu»<span class="see">Você deve ver: <q>«Agora, algum destes?»</q></span></li><li>Toque em «Respiro bem, sem dor no peito»<span class="see">Você deve ver: <q>«Você consegue pensar e responder normalmente?»</q></span></li><li>Toque em «Consigo»<span class="see">Você deve ver: <q>«Quanto de ansiedade agora?»</q></span></li><li>Toque em «Pouca»<span class="see">Você deve ver: <q>«Tô aqui com você.» · Sem pressa. Escolhe o que quiser no menu abaixo, ou só fica aqui e respira. Se piorar de verdade, o 192 tá no topo.</q></span></li><li>Toque em «Tô bem, encerrar»<span class="see">Você deve ver: <q>«Que bom. Se cuida.» · O que foi respondido fica só neste aparelho e é apagado sozinho em até 12h.</q></span></li><li>Toque em «Apagar agora»<span class="see">Você deve ver: <q>Tudo é apagado do aparelho e o app recomeça pela primeira pergunta.</q></span></li></ol>
+  <p><strong>O que observar:</strong> Ficou claro que nada ficou guardado? O app recomeçou do zero?</p>
+  <fieldset><legend>Como foi?</legend>
+    <label class="opt"><input type="radio" name="r-calm-end-and-wipe" value="como_descrito"> Aconteceu como descrito</label>
+    <label class="opt"><input type="radio" name="r-calm-end-and-wipe" value="diferente"> Aconteceu diferente</label>
+    <label class="opt"><input type="radio" name="r-calm-end-and-wipe" value="nao_consegui"> Não consegui fazer</label>
+  </fieldset>
+  <fieldset><legend>Clareza dos textos (1 = confuso, 5 = muito claro)</legend>
+    <label class="opt"><input type="radio" name="q-calm-end-and-wipe" value="1"> 1</label><label class="opt"><input type="radio" name="q-calm-end-and-wipe" value="2"> 2</label><label class="opt"><input type="radio" name="q-calm-end-and-wipe" value="3"> 3</label><label class="opt"><input type="radio" name="q-calm-end-and-wipe" value="4"> 4</label><label class="opt"><input type="radio" name="q-calm-end-and-wipe" value="5"> 5</label>
+  </fieldset>
+  <textarea name="c-calm-end-and-wipe" aria-label="Comentário sobre a missão 13" placeholder="O que chamou atenção? (sem dados pessoais)"></textarea>
+</article>
+<article class="item" data-id="no-timer-jumps">
+  <h2>Missão 14 · Pensando com calma <span class="badge">você é a pessoa em crise</span> <span class="badge">~15 min</span></h2>
+  <p>Você está sozinho(a), chama alguém pelo WhatsApp e depois fica vários minutos pensando antes de responder o que usou.</p>
+  <p class="note no-print">Comece com o app zerado. <a href="../" target="_blank" rel="noopener">Abrir o app</a> · <button type="button" onclick="sosResetApp(this.nextElementSibling)">Zerar o app</button><span class="note" role="status"></span></p>
+  <ol class="steps"><li>Toque em «Eu»<span class="see">Você deve ver: <q>«Agora, algum destes?»</q></span></li><li>Espere cerca de 30 s. Depois toque em «Respiro bem, sem dor no peito»<span class="see">Você deve ver: <q>«Você consegue pensar e responder normalmente?»</q></span></li><li>Espere cerca de 40 s. Depois toque em «Consigo»<span class="see">Você deve ver: <q>«Quanto de ansiedade agora?»</q></span></li><li>Espere cerca de 60 s. Depois toque em «Bastante»<span class="see">Você deve ver: <q>«Água gelada no rosto.» · Joga água bem fria no rosto, na nuca ou nos punhos. Ou segura um gelo. O frio ajuda o coração a desacelerar.</q></span></li><li>Espere cerca de 2 min. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«O que você sente agora é intenso.. não é permanente.» «Tem alguém de confiança aí com você?»</q></span></li><li>Espere cerca de 60 s. Depois toque em «Tô sozinho(a)»<span class="see">Você deve ver: <q>«Chama alguém de confiança.» · Vou abrir o WhatsApp com uma mensagem pronta. Você escolhe pra quem mandar.</q></span></li><li>Espere cerca de 2 min. Depois toque em «Abrir WhatsApp»<span class="warn">Abre o WhatsApp ou o SMS com uma mensagem pronta. Não envie: volte ao app.</span><span class="see">Você deve ver: <q>«O que você usou?» · Sem julgamento.. só pra eu saber como cuidar de você. Fica só neste aparelho.</q></span></li><li>Espere cerca de 2 min com o app aberto, sem tocar em nada<span class="see">Você deve ver: <q>«Sem pressa. Pode pensar com calma.. eu espero.» «O que você usou?» · Sem julgamento.. só pra eu saber como cuidar de você. Fica só neste aparelho.</q></span></li><li>Espere cerca de 2 min com o app aberto, sem tocar em nada<span class="see">Você deve ver: <q>«Sem pressa. Pode pensar com calma.. eu espero.» «O que você usou?» · Sem julgamento.. só pra eu saber como cuidar de você. Fica só neste aparelho.</q></span></li><li>Espere cerca de 2 min com o app aberto, sem tocar em nada<span class="see">Você deve ver: <q>«Sem pressa. Pode pensar com calma.. eu espero.» «O que você usou?» · Sem julgamento.. só pra eu saber como cuidar de você. Fica só neste aparelho.</q></span></li><li>Espere cerca de 2 min com o app aberto, sem tocar em nada<span class="see">Você deve ver: <q>«Sem pressa. Pode pensar com calma.. eu espero.» «O que você usou?» · Sem julgamento.. só pra eu saber como cuidar de você. Fica só neste aparelho.</q></span></li><li>Toque em «Bala, MD ou pó»<span class="see">Você deve ver: <q>«Conseguiu falar com alguém?»</q></span></li></ol>
+  <p><strong>O que observar:</strong> A tela ficou parada enquanto você pensava? Apareceu «Sem pressa. Pode pensar com calma»? Sua resposta foi aceita, sem «Essa tela já mudou»?</p>
+  <fieldset><legend>Como foi?</legend>
+    <label class="opt"><input type="radio" name="r-no-timer-jumps" value="como_descrito"> Aconteceu como descrito</label>
+    <label class="opt"><input type="radio" name="r-no-timer-jumps" value="diferente"> Aconteceu diferente</label>
+    <label class="opt"><input type="radio" name="r-no-timer-jumps" value="nao_consegui"> Não consegui fazer</label>
+  </fieldset>
+  <fieldset><legend>Clareza dos textos (1 = confuso, 5 = muito claro)</legend>
+    <label class="opt"><input type="radio" name="q-no-timer-jumps" value="1"> 1</label><label class="opt"><input type="radio" name="q-no-timer-jumps" value="2"> 2</label><label class="opt"><input type="radio" name="q-no-timer-jumps" value="3"> 3</label><label class="opt"><input type="radio" name="q-no-timer-jumps" value="4"> 4</label><label class="opt"><input type="radio" name="q-no-timer-jumps" value="5"> 5</label>
+  </fieldset>
+  <textarea name="c-no-timer-jumps" aria-label="Comentário sobre a missão 14" placeholder="O que chamou atenção? (sem dados pessoais)"></textarea>
+</article>
+<article class="item" data-id="pista-bala-alcool-azulzinho">
+  <h2>Missão 15 · Bala, álcool e azulzinho <span class="badge">você é a pessoa em crise</span> <span class="badge">~12 min</span></h2>
+  <p>Você tomou bala, bebeu e tomou um azulzinho. Bateu um pânico e o nariz está ardendo. Responda com a verdade: é só um teste.</p>
+  <p class="note no-print">Comece com o app zerado. <a href="../" target="_blank" rel="noopener">Abrir o app</a> · <button type="button" onclick="sosResetApp(this.nextElementSibling)">Zerar o app</button><span class="note" role="status"></span></p>
+  <ol class="steps"><li>Toque em «Eu»<span class="see">Você deve ver: <q>«Agora, algum destes?»</q></span></li><li>Toque em «Respiro bem, sem dor no peito»<span class="see">Você deve ver: <q>«Você consegue pensar e responder normalmente?»</q></span></li><li>Toque em «Consigo»<span class="see">Você deve ver: <q>«Quanto de ansiedade agora?»</q></span></li><li>Toque em «Muita, pânico»<span class="see">Você deve ver: <q>«Água gelada no rosto.» · Joga água bem fria no rosto, na nuca ou nos punhos. Ou segura um gelo. O frio ajuda o coração a desacelerar.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«O que você sente agora é intenso.. não é permanente.» «Tem alguém de confiança aí com você?»</q></span></li><li>Toque em «Sim, aqui comigo»<span class="see">Você deve ver: <q>«Um lugar firme pro corpo..» · Senta ou deita em algo firme: chão, cadeira, sofá. Vira o celular com a tela pra baixo um segundo.. e volta quando quiser. Tô aqui.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«O efeito vai passando.. às vezes sobe, às vezes baixa. A direção é o fim.» «Como está o lugar agora?»</q></span></li><li>Toque em «Tranquilo»<span class="see">Você deve ver: <q>«Pés no chão.» · Sente os pés firmes no chão. Aperta as mãos uma na outra por 5 segundos e solta. Repete 3 vezes.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«Você fez o que deu. Isso já é muito. Tô aqui.» «O que você usou?» · Sem julgamento.. só pra eu saber como cuidar de você. Fica só neste aparelho.</q></span></li><li>Toque em «Bala, MD ou pó»<span class="see">Você deve ver: <q>«Esfriar o corpo..» · Para de se mexer um pouco. Pano molhado frio na nuca, axila ou atrás do joelho. Sombra, janela, vento. Muito quente e confuso: 192.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«Não precisa estar bem agora. Só o próximo minuto.» «Qual deles? Teve álcool junto?» · Um toque só responde as duas coisas.</q></span></li><li>Toque em «Bala + álcool»<span class="see">Você deve ver: <q>«Bala com álcool esquenta.» · Juntos, esquentam e secam o corpo, e escondem o cansaço. Para de beber agora. Sai do calor, descansa da dança. Goles de água, sem exagero.</q></span></li><li>Espere cerca de 30 s. Depois toque em «Entendi»<span class="see">Você deve ver: <q>«Tomou algo pra transar?» · Sem julgamento. Azulzinho (Viagra, Cialis) ou poppers mudam o que é perigoso misturar.</q></span></li><li>Toque em «Azulzinho»<span class="see">Você deve ver: <q>«Coração nos dois sentidos.» · Estimulante com azulzinho ou poppers força o coração. Não toma mais nada hoje. Senta, esfria. Dor no peito, desmaio ou ereção que não passa em 4 h: 192.</q></span></li><li>Espere cerca de 30 s. Depois toque em «Entendi»<span class="see">Você deve ver: <q>«O que mais incomoda no corpo?» · Me diz uma coisa só. A gente cuida dela primeiro.</q></span></li><li>Toque em «Nariz ardendo»<span class="see">Você deve ver: <q>«Nariz ardendo..» · Soro fisiológico no nariz: um jato ou umas gotas de cada lado. Ele lava o que ficou e alivia. Assoa devagar. Nada mais pelo nariz hoje. Sangue que não para: pronto-socorro.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«O efeito vai passando.. às vezes sobe, às vezes baixa. A direção é o fim.» «Suspiro duplo.» · Puxa o ar pelo nariz e, antes de soltar, dá mais uma puxadinha curta. Depois solta tudo devagar pela boca. Faz 3 vezes.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«Você fez o que deu. Isso já é muito. Tô aqui.» «Azulzinho: uma só.» · Não toma outra hoje. Não junta com poppers. Ereção que não passa em 4 horas, dor no peito ou desmaio: pronto-socorro ou 192.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«Não precisa estar bem agora. Só o próximo minuto.» «Olha em volta.» · Diga pra si: 3 coisas que você vê, 2 que você ouve, 1 que você toca.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«Isso. O corpo já está processando, mesmo que você não sinta ainda.» «Guarda o resto longe.» · Tira da vista. Mais uma bala não volta o começo.. só esquenta e cansa o corpo. A onda baixa sozinha.</q></span></li></ol>
+  <p><strong>O que observar:</strong> Um toque só («Bala + álcool») respondeu as duas coisas? Os avisos de mistura apareceram na hora, sem julgamento e sem dose?</p>
+  <fieldset><legend>Como foi?</legend>
+    <label class="opt"><input type="radio" name="r-pista-bala-alcool-azulzinho" value="como_descrito"> Aconteceu como descrito</label>
+    <label class="opt"><input type="radio" name="r-pista-bala-alcool-azulzinho" value="diferente"> Aconteceu diferente</label>
+    <label class="opt"><input type="radio" name="r-pista-bala-alcool-azulzinho" value="nao_consegui"> Não consegui fazer</label>
+  </fieldset>
+  <fieldset><legend>Clareza dos textos (1 = confuso, 5 = muito claro)</legend>
+    <label class="opt"><input type="radio" name="q-pista-bala-alcool-azulzinho" value="1"> 1</label><label class="opt"><input type="radio" name="q-pista-bala-alcool-azulzinho" value="2"> 2</label><label class="opt"><input type="radio" name="q-pista-bala-alcool-azulzinho" value="3"> 3</label><label class="opt"><input type="radio" name="q-pista-bala-alcool-azulzinho" value="4"> 4</label><label class="opt"><input type="radio" name="q-pista-bala-alcool-azulzinho" value="5"> 5</label>
+  </fieldset>
+  <textarea name="c-pista-bala-alcool-azulzinho" aria-label="Comentário sobre a missão 15" placeholder="O que chamou atenção? (sem dados pessoais)"></textarea>
+</article>
+<article class="item" data-id="pista-g-alcool-helper">
+  <h2>Missão 16 · Amigo(a) com G e álcool <span class="badge">você ajuda outra pessoa</span> <span class="badge">~5 min</span></h2>
+  <p>Seu amigo(a) tomou G e bebeu. Está acordado(a), respira normal, mas está ansioso(a).</p>
+  <p class="note no-print">Comece com o app zerado. <a href="../" target="_blank" rel="noopener">Abrir o app</a> · <button type="button" onclick="sosResetApp(this.nextElementSibling)">Zerar o app</button><span class="note" role="status"></span></p>
+  <ol class="steps"><li>Toque em «Outra pessoa»<span class="see">Você deve ver: <q>«A pessoa responde quando você chama ou toca nela?»</q></span></li><li>Toque em «Responde normal»<span class="see">Você deve ver: <q>«Como está a respiração dela?»</q></span></li><li>Toque em «Normal»<span class="see">Você deve ver: <q>«Está acontecendo algum destes?»</q></span></li><li>Toque em «Nenhum desses»<span class="see">Você deve ver: <q>«A pessoa parece ansiosa ou em pânico?»</q></span></li><li>Toque em «Ansiosa»<span class="see">Você deve ver: <q>«Como está o lugar agora?»</q></span></li><li>Toque em «Tranquilo»<span class="see">Você deve ver: <q>«Água gelada no rosto.» · Ajude a pessoa a molhar o rosto, a nuca ou os punhos com água bem fria. Um pano gelado ou um gelo também servem.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«O que você sente agora é intenso.. não é permanente.» «O que a pessoa usou?» · Sem julgamento.. só pra eu saber como te ajudar a cuidar dela. Fica só neste aparelho.</q></span></li><li>Toque em «G, calmante ou remédio»<span class="see">Você deve ver: <q>«Corpo pesado pede cuidado.» · Deixa ela sentada ou deitada de lado, e fica junto. Nada de banho frio pra acordar. Nada mais pra ela. Não acorda ou respira devagar: 192.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«O efeito vai passando.. às vezes sobe, às vezes baixa. A direção é o fim.» «Qual deles? Teve álcool junto?» · Um toque só responde as duas coisas.</q></span></li><li>Toque em «G + álcool»<span class="see">Você deve ver: <q>«Álcool com isso soma.» · Os dois derrubam a respiração juntos. Nada mais pra ela hoje. Não deixa ela sozinha. Sono pesado: de lado, joelho dobrado. Não acorda ou respira devagar: 192.</q></span></li></ol>
+  <p><strong>O que observar:</strong> O aviso de «de lado, não deixa sozinho(a)» chegou logo que você contou do álcool? Os textos falam com você, que está ajudando?</p>
+  <fieldset><legend>Como foi?</legend>
+    <label class="opt"><input type="radio" name="r-pista-g-alcool-helper" value="como_descrito"> Aconteceu como descrito</label>
+    <label class="opt"><input type="radio" name="r-pista-g-alcool-helper" value="diferente"> Aconteceu diferente</label>
+    <label class="opt"><input type="radio" name="r-pista-g-alcool-helper" value="nao_consegui"> Não consegui fazer</label>
+  </fieldset>
+  <fieldset><legend>Clareza dos textos (1 = confuso, 5 = muito claro)</legend>
+    <label class="opt"><input type="radio" name="q-pista-g-alcool-helper" value="1"> 1</label><label class="opt"><input type="radio" name="q-pista-g-alcool-helper" value="2"> 2</label><label class="opt"><input type="radio" name="q-pista-g-alcool-helper" value="3"> 3</label><label class="opt"><input type="radio" name="q-pista-g-alcool-helper" value="4"> 4</label><label class="opt"><input type="radio" name="q-pista-g-alcool-helper" value="5"> 5</label>
+  </fieldset>
+  <textarea name="c-pista-g-alcool-helper" aria-label="Comentário sobre a missão 16" placeholder="O que chamou atenção? (sem dados pessoais)"></textarea>
+</article>
+<article class="item" data-id="poppers-com-azulzinho">
+  <h2>Missão 17 · Poppers com azulzinho <span class="badge">você é a pessoa em crise</span> <span class="badge">~8 min</span></h2>
+  <p>Você usou poppers e tomou azulzinho.</p>
+  <p class="note no-print">Comece com o app zerado. <a href="../" target="_blank" rel="noopener">Abrir o app</a> · <button type="button" onclick="sosResetApp(this.nextElementSibling)">Zerar o app</button><span class="note" role="status"></span></p>
+  <ol class="steps"><li>Toque em «Eu»<span class="see">Você deve ver: <q>«Agora, algum destes?»</q></span></li><li>Toque em «Respiro bem, sem dor no peito»<span class="see">Você deve ver: <q>«Você consegue pensar e responder normalmente?»</q></span></li><li>Toque em «Consigo»<span class="see">Você deve ver: <q>«Quanto de ansiedade agora?»</q></span></li><li>Toque em «Bastante»<span class="see">Você deve ver: <q>«Água gelada no rosto.» · Joga água bem fria no rosto, na nuca ou nos punhos. Ou segura um gelo. O frio ajuda o coração a desacelerar.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«O que você sente agora é intenso.. não é permanente.» «Tem alguém de confiança aí com você?»</q></span></li><li>Toque em «Sim, aqui comigo»<span class="see">Você deve ver: <q>«Um lugar firme pro corpo..» · Senta ou deita em algo firme: chão, cadeira, sofá. Vira o celular com a tela pra baixo um segundo.. e volta quando quiser. Tô aqui.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«O efeito vai passando.. às vezes sobe, às vezes baixa. A direção é o fim.» «Como está o lugar agora?»</q></span></li><li>Toque em «Tranquilo»<span class="see">Você deve ver: <q>«Pés no chão.» · Sente os pés firmes no chão. Aperta as mãos uma na outra por 5 segundos e solta. Repete 3 vezes.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«Você fez o que deu. Isso já é muito. Tô aqui.» «O que você usou?» · Sem julgamento.. só pra eu saber como cuidar de você. Fica só neste aparelho.</q></span></li><li>Toque em «Bala, MD ou pó»<span class="see">Você deve ver: <q>«Esfriar o corpo..» · Para de se mexer um pouco. Pano molhado frio na nuca, axila ou atrás do joelho. Sombra, janela, vento. Muito quente e confuso: 192.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«Não precisa estar bem agora. Só o próximo minuto.» «Qual deles? Teve álcool junto?» · Um toque só responde as duas coisas.</q></span></li><li>Toque em «Só pó»<span class="see">Você deve ver: <q>«Suspiro duplo.» · Puxa o ar pelo nariz e, antes de soltar, dá mais uma puxadinha curta. Depois solta tudo devagar pela boca. Faz 3 vezes.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«Isso. O corpo já está processando, mesmo que você não sinta ainda.» «Tomou algo pra transar?» · Sem julgamento. Azulzinho (Viagra, Cialis) ou poppers mudam o que é perigoso misturar.</q></span></li><li>Toque em «Os dois»<span class="see">Você deve ver: <q>«Poppers com azulzinho, não.» · Juntos derrubam a pressão de um jeito perigoso. Sem mais poppers hoje. Senta ou deita e levanta devagar. Desmaio, dor no peito ou tontura forte: 192.</q></span></li></ol>
+  <p><strong>O que observar:</strong> O aviso foi claro e rápido? Dava pra ligar pro Disque-Intoxicação?</p>
+  <fieldset><legend>Como foi?</legend>
+    <label class="opt"><input type="radio" name="r-poppers-com-azulzinho" value="como_descrito"> Aconteceu como descrito</label>
+    <label class="opt"><input type="radio" name="r-poppers-com-azulzinho" value="diferente"> Aconteceu diferente</label>
+    <label class="opt"><input type="radio" name="r-poppers-com-azulzinho" value="nao_consegui"> Não consegui fazer</label>
+  </fieldset>
+  <fieldset><legend>Clareza dos textos (1 = confuso, 5 = muito claro)</legend>
+    <label class="opt"><input type="radio" name="q-poppers-com-azulzinho" value="1"> 1</label><label class="opt"><input type="radio" name="q-poppers-com-azulzinho" value="2"> 2</label><label class="opt"><input type="radio" name="q-poppers-com-azulzinho" value="3"> 3</label><label class="opt"><input type="radio" name="q-poppers-com-azulzinho" value="4"> 4</label><label class="opt"><input type="radio" name="q-poppers-com-azulzinho" value="5"> 5</label>
+  </fieldset>
+  <textarea name="c-poppers-com-azulzinho" aria-label="Comentário sobre a missão 17" placeholder="O que chamou atenção? (sem dados pessoais)"></textarea>
+</article>
+<article class="item" data-id="body-chip-nose">
+  <h2>Missão 18 · Dizendo o que incomoda pelo menu <span class="badge">você é a pessoa em crise</span> <span class="badge">~2 min</span></h2>
+  <p>Seu nariz está ardendo. Você não quer esperar uma pergunta: usa o menu «Cuidar do corpo».</p>
+  <p class="note no-print">Comece com o app zerado. <a href="../" target="_blank" rel="noopener">Abrir o app</a> · <button type="button" onclick="sosResetApp(this.nextElementSibling)">Zerar o app</button><span class="note" role="status"></span></p>
+  <ol class="steps"><li>Toque em «Eu»<span class="see">Você deve ver: <q>«Agora, algum destes?»</q></span></li><li>Toque em «Respiro bem, sem dor no peito»<span class="see">Você deve ver: <q>«Você consegue pensar e responder normalmente?»</q></span></li><li>Toque em «Consigo»<span class="see">Você deve ver: <q>«Quanto de ansiedade agora?»</q></span></li><li>Toque em «Bastante»<span class="see">Você deve ver: <q>«Água gelada no rosto.» · Joga água bem fria no rosto, na nuca ou nos punhos. Ou segura um gelo. O frio ajuda o coração a desacelerar.</q></span></li><li>Toque em «Nariz ardendo» no menu<span class="see">Você deve ver: <q>«Valeu por me contar. Vamos cuidar disso primeiro.» «Nariz ardendo..» · Soro fisiológico no nariz: um jato ou umas gotas de cada lado. Ele lava o que ficou e alivia. Assoa devagar. Nada mais pelo nariz hoje. Sangue que não para: pronto-socorro.</q></span></li><li>Toque em «Escovar os dentes» no menu<span class="see">Você deve ver: <q>«Escovar os dentes..» · Parece bobo, mas o frescor e o gesto de sempre avisam o corpo que tá voltando. Devagar, sem força na gengiva.</q></span></li></ol>
+  <p><strong>O que observar:</strong> O app agradeceu e mostrou o cuidado (soro) logo em seguida?</p>
+  <fieldset><legend>Como foi?</legend>
+    <label class="opt"><input type="radio" name="r-body-chip-nose" value="como_descrito"> Aconteceu como descrito</label>
+    <label class="opt"><input type="radio" name="r-body-chip-nose" value="diferente"> Aconteceu diferente</label>
+    <label class="opt"><input type="radio" name="r-body-chip-nose" value="nao_consegui"> Não consegui fazer</label>
+  </fieldset>
+  <fieldset><legend>Clareza dos textos (1 = confuso, 5 = muito claro)</legend>
+    <label class="opt"><input type="radio" name="q-body-chip-nose" value="1"> 1</label><label class="opt"><input type="radio" name="q-body-chip-nose" value="2"> 2</label><label class="opt"><input type="radio" name="q-body-chip-nose" value="3"> 3</label><label class="opt"><input type="radio" name="q-body-chip-nose" value="4"> 4</label><label class="opt"><input type="radio" name="q-body-chip-nose" value="5"> 5</label>
+  </fieldset>
+  <textarea name="c-body-chip-nose" aria-label="Comentário sobre a missão 18" placeholder="O que chamou atenção? (sem dados pessoais)"></textarea>
+</article>
+<article class="item" data-id="slow-pace-asks-less">
+  <h2>Missão 19 · Respondendo devagar <span class="badge">você é a pessoa em crise</span> <span class="badge">~20 min</span></h2>
+  <p>Você está muito mal e demora muito pra conseguir tocar nas respostas (espere 1 minuto e meio antes de cada resposta).</p>
+  <p class="note no-print">Comece com o app zerado. <a href="../" target="_blank" rel="noopener">Abrir o app</a> · <button type="button" onclick="sosResetApp(this.nextElementSibling)">Zerar o app</button><span class="note" role="status"></span></p>
+  <ol class="steps"><li>Espere cerca de 2 min. Depois toque em «Eu»<span class="see">Você deve ver: <q>«Agora, algum destes?»</q></span></li><li>Espere cerca de 2 min. Depois toque em «Respiro bem, sem dor no peito»<span class="see">Você deve ver: <q>«Você consegue pensar e responder normalmente?»</q></span></li><li>Espere cerca de 2 min. Depois toque em «Consigo»<span class="see">Você deve ver: <q>«Quanto de ansiedade agora?»</q></span></li><li>Espere cerca de 2 min. Depois toque em «Muita, pânico»<span class="see">Você deve ver: <q>«Água gelada no rosto.» · Joga água bem fria no rosto, na nuca ou nos punhos. Ou segura um gelo. O frio ajuda o coração a desacelerar.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«O que você sente agora é intenso.. não é permanente.» «Um lugar firme pro corpo..» · Senta ou deita em algo firme: chão, cadeira, sofá. Vira o celular com a tela pra baixo um segundo.. e volta quando quiser. Tô aqui.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«O efeito vai passando.. às vezes sobe, às vezes baixa. A direção é o fim.» «Pés no chão.» · Sente os pés firmes no chão. Aperta as mãos uma na outra por 5 segundos e solta. Repete 3 vezes.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«Você fez o que deu. Isso já é muito. Tô aqui.» «Um pouco de água, aos goles.» · Devagar. Sente a água descer.. o corpo agradece. Sem exagero: goles, não garrafas.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«Não precisa estar bem agora. Só o próximo minuto.» «Suspiro duplo.» · Puxa o ar pelo nariz e, antes de soltar, dá mais uma puxadinha curta. Depois solta tudo devagar pela boca. Faz 3 vezes.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«Isso. O corpo já está processando, mesmo que você não sinta ainda.» «Um pouco de ar..» · Janela aberta, porta, varanda.. ou só sair da muvuca. Três respirações perto do ar fresco. Tô aqui com você.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«O que você sente agora é intenso.. não é permanente.» «Hmmm de boca fechada.» · Fecha a boca e faz um 'hmmmm' longo, de 15 a 20 segundos. Sente vibrar no peito e na garganta. Repete se quiser.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«O efeito vai passando.. às vezes sobe, às vezes baixa. A direção é o fim.» «Algo pequeno pra comer.» · Se o estômago aceitar: pão, fruta, bolacha, algo doce ou salgado. Dá chão pro corpo. Sem pressa.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«Você fez o que deu. Isso já é muito. Tô aqui.» «Empurra a parede.» · Apoia as mãos numa parede e empurra com força por 5 segundos. Solta. Repete 3 vezes. Sente o peso do seu corpo.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«Não precisa estar bem agora. Só o próximo minuto.» «Tem alguém de confiança aí com você?»</q></span></li><li>Toque em «Sim, aqui comigo»<span class="see">Você deve ver: <q>«Escovar os dentes..» · Parece bobo, mas o frescor e o gesto de sempre avisam o corpo que tá voltando. Devagar, sem força na gengiva.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«Isso. O corpo já está processando, mesmo que você não sinta ainda.» «Como está o lugar agora?»</q></span></li><li>Toque em «Tranquilo»<span class="see">Você deve ver: <q>«Olha em volta.» · Diga pra si: 3 coisas que você vê, 2 que você ouve, 1 que você toca.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«O que você sente agora é intenso.. não é permanente.» «O que você usou?» · Sem julgamento.. só pra eu saber como cuidar de você. Fica só neste aparelho.</q></span></li><li>Toque em «Nada»<span class="see">Você deve ver: <q>«Um banho fresco..» · Morno pra fresco, rápido, com alguém em casa sabendo. Começa pelos pés e punhos. Tontura: senta ou sai, e fica no pano frio.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«O efeito vai passando.. às vezes sobe, às vezes baixa. A direção é o fim.» «Água gelada no rosto.» · Joga água bem fria no rosto, na nuca ou nos punhos. Ou segura um gelo. O frio ajuda o coração a desacelerar.</q></span></li><li>Espere cerca de 60 s. Depois toque em «Fiz»<span class="see">Você deve ver: <q>«O efeito vai passando.. às vezes sobe, às vezes baixa. A direção é o fim.» «Um som que acalma..» · Música sem letra, baixinho: piano, lo-fi, chuva. Só de fundo. O tempo tá do seu lado agora.</q></span></li></ol>
+  <p><strong>O que observar:</strong> Depois das primeiras respostas, o app parou de perguntar e só foi ajudando? A bola de respiração ficou ao fundo o tempo todo?</p>
+  <fieldset><legend>Como foi?</legend>
+    <label class="opt"><input type="radio" name="r-slow-pace-asks-less" value="como_descrito"> Aconteceu como descrito</label>
+    <label class="opt"><input type="radio" name="r-slow-pace-asks-less" value="diferente"> Aconteceu diferente</label>
+    <label class="opt"><input type="radio" name="r-slow-pace-asks-less" value="nao_consegui"> Não consegui fazer</label>
+  </fieldset>
+  <fieldset><legend>Clareza dos textos (1 = confuso, 5 = muito claro)</legend>
+    <label class="opt"><input type="radio" name="q-slow-pace-asks-less" value="1"> 1</label><label class="opt"><input type="radio" name="q-slow-pace-asks-less" value="2"> 2</label><label class="opt"><input type="radio" name="q-slow-pace-asks-less" value="3"> 3</label><label class="opt"><input type="radio" name="q-slow-pace-asks-less" value="4"> 4</label><label class="opt"><input type="radio" name="q-slow-pace-asks-less" value="5"> 5</label>
+  </fieldset>
+  <textarea name="c-slow-pace-asks-less" aria-label="Comentário sobre a missão 19" placeholder="O que chamou atenção? (sem dados pessoais)"></textarea>
+</article>
+<article class="item" data-id="e2e:offline">
+  <h2>Missão 20 · Sem internet <span class="badge">você é a pessoa em crise</span> <span class="badge">~3 min</span></h2>
+  <p>Você abriu o app uma vez com internet. Depois a internet cai (por exemplo, no meio de uma festa).</p>
+  <p class="note no-print">Comece com o app zerado. <a href="../" target="_blank" rel="noopener">Abrir o app</a> · <button type="button" onclick="sosResetApp(this.nextElementSibling)">Zerar o app</button><span class="note" role="status"></span></p>
+  <ol class="steps"><li>Com internet, abra o app e espere a primeira pergunta aparecer<span class="see">Você deve ver: <q>«Quem precisa de ajuda?»</q></span></li><li>Feche o app e ative o modo avião<span class="see">Você deve ver: <q>Nada ainda.</q></span></li><li>Abra o app de novo pelo mesmo endereço<span class="see">Você deve ver: <q>A barra vermelha «Ligar 192» e «Quem precisa de ajuda?», mesmo sem internet.</q></span></li></ol>
+  <p><strong>O que observar:</strong> O app abriu mesmo sem internet? A barra do 192 estava lá?</p>
+  <fieldset><legend>Como foi?</legend>
+    <label class="opt"><input type="radio" name="r-e2e:offline" value="como_descrito"> Aconteceu como descrito</label>
+    <label class="opt"><input type="radio" name="r-e2e:offline" value="diferente"> Aconteceu diferente</label>
+    <label class="opt"><input type="radio" name="r-e2e:offline" value="nao_consegui"> Não consegui fazer</label>
+  </fieldset>
+  <fieldset><legend>Clareza dos textos (1 = confuso, 5 = muito claro)</legend>
+    <label class="opt"><input type="radio" name="q-e2e:offline" value="1"> 1</label><label class="opt"><input type="radio" name="q-e2e:offline" value="2"> 2</label><label class="opt"><input type="radio" name="q-e2e:offline" value="3"> 3</label><label class="opt"><input type="radio" name="q-e2e:offline" value="4"> 4</label><label class="opt"><input type="radio" name="q-e2e:offline" value="5"> 5</label>
+  </fieldset>
+  <textarea name="c-e2e:offline" aria-label="Comentário sobre a missão 20" placeholder="O que chamou atenção? (sem dados pessoais)"></textarea>
+</article>
+<section class="item" data-id="geral">
+  <h2>No geral</h2>
+  <fieldset><legend>Você confiaria neste app numa situação real? (1 = não, 5 = sim)</legend>
+    <label class="opt"><input type="radio" name="g-trust" value="1"> 1</label><label class="opt"><input type="radio" name="g-trust" value="2"> 2</label><label class="opt"><input type="radio" name="g-trust" value="3"> 3</label><label class="opt"><input type="radio" name="g-trust" value="4"> 4</label><label class="opt"><input type="radio" name="g-trust" value="5"> 5</label>
+  </fieldset>
+  <textarea id="g-confused" aria-label="O que mais confundiu" placeholder="O que mais confundiu?"></textarea>
+  <textarea id="g-missing" aria-label="O que faltou" placeholder="O que faltou?"></textarea>
+</section>
+<p class="meta">Registro 0.1.0 · hash 3dd609a102323408 · motor assets/app.ebd78ac44e1a.js</p>
+<div class="bar"><div class="in">
+  <span class="grow" id="progress" role="status">0 de 20 missões feitas</span>
+  <button type="button" id="copy">Copiar resumo</button>
+  <button type="button" class="primary" id="download">Baixar retorno</button>
+</div></div>
+
+</div>
+<script>
+async function sosResetApp(out){
+  if(!confirm("Apagar os dados do app SOS neste navegador? Feche antes a aba do app.")) return;
+  for (const db of ["sos-apollo","sos-apollo-vault"]) {
+    await new Promise((r)=>{ try{ const q=indexedDB.deleteDatabase(db); q.onsuccess=q.onerror=q.onblocked=()=>r(); }catch(e){ r(); } });
+  }
+  if(out) out.textContent="Pronto. Abra o app de novo: ele começa pela primeira pergunta.";
+}
+const FACTS={"registryHash":"3dd609a102323408","bundle":"assets/app.ebd78ac44e1a.js","total":20};
+const KEY="sos-lab-missions:v1";
+const arts=[...document.querySelectorAll("article.item")];
+let st={nick:"",device:"",missions:{},trust:"",confused:"",missing:""};
+try{ st=Object.assign(st, JSON.parse(localStorage.getItem(KEY)||"{}")); }catch(e){}
+const save=()=>{ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} };
+const val=(root,name)=>{ const r=root.querySelector('input[name="'+name+'"]:checked'); return r?r.value:""; };
+function paint(){
+  let n=0; for(const el of arts){ const m=st.missions[el.dataset.id]; const d=!!(m&&m.result); if(d) n++; el.classList.toggle("done",d); }
+  document.getElementById("progress").textContent=n+" de "+FACTS.total+" missões feitas";
+}
+for(const el of arts){
+  const id=el.dataset.id, m=st.missions[id];
+  if(m){ for(const [k,v] of [["r-"+id,m.result],["q-"+id,m.clarity]]){ const r=el.querySelector('input[name="'+k+'"][value="'+v+'"]'); if(r) r.checked=true; } el.querySelector("textarea").value=m.comment||""; }
+  el.addEventListener("input",()=>{ st.missions[id]={result:val(el,"r-"+id),clarity:val(el,"q-"+id),comment:el.querySelector("textarea").value}; save(); paint(); });
+}
+const bind=(id,key)=>{ const el=document.getElementById(id); el.value=st[key]||""; el.addEventListener("input",()=>{ st[key]=el.value; save(); }); el.addEventListener("change",()=>{ st[key]=el.value; save(); }); };
+bind("t-nick","nick"); bind("t-device","device"); bind("g-confused","confused"); bind("g-missing","missing");
+for(const r of document.querySelectorAll('input[name="g-trust"]')){ if(r.value===st.trust) r.checked=true; r.addEventListener("change",()=>{ st.trust=r.value; save(); }); }
+function exportData(){
+  return {kind:"sos-apollo-beta-feedback",version:1,registryHash:FACTS.registryHash,bundle:FACTS.bundle,exportedAt:new Date().toISOString(),
+    tester:{nick:st.nick,device:st.device},missions:Object.entries(st.missions).map(([id,m])=>({id,...m})),
+    general:{trust:st.trust,confused:st.confused,missing:st.missing}};
+}
+document.getElementById("download").addEventListener("click",()=>{
+  const blob=new Blob([JSON.stringify(exportData(),null,2)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="retorno-beta-sos-"+FACTS.registryHash+".json"; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+});
+document.getElementById("copy").addEventListener("click",async()=>{
+  const d=exportData(), R={como_descrito:"como descrito",diferente:"diferente",nao_consegui:"não consegui"};
+  const lines=["Retorno beta SOS Apollo (registro "+d.registryHash+")","Aparelho: "+(d.tester.device||"—")];
+  for(const m of d.missions) lines.push("- "+m.id+": "+(R[m.result]||"—")+(m.clarity?" · clareza "+m.clarity:"")+(m.comment?" · "+m.comment:""));
+  lines.push("Confiança: "+(d.general.trust||"—"));
+  if(d.general.confused) lines.push("Confundiu: "+d.general.confused);
+  if(d.general.missing) lines.push("Faltou: "+d.general.missing);
+  const t=lines.join("\n");
+  try{ await navigator.clipboard.writeText(t); document.getElementById("progress").textContent="Resumo copiado."; }
+  catch(e){ const ta=document.createElement("textarea"); ta.value=t; document.body.append(ta); ta.select(); document.execCommand("copy"); ta.remove(); }
+});
+paint();
+</script>
+</body>
+</html>

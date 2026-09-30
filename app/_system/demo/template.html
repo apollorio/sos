@@ -1,3 +1,5 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Simulador SOS Apollo</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -54,11 +56,18 @@ code,.num{font-family:var(--mono);font-size:.86em}
 .phone .card.band-P0 .btn.primary{background:var(--p0);border-color:var(--p0);color:#fff;font-size:19px;min-height:62px}
 .phone .btn.low{background:transparent;border-color:transparent;color:var(--muted);font-weight:400;min-height:40px;text-decoration:underline}
 .phone .chip{justify-self:start;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--ink);padding:7px 13px;font:14px var(--body);cursor:pointer}
+.phone .menu{display:grid;gap:6px;border-top:1px solid var(--line);padding-top:10px}.phone .menu-h{margin:2px 0 0;font:13px var(--body);color:var(--muted)}.phone .menu-row{display:flex;flex-wrap:wrap;gap:6px}
 .phone .free-text{display:grid;grid-template-columns:1fr auto;gap:8px}
 .phone .free-text input{min-height:42px;border-radius:12px;border:1px solid var(--line);background:transparent;color:var(--ink);padding:0 12px;font:16px var(--body);min-width:0}
 .phone .free-text .btn{width:auto;min-height:42px}
-.pacer{display:grid;place-items:center;height:150px}.pacer-dot{width:130px;height:130px;border-radius:50%;background:radial-gradient(circle,var(--p2),transparent 70%);transform:scale(.45);transition:transform 4s ease-in-out}
-.pacer-label{margin-top:-86px;color:var(--muted);font-size:14px}
+/* L27: the breathing orb behind the card (inside the phone frame). */
+.phone .ambient-breath{position:absolute;inset:0;z-index:0;display:grid;place-items:center;pointer-events:none;opacity:0;transition:opacity 1.2s ease}
+.phone .ambient-breath.on{opacity:1}
+.phone .ambient-breath .orb{width:360px;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--p2) 60%,transparent) 0%,color-mix(in srgb,var(--p2) 26%,transparent) 42%,transparent 70%);transform:scale(.5);transition:transform 4s ease-in-out}
+.phone .breath-line{display:none}.phone .breath-line.on{display:block}
+.phone .breath-line{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);z-index:5;margin:0;padding:5px 14px;border-radius:999px;background:var(--phone);border:1px solid color-mix(in srgb,var(--p2) 45%,var(--line));color:var(--fg);font-size:14px}
+.phone:has(.ambient-breath.on) #phone-screen{padding-bottom:56px}
+.phone .card{position:relative;z-index:1;background:color-mix(in srgb,var(--panel) 45%,transparent)}
 #toast{position:absolute;left:12px;right:12px;bottom:12px;background:var(--ink);color:var(--panel);padding:10px 12px;border-radius:12px;font-size:14px}
 /* Brain */
 .brain{display:grid;gap:12px;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
@@ -86,17 +95,28 @@ tr.voi-known td,tr.voi-irrelevant td{color:var(--muted)}
 #b-timeline{list-style:none;margin:0;padding:0;display:grid;gap:4px;max-height:280px;overflow:auto;font-size:12.5px}
 #b-timeline li{display:grid;grid-template-columns:62px 30px minmax(0,1fr) minmax(0,1.2fr);gap:8px;align-items:baseline;padding:3px 0;border-top:1px solid var(--line)}
 #b-timeline .in,#b-timeline .out{overflow-wrap:anywhere}
+.cont-controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+.cont-controls button{font:600 13px var(--body);color:var(--ink);background:var(--btn);border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-height:34px;cursor:pointer}
+.cont-controls button[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
+.cont-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;font-size:13px;margin:0}
+.kv dt{color:var(--muted)}.kv dd{margin:0;font-family:var(--mono)}
+.prior{display:inline-block;border-radius:5px;padding:1px 6px;font:700 11px var(--mono);color:#fff;background:var(--muted)}
+.prior[data-p="helpful"]{background:var(--p3)}.prior[data-p="unhelpful"]{background:var(--p1)}
+pre.summary{white-space:pre-wrap;font:13px/1.45 var(--mono);background:var(--soft);border-radius:10px;padding:12px;margin:0;max-height:360px;overflow:auto}
+.link{font:12px var(--mono);overflow-wrap:anywhere;color:var(--muted);margin:6px 0 0}
 .pill{font:700 11px var(--mono);color:#fff;border-radius:5px;padding:1px 5px;background:var(--p3);text-align:center}
 .pill[data-band="P0"]{background:var(--p0)}.pill[data-band="P1"]{background:var(--p1)}.pill[data-band="P2"]{background:var(--p2)}
 .dim{color:var(--muted)}
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-@media (prefers-reduced-motion:reduce){.pacer-dot{transition:none!important}}
+@media (prefers-reduced-motion:reduce){.phone .ambient-breath .orb{transition:none!important;transform:scale(.75)!important}}
 </style>
 
 <div class="wrap">
   <header>
     <h1>Simulador SOS Apollo</h1>
     <p>O motor real, rodando aqui no navegador: sem IA, sem servidor, sem login. À esquerda, o que a pessoa vê. À direita, por que o motor decidiu isso. Toque nas respostas, avance o tempo ou rode uma das histórias do brainstorm.</p>
+    <p class="dim" id="build-stamp">versão: …</p>
   </header>
   <div class="warn" role="note"><b>Protótipo de engenharia.</b> Os textos ainda não passaram por revisão clínica e nada é discado ou enviado a partir desta página. Numa emergência real, ligue <b>192</b> (SAMU) direto do seu telefone.</div>
 
@@ -135,6 +155,10 @@ tr.voi-known td,tr.voi-irrelevant td{color:var(--muted)}
         </div>
         <ul id="b-because" aria-label="Motivos (gerados pela mesma regra que decidiu)"></ul>
       </section>
+      <section class="pane wide" aria-labelledby="h-pista">
+        <h2 id="h-pista">Pista · o que foi usado, extras, álcool e mistura (acompanhamento)</h2>
+        <div class="tbl"><table><tbody id="b-pista"></tbody></table></div>
+      </section>
       <section class="pane" aria-labelledby="h-voi">
         <h2 id="h-voi">Perguntas · valor da informação</h2>
         <div class="tbl"><table><tbody id="b-voi"></tbody></table></div>
@@ -155,6 +179,37 @@ tr.voi-known td,tr.voi-irrelevant td{color:var(--muted)}
       <section class="pane wide" aria-labelledby="h-tl">
         <h2 id="h-tl">Linha do tempo · log estruturado</h2>
         <ol id="b-timeline"></ol>
+      </section>
+      <section class="pane wide" aria-labelledby="h-cont">
+        <h2 id="h-cont">Continuidade · cofre de 180 dias (v0.2 · plano separado, nunca controla P0)</h2>
+        <div class="cont-controls" aria-label="Controles de continuidade">
+          <button id="k-consent" type="button" aria-pressed="false">Lembrar por 180 dias: desligado</button>
+          <button id="k-seed" type="button">Simular histórico (5 episódios)</button>
+          <button id="k-clear" type="button">Apagar cofre</button>
+          <span class="sep" aria-hidden="true"></span>
+          <button id="k-friend" type="button">Resumo p/ quem ajuda</button>
+          <button id="k-pro" type="button">Resumo p/ profissional</button>
+          <button id="k-capsule" type="button">Gerar link (cápsula 6 h)</button>
+        </div>
+        <div class="cont-grid">
+          <div>
+            <h2>Snapshot</h2>
+            <dl class="kv" id="k-snap"></dl>
+          </div>
+          <div>
+            <h2>Histórico de estratégias → priors</h2>
+            <div class="tbl"><table><tbody id="k-strat"></tbody></table></div>
+          </div>
+          <div>
+            <h2>Diário deste episódio (últimos 12)</h2>
+            <div class="tbl"><table><tbody id="k-journal"></tbody></table></div>
+          </div>
+        </div>
+        <div id="k-summary-wrap" hidden style="margin-top:12px">
+          <h2 id="k-summary-title">Resumo</h2>
+          <pre class="summary" id="k-summary"></pre>
+          <p class="link" id="k-link"></p>
+        </div>
       </section>
     </div>
   </div>

@@ -14,11 +14,13 @@
 import { describe, it, expect } from "vitest";
 import { REG } from "../../src/core/registry";
 import { initialState, type SessionState } from "../../src/core/domain/state";
+import { SCENARIOS, runScenario } from "../scenarios/scenarios";
 import { decide, decideCore } from "../../src/core/planner/decide";
 import { determineBand } from "../../src/core/safety/band-engine";
 import { buildFacts } from "../../src/core/logic/facts";
 import type { Decision } from "../../src/core/domain/decision";
 import type { Primitive } from "../../src/core/domain/signals";
+import { helperPerspectiveViolation } from "../invariants/perspective";
 
 const NOW = 1_800_000_000_000;
 const RANK: Record<string, number> = { P0: 0, P1: 1, P2: 2, P3: 3 };
@@ -60,6 +62,16 @@ function mkState(c: Record<string, Primitive>): SessionState | null {
     // History abstraction: every non-fallback strategy was already tried and refused.
     for (const sk of REG.data.skills) for (const st of sk.strategies) if (!st.alwaysEligible) s.strategies[`${sk.id}.${st.id}`] = { doneAt: null, blockedUntil: NOW + 1e6, shows: 1 };
   }
+  if (typeof c["helpLast"] === "string" && c["helpLast"] !== "none") {
+    // Abstract history for help.last (audit 011): the last help card on screen was of this skill.
+    s.card = { instanceId: "h", key: "h", cardId: "CARD_HOLD", kind: "action", band: "P2", skill: c["helpLast"] as "care", strategy: "x", variantKeys: [], actions: [], shownAt: NOW - 5000 };
+  }
+  if (c["groundingDone"] === true) s.strategies["grounding.feet_floor"] = { doneAt: NOW - 400_000, blockedUntil: null, shows: 1 };
+  if (c["helpExhausted"] === true) {
+    // Every technique and care tip was refused (blocked): what is left must still be help (contact, then the fallback).
+    for (const sk of REG.data.skills) if (sk.id === "grounding" || sk.id === "care") for (const st of sk.strategies) s.strategies[`${sk.id}.${st.id}`] = { doneAt: null, blockedUntil: NOW + 1e6, shows: 1 };
+  }
+  if (c["pace"] === "slow") s.answerPace = [{ ms: 120_000, at: NOW - 2000 }, { ms: 120_000, at: NOW - 1000 }];
   if (typeof c["prevBand"] === "string" && c["prevBand"] !== "none") s.band = { current: c["prevBand"] as "P1", since: NOW - 30_000, ruleId: "prev", sticky: true };
   return s;
 }
@@ -81,6 +93,8 @@ function assertDecision(c: Record<string, Primitive>, s: SessionState, d: Decisi
   if (d.pick.strategy === "message_whatsapp" && s.connectivity === "offline") throw new Error(`network requirement ${where}`);
   const eng = REG.data.engagement[d.band];
   if (!eng) throw new Error(`no engagement for ${d.band}`);
+  // L10 — a helper is never addressed as the person in crisis.
+  if (c["actor"] === "helper") { const v = helperPerspectiveViolation(d.pick, d.band); if (v) throw new Error(`L10 ${v} at ${where}`); }
 }
 
 /* ───────── Tier A: decideCore over the broad space (no question layer) ───────── */
@@ -119,6 +133,36 @@ const TIER_B: Dim[] = [
   { name: "exhausted", values: [false, true] },
 ];
 
+/* ───────── Tier D (audit 011): what was used × the care loop × pace, over decideCore ───────── */
+const CLASS_OF: Record<string, string> = { coke: "stim", md: "stim", ghb: "downer", downer_pill: "downer", alcohol: "downer", ket: "psychedelic", cannabis: "psychedelic", lsd: "psychedelic", inhalant: "psychedelic" };
+const TIER_D: Dim[] = [
+  { name: "actor", values: ["self", "helper"] },
+  { name: "responsiveness", values: ["responsive", "impaired"] },
+  { name: "breathing", values: ["normal", "abnormal"] },
+  { name: "chest", values: ["no"] },
+  { name: "seizure", values: ["no"] },
+  { name: "company", values: ["with_someone"] },
+  { name: "anxiety", values: [1, 3, 4] },
+  { name: "substanceClass", values: ["stim", "downer", "psychedelic", "none", "unknown"] },
+  { name: "substance", values: ["coke", "md", "ghb", "downer_pill", "alcohol", "ket", "cannabis", "lsd", "inhalant", "unknown"] },
+  { name: "alcohol", values: ["yes", "no", "unknown"] },
+  { name: "sexEnhancer", values: ["pill", "poppers", "both", "none", "unknown"] },
+  { name: "discomfort", values: ["nose", "throat", "heat", "nausea", "jaw", "unknown"] },
+  { name: "helpLast", values: ["none", "grounding", "care", "combination", "steady_check"] },
+  { name: "groundingDone", values: [false, true] },
+  { name: "pace", values: ["unknown", "slow"] },
+  { name: "helpExhausted", values: [false, true] },
+];
+function reachableD(c: Record<string, Primitive>): boolean {
+  const sub = String(c["substance"]);
+  if (sub !== "unknown" && CLASS_OF[sub] !== c["substanceClass"]) return false; // "which one?" is asked only under its class
+  if (sub === "alcohol" && c["alcohol"] !== "yes") return false; // "Só álcool" records alcohol = yes
+  const used = ["stim", "downer", "psychedelic"].includes(String(c["substanceClass"]));
+  if (!used && (sub !== "unknown" || c["alcohol"] !== "unknown" || c["sexEnhancer"] !== "unknown")) return false; // asked only after a substance
+  if (c["helpLast"] === "none" && c["groundingDone"] === true) return false;
+  return true;
+}
+
 const coverage = new Set<string>();
 
 describe("exhaustive decision space", () => {
@@ -130,6 +174,11 @@ describe("exhaustive decision space", () => {
       if (!s) continue;
       const { decision } = decideCore(s, NOW, REG);
       assertDecision(c, s, decision, coverage);
+      // INV-027 — grounding respects physiology (proven over the whole space, not only in scenarios).
+      if (decision.pick.skill === "grounding" && decision.pick.strategy === "breath_pacer") {
+        if (c["breathing"] !== "normal" || c["responsiveness"] !== "responsive") throw new Error(`INV-027 breath_pacer at ${JSON.stringify(c)}`);
+      }
+      if (decision.pick.skill === "grounding" && decision.pick.strategy === "five_senses" && c["responsiveness"] !== "responsive") throw new Error(`INV-027 five_senses at ${JSON.stringify(c)}`);
       bandOf.set(JSON.stringify(c), RANK[decision.band]!);
       n++;
     }
@@ -175,6 +224,39 @@ describe("exhaustive decision space", () => {
       n++;
     }
     console.log(`Tier B: ${n.toLocaleString()} reachable states (VOI critical=${voi.critical}, decisive=${voi.decisive})`);
+    expect(n).toBeGreaterThan(10_000);
+  });
+
+  it("Tier D — what was used, combinations, the care loop and pace: total, never P0 by itself, nothing unsafe by mouth", () => {
+    let n = 0;
+    const MOUTH = new Set(["sip_water", "eat_something", "throat_soothe", "brush_teeth"]);
+    for (const c of cartesian(TIER_D)) {
+      if (!reachableD(c)) continue;
+      const s = mkState(c);
+      if (!s) continue;
+      const { decision: d } = decideCore(s, NOW, REG);
+      assertDecision(c, s, d, coverage);
+      const where = JSON.stringify(c);
+      const f = buildFacts(s, NOW, REG).facts;
+      // L26: no hard rule reads what was used, so a combination alone is never P0.
+      if (d.band === "P0") throw new Error(`P0 without a red flag ${where}`);
+      if (d.pick.skill === "combination" && Number(f["risk.mixing"]) < 2) throw new Error(`combination warning without a combination ${where}`);
+      if (Number(f["risk.mixing"]) >= 3 && d.band !== "P1") throw new Error(`mixing 3 not in P1 ${where}`);
+      if (d.pick.skill === "care" && MOUTH.has(d.pick.strategy ?? "") && (c["breathing"] !== "normal" || c["responsiveness"] !== "responsive")) throw new Error(`by mouth while breathing/responsiveness not normal ${where}`);
+      if (d.pick.strategy === "cool_shower" && (c["substanceClass"] === "downer" || ["ghb", "downer_pill", "ket", "alcohol"].includes(String(c["substance"])) || c["responsiveness"] !== "responsive")) throw new Error(`shower while sedated ${where}`);
+      if (d.pick.strategy === "breath_pacer") throw new Error(`retired breath card picked ${where}`);
+      // L25: pace never moves the band.
+      if (c["helpExhausted"] === true) {
+    // Every technique and care tip was refused (blocked): what is left must still be help (contact, then the fallback).
+    for (const sk of REG.data.skills) if (sk.id === "grounding" || sk.id === "care") for (const st of sk.strategies) s.strategies[`${sk.id}.${st.id}`] = { doneAt: null, blockedUntil: NOW + 1e6, shows: 1 };
+  }
+  if (c["pace"] === "slow") {
+        const quick = decideCore({ ...s, answerPace: [] }, NOW, REG).decision;
+        if (quick.band !== d.band) throw new Error(`pace changed the band ${where}`);
+      }
+      n++;
+    }
+    console.log(`Tier D: ${n.toLocaleString()} reachable states`);
     expect(n).toBeGreaterThan(10_000);
   });
 
@@ -248,15 +330,39 @@ describe("exhaustive decision space", () => {
       ...REG.data.hardRules.map((h) => h.id),
       ...REG.data.bandRules.map((b) => b.id),
       ...Object.values(REG.data.policies).flat().map((p) => p.id),
-      ...REG.data.skills.flatMap((s) => s.strategies.map((st) => `${s.id}.${st.id}`)),
+      ...REG.data.skills.flatMap((s) => s.strategies.filter((st) => !st.retired).map((st) => `${s.id}.${st.id}`)),
     ];
-    // Reachable only through a SEQUENCE (one strategy refused, the next one offered), never from a
-    // single abstract state. Each one is pinned by a golden scenario instead. The list must stay honest:
-    const HISTORY_ONLY = new Set(["grounding.feet_floor", "grounding.five_senses", "contact_trusted_person.crisis_line"]);
-    const stale = [...HISTORY_ONLY].filter((id) => coverage.has(id));
+    // Reachable only through a SEQUENCE, never from a single abstract state: a strategy offered after an earlier one
+    // was done or refused, or (L21, audit 010) contact for a person helping themselves, which comes after a first
+    // technique. Each one names the golden scenario that exercises it, and that is checked below. The list must stay honest:
+    const HISTORY_ONLY = new Map<string, string>([
+      ["grounding.double_sigh", "grounding-rotation"],
+      ["grounding.humming", "grounding-rotation"],
+      ["P1-020", "self-alone-friend-coming"],
+      ["contact_trusted_person.message_whatsapp", "self-alone-friend-coming"],
+      ["contact_trusted_person.message_sms", "prefers-sms"],
+      ["contact_trusted_person.crisis_line", "nobody-to-call"],
+      // Audits 011–012: everyday care tips come after «Um lugar firme pro corpo» (rotation), so only a session reaches them.
+      ["care.put_away", "pista-bala-alcool-azulzinho"],
+      ["care.eat_something", "grounding-rotation"],
+      ["care.brush_teeth", "grounding-rotation"],
+      ["care.cool_shower", "grounding-rotation"],
+      ["care.soft_music", "slow-pace-asks-less"],
+      ["care.sip_water", "grounding-rotation"],
+      ["care.fresh_air", "grounding-rotation"],
+    ]);
+    const stale = [...HISTORY_ONLY.keys()].filter((id) => coverage.has(id));
+    const deadPreview = expected.filter((id) => !coverage.has(id) && !HISTORY_ONLY.has(id));
+    if (stale.length || deadPreview.length) console.log(`coverage gate: stale=${stale.join(",")} dead=${deadPreview.join(",")}`);
     expect(stale, "HISTORY_ONLY lists rules that ARE reachable — remove them").toEqual([]);
+    for (const [id, name] of HISTORY_ONLY) {
+      const sc = SCENARIOS.find((x) => x.name === name);
+      expect(sc, `${id}: no golden scenario ${name}`).toBeDefined();
+      const hit = runScenario(sc!).some((r) => `${r.output.card.skill}.${r.output.card.strategy}` === id || r.log.why.policyRule === id);
+      expect(hit, `${id} is history-only but ${name} never reaches it`).toBe(true);
+    }
     const dead = expected.filter((id) => !coverage.has(id) && !HISTORY_ONLY.has(id));
-    console.log(`coverage: ${expected.length - dead.length}/${expected.length} rules reachable from single states (+${HISTORY_ONLY.size} history-only)`);
+    console.log(`coverage: ${expected.length - dead.length}/${expected.length} rules covered: ${expected.length - dead.length - HISTORY_ONLY.size} from single states + ${HISTORY_ONLY.size} through pinned scenarios${dead.length ? ` — dead: ${dead.join(", ")}` : ""}`);
     expect(dead).toEqual([]);
   });
 });

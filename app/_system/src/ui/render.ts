@@ -6,12 +6,21 @@
 import type { StepResult } from "../core/domain/decision";
 import type { Reg } from "../core/registry";
 import { resolveCard, type Locale } from "./locale";
-import { mountBreathPacer } from "./breath-pacer";
+import { ambientBreath } from "./breath-pacer";
 
 export interface UiHandlers {
   tap(cardInstanceId: string, actionId: string): void;
   text(text: string): void;
   chip(chipId: string): void;
+}
+
+/** The live flows' voice uses **bold** for the one thing to do. Rendered as text nodes + <strong> (never innerHTML). */
+export function rich(host: HTMLElement, text: string): HTMLElement {
+  text.split(/\*\*(.+?)\*\*/g).forEach((part, i) => {
+    if (!part) return;
+    if (i % 2) { const b = document.createElement("strong"); b.textContent = part; host.append(b); } else host.append(document.createTextNode(part));
+  });
+  return host;
 }
 
 export function renderStep(root: HTMLElement, r: StepResult, locale: Locale, reg: Reg, on: UiHandlers): void {
@@ -28,8 +37,7 @@ export function renderStep(root: HTMLElement, r: StepResult, locale: Locale, reg
   section.setAttribute("aria-live", card.band === "P0" ? "assertive" : "polite");
   if (r.output.notice) section.append(el("p", "notice", locale.notices[r.output.notice] ?? ""));
   section.append(el("h1", "title", c.title));
-  if (c.body) section.append(el("p", "body", c.body));
-  if (card.interactive === "breath_pacer") mountBreathPacer(section);
+  if (c.body) section.append(rich(el("p", "body"), c.body));
 
   const actions = el("div", "actions");
   for (const a of c.actions) {
@@ -41,11 +49,26 @@ export function renderStep(root: HTMLElement, r: StepResult, locale: Locale, reg
   section.append(actions);
   if (c.aside) section.append(el("p", "aside", c.aside));
 
-  for (const chip of r.output.chips) {
-    const b = el("button", "chip", locale.chips[chip.chipId]?.label ?? chip.chipId);
-    b.addEventListener("click", () => on.chip(chip.chipId));
-    section.append(b);
+  const chipButton = (chipId: string) => {
+    const b = el("button", "chip", locale.chips[chipId]?.label ?? chipId);
+    b.setAttribute("type", "button");
+    b.addEventListener("click", () => on.chip(chipId));
+    return b;
+  };
+  for (const chip of r.output.chips.filter((c) => c.group === "pending")) section.append(chipButton(chip.chipId));
+
+  // L23: a way out and a menu, always (never in P0: the engine sends no chips there).
+  const groups: [string, string][] = [["body", "menuBody"], ["tools", "menuTools"], ["talk", "menuTalk"], ["report", "menuReport"]];
+  const menu = el("nav", "menu");
+  menu.setAttribute("aria-label", locale.shell["menuTools"] ?? "menu");
+  for (const [g, heading] of groups) {
+    const chips = r.output.chips.filter((c) => c.group === g);
+    if (!chips.length) continue;
+    const row = el("div", "menu-row");
+    for (const chip of chips) row.append(chipButton(chip.chipId));
+    menu.append(el("p", "menu-h", locale.shell[heading] ?? ""), row);
   }
+  if (menu.childElementCount) section.append(menu);
 
   if (card.band !== "P0") {
     const form = el("form", "free-text") as HTMLFormElement;
@@ -56,6 +79,8 @@ export function renderStep(root: HTMLElement, r: StepResult, locale: Locale, reg
     section.append(form);
   }
 
-  root.replaceChildren(section);
+  // L27: the breathing orb lives behind the card, not in it (same node across renders, so the rhythm continues).
+  const [orb, line] = ambientBreath(root, r.output.breath, locale);
+  root.replaceChildren(orb, section, line);
   (section.querySelector(".btn.primary, .btn") as HTMLElement | null)?.focus({ preventScroll: true });
 }

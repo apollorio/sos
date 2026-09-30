@@ -20,7 +20,7 @@ This blueprint audits the three brainstorm versions and closes their gaps. It al
 | Property tests (random event sequences) | ✔ passing | 5 properties × 400 runs per CI run (stress-tested at 4,000) × ≤45 steps |
 | Golden scenarios (the brainstorm's own stories) | ✔ passing | 14 executable stories |
 | Static emergency shell + PWA + e2e in real Chromium | ✔ passing | 192 works with JS off, after a crash, and 2 taps from boot |
-| Whole engine + registry + copy, bundled | ✔ | **80 KB** min · **25 KB** gzip |
+| Whole engine + registry + copy, bundled | ✔ | **80 KB** min · **25 KB** gzip in v0.1 (v0.2 with the continuity plane: 107 KB, see v0.2 §13b) |
 | Clinical content | ✖ **draft** | release gate blocks production until a clinician signs (`docs/CLINICAL-REVIEW.md`) |
 
 **On "0 chance of error":** no system can promise that, and claiming it would be the most dangerous line in this document. Here is what the base *does* guarantee, by exhaustive proof rather than sampling:
@@ -109,13 +109,39 @@ These live in `registry.json → laws` and are cited by id in code and tests.
 | L11 | **Emergency does not depend on JavaScript staying alive.** The app fails to the shell. |
 | L12 | **The real world beats the app.** Nothing (captcha, network, onboarding) ever gates help. |
 
+### 2b · Acolhimento: laws L21–L24 (audit 010)
+
+The owner's field test showed the v0.1 rhythm felt like an interrogation: "how are you now?" after every exercise and after
+every minute of silence, and no calming technique at all for a person alone. Four laws now bind the rhythm (registry
+`laws`, enforced by lint, runtime and tests; details in `app/_audit/010-acolhimento/`):
+
+| | Law |
+|---|---|
+| L21 | **Help comes before questions.** After a short triage, at most one question stands between two helps (`questionsBetweenHelps`). |
+| L22 | **Never interrupt help to ask how the person is.** Silence on a help card adds "Tô aqui com você. Sem pressa."; a timer never replaces a help card (except P0, a lost contraindication, or a safety re-check while someone is watched). |
+| L23 | **A way out and a menu, always.** Every non-P0 card offers techniques, people to reach and "how I am", filtered by the same contraindications and perspective rules. |
+| L24 | **No question repeated within its interval** (`minIntervalSec`); "Prefiro só continuar" is always an answer. |
+
+### 2c · Pista: laws L25–L27 (audit 011)
+
+| | Law |
+|---|---|
+| L25 | **Pace is read, never reported.** The time a person takes to answer (derived `pace`) may make the app ask less and offer simpler things first; it never becomes anxiety, never moves a band, never diagnoses. |
+| L26 | **What was used only adds care.** Asked directly («O que você usou?», then «Qual deles? Teve álcool junto?»: one tap answers both), one question between two helps, never before the first help; a dangerous combination raises the band (P1/P2) and brings its warning at once, never P0 by itself; no dose, no second substance, no antidote (INV-030). |
+| L27 | **Breathing is the background, not a step.** A slow orb (in 4 · hold 1 · out 6) paces the breath behind every non-P0 card while breathing is normal and the person responds; the breathing card is retired. |
+| L28 | **Only the person moves the screen** (audit 012). Time (a timer, an answer ageing out, a follow-up falling due) never replaces a card, question or help; it waits for the next tap. Only P0 can. |
+| L29 | **No grading.** The app never asks the person to grade how they are (audit 013): no better/worse buttons, no «how are you now?», no timed check-in. What it knows comes from what they choose to tell and tap. |
+
+Anxiety is asked **once** per session (`Q_ANXIETY maxAsks 1`, answer valid 1 h). The loop alternates a technique and a
+care tip (`help.last`), rotating least-shown first, forever: see `app/_audit/011-pista/` and `scripts/converse.ts`.
+
 ---
 
 ## 3 · Architecture
 
 ```mermaid
 flowchart TB
-  subgraph SHELL["STATIC SHELL · public/index.html · zero JS (L11)"]
+  subgraph SHELL["STATIC SHELL · app/index.html · zero JS (L11)"]
     SOS["tel:192 bar · always visible"]
     HELP["static help panel · SAMU 192 · CVV 188 · 0800 722 6001<br/>visible until the engine proves it is alive"]
   end
@@ -206,7 +232,7 @@ flowchart LR
 Three behaviours emerge without a line of flow code:
 
 - **Triage order emerges from risk.** For a helper, the first question is "A pessoa responde quando você chama ou toca nela?". It is critical because one answer reveals P0. For a self user, the first question is the red-flag card.
-- **Monitoring emerges from TTL.** `breathing = normal` expires after 10 minutes. It becomes `unknown`, which is critical again, so it is re-asked, the way a harm-reduction team re-checks breathing.
+- **Monitoring emerges from TTL.** `breathing = normal` expires after 10 minutes. It becomes `unknown`, which is critical again, so it is re-asked, the way a harm-reduction team re-checks breathing. Since audit 010 (L22) the re-check interrupts a help card on a timer only while someone is being watched (helper, or medical risk); otherwise it comes right after the next tap.
 - **Asking stops when it stops mattering.** The budget caps questions in a row, and a question never interrupts an intervention already on screen.
 
 Cost: about 20 pure evaluations per step, around **0.7 ms** on a laptop. Target on low-end Android: under 16 ms.
@@ -278,7 +304,7 @@ sequenceDiagram
 
 | | Condition | Effect |
 |---|---|---|
-| **SILENCE** | card visible for the whole window with no human input | uncertainty rises. Only with a known medical risk (HR-008) can it lead to P0 bystander mode. |
+| **SILENCE** | card visible for the whole window with no human input | uncertainty rises and a help card shows "Tô aqui com você. Sem pressa." (L22: never a question). Only with a known medical risk (HR-008) can it lead to P0 bystander mode. |
 | **APP_UNAVAILABLE** | hidden, frozen or closed | nothing accrues. On return, `resumedAfterGap` triggers a check-in. |
 | **CONNECTIVITY_LOST** | offline | only strategies that need network are affected (WhatsApp → SMS). |
 
@@ -316,7 +342,7 @@ registry/
 
 ---
 
-## 10 · Skills catalog (7 skills, 12 strategies)
+## 10 · Skills catalog (9 skills, 45 strategies; 1 retired)
 
 | Skill | Bands | Strategies (in order) | Notes |
 |---|---|---|---|
@@ -325,7 +351,9 @@ registry/
 | `reduce_stimulation` | P1–P2 | `relocate` (needs movement + safe location) → `in_place` | "Não consigo" blocks `relocate` for 30 min |
 | `contact_trusted_person` | P1–P2 | `stay_close` → `message_whatsapp` (network) → `message_sms` → `crisis_line` (CVV 188, self only) | "Não tenho ninguém" blocks both message strategies |
 | `confirm_commitment` | P1–P3 | per commitment kind | generalizes `confirm_arrival` |
-| `grounding` | P1–P2 | `breath_pacer` (the human step) → `feet_floor` → `five_senses` | "done" expires anxiety on purpose, so it is re-asked |
+| `grounding` | P1–P3 | `cold_water` → `feet_floor` → `double_sigh` → `five_senses` → `humming` → `press_wall`, **rotating** least-shown first (`breath_pacer` retired: the orb, L27) | breathing exercises and cold water need normal breathing + responsive (INV-027); `five_senses` deferred while pace = slow (L25) |
+| `combination` | P1–P3 | `downers` · `poppers_pill` · `coke_alcohol` · `md_alcohol` · `stim_alcohol` · `stim_sex` | audit 011: the warning for what was mixed, the moment it is known; never alternates, never P0 by itself |
+| `care` | P1–P3 | what the person reported first (`cool_body`, `inhalant_air`, `nose_rinse`, `throat_soothe`, `nausea_care`, `jaw_ease`), then safety notes (`poppers_care`, `pill_care`), then the substance (`side_safe`, `ride_wave`, `put_away`), then everyday care (`sip_water`, `fresh_air`, `eat_something`, `brush_teeth`, `cool_shower`, `soft_music`), rotating | nothing by mouth unless `can_swallow`; shower only when `awake`; copy per substance (`drug` variant) |
 | `steady_check` | P1–P3 | `tips` (P3, by substance class) → `check_later` (P3) → **`hold`** (always eligible) | **new**: without it P3 had no skill and totality could not be proven |
 
 **Why 7 and not 6:** the latest brainstorm fixed 6 skills. The audit found no skill for P3 and no guaranteed fallback anywhere, which leaves a blank screen as a possible outcome. `steady_check.hold` closes that hole and makes totality provable. Decision D10 asks you to approve it.
@@ -337,14 +365,19 @@ registry/
 | P1 | when | skill | | P2 | when | skill |
 |---|---|---|---|---|---|---|
 | P1-005 | commitment due | confirm_commitment | | P2-005 | commitment due | confirm_commitment |
-| P1-010 | silence ≥1 ∨ resumed | assess · Q_HOW_NOW | | P2-010 | silence ≥1 ∨ resumed | assess · Q_HOW_NOW |
+| P1-010 | resumed (not silence, L22) | assess · Q_HOW_NOW | | P2-010 | resumed (not silence, L22) | assess · Q_HOW_NOW |
+| P1-012 | mixing ≥ 2 | combination (L26) | | P2-012 | mixing ≥ 2 | combination (L26) |
+| P1-015 | self ∧ no grounding done yet | grounding (L21) | | | | |
 | P1-020 | alone ∧ ¬friend coming ∧ ¬contact pending | contact_trusted_person | | P2-020 | loud ∧ emotional ≥3 | reduce_stimulation |
-| P1-030 | loud | reduce_stimulation | | P2-040 | emotional ≥3 | grounding |
-| P1-040 | emotional ≥3 | grounding | | P2-050 | loud | reduce_stimulation |
-| P1-050 | always | contact_trusted_person | | P2-060 | always | grounding |
+| P1-030 | loud | reduce_stimulation | | P2-035 | a help shown ∧ last help ≠ care | care |
+| P1-032 | helper ∧ a help shown | contact_trusted_person (stay close) | | P2-040 | emotional ≥3 | grounding |
+| P1-035 | a help shown ∧ last help ≠ care | care | | P2-050 | loud | reduce_stimulation |
+| P1-040 | emotional ≥3 | grounding | | P2-060 | always | grounding |
+| P1-045 | last help ≠ grounding | grounding | | | | |
+| P1-050 | always | contact_trusted_person | | | | |
 | P1-099 | always | steady_check (hold) | | P2-099 | always | steady_check (hold) |
 
-P3: `P3-005` commitment due → confirm · `P3-010` resumed → Q_HOW_NOW · `P3-099` always → steady_check.
+P3: `P3-005` commitment due → confirm · `P3-010` resumed → Q_HOW_NOW · `P3-050` a help shown ∧ last ≠ care → care · `P3-060` a help shown ∧ last ≠ grounding → grounding · `P3-099` always → steady_check.
 
 **Hard rules (precedence = order):** HR-001 unresponsive · HR-002 severe breathing · HR-003 seizure · HR-004 chest · HR-005 physically unsafe · HR-006 fainted *(proposed)* · HR-007 self-harm *(proposed)* · HR-008 medical risk + 2 visible silences *(proposed, not latched)* · HR-009 user tapped 192.
 
@@ -406,7 +439,7 @@ The pyramid has already paid for itself. It caught **5 real defects** before thi
 |---|---|
 | Entry | **no gate.** A bot loading a static page gains nothing. |
 | Handoffs | native `tel:`, `sms:` and `wa.me` links, run by the user's phone inside their own gesture. No server, no SMS bill, no pumping target. |
-| Code integrity | strict CSP (`default-src 'self'`, no third-party scripts), immutable hashed assets, SRI. |
+| Code integrity | strict CSP (`default-src 'self'`, no third-party scripts), content-hashed bundle served immutable, SRI on the module tag, SW VERSION stamped from the shell's content (`scripts/build.ts`; true since 2026-09-25, before that the bundle was unhashed and the SW VERSION constant). |
 | Exfiltration | no analytics, no telemetry, no endpoint on self to post to. |
 | DDoS | static CDN (Cloudflare Pages or Netlify) absorbs volumetric attacks. |
 | "Human steps" | the breath pacer: a calming micro-interaction, **never a gate**. |
@@ -454,11 +487,11 @@ sos-apollo/
 │   │   └── storage/session-store.ts
 │   ├── ui/{render,locale,breath-pacer}.ts   dumb renderer · copy resolution · the human step
 │   └── demo/demo.ts               engineering simulator (virtual clock + brain panel)
-├── public/                        index.html (static shell) · app.css · sw.js · manifest · _headers
+├── ../index.html (= /app/)        static shell · app.css · sw.js · manifest · assets/ (stamped in place; /_headers at the repo root)
 ├── tests/
 │   ├── exhaustive/decision-space.test.ts   Tier A/B/C · precedence · coverage
 │   ├── property/engine.property.test.ts    fast-check random sequences
-│   ├── scenarios/{scenarios,scenarios.test}.ts   14 golden stories
+│   ├── scenarios/{scenarios,scenarios.test}.ts   18 golden stories
 │   ├── registry/{lint,schema}.test.ts      + 11 mutation cases
 │   ├── invariants/text-triggers.test.ts
 │   ├── architecture/boundaries.test.ts     INV-016

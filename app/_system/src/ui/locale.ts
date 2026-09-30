@@ -4,6 +4,7 @@
  */
 import type { CardView } from "../core/domain/decision";
 import type { Reg } from "../core/registry";
+import type { SummaryLocale } from "../core/handoff/summary";
 import ptBR from "../../registry/locales/pt-BR.json";
 
 type Text = string | Record<string, string>;
@@ -15,6 +16,7 @@ export interface Locale {
   handoff: Record<string, string>;
   chips: Record<string, { label: string }>;
   cards: Record<string, LocaleCard>;
+  continuity: SummaryLocale & { consentCard: { title: string; body: string; actions: Record<string, string> } };
 }
 
 export const LOCALES: Record<string, Locale> = { "pt-BR": ptBR as unknown as Locale };

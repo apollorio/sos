@@ -83,7 +83,13 @@ export function lintRegistry(opts: { release?: boolean; reg?: Reg; locales?: Rec
   });
   d.bandRules.forEach((b) => { checkPred(b.id, b.when); if (!bands.has(b.band) || b.band === "P0") err(`${b.id}: band must be P1..P3`); });
   for (const rules of Object.values(d.policies)) rules.forEach((r) => checkPred(r.id, r.when));
-  d.skills.forEach((s) => s.strategies.forEach((st) => checkPred(`${s.id}.${st.id}`, st.when)));
+  d.skills.forEach((s) => s.strategies.forEach((st) => { checkPred(`${s.id}.${st.id}`, st.when); if (st.deferWhen) checkPred(`${s.id}.${st.id}.deferWhen`, st.deferWhen); }));
+  d.questions.forEach((q) => q.when && checkPred(`${q.id}.when`, q.when));
+  checkPred("ambient.breath.when", d.ambient.breath.when);
+  /* L27 / INV-032: the orb paces breathing, so it needs exactly what paced breathing needs (INV-027). */
+  for (const need of ["signal.breathing", "signal.responsiveness"]) if (!JSON.stringify(d.ambient.breath.when).includes(`"${need}"`)) err(`ambient.breath.when must gate on ${need} (INV-032)`);
+  for (const s of d.skills) for (const st of s.strategies) if (st.retired && !(d.conventions as { retiredIds?: string[] }).retiredIds?.includes(`${s.id}.${st.id}`)) err(`${s.id}.${st.id}: retired but not listed in conventions.retiredIds`);
+  for (const id of (d.conventions as { retiredIds?: string[] }).retiredIds ?? []) if (REG.chip.has(id)) err(`${id} is retired and may not be reused`);
   for (const [k, v] of Object.entries(d.requirements)) if (k !== "doc") checkPred(`requirement.${k}`, v as Pred);
   d.invalidation.forEach((i) => i.onlyIf && checkPred(i.id, i.onlyIf));
 
@@ -114,6 +120,7 @@ export function lintRegistry(opts: { release?: boolean; reg?: Reg; locales?: Rec
         case "SIGNALS_REPORTED": checkSet(where, op.set); if (op.set["substanceClass"] !== undefined) err(`${where}: substanceClass may only come from a question (INV-012)`); break;
         case "SIGNALS_EXPIRED": op.signals.forEach((s) => REG.signal.has(s) || err(`${where}: unknown signal ${s}`)); break;
         case "STRATEGY_OUTCOME": if (op.skill && !REG.strategy.has(`${op.skill}.${op.strategy}`)) err(`${where}: unknown strategy ${op.skill}.${op.strategy}`); break;
+        case "STRATEGY_REQUESTED": if (!REG.strategy.has(`${op.skill}.${op.strategy}`)) err(`${where}: requests unknown strategy ${op.skill}.${op.strategy}`); break;
         case "COMMITMENT_CREATED": case "COMMITMENT_RESOLVED": if (!REG.commitment.has(op.kind)) err(`${where}: unknown commitment ${op.kind}`); break;
         case "HANDOFF_OPENED": if (op.target !== "trusted" && !REG.numbers[op.target]) err(`${where}: no number for target ${op.target}`); break;
         default: break;
@@ -216,11 +223,27 @@ export function lintRegistry(opts: { release?: boolean; reg?: Reg; locales?: Rec
     if (!REG.card.has(c.confirmCard)) err(`${c.id}: unknown confirmCard ${c.confirmCard}`);
     checkOps(`${c.id}.onMissed`, c.onMissed);
   }
-  for (const c of d.chips) if (!REG.commitment.has(c.whenPending)) err(`${c.id}: unknown commitment ${c.whenPending}`);
+  /* Chips (L23): pending chips need a commitment; tools/talk chips request exactly one strategy; notices exist. */
+  const NOTICE_IDS = ["TEXT_UNMATCHED", "STALE_TAP", "PRESENCE", "PRESENCE_WAVE", "PRESENCE_MINUTE", "THINKING", "RECHECK", "DONE_1", "DONE_2", "DONE_3", "DONE_4", "DONE_5", "ACK_BETTER", "ACK_WORSE", "ACK_BODY"];
+  const NOTICES = new Set(NOTICE_IDS);
+  for (const c of d.chips) {
+    checkOps(`${c.id}.action`, c.action.ops);
+    if (c.bands.includes("P0")) err(`${c.id}: chips never appear in P0 (INV-029)`);
+    const requests = c.action.ops.filter((o) => o.op === "STRATEGY_REQUESTED");
+    if (c.group === "pending" && (!c.whenPending || !REG.commitment.has(c.whenPending))) err(`${c.id}: pending chip needs a known whenPending commitment`);
+    if (c.group !== "pending" && c.whenPending) err(`${c.id}: only pending chips may wait on a commitment`);
+    if ((c.group === "tools" || c.group === "talk" || c.group === "body") && requests.length !== 1) err(`${c.id}: a ${c.group} chip requests exactly one strategy`);
+    if (c.group === "report" && requests.length) err(`${c.id}: a report chip reports, it does not request`);
+    if (c.notice && !NOTICES.has(c.notice)) err(`${c.id}: unknown notice ${c.notice}`);
+  }
+  /* L22 / INV-028: silence never pins a question; it only adds presence. */
+  for (const b of nonP0) for (const r of d.policies[b] ?? []) {
+    if (r.skill === "assess" && JSON.stringify(r.when).includes("silence.count")) err(`${r.id}: asks a question because of silence (L22, INV-028)`);
+  }
   for (const t of d.textTriggers.rules) {
     t.patterns.forEach((p) => { try { new RegExp(p); } catch { err(`${t.id}: invalid regex ${p}`); } if (/[A-ZÀ-ÿ]/.test(p.replace(/\\[a-zA-Z]/g, ""))) err(`${t.id}: pattern must be written in normalized form (lowercase, no accents): ${p}`); });
     checkSet(t.id, t.set);
-    if (t.set["substanceClass"] !== undefined) err(`${t.id}: text may never set substanceClass (INV-012)`);
+    for (const k of Object.keys(t.set)) if (REG.signal.get(k)?.explicitOnly) err(`${t.id}: text may never set ${k}, an explicit-only signal (INV-012, L26)`);
     if (t.onNegated && !REG.question.has(t.onNegated.ask)) err(`${t.id}: onNegated asks unknown question ${t.onNegated.ask}`);
   }
 
@@ -253,7 +276,56 @@ export function lintRegistry(opts: { release?: boolean; reg?: Reg; locales?: Rec
       if (lc.clinical && lc.review !== "clinical") (release ? err : warn)(`${code}: ${c.id} clinical copy is "${lc.review}" (needs clinical review)`);
     }
     for (const c of d.chips) if (!loc.chips[c.id]) err(`${code}: missing chip label ${c.id}`);
+    for (const n of NOTICE_IDS) if (!loc.notices[n]) err(`${code}: missing notice ${n}`);
+    for (const k of ["menuBody", "menuTools", "menuTalk", "menuReport"]) if (!loc.shell[k]) err(`${code}: missing shell.${k} (menu heading, L23)`);
     for (const k of Object.keys(loc.cards)) if (!REG.card.has(k)) warn(`${code}: orphan copy ${k}`);
+    /* INV-030 (L26): no dose, no volume, no second substance to "come down", no "antidote", no "neutralizes". */
+    const allText = (lc: LocaleCard) => [lc.title, lc.body, lc.actions].flatMap((t) => (typeof t === "string" ? [t] : Object.values(t ?? {})));
+    const FORBIDDEN: [RegExp, string][] = [
+      [/\d+\s*(ml|mg|l\b|litros?|copos?|comprimidos?|gotas|doses?)\b/i, "a dose or a volume"],
+      [/ant[íi]doto|neutraliz/i, "an 'antidote' or 'neutralizes' claim"],
+      [/pra (descer|baixar)\b.*\b(toma|usa|fuma|bebe)|\b(toma|usa|fuma|bebe) (um|uma|outro|outra) .*pra (descer|baixar)/i, "a second substance to come down"],
+    ];
+    for (const [id, lc] of Object.entries(loc.cards)) for (const t of allText(lc)) for (const [rx, what] of FORBIDDEN) if (rx.test(t)) err(`${code}: ${id} gives ${what}: "${t.slice(0, 60)}…" (INV-030)`);
+  }
+
+  /* ── Grounding physiology (INV-027): the paced-breathing exercise must be gated by breathing=normal ── */
+  for (const s of d.skills) for (const st of s.strategies) {
+    if (st.interactive === "breath_pacer" && !st.requires.includes("breathing_normal")) err(`${s.id}.${st.id}: breath pacer without the breathing_normal requirement (INV-027)`);
+    if (st.id === "five_senses" && !st.requires.includes("responsive")) err(`${s.id}.${st.id}: five_senses without the responsive requirement (INV-027)`);
+    // Anything that changes breathing, and the cold-water shock, needs normal breathing and a responsive person.
+    if (["double_sigh", "humming"].includes(st.id) && !(st.requires.includes("breathing_normal") && st.requires.includes("responsive"))) err(`${s.id}.${st.id}: breathing exercise without breathing_normal + responsive (INV-027)`);
+    if (st.id === "cold_water" && !(st.requires.includes("breathing_normal") && st.requires.includes("responsive"))) err(`${s.id}.${st.id}: cold water without breathing_normal + responsive (INV-027)`);
+  }
+
+  /* ── Continuity (v0.2): journal kinds documented, scopes consistent, retention within law, lexicon present ── */
+  {
+    const c = d.continuity;
+    const seenK = new Set<string>();
+    for (const k of c.journalKinds) {
+      if (!re("journalKind").test(k.id)) err(`journalKind "${k.id}" violates ${conv["journalKind"]}`);
+      if (seenK.has(k.id)) err(`duplicate journalKind ${k.id}`);
+      seenK.add(k.id);
+      if (!k.doc) err(`journalKind ${k.id} has no doc`);
+    }
+    const scopes = new Set([...Object.values(c.share.audiences).flat(), ...c.share.optionalScopes]);
+    for (const sc of scopes) if (!re("accessScope").test(sc)) err(`accessScope "${sc}" violates ${conv["accessScope"]}`);
+    for (const [aud, list] of Object.entries(c.share.audiences)) for (const sc of list) if (c.share.optionalScopes.includes(sc)) err(`audience ${aud} lists optional scope ${sc} as default (must be chosen explicitly, D16)`);
+    if (!c.share.expiryHours.includes(c.retention.shareCapsuleDefaultHours)) err(`continuity.retention.shareCapsuleDefaultHours not in share.expiryHours`);
+    if (Math.max(...c.share.expiryHours) > c.retention.shareCapsuleMaxHours) err(`share.expiryHours exceeds shareCapsuleMaxHours`);
+    if (c.retention.journalDays > 180 || c.retention.snapshotDays > 180) err(`continuity retention beyond 180 days`);
+    if (c.buckets.RECENT >= c.buckets.RELEVANT || c.buckets.RELEVANT >= c.buckets.OLD || c.buckets.OLD > c.retention.journalDays) err(`continuity.buckets must be RECENT < RELEVANT < OLD ≤ journalDays`);
+    if (c.evidence.minBetterForHelpful > c.evidence.minAttempted) err(`evidence.minBetterForHelpful > minAttempted (never satisfiable)`);
+    if (c.forbiddenInference.terms.length < 5) err(`continuity.forbiddenInference needs a real lexicon`);
+    for (const [code, loc] of Object.entries(LOCALES)) {
+      const ct = loc.continuity;
+      if (!ct) { err(`${code}: missing continuity templates`); continue; }
+      for (const k of REG.strategy.keys()) if (!ct.strategyPhrases[k]) err(`${code}: continuity.strategyPhrases missing ${k}`);
+      for (const h of d.hardRules) if (!ct.reasonPhrases[h.reason]) err(`${code}: continuity.reasonPhrases missing ${h.reason}`);
+      const norm = (x: string) => x.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+      const dump = norm(JSON.stringify(ct));
+      for (const term of c.forbiddenInference.terms) if (dump.includes(norm(term))) err(`${code}: continuity templates contain forbidden term "${term}" (INV-023)`);
+    }
   }
 
   if (d.meta.status !== "approved" && release) err(`meta.status is "${d.meta.status}" — release requires "approved"`);

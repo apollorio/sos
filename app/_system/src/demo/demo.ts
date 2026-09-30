@@ -5,6 +5,7 @@
  *   · a "brain" panel: band, commanding rule, VOI class of every question, signals with age, commitments
  *   · autoplay of the golden scenarios
  */
+import { REGISTRY_HASH } from "../generated/registry.gen";
 import { REG } from "../core/registry";
 import { LOCALES } from "../ui/locale";
 import { renderStep } from "../ui/render";
@@ -16,6 +17,16 @@ import { buildFacts } from "../core/logic/facts";
 import { decideCore } from "../core/planner/decide";
 import { askable, rankQuestions } from "../core/planner/voi";
 import { SCENARIOS, type Step } from "../../tests/scenarios/scenarios";
+import type { Journal, JournalEvent } from "../core/journal/journal";
+import { memoryVaultStore } from "../runtime/continuity/journal-store";
+import { deriveSnapshot } from "../core/continuity/snapshot";
+import { strategyPriors } from "../core/continuity/priors";
+import { purgeExpired } from "../core/continuity/retention";
+import type { ContinuitySnapshot, StrategyPriors } from "../core/continuity/types";
+import { buildCrisisSummary, renderSummary, findForbiddenTerms } from "../core/handoff/summary";
+import { newCapsule, capsuleLink, parseCapsuleLink } from "../core/handoff/capsule";
+import { sealCapsule, openCapsule, newCapsuleId } from "../runtime/handoff/capsule-crypto";
+import { synthHistory } from "./history-fixture";
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T;
 const locale = LOCALES["pt-BR"]!;
@@ -49,6 +60,50 @@ function toast(msg: string) {
   (el as unknown as { _t?: number })._t = window.setTimeout(() => (el.hidden = true), 3200);
 }
 
+/** Plain words for what was recorded (one value can come from several buttons, e.g. «Bala + álcool» and «Só bala»). */
+const SAID: Record<string, Record<string, string>> = {
+  substanceClass: { stim: "estimulante (bala, MD ou pó)", downer: "depressor (G, calmante, remédio ou álcool)", psychedelic: "psicodélico / dissociativo", none: "nada" },
+  substance: { md: "bala / MD", coke: "pó (cocaína)", ghb: "G (GHB/GBL)", downer_pill: "calmante, remédio ou opioide", alcohol: "só álcool", lsd: "ácido ou cogumelo", ket: "ket", cannabis: "erva", inhalant: "lança ou loló" },
+  alcohol: { yes: "sim", no: "não" },
+  sexEnhancer: { pill: "azulzinho", poppers: "poppers", both: "azulzinho + poppers", none: "nada disso" },
+  discomfort: { nose: "nariz ardendo", throat: "garganta ardendo", heat: "muito calor", nausea: "enjoo", jaw: "mandíbula travando" },
+};
+function saidAs(signal: string, value: unknown): string {
+  if (value === "unknown" || value === undefined) return "<span class='dim'>ainda não sabido</span>";
+  return `<b>${esc(SAID[signal]?.[String(value)] ?? String(value))}</b>`;
+}
+
+function pistaRows(s: StepResult["state"], facts: Record<string, unknown>): [string, string, string][] {
+  const phrase = (k: string) => locale.continuity?.strategyPhrases?.[k] ?? k;
+  const shown = (skill: string) => REG.data.skills.find((x) => x.id === skill)!.strategies
+    .filter((st) => (s.strategies[`${skill}.${st.id}`]?.shows ?? 0) > 0)
+    .map((st) => `${esc(phrase(`${skill}.${st.id}`))}${s.strategies[`${skill}.${st.id}`]?.doneAt != null ? " ✔" : ""}`);
+  const mixing = Number(facts["risk.mixing"] ?? 0);
+  const mixNote = ["nenhuma mistura conhecida", "", "mistura que pesa (faixa P2 no mínimo)", "mistura perigosa (faixa P1)", ""][mixing] ?? "";
+  const next = ["Q_SUBSTANCE", "Q_WHICH_STIM", "Q_WHICH_DOWNER", "Q_WHICH_PSY", "Q_ALCOHOL", "Q_SEX", "Q_BODY"].find((id) => {
+    const q = REG.question.get(id)!;
+    return s.band ? !!askable(q, s, facts as never, s.band.current, s.lastAt, REG) : false;
+  });
+  return [
+    ["Usou", saidAs("substanceClass", facts["signal.substanceClass"]), "O que você usou? (1 toque)"],
+    ["Qual", saidAs("substance", facts["signal.substance"]), "Qual deles? Teve álcool junto? (mesmo toque responde o álcool)"],
+    ["Álcool junto", saidAs("alcohol", facts["signal.alcohol"]), facts["signal.alcohol"] === "no" ? "escolheu «Só …» quando havia «+ álcool»" : ""],
+    ["Pra transar", saidAs("sexEnhancer", facts["signal.sexEnhancer"]), "azulzinho / poppers"],
+    ["No corpo", saidAs("discomfort", facts["signal.discomfort"]), "pergunta ou menu «Cuidar do corpo»"],
+    ["Mistura", `<b>${mixing}</b>`, mixNote],
+    ["Avisos mostrados", shown("combination").join(" · ") || "<span class='dim'>nenhum</span>", "aparecem assim que a mistura é conhecida"],
+    ["Cuidados dados", shown("care").join(" · ") || "<span class='dim'>nenhum</span>", "alternam com as técnicas, sem fim"],
+    ["Próxima pergunta da pista", next ? `<code>${next}</code>` : "<span class='dim'>nenhuma agora</span>", "uma pergunta no máximo entre duas ajudas, nunca antes da 1ª ajuda"],
+    ["Ritmo das respostas", `<code>${esc(String(facts["pace"]))}</code>`, "derivado; lento = 90 s ou mais por resposta, 2 vezes"],
+  ];
+}
+
+/** Which build is this? A stale copy on disk is the most common reason a page "does not match" (audit 013). */
+function stampBuild() {
+  const el = document.getElementById("build-stamp");
+  if (el) el.textContent = `versão do motor: registro ${REGISTRY_HASH} · ${REG.data.skills.length} habilidades · ${REG.data.questions.length} perguntas · ${REG.data.chips.length} botões de menu`;
+}
+
 function renderBrain(r: StepResult) {
   const s = r.state;
   const now = s.lastAt;
@@ -65,6 +120,9 @@ function renderBrain(r: StepResult) {
   $("b-bandrule").textContent = why.commander ? "hard rule · first match wins" : `${why.bandRule ?? ""}${why.heldByHysteresis ? " · held by hysteresis" : ""}`;
   $("b-skill").textContent = `${r.output.card.skill}${r.output.card.strategy ? "." + r.output.card.strategy : ""}`;
   $("b-because").innerHTML = why.because.map((l) => `<li><code>${esc(l.path)}</code> <span class="op">${esc(l.op)}</span> ${l.expected === null ? "" : `<code>${esc(JSON.stringify(l.expected))}</code>`}</li>`).join("") || "<li>—</li>";
+
+  // Pista (audit 012): the follow-up of what was used, in the words the person tapped.
+  $("b-pista").innerHTML = pistaRows(s, facts).map(([k, v, note]) => `<tr><th scope="row">${esc(k)}</th><td>${v}</td><td class="dim">${esc(note)}</td></tr>`).join("");
 
   // Risk vector
   $("b-risk").innerHTML = Object.entries(risk).map(([d, v]) =>
@@ -105,9 +163,88 @@ function renderBrain(r: StepResult) {
     `<li><span class="t num">t+${fmt(h.at - t0)}</span><span class="pill" data-band="${h.log.band}">${h.log.band}</span><span class="in">${esc(h.log.input.replace(/\s\[.*\]$/, ""))}</span><span class="out"><code>${esc(h.log.why.commander ?? h.log.why.policyRule ?? "")}</code> → ${esc(h.title.replace("CARD_", ""))}</span></li>`).join("");
 }
 
+/* ───────────────────────── Continuity plane (v0.2) · separate, never controls P0 ───────────────────────── */
+const vault = memoryVaultStore();
+let consent = false;
+let snapshot: ContinuitySnapshot | null = null;
+let priors: StrategyPriors = {};
+let currentJournal: Journal | null = null;
+const DAY = 86_400_000;
+
+async function refreshContinuity() {
+  const all = purgeExpired(await vault.readAll(), clock(), REG);
+  snapshot = deriveSnapshot(all, clock(), REG);
+  priors = consent ? strategyPriors(snapshot, REG) : {};
+  renderContinuity();
+}
+
+function renderContinuity() {
+  const sn = snapshot;
+  $("k-snap").innerHTML = sn
+    ? [["episódios (180 d)", sn.episodeCount], ["último episódio", sn.lastEpisodeAt ? `${Math.round((clock() - sn.lastEpisodeAt) / DAY)} d atrás` : "—"], ["chegaram a P0", sn.previousP0Count], ["sozinha", sn.supportPatterns.episodesAlone], ["melhorou após apoio", sn.supportPatterns.improvedAfterSupport], ["recusou contato", sn.supportPatterns.declinedContact], ["consentimento", consent ? "ligado" : "desligado (priors vazios)"]]
+        .map(([k, v]) => `<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")
+    : "<dt>—</dt><dd>cofre vazio</dd>";
+  $("k-strat").innerHTML = sn && sn.strategyHistory.length
+    ? sn.strategyHistory.map((h) => `<tr><td><code>${esc(h.strategy)}</code></td><td class="num">${h.attempted}×</td><td class="num">↑${h.outcome.better} =${h.outcome.same} ↓${h.outcome.worse}</td><td>${esc(h.bucket ?? "")}</td><td>${priors[h.strategy] ? `<span class="prior" data-p="${priors[h.strategy]}">${priors[h.strategy]}</span>` : "<span class='dim'>sem evidência</span>"}</td></tr>`).join("")
+    : "<tr><td class='dim'>nenhuma estratégia registrada</td></tr>";
+  const evs = currentJournal?.events.slice(-12).reverse() ?? [];
+  $("k-journal").innerHTML = evs.length
+    ? evs.map((e: JournalEvent) => `<tr><td class="num">${e.clientSeq}</td><td><code>${esc(e.kind)}</code></td><td class="dim">${esc(e.provenance)}</td><td class="dim">${esc(Object.entries(e.payload).filter(([, v]) => v !== null && v !== false).map(([k, v]) => `${k}=${String(v)}`).join(" "))}</td></tr>`).join("")
+    : "<tr><td class='dim'>—</td></tr>";
+}
+
+async function allEventsForSummary(): Promise<JournalEvent[]> {
+  const stored = await vault.readAll();
+  const cur = currentJournal?.events ?? [];
+  const ids = new Set(stored.map((e) => e.eventId));
+  return [...stored, ...cur.filter((e) => !ids.has(e.eventId))];
+}
+
+let lastSummaryText = "";
+async function showSummary(audience: "trusted_person" | "health_professional") {
+  if (!currentJournal) return;
+  const events = await allEventsForSummary();
+  const s = buildCrisisSummary(events, currentJournal.episodeId, { audience, snapshot: consent ? snapshot : null, now: clock() }, REG);
+  lastSummaryText = renderSummary(s, locale.continuity);
+  const bad = findForbiddenTerms(lastSummaryText, REG);
+  $("k-summary-title").textContent = audience === "trusted_person" ? "Resumo para quem está ajudando (escopo: episódio atual)" : `Resumo para profissional de saúde (escopos: ${s.scopes.join(", ")})${bad.length ? " · ✖ termo proibido: " + bad.join(", ") : " · ✔ sem vocabulário diagnóstico"}`;
+  $("k-summary").textContent = lastSummaryText;
+  $("k-link").textContent = "";
+  $("k-summary-wrap").hidden = false;
+}
+
+$("k-consent").addEventListener("click", async () => {
+  consent = !consent;
+  const b = $("k-consent");
+  b.setAttribute("aria-pressed", String(consent));
+  b.textContent = `Lembrar por 180 dias: ${consent ? "ligado" : "desligado"}`;
+  await refreshContinuity();
+  toast(consent ? "Continuidade ligada: o histórico pode reordenar estratégias elegíveis. Nunca muda P0, banda nem fatos (L14)." : "Continuidade desligada: o app segue igual ao v0.1.");
+});
+$("k-seed").addEventListener("click", async () => {
+  const now = clock();
+  await vault.append([...synthHistory("grounding", "five_senses", 3, "better", now - 2 * DAY, "S"), ...synthHistory("reduce_stimulation", "relocate", 2, "worse", now - 40 * DAY, "R")]);
+  if (!consent) $("k-consent").click(); else await refreshContinuity();
+  toast("5 episódios simulados: 'cinco sentidos' ajudou 3×. Rode a história self-club-panic-loud e veja o grounding mudar de ordem.");
+});
+$("k-clear").addEventListener("click", async () => { await vault.wipe(); await refreshContinuity(); toast("Cofre apagado (Apagar cofre = direito de eliminação, LGPD)."); });
+$("k-friend").addEventListener("click", () => void showSummary("trusted_person"));
+$("k-pro").addEventListener("click", () => void showSummary("health_professional"));
+$("k-capsule").addEventListener("click", async () => {
+  if (!lastSummaryText) await showSummary("trusted_person");
+  const id = newCapsuleId();
+  const policy = newCapsule({ id, now: clock(), audience: "trusted_person" }, REG);
+  const { sealed, keyB64u } = await sealCapsule(lastSummaryText);
+  const link = capsuleLink("https://sos.apollo.rio.br", id, keyB64u);
+  const parsed = parseCapsuleLink(link)!;
+  const back = await openCapsule(sealed, parsed.key);
+  $("k-link").textContent = `${link}\n→ servidor guarda ${sealed.ct.length} chars de cifra, expira em ${Math.round((policy.expiresAt - policy.createdAt) / 3_600_000)} h, máx. ${policy.maxViews} aberturas · chave só no #fragment · ${back === lastSummaryText ? "✔ aberta localmente com a chave" : "✖ falha"}`;
+});
+
 let loop: EngineLoop;
 
 async function boot() {
+  stampBuild();
   const phone = $("phone-screen");
   loop = new EngineLoop(memStore(), (r) => {
     renderStep(phone, r, locale, REG, {
@@ -117,7 +254,18 @@ async function boot() {
     });
     renderBrain(r);
   }, clock);
+  // Continuity hooks: strictly after render (INV-019). Priors only with consent (L20).
+  loop.hooks = {
+    priors: () => (consent ? priors : undefined),
+    onJournal: async (evs, j) => {
+      currentJournal = j;
+      if (consent) await vault.append(evs);
+      if (evs.some((e) => e.kind === "EPISODE_ENDED" || e.kind === "STRATEGY_OUTCOME")) await refreshContinuity();
+      else renderContinuity();
+    },
+  };
   await loop.start();
+  await refreshContinuity();
 }
 
 // Neutralize every handoff: this is a simulator.
@@ -155,6 +303,9 @@ $("c-reset").addEventListener("click", async () => { await reset(); });
 
 async function reset() {
   offset = 0;
+  currentJournal = null;
+  lastSummaryText = "";
+  $("k-summary-wrap").hidden = true;
   t0 = clock();
   history.length = 0;
   offBtn.setAttribute("aria-pressed", "false");

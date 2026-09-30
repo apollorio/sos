@@ -20,6 +20,7 @@ export type DomainEvent =
   | { type: "SIGNALS_REPORTED"; set: Record<string, Primitive>; source: Source; questionId?: string; unknownAnswer?: boolean; triggerId?: string }
   | { type: "SIGNALS_EXPIRED"; signals: string[] }
   | { type: "STRATEGY_OUTCOME"; skill: string; strategy: string; outcome: "done" | "failed" | "declined" }
+  | { type: "STRATEGY_REQUESTED"; skill: string; strategy: string }
   | { type: "COMMITMENT_CREATED"; kind: string }
   | { type: "COMMITMENT_RESOLVED"; kind: string; outcome: "done" | "snooze" | "cancel" }
   | { type: "HANDOFF_OPENED"; channel: Channel; target: string }

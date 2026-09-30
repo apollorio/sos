@@ -1,0 +1,1191 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="color-scheme" content="light dark">
+<title>SOS Apollo · Revisão clínica</title>
+<style>
+:root{--bg:#f6f7f9;--fg:#0b0d10;--muted:#4a5561;--card:#fff;--line:#dde3ea;--accent:#0a5cb8;--p0:#c4000f;--ok:#1a7f37;--mid:#8a5a00;--soft:#eef2f6}
+@media (prefers-color-scheme:dark){:root{--bg:#0b0d10;--fg:#f4f6f8;--muted:#9aa4ae;--card:#151a20;--line:#26303a;--accent:#64b5ff;--p0:#ff5a4f;--ok:#3ddc6e;--mid:#ffcc4d;--soft:#1f2730}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--fg);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:900px;margin:0 auto;padding:16px 16px 120px}
+a{color:var(--accent)}
+.top{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:baseline;justify-content:space-between;padding:8px 0 4px}
+.top a{font-size:15px}
+h1{font-size:28px;line-height:1.2;margin:8px 0}
+h2{font-size:21px;line-height:1.3;margin:28px 0 8px}
+h3{font-size:17px;margin:0}
+.lead{color:var(--muted);margin:0 0 16px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:12px 0}
+.safety{border-left:6px solid var(--p0)}
+.safety strong{color:var(--p0)}
+.grid{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr))}
+.tile{display:block;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;color:inherit;text-decoration:none}
+.tile strong{display:block;font-size:18px;margin-bottom:4px;color:var(--accent)}
+.tile span{color:var(--muted);font-size:15px}
+.meta{color:var(--muted);font-size:13px;word-break:break-all}
+.badge{display:inline-block;font-size:12px;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--muted);margin-left:6px;vertical-align:middle}
+.badge.p0{background:var(--p0);color:#fff;margin-left:0}
+.item{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:12px 0}
+.item.done{border-left:6px solid var(--ok)}
+.item.changed{border-left:6px solid var(--mid)}
+dl{display:grid;grid-template-columns:minmax(120px,190px) 1fr;gap:6px 14px;margin:12px 0}
+dt{color:var(--muted);font-size:14px}
+dd{margin:0}
+@media (max-width:560px){dl{grid-template-columns:1fr}dt{margin-top:6px}}
+fieldset{border:0;padding:0;margin:10px 0 0;display:flex;flex-wrap:wrap;gap:8px}
+legend{font-size:14px;color:var(--muted);margin-bottom:4px;width:100%}
+label.opt{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;cursor:pointer;background:var(--bg)}
+label.opt:has(input:checked){border-color:var(--accent);outline:2px solid var(--accent)}
+textarea,input[type=text],select{width:100%;font:inherit;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:8px 10px}
+textarea{min-height:64px;margin-top:10px}
+.who{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+.who label{font-size:14px;color:var(--muted)}
+ol.steps{padding-left:22px}
+ol.steps li{margin:10px 0}
+.see{display:block;color:var(--muted);font-size:15px;margin-top:2px}
+.see q{color:var(--fg);quotes:none}
+.warn{display:block;color:var(--p0);font-size:14px;margin-top:2px}
+.bar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);padding:8px 16px calc(8px + env(safe-area-inset-bottom))}
+.bar .in{max-width:900px;margin:0 auto;display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center}
+.bar .grow{flex:1 1 100%;font-size:13px;color:var(--muted)}
+@media (min-width:640px){.bar .grow{flex-basis:200px}}
+.bar button{padding:6px 12px;font-size:15px}
+button{font:inherit;border-radius:10px;border:1px solid var(--line);background:var(--soft);color:var(--fg);padding:8px 14px;cursor:pointer}
+button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+nav.toc{display:flex;flex-wrap:wrap;gap:6px}
+nav.toc a{font-size:14px;background:var(--card);border:1px solid var(--line);border-radius:999px;padding:4px 10px;text-decoration:none}
+.note{font-size:14px;color:var(--muted)}
+.hidden{display:none!important}
+@media print{.bar,.no-print,nav.toc{display:none!important}.wrap{padding-bottom:0}.item{break-inside:avoid}}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="top no-print"><a href="./">← Laboratório</a><span class="meta">Revisão clínica</span></div>
+<h1>Revisão clínica</h1>
+<p class="lead">Cada item abaixo vem direto do motor do app: é exatamente o que ele decide e mostra. Dê um parecer por item. Os itens «opcionais» são só editoriais.</p>
+<div class="box safety" role="note">
+  <p><strong>Versão de teste.</strong> Os textos clínicos ainda não foram aprovados por profissionais de saúde.</p>
+  <p>Em uma emergência real, ligue <a href="tel:192">192 (SAMU)</a>. Para apoio emocional, <a href="tel:188">188 (CVV)</a>.</p>
+  <p>Durante os testes, o app pode abrir o discador ou o WhatsApp. Cancele: não complete ligações nem envie mensagens.</p>
+</div>
+<div class="box">
+  <p>Os itens marcados como obrigatórios precisam de parecer para liberar a versão final. A liberação também exige o registro da aprovação em <span class="meta">docs/CLINICAL-REVIEW.md</span>, com nome, registro profissional e o hash do registro abaixo.</p>
+  <p class="note">Suas respostas ficam salvas só neste navegador. Ao terminar, baixe o arquivo e envie para a equipe.</p>
+  <div class="who">
+    <div><label for="r-name">Nome</label><input type="text" id="r-name" autocomplete="name"></div>
+    <div><label for="r-reg">Registro profissional (CRM, COREN, CRP…)</label><input type="text" id="r-reg"></div>
+    <div><label for="r-spec">Especialidade</label><input type="text" id="r-spec"></div>
+  </div>
+</div>
+<nav class="toc no-print" aria-label="Seções"><a href="#s-hard">Regras de emergência</a><a href="#s-p0">Telas de emergência</a><a href="#s-triage">Perguntas de triagem</a><a href="#s-guidance">Orientações, exercícios e contraindicações</a><a href="#s-risk">Como o app estima o risco</a><a href="#s-bands">Faixas de gravidade</a><a href="#s-text">Frases que acionam o app (texto livre)</a><a href="#s-other">Outros textos (editorial, opcional)</a></nav>
+<p class="no-print"><label class="opt"><input type="checkbox" id="only-pending"> Mostrar só itens sem parecer</label></p>
+
+<section id="s-hard">
+  <h2>Regras de emergência: «Ligue 192» antes de qualquer pergunta</h2>
+  <p class="lead">A condição justifica mostrar «Ligue 192» primeiro? A ordem está certa? A regra de número menor comanda quando várias valem ao mesmo tempo.</p>
+  <article class="item" data-id="HR-001" data-hash="8bf4a3d7f1" data-optional="0">
+    <h3>HR-001 · unresponsive <span class="badge">revisão obrigatória</span></h3>
+    <dl><dt>Condição</dt><dd>responde = unresponsive («Não responde», texto TT-002)</dd><dt>Mantida até a pessoa corrigir</dt><dd>sim (não some com o tempo)</dd><dt>Mensagem</dt><dd>A pessoa não responde. Ligue 192 e fique com ela.</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-HR-001" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-HR-001" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-HR-001" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-HR-001" aria-label="Comentário ou texto sugerido para HR-001" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="HR-002" data-hash="41264add90" data-optional="0">
+    <h3>HR-002 · severe_breathing_problem <span class="badge">revisão obrigatória</span></h3>
+    <dl><dt>Condição</dt><dd>respiração = severely_abnormal («Quase ou não respira», «Muito difícil respirar», texto TT-001)</dd><dt>Mantida até a pessoa corrigir</dt><dd>sim (não some com o tempo)</dd><dt>Mensagem · a própria pessoa</dt><dd>Falta de ar forte é emergência. Ligue 192 agora.</dd><dt>Mensagem · quem ajuda</dt><dd>Respiração muito ruim é emergência. Ligue 192 e fique com a pessoa.</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-HR-002" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-HR-002" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-HR-002" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-HR-002" aria-label="Comentário ou texto sugerido para HR-002" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="HR-003" data-hash="288a7e75b0" data-optional="0">
+    <h3>HR-003 · seizure <span class="badge">revisão obrigatória</span></h3>
+    <dl><dt>Condição</dt><dd>convulsão = sim («Convulsão (se debatendo)», texto TT-005)</dd><dt>Mantida até a pessoa corrigir</dt><dd>sim (não some com o tempo)</dd><dt>Mensagem</dt><dd>Convulsão é emergência. Ligue 192. Afaste objetos e proteja a cabeça.</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-HR-003" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-HR-003" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-HR-003" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-HR-003" aria-label="Comentário ou texto sugerido para HR-003" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="HR-004" data-hash="ee8a9c6c2c" data-optional="0">
+    <h3>HR-004 · acute_chest_problem <span class="badge">revisão obrigatória</span></h3>
+    <dl><dt>Condição</dt><dd>dor no peito = sim («Dor forte no peito», texto TT-004)</dd><dt>Mantida até a pessoa corrigir</dt><dd>sim (não some com o tempo)</dd><dt>Mensagem · a própria pessoa</dt><dd>Dor forte no peito é emergência. Ligue 192 e fique sentado(a).</dd><dt>Mensagem · quem ajuda</dt><dd>Dor forte no peito é emergência. Ligue 192 e deixe a pessoa sentada.</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-HR-004" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-HR-004" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-HR-004" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-HR-004" aria-label="Comentário ou texto sugerido para HR-004" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="HR-005" data-hash="8f360d2fa2" data-optional="0">
+    <h3>HR-005 · physically_unsafe <span class="badge">revisão obrigatória</span></h3>
+    <dl><dt>Condição</dt><dd>em perigo físico = sim (texto TT-007)</dd><dt>Mantida até a pessoa corrigir</dt><dd>sim (não some com o tempo)</dd><dt>Mensagem</dt><dd>Vá pra perto de outras pessoas se puder. Ligue 192. Em caso de violência: 190.</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-HR-005" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-HR-005" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-HR-005" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-HR-005" aria-label="Comentário ou texto sugerido para HR-005" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="HR-006" data-hash="8906be9225" data-optional="0">
+    <h3>HR-006 · fainted_reported <span class="badge">proposta: precisa de aprovação</span></h3>
+    <dl><dt>Condição</dt><dd>desmaio relatado = sim (texto TT-003)</dd><dt>Mantida até a pessoa corrigir</dt><dd>sim (não some com o tempo)</dd><dt>Mensagem</dt><dd>Desmaio precisa de avaliação. Ligue 192.</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-HR-006" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-HR-006" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-HR-006" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-HR-006" aria-label="Comentário ou texto sugerido para HR-006" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="HR-007" data-hash="772fd8a3cd" data-optional="0">
+    <h3>HR-007 · self_harm_intent <span class="badge">proposta: precisa de aprovação</span></h3>
+    <dl><dt>Condição</dt><dd>intenção de se ferir = sim (texto TT-006)</dd><dt>Mantida até a pessoa corrigir</dt><dd>sim (não some com o tempo)</dd><dt>Mensagem</dt><dd>Se houver risco agora, ligue 192.</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-HR-007" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-HR-007" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-HR-007" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-HR-007" aria-label="Comentário ou texto sugerido para HR-007" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="HR-008" data-hash="b1fd1f503e" data-optional="0">
+    <h3>HR-008 · medical_risk_then_silence <span class="badge">proposta: precisa de aprovação</span></h3>
+    <dl><dt>Condição</dt><dd>risco médico ≥ 3 e janelas sem resposta ≥ 2</dd><dt>Mantida até a pessoa corrigir</dt><dd>não</dd><dt>Mensagem</dt><dd>Sem resposta. Se a pessoa não responder, ligue 192.</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-HR-008" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-HR-008" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-HR-008" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-HR-008" aria-label="Comentário ou texto sugerido para HR-008" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="HR-009" data-hash="a1cf7e46b0" data-optional="0">
+    <h3>HR-009 · user_called_emergency <span class="badge">revisão obrigatória</span></h3>
+    <dl><dt>Condição</dt><dd>emergência já acionada = sim</dd><dt>Mantida até a pessoa corrigir</dt><dd>sim (não some com o tempo)</dd><dt>Mensagem</dt><dd>Você escolheu ligar. Faça isso agora: 192.</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-HR-009" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-HR-009" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-HR-009" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-HR-009" aria-label="Comentário ou texto sugerido para HR-009" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article>
+</section>
+<section id="s-p0">
+  <h2>Telas de emergência</h2>
+  <p class="lead">A orientação é correta e segura para uma pessoa leiga, em até 200 caracteres?</p>
+  <article class="item" data-id="CARD_P0_CALL" data-hash="b175a111ba" data-optional="0">
+    <h3>CARD_P0_CALL <span class="badge">rascunho</span></h3>
+    <dl><dt>Título</dt><dd>Ligue 192 agora.</dd><dt>Texto</dt><dd>Pode ser uma emergência. O SAMU é grátis e atende 24h.</dd><dt>Texto · unresponsive</dt><dd>A pessoa não responde. Ligue 192 e fique com ela.</dd><dt>Texto · breathing · a própria pessoa</dt><dd>Falta de ar forte é emergência. Ligue 192 agora.</dd><dt>Texto · breathing · quem ajuda</dt><dd>Respiração muito ruim é emergência. Ligue 192 e fique com a pessoa.</dd><dt>Texto · seizure</dt><dd>Convulsão é emergência. Ligue 192. Afaste objetos e proteja a cabeça.</dd><dt>Texto · chest · a própria pessoa</dt><dd>Dor forte no peito é emergência. Ligue 192 e fique sentado(a).</dd><dt>Texto · chest · quem ajuda</dt><dd>Dor forte no peito é emergência. Ligue 192 e deixe a pessoa sentada.</dd><dt>Texto · unsafe</dt><dd>Vá pra perto de outras pessoas se puder. Ligue 192. Em caso de violência: 190.</dd><dt>Texto · fainted</dt><dd>Desmaio precisa de avaliação. Ligue 192.</dd><dt>Texto · self_harm</dt><dd>Se houver risco agora, ligue 192.</dd><dt>Texto · silent_after_risk</dt><dd>Sem resposta. Se a pessoa não responder, ligue 192.</dd><dt>Texto · user_initiated</dt><dd>Você escolheu ligar. Faça isso agora: 192.</dd><dt>Nota</dt><dd>Se der, deixe à mão: o que foi usado, quanto e quando.</dd><dt>Botões</dt><dd>«Ligar 192»  «Já liguei»  «Me enganei»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_P0_CALL" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_P0_CALL" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_P0_CALL" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_P0_CALL" aria-label="Comentário ou texto sugerido para CARD_P0_CALL" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_P0_CALL_CRISIS" data-hash="731084a0ea" data-optional="0">
+    <h3>CARD_P0_CALL_CRISIS <span class="badge">rascunho</span></h3>
+    <dl><dt>Título</dt><dd>Você não precisa passar por isso sozinho(a).</dd><dt>Texto</dt><dd>Se houver risco agora, ligue 192. Pra conversar agora, o CVV atende no 188, grátis, 24h.</dd><dt>Texto · self_harm · quem ajuda</dt><dd>Se houver risco agora, ligue 192. Não deixe a pessoa sozinha.</dd><dt>Botões</dt><dd>«Ligar 192»  «Ligar 188 (CVV)»  «Me enganei»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_P0_CALL_CRISIS" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_P0_CALL_CRISIS" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_P0_CALL_CRISIS" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_P0_CALL_CRISIS" aria-label="Comentário ou texto sugerido para CARD_P0_CALL_CRISIS" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_P0_WAITING" data-hash="80c5fbd32d" data-optional="0">
+    <h3>CARD_P0_WAITING <span class="badge">rascunho</span></h3>
+    <dl><dt>Título</dt><dd>Enquanto a ajuda chega:</dd><dt>Texto</dt><dd>Fique onde está, com a porta acessível. Siga o que o atendente do 192 disser.</dd><dt>Texto · unresponsive</dt><dd>Fique com a pessoa. Se ela respira, deite-a de lado. Nada pela boca. Siga o atendente.</dd><dt>Texto · breathing · a própria pessoa</dt><dd>Sente-se inclinado(a) pra frente. Afrouxe a roupa. Destranque a porta se puder.</dd><dt>Texto · breathing · quem ajuda</dt><dd>Fique com a pessoa. Se desmaiar e respirar, deite-a de lado. Siga o atendente.</dd><dt>Texto · seizure</dt><dd>Não segure os movimentos, nada na boca. Quando parar, deite a pessoa de lado.</dd><dt>Texto · chest · a própria pessoa</dt><dd>Fique sentado(a) e parado(a). Destranque a porta se estiver sozinho(a).</dd><dt>Texto · chest · quem ajuda</dt><dd>Deixe a pessoa sentada e parada. Não a deixe sozinha. Siga o atendente.</dd><dt>Texto · unsafe</dt><dd>Fique perto de outras pessoas ou de um segurança. Não volte ao lugar do perigo.</dd><dt>Texto · fainted</dt><dd>Fique sentado(a) ou deitado(a). Não fique sozinho(a) até a ajuda chegar.</dd><dt>Texto · self_harm · a própria pessoa</dt><dd>Fique perto de alguém. Afaste o que possa te machucar.</dd><dt>Texto · self_harm · quem ajuda</dt><dd>Não deixe a pessoa sozinha. Afaste o que possa machucar.</dd><dt>Texto · silent_after_risk</dt><dd>Se a pessoa não responder, fique com ela e siga o atendente do 192.</dd><dt>Texto · user_initiated</dt><dd>Fique onde está. Siga o que o atendente do 192 disser.</dd><dt>Botões</dt><dd>«A ajuda chegou»  «Ligar 192 de novo»  «Me enganei»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_P0_WAITING" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_P0_WAITING" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_P0_WAITING" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_P0_WAITING" aria-label="Comentário ou texto sugerido para CARD_P0_WAITING" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_P0_BYSTANDER" data-hash="22c7b9c166" data-optional="0">
+    <h3>CARD_P0_BYSTANDER <span class="badge">rascunho</span></h3>
+    <dl><dt>Título</dt><dd>ATENÇÃO: esta pessoa pode precisar de ajuda.</dd><dt>Texto</dt><dd>Se você está vendo esta tela, ligue 192 (SAMU) e fique com ela.</dd><dt>Texto · engaged</dt><dd>O 192 já foi chamado. Fique com esta pessoa até a ajuda chegar.</dd><dt>Botões</dt><dd>«Ligar 192»  «Tô aqui»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_P0_BYSTANDER" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_P0_BYSTANDER" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_P0_BYSTANDER" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_P0_BYSTANDER" aria-label="Comentário ou texto sugerido para CARD_P0_BYSTANDER" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_P0_HANDOVER" data-hash="196f0754df" data-optional="0">
+    <h3>CARD_P0_HANDOVER <span class="badge">rascunho</span></h3>
+    <dl><dt>Título</dt><dd>A ajuda chegou.</dd><dt>Texto</dt><dd>Siga as orientações da equipe. Você fez a coisa certa.</dd><dt>Botões</dt><dd>«Encerrar»  «Ligar 192»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_P0_HANDOVER" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_P0_HANDOVER" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_P0_HANDOVER" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_P0_HANDOVER" aria-label="Comentário ou texto sugerido para CARD_P0_HANDOVER" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article>
+</section>
+<section id="s-triage">
+  <h2>Perguntas de triagem</h2>
+  <p class="lead">Cada opção significa exatamente o que o app registra?</p>
+  <article class="item" data-id="CARD_Q_ACTOR" data-hash="5242c0393e" data-optional="0">
+    <h3>CARD_Q_ACTOR <span class="badge">rascunho</span></h3>
+    <dl><dt>Pergunta</dt><dd>Quem precisa de ajuda?</dd><dt>«Eu»</dt><dd>registra: quem está com o celular = self</dd><dt>«Outra pessoa»</dt><dd>registra: quem está com o celular = helper</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_Q_ACTOR" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_ACTOR" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_ACTOR" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_Q_ACTOR" aria-label="Comentário ou texto sugerido para CARD_Q_ACTOR" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_Q_RESPONDS" data-hash="5819f04a7d" data-optional="0">
+    <h3>CARD_Q_RESPONDS <span class="badge">rascunho</span></h3>
+    <dl><dt>Pergunta</dt><dd>A pessoa responde quando você chama ou toca nela?</dd><dt>«Responde normal»</dt><dd>registra: responde = responsive</dd><dt>«Pouco ou confusa»</dt><dd>registra: responde = impaired</dd><dt>«Não responde»</dt><dd>registra: responde = unresponsive</dd><dt>«Não sei»</dt><dd>registra: responde = unknown</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_Q_RESPONDS" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_RESPONDS" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_RESPONDS" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_Q_RESPONDS" aria-label="Comentário ou texto sugerido para CARD_Q_RESPONDS" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_Q_BREATHING" data-hash="8621729e09" data-optional="0">
+    <h3>CARD_Q_BREATHING <span class="badge">rascunho</span></h3>
+    <dl><dt>Pergunta</dt><dd>Como está a respiração dela?</dd><dt>«Normal»</dt><dd>registra: respiração = normal</dd><dt>«Estranha ou ofegante»</dt><dd>registra: respiração = abnormal</dd><dt>«Quase ou não respira»</dt><dd>registra: respiração = severely_abnormal</dd><dt>«Não sei»</dt><dd>registra: respiração = unknown</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_Q_BREATHING" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_BREATHING" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_BREATHING" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_Q_BREATHING" aria-label="Comentário ou texto sugerido para CARD_Q_BREATHING" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_Q_RED_FLAGS_SELF" data-hash="3308ba29ac" data-optional="0">
+    <h3>CARD_Q_RED_FLAGS_SELF <span class="badge">rascunho</span></h3>
+    <dl><dt>Pergunta</dt><dd>Agora, algum destes?</dd><dt>«Muito difícil respirar»</dt><dd>registra: respiração = severely_abnormal</dd><dt>«Dor forte no peito»</dt><dd>registra: dor no peito = yes</dd><dt>«Respiro bem, sem dor no peito»</dt><dd>registra: respiração = normal, dor no peito = no</dd><dt>«Não sei»</dt><dd>registra: respiração = unknown, dor no peito = unknown</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_Q_RED_FLAGS_SELF" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_RED_FLAGS_SELF" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_RED_FLAGS_SELF" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_Q_RED_FLAGS_SELF" aria-label="Comentário ou texto sugerido para CARD_Q_RED_FLAGS_SELF" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_Q_RED_FLAGS_HELPER" data-hash="abc622fe98" data-optional="0">
+    <h3>CARD_Q_RED_FLAGS_HELPER <span class="badge">rascunho</span></h3>
+    <dl><dt>Pergunta</dt><dd>Está acontecendo algum destes?</dd><dt>«Convulsão (se debatendo)»</dt><dd>registra: convulsão = yes</dd><dt>«Dor forte no peito»</dt><dd>registra: dor no peito = yes</dd><dt>«Nenhum desses»</dt><dd>registra: convulsão = no, dor no peito = no</dd><dt>«Não sei»</dt><dd>registra: convulsão = unknown, dor no peito = unknown</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_Q_RED_FLAGS_HELPER" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_RED_FLAGS_HELPER" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_RED_FLAGS_HELPER" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_Q_RED_FLAGS_HELPER" aria-label="Comentário ou texto sugerido para CARD_Q_RED_FLAGS_HELPER" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_Q_CLARITY" data-hash="352781ea94" data-optional="0">
+    <h3>CARD_Q_CLARITY <span class="badge">rascunho</span></h3>
+    <dl><dt>Pergunta</dt><dd>Você consegue pensar e responder normalmente?</dd><dt>«Consigo»</dt><dd>registra: responde = responsive</dd><dt>«Tá difícil, confuso»</dt><dd>registra: responde = impaired</dd><dt>«Não sei»</dt><dd>registra: responde = unknown</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_Q_CLARITY" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_CLARITY" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_CLARITY" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_Q_CLARITY" aria-label="Comentário ou texto sugerido para CARD_Q_CLARITY" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_Q_COMPANY" data-hash="0d8260e921" data-optional="0">
+    <h3>CARD_Q_COMPANY <span class="badge">rascunho</span></h3>
+    <dl><dt>Pergunta</dt><dd>Tem alguém de confiança aí com você?</dd><dt>«Sim, aqui comigo»</dt><dd>registra: companhia = with_someone</dd><dt>«Tô sozinho(a)»</dt><dd>registra: companhia = alone</dd><dt>«Não sei»</dt><dd>registra: companhia = unknown</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_Q_COMPANY" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_COMPANY" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_COMPANY" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_Q_COMPANY" aria-label="Comentário ou texto sugerido para CARD_Q_COMPANY" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_Q_ANXIETY_SELF" data-hash="b3094f3e99" data-optional="0">
+    <h3>CARD_Q_ANXIETY_SELF <span class="badge">rascunho</span></h3>
+    <dl><dt>Pergunta</dt><dd>Quanto de ansiedade agora?</dd><dt>«Pouca»</dt><dd>registra: ansiedade (0–4) = 1</dd><dt>«Bastante»</dt><dd>registra: ansiedade (0–4) = 3</dd><dt>«Muita, pânico»</dt><dd>registra: ansiedade (0–4) = 4</dd><dt>«Não sei»</dt><dd>registra: ansiedade (0–4) = unknown</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_Q_ANXIETY_SELF" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_ANXIETY_SELF" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_ANXIETY_SELF" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_Q_ANXIETY_SELF" aria-label="Comentário ou texto sugerido para CARD_Q_ANXIETY_SELF" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_Q_ANXIETY_HELPER" data-hash="e1dc0eaa29" data-optional="0">
+    <h3>CARD_Q_ANXIETY_HELPER <span class="badge">rascunho</span></h3>
+    <dl><dt>Pergunta</dt><dd>A pessoa parece ansiosa ou em pânico?</dd><dt>«Calma»</dt><dd>registra: ansiedade (0–4) = 1</dd><dt>«Ansiosa»</dt><dd>registra: ansiedade (0–4) = 3</dd><dt>«Em pânico»</dt><dd>registra: ansiedade (0–4) = 4</dd><dt>«Não sei»</dt><dd>registra: ansiedade (0–4) = unknown</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_Q_ANXIETY_HELPER" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_ANXIETY_HELPER" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_ANXIETY_HELPER" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_Q_ANXIETY_HELPER" aria-label="Comentário ou texto sugerido para CARD_Q_ANXIETY_HELPER" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_Q_NOISE" data-hash="e10e7ab007" data-optional="0">
+    <h3>CARD_Q_NOISE <span class="badge">rascunho</span></h3>
+    <dl><dt>Pergunta</dt><dd>Como está o lugar agora?</dd><dt>«Tranquilo»</dt><dd>registra: barulho = quiet</dd><dt>«Barulho médio»</dt><dd>registra: barulho = moderate</dd><dt>«Muito barulho ou luz»</dt><dd>registra: barulho = loud</dd><dt>«Não sei»</dt><dd>registra: barulho = unknown</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_Q_NOISE" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_NOISE" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_NOISE" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_Q_NOISE" aria-label="Comentário ou texto sugerido para CARD_Q_NOISE" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_Q_SUBSTANCE" data-hash="ea473c5cd9" data-optional="0">
+    <h3>CARD_Q_SUBSTANCE <span class="badge">rascunho</span></h3>
+    <dl><dt>Pergunta</dt><dd>O que você usou?</dd><dt>Pergunta · quem ajuda</dt><dd>O que a pessoa usou?</dd><dt>Texto</dt><dd>Sem julgamento.. só pra eu saber como cuidar de você. Fica só neste aparelho.</dd><dt>Texto · quem ajuda</dt><dd>Sem julgamento.. só pra eu saber como te ajudar a cuidar dela. Fica só neste aparelho.</dd><dt>Só pergunta quando</dt><dd>última ajuda mostrada ≠ none</dd><dt>«Bala, MD ou pó»</dt><dd>registra: substância = stim</dd><dt>«G, calmante ou remédio»</dt><dd>registra: substância = downer</dd><dt>«Só álcool»</dt><dd>registra: substância = downer, qual substância = alcohol, álcool junto = yes</dd><dt>«Ácido, cogumelo, ket, erva ou lança»</dt><dd>registra: substância = psychedelic</dd><dt>«Nada»</dt><dd>registra: substância = none</dd><dt>«Não sei / misturei muita coisa»</dt><dd>registra: substância = unknown</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_Q_SUBSTANCE" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_SUBSTANCE" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_SUBSTANCE" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_Q_SUBSTANCE" aria-label="Comentário ou texto sugerido para CARD_Q_SUBSTANCE" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_Q_WHICH_STIM" data-hash="a9f7de9214" data-optional="0">
+    <h3>CARD_Q_WHICH_STIM <span class="badge">rascunho</span></h3>
+    <dl><dt>Pergunta</dt><dd>Qual deles? Teve álcool junto?</dd><dt>Pergunta · quem ajuda</dt><dd>Qual deles? Teve álcool junto?</dd><dt>Texto</dt><dd>Um toque só responde as duas coisas.</dd><dt>Texto · quem ajuda</dt><dd>Um toque só responde as duas coisas.</dd><dt>Só pergunta quando</dt><dd>última ajuda mostrada ≠ none e substância = stim («Bala, MD ou pó»)</dd><dt>«Só bala / MD»</dt><dd>registra: qual substância = md, álcool junto = no</dd><dt>«Bala + álcool»</dt><dd>registra: qual substância = md, álcool junto = yes</dd><dt>«Só pó»</dt><dd>registra: qual substância = coke, álcool junto = no</dd><dt>«Pó + álcool»</dt><dd>registra: qual substância = coke, álcool junto = yes</dd><dt>«Outro / não sei»</dt><dd>registra: qual substância = unknown</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_Q_WHICH_STIM" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_WHICH_STIM" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_WHICH_STIM" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_Q_WHICH_STIM" aria-label="Comentário ou texto sugerido para CARD_Q_WHICH_STIM" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_Q_WHICH_DOWNER" data-hash="0b82ebdf01" data-optional="0">
+    <h3>CARD_Q_WHICH_DOWNER <span class="badge">rascunho</span></h3>
+    <dl><dt>Pergunta</dt><dd>Qual deles? Teve álcool junto?</dd><dt>Pergunta · quem ajuda</dt><dd>Qual deles? Teve álcool junto?</dd><dt>Texto</dt><dd>Um toque só responde as duas coisas.</dd><dt>Texto · quem ajuda</dt><dd>Um toque só responde as duas coisas.</dd><dt>Só pergunta quando</dt><dd>última ajuda mostrada ≠ none e substância = downer («G, calmante ou remédio», «Só álcool»)</dd><dt>«Só G»</dt><dd>registra: qual substância = ghb, álcool junto = no</dd><dt>«G + álcool»</dt><dd>registra: qual substância = ghb, álcool junto = yes</dd><dt>«Só calmante ou remédio»</dt><dd>registra: qual substância = downer_pill, álcool junto = no</dd><dt>«Calmante + álcool»</dt><dd>registra: qual substância = downer_pill, álcool junto = yes</dd><dt>«Outro / não sei»</dt><dd>registra: qual substância = unknown</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_Q_WHICH_DOWNER" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_WHICH_DOWNER" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_WHICH_DOWNER" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_Q_WHICH_DOWNER" aria-label="Comentário ou texto sugerido para CARD_Q_WHICH_DOWNER" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_Q_WHICH_PSY" data-hash="4ce94907f6" data-optional="0">
+    <h3>CARD_Q_WHICH_PSY <span class="badge">rascunho</span></h3>
+    <dl><dt>Pergunta</dt><dd>Qual deles?</dd><dt>Pergunta · quem ajuda</dt><dd>Qual deles?</dd><dt>Texto</dt><dd>Cada um pede um cuidado diferente. Sem julgamento.</dd><dt>Texto · quem ajuda</dt><dd>Cada um pede um cuidado diferente. Sem julgamento.</dd><dt>Só pergunta quando</dt><dd>última ajuda mostrada ≠ none e substância = psychedelic («Ácido, cogumelo, ket, erva ou lança»)</dd><dt>«Ácido, doce ou cogumelo»</dt><dd>registra: qual substância = lsd</dd><dt>«Ket»</dt><dd>registra: qual substância = ket</dd><dt>«Erva, maconha»</dt><dd>registra: qual substância = cannabis</dd><dt>«Lança, loló»</dt><dd>registra: qual substância = inhalant</dd><dt>«Outra coisa / não sei»</dt><dd>registra: qual substância = unknown</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_Q_WHICH_PSY" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_WHICH_PSY" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_WHICH_PSY" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_Q_WHICH_PSY" aria-label="Comentário ou texto sugerido para CARD_Q_WHICH_PSY" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_Q_ALCOHOL" data-hash="1bd772ca5c" data-optional="0">
+    <h3>CARD_Q_ALCOHOL <span class="badge">rascunho</span></h3>
+    <dl><dt>Pergunta</dt><dd>Rolou álcool junto?</dd><dt>Pergunta · quem ajuda</dt><dd>Ela bebeu álcool junto?</dd><dt>Texto</dt><dd>Misturar muda o cuidado. Só isso.</dd><dt>Texto · quem ajuda</dt><dd>Misturar muda o cuidado. Só isso.</dd><dt>Só pergunta quando</dt><dd>última ajuda mostrada ≠ none e substância ∈ {stim («Bala, MD ou pó»), downer («G, calmante ou remédio», «Só álcool»), psychedelic («Ácido, cogumelo, ket, erva ou lança»)} e qual substância ≠ alcohol («Só álcool») e (qual substância é conhecido ou já perguntou Q_WHICH_STIM = sim ou já perguntou Q_WHICH_DOWNER = sim ou já perguntou Q_WHICH_PSY = sim)</dd><dt>«Sim, teve álcool»</dt><dd>registra: álcool junto = yes</dd><dt>«Não»</dt><dd>registra: álcool junto = no</dd><dt>«Não sei»</dt><dd>registra: álcool junto = unknown</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_Q_ALCOHOL" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_ALCOHOL" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_ALCOHOL" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_Q_ALCOHOL" aria-label="Comentário ou texto sugerido para CARD_Q_ALCOHOL" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_Q_SEX" data-hash="16d639ffa5" data-optional="0">
+    <h3>CARD_Q_SEX <span class="badge">rascunho</span></h3>
+    <dl><dt>Pergunta</dt><dd>Tomou algo pra transar?</dd><dt>Pergunta · quem ajuda</dt><dd>Ela tomou algo pra transar?</dd><dt>Texto</dt><dd>Sem julgamento. Azulzinho (Viagra, Cialis) ou poppers mudam o que é perigoso misturar.</dd><dt>Texto · quem ajuda</dt><dd>Sem julgamento. Azulzinho (Viagra, Cialis) ou poppers mudam o que é perigoso misturar.</dd><dt>Só pergunta quando</dt><dd>última ajuda mostrada ≠ none e substância ∈ {stim («Bala, MD ou pó»), downer («G, calmante ou remédio», «Só álcool»), psychedelic («Ácido, cogumelo, ket, erva ou lança»)} e (álcool junto é conhecido ou já perguntou Q_ALCOHOL = sim)</dd><dt>«Azulzinho»</dt><dd>registra: azulzinho/poppers = pill</dd><dt>«Poppers»</dt><dd>registra: azulzinho/poppers = poppers</dd><dt>«Os dois»</dt><dd>registra: azulzinho/poppers = both</dd><dt>«Nada disso»</dt><dd>registra: azulzinho/poppers = none</dd><dt>«Não sei»</dt><dd>registra: azulzinho/poppers = unknown</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_Q_SEX" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_SEX" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_SEX" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_Q_SEX" aria-label="Comentário ou texto sugerido para CARD_Q_SEX" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_Q_BODY" data-hash="51b11c9ec4" data-optional="0">
+    <h3>CARD_Q_BODY <span class="badge">rascunho</span></h3>
+    <dl><dt>Pergunta</dt><dd>O que mais incomoda no corpo?</dd><dt>Pergunta · quem ajuda</dt><dd>O que mais incomoda nela agora?</dd><dt>Texto</dt><dd>Me diz uma coisa só. A gente cuida dela primeiro.</dd><dt>Texto · quem ajuda</dt><dd>Uma coisa só. A gente cuida disso primeiro.</dd><dt>Só pergunta quando</dt><dd>última ajuda mostrada ≠ none e substância ∈ {stim («Bala, MD ou pó»), downer («G, calmante ou remédio», «Só álcool»), psychedelic («Ácido, cogumelo, ket, erva ou lança»)}</dd><dt>«Nariz ardendo»</dt><dd>registra: o que incomoda no corpo = nose</dd><dt>«Garganta ardendo»</dt><dd>registra: o que incomoda no corpo = throat</dd><dt>«Muito calor»</dt><dd>registra: o que incomoda no corpo = heat</dd><dt>«Enjoo»</dt><dd>registra: o que incomoda no corpo = nausea</dd><dt>«Nada disso agora»</dt><dd>registra: o que incomoda no corpo = unknown</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_Q_BODY" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_BODY" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_Q_BODY" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_Q_BODY" aria-label="Comentário ou texto sugerido para CARD_Q_BODY" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article>
+</section>
+<section id="s-guidance">
+  <h2>Orientações, exercícios e contraindicações</h2>
+  <p class="lead">O texto é correto, não julgador e sem orientação de dose? As condições de quando aparece (e quando nunca aparece) bastam?</p>
+  <article class="item" data-id="CARD_RELOCATE" data-hash="1fbbde4075" data-optional="0">
+    <h3>CARD_RELOCATE <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia reduce_stimulation.relocate: quando barulho = loud («Muito barulho ou luz»); só se em perigo físico ≠ sim (texto TT-007) e responde ≠ impaired («Pouco ou confusa», «Tá difícil, confuso»)</dd><dt>Título</dt><dd>Menos estímulo agora.</dd><dt>Texto</dt><dd>Vai pra um lugar mais quieto e com menos luz. Me avisa quando chegar.</dd><dt>Texto · quem ajuda</dt><dd>Leve a pessoa pra um lugar mais quieto e com menos luz, sem pressa. Me avise quando chegarem.</dd><dt>Botões</dt><dd>«Cheguei»  «Não consigo»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_RELOCATE" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_RELOCATE" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_RELOCATE" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_RELOCATE" aria-label="Comentário ou texto sugerido para CARD_RELOCATE" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_IN_PLACE" data-hash="338430003f" data-optional="0">
+    <h3>CARD_IN_PLACE <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia reduce_stimulation.in_place: quando barulho ∈ {loud («Muito barulho ou luz»), moderate («Barulho médio»)}</dd><dt>Título</dt><dd>Dá pra baixar o volume daí mesmo.</dd><dt>Texto</dt><dd>Senta ou encosta numa parede. Cobre os ouvidos ou fecha os olhos por um minuto.</dd><dt>Texto · quem ajuda</dt><dd>Ajude a pessoa a sentar. Fale baixo, sem pressa. Menos luz e menos gente em volta.</dd><dt>Botões</dt><dd>«Fiz isso»  «Não ajudou»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_IN_PLACE" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_IN_PLACE" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_IN_PLACE" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_IN_PLACE" aria-label="Comentário ou texto sugerido para CARD_IN_PLACE" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_STAY_CLOSE" data-hash="194c821a3a" data-optional="0">
+    <h3>CARD_STAY_CLOSE <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia contact_trusted_person.stay_close: quando companhia = with_someone («Sim, aqui comigo») ou quem está com o celular = helper («Outra pessoa»)</dd><dt>Título</dt><dd>Fica perto de quem está com você.</dd><dt>Texto</dt><dd>Conta pra essa pessoa como você está. Não precisa explicar tudo.</dd><dt>Texto · quem ajuda</dt><dd>Fica perto da pessoa. Não deixa ela sozinha, nem pra buscar algo.</dd><dt>Botões</dt><dd>«Ok, fiz isso»  «Agora não»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_STAY_CLOSE" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_STAY_CLOSE" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_STAY_CLOSE" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_STAY_CLOSE" aria-label="Comentário ou texto sugerido para CARD_STAY_CLOSE" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CONTACT_WHATSAPP" data-hash="314464ec46" data-optional="0">
+    <h3>CARD_CONTACT_WHATSAPP <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia contact_trusted_person.message_whatsapp: quando companhia ≠ with_someone («Sim, aqui comigo») e quem está com o celular = self («Eu»); só se conexão = online</dd><dt>Título</dt><dd>Chama alguém de confiança.</dd><dt>Texto</dt><dd>Vou abrir o WhatsApp com uma mensagem pronta. Você escolhe pra quem mandar.</dd><dt>Botões</dt><dd>«Abrir WhatsApp»  «Prefiro SMS»  «Não tenho ninguém»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CONTACT_WHATSAPP" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CONTACT_WHATSAPP" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CONTACT_WHATSAPP" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CONTACT_WHATSAPP" aria-label="Comentário ou texto sugerido para CARD_CONTACT_WHATSAPP" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CONTACT_SMS" data-hash="75108a4719" data-optional="0">
+    <h3>CARD_CONTACT_SMS <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia contact_trusted_person.message_sms: quando companhia ≠ with_someone («Sim, aqui comigo») e quem está com o celular = self («Eu»)</dd><dt>Título</dt><dd>Chama alguém de confiança.</dd><dt>Texto</dt><dd>Vou abrir o SMS com uma mensagem pronta. Você escolhe pra quem mandar.</dd><dt>Botões</dt><dd>«Abrir SMS»  «Não tenho ninguém»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CONTACT_SMS" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CONTACT_SMS" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CONTACT_SMS" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CONTACT_SMS" aria-label="Comentário ou texto sugerido para CARD_CONTACT_SMS" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CRISIS_LINE" data-hash="08b7134942" data-optional="0">
+    <h3>CARD_CRISIS_LINE <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia contact_trusted_person.crisis_line: quando quem está com o celular = self («Eu»)</dd><dt>Título</dt><dd>Dá pra conversar com alguém agora.</dd><dt>Texto</dt><dd>O CVV atende no 188, grátis, 24h. É só ligar e falar como você está.</dd><dt>Botões</dt><dd>«Ligar 188»  «Agora não»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CRISIS_LINE" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CRISIS_LINE" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CRISIS_LINE" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CRISIS_LINE" aria-label="Comentário ou texto sugerido para CARD_CRISIS_LINE" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_GROUNDING_BREATH" data-hash="71688f49f0" data-optional="0">
+    <h3>CARD_GROUNDING_BREATH <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia grounding.breath_pacer: quando sempre; só se respiração = normal («Normal», «Respiro bem, sem dor no peito») e responde = responsive («Responde normal», «Consigo»)</dd><dt>Título</dt><dd>Respira comigo.</dd><dt>Texto</dt><dd>Segue o círculo: puxa o ar quando ele cresce, solta devagar quando ele diminui.</dd><dt>Texto · quem ajuda</dt><dd>Respire junto com a pessoa, devagar. Ela pode seguir o círculo também.</dd><dt>Botões</dt><dd>«Terminei»  «Quero outra»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_GROUNDING_BREATH" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_GROUNDING_BREATH" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_GROUNDING_BREATH" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_GROUNDING_BREATH" aria-label="Comentário ou texto sugerido para CARD_GROUNDING_BREATH" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_GROUNDING_FEET" data-hash="27442a7ee0" data-optional="0">
+    <h3>CARD_GROUNDING_FEET <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia grounding.feet_floor: quando sempre</dd><dt>Título</dt><dd>Pés no chão.</dd><dt>Texto</dt><dd>Sente os pés firmes no chão. Aperta as mãos uma na outra por 5 segundos e solta. Repete 3 vezes.</dd><dt>Texto · quem ajuda</dt><dd>Ajude a pessoa a sentir os pés firmes no chão. Peça pra ela apertar as mãos por 5 segundos e soltar. Repitam 3 vezes.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_GROUNDING_FEET" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_GROUNDING_FEET" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_GROUNDING_FEET" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_GROUNDING_FEET" aria-label="Comentário ou texto sugerido para CARD_GROUNDING_FEET" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_GROUNDING_SENSES" data-hash="f9ddb5fccc" data-optional="0">
+    <h3>CARD_GROUNDING_SENSES <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia grounding.five_senses: quando sempre; só se responde = responsive («Responde normal», «Consigo»)</dd><dt>Título</dt><dd>Olha em volta.</dd><dt>Título · quem ajuda</dt><dd>Olhem em volta, juntos.</dd><dt>Texto</dt><dd>Diga pra si: 3 coisas que você vê, 2 que você ouve, 1 que você toca.</dd><dt>Texto · quem ajuda</dt><dd>Peça pra pessoa dizer, no ritmo dela: 3 coisas que vê, 2 que ouve, 1 que toca.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_GROUNDING_SENSES" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_GROUNDING_SENSES" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_GROUNDING_SENSES" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_GROUNDING_SENSES" aria-label="Comentário ou texto sugerido para CARD_GROUNDING_SENSES" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_GROUNDING_COLD" data-hash="b0f68c8c4c" data-optional="0">
+    <h3>CARD_GROUNDING_COLD <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia grounding.cold_water: quando sempre; só se respiração = normal («Normal», «Respiro bem, sem dor no peito») e responde = responsive («Responde normal», «Consigo»)</dd><dt>Título</dt><dd>Água gelada no rosto.</dd><dt>Texto</dt><dd>Joga água bem fria no rosto, na nuca ou nos punhos. Ou segura um gelo. O frio ajuda o coração a desacelerar.</dd><dt>Texto · quem ajuda</dt><dd>Ajude a pessoa a molhar o rosto, a nuca ou os punhos com água bem fria. Um pano gelado ou um gelo também servem.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»  «Não tenho água aqui»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_GROUNDING_COLD" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_GROUNDING_COLD" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_GROUNDING_COLD" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_GROUNDING_COLD" aria-label="Comentário ou texto sugerido para CARD_GROUNDING_COLD" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_GROUNDING_SIGH" data-hash="144a8e5fbb" data-optional="0">
+    <h3>CARD_GROUNDING_SIGH <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia grounding.double_sigh: quando sempre; só se respiração = normal («Normal», «Respiro bem, sem dor no peito») e responde = responsive («Responde normal», «Consigo»)</dd><dt>Título</dt><dd>Suspiro duplo.</dd><dt>Texto</dt><dd>Puxa o ar pelo nariz e, antes de soltar, dá mais uma puxadinha curta. Depois solta tudo devagar pela boca. Faz 3 vezes.</dd><dt>Texto · quem ajuda</dt><dd>Façam juntos: puxar o ar pelo nariz, dar mais uma puxadinha curta e soltar tudo devagar pela boca. 3 vezes.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_GROUNDING_SIGH" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_GROUNDING_SIGH" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_GROUNDING_SIGH" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_GROUNDING_SIGH" aria-label="Comentário ou texto sugerido para CARD_GROUNDING_SIGH" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_GROUNDING_HUM" data-hash="6bceb264b1" data-optional="0">
+    <h3>CARD_GROUNDING_HUM <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia grounding.humming: quando sempre; só se respiração = normal («Normal», «Respiro bem, sem dor no peito») e responde = responsive («Responde normal», «Consigo»)</dd><dt>Título</dt><dd>Hmmm de boca fechada.</dd><dt>Texto</dt><dd>Fecha a boca e faz um 'hmmmm' longo, de 15 a 20 segundos. Sente vibrar no peito e na garganta. Repete se quiser.</dd><dt>Texto · quem ajuda</dt><dd>Peça pra pessoa fechar a boca e fazer um 'hmmmm' longo, de 15 a 20 segundos. Você pode fazer junto.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_GROUNDING_HUM" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_GROUNDING_HUM" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_GROUNDING_HUM" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_GROUNDING_HUM" aria-label="Comentário ou texto sugerido para CARD_GROUNDING_HUM" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_GROUNDING_WALL" data-hash="fa2023b8a9" data-optional="0">
+    <h3>CARD_GROUNDING_WALL <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia grounding.press_wall: quando sempre</dd><dt>Título</dt><dd>Empurra a parede.</dd><dt>Texto</dt><dd>Apoia as mãos numa parede e empurra com força por 5 segundos. Solta. Repete 3 vezes. Sente o peso do seu corpo.</dd><dt>Texto · quem ajuda</dt><dd>Peça pra pessoa apoiar as mãos numa parede e empurrar com força por 5 segundos, soltar e repetir 3 vezes.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_GROUNDING_WALL" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_GROUNDING_WALL" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_GROUNDING_WALL" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_GROUNDING_WALL" aria-label="Comentário ou texto sugerido para CARD_GROUNDING_WALL" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_MIX_DOWNERS" data-hash="8eecfe0e82" data-optional="0">
+    <h3>CARD_CARE_MIX_DOWNERS <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia combination.downers: quando álcool junto = sim («Só álcool», «Bala + álcool», «Pó + álcool», «G + álcool», «Calmante + álcool», «Sim, teve álcool») e qual substância ∈ {ghb («Só G», «G + álcool»), downer_pill («Só calmante ou remédio», «Calmante + álcool»), ket («Ket»)}</dd><dt>Título</dt><dd>Álcool com isso soma.</dd><dt>Título · quem ajuda</dt><dd>Álcool com isso soma.</dd><dt>Texto</dt><dd>Os dois derrubam a respiração juntos. Não toma mais nada hoje. Não fica sozinho(a). Deu sono pesado: deita de lado. Não acorda ou respira devagar: 192.</dd><dt>Texto · quem ajuda</dt><dd>Os dois derrubam a respiração juntos. Nada mais pra ela hoje. Não deixa ela sozinha. Sono pesado: de lado, joelho dobrado. Não acorda ou respira devagar: 192.</dd><dt>Botões</dt><dd>«Entendi»  «Quero outra coisa»  «Tirar dúvida: 0800 722 6001»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_MIX_DOWNERS" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_MIX_DOWNERS" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_MIX_DOWNERS" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_MIX_DOWNERS" aria-label="Comentário ou texto sugerido para CARD_CARE_MIX_DOWNERS" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_MIX_POPPERS_PILL" data-hash="86c7f95a90" data-optional="0">
+    <h3>CARD_CARE_MIX_POPPERS_PILL <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia combination.poppers_pill: quando azulzinho/poppers = both («Os dois»)</dd><dt>Título</dt><dd>Poppers com azulzinho, não.</dd><dt>Título · quem ajuda</dt><dd>Poppers com azulzinho, não.</dd><dt>Texto</dt><dd>Juntos derrubam a pressão de um jeito perigoso. Sem mais poppers hoje. Senta ou deita e levanta devagar. Desmaio, dor no peito ou tontura forte: 192.</dd><dt>Texto · quem ajuda</dt><dd>Juntos derrubam a pressão de um jeito perigoso. Sem mais poppers pra ela hoje. Deixa ela sentada ou deitada. Desmaio, dor no peito ou tontura forte: 192.</dd><dt>Botões</dt><dd>«Entendi»  «Quero outra coisa»  «Tirar dúvida: 0800 722 6001»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_MIX_POPPERS_PILL" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_MIX_POPPERS_PILL" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_MIX_POPPERS_PILL" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_MIX_POPPERS_PILL" aria-label="Comentário ou texto sugerido para CARD_CARE_MIX_POPPERS_PILL" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_MIX_COKE_ALCOHOL" data-hash="1ea905b01d" data-optional="0">
+    <h3>CARD_CARE_MIX_COKE_ALCOHOL <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia combination.coke_alcohol: quando qual substância = coke («Só pó», «Pó + álcool») e álcool junto = sim («Só álcool», «Bala + álcool», «Pó + álcool», «G + álcool», «Calmante + álcool», «Sim, teve álcool»)</dd><dt>Título</dt><dd>Pó com álcool pesa no coração.</dd><dt>Título · quem ajuda</dt><dd>Pó com álcool pesa no coração.</dd><dt>Texto</dt><dd>Juntos, o corpo faz uma terceira coisa, mais forte e mais longa. Para os dois por hoje. Senta num lugar fresco. Dor no peito ou coração disparado: 192.</dd><dt>Texto · quem ajuda</dt><dd>Juntos, o corpo faz uma terceira coisa, mais forte e mais longa. Nada mais pra ela hoje. Lugar fresco, sentada. Dor no peito ou coração disparado: 192.</dd><dt>Botões</dt><dd>«Entendi»  «Quero outra coisa»  «Tirar dúvida: 0800 722 6001»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_MIX_COKE_ALCOHOL" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_MIX_COKE_ALCOHOL" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_MIX_COKE_ALCOHOL" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_MIX_COKE_ALCOHOL" aria-label="Comentário ou texto sugerido para CARD_CARE_MIX_COKE_ALCOHOL" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_MIX_MD_ALCOHOL" data-hash="2f9b6244dd" data-optional="0">
+    <h3>CARD_CARE_MIX_MD_ALCOHOL <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia combination.md_alcohol: quando qual substância = md («Só bala / MD», «Bala + álcool») e álcool junto = sim («Só álcool», «Bala + álcool», «Pó + álcool», «G + álcool», «Calmante + álcool», «Sim, teve álcool»)</dd><dt>Título</dt><dd>Bala com álcool esquenta.</dd><dt>Título · quem ajuda</dt><dd>Bala com álcool esquenta.</dd><dt>Texto</dt><dd>Juntos, esquentam e secam o corpo, e escondem o cansaço. Para de beber agora. Sai do calor, descansa da dança. Goles de água, sem exagero.</dd><dt>Texto · quem ajuda</dt><dd>Juntos, esquentam e secam o corpo, e escondem o cansaço. Sem mais álcool pra ela. Tira ela do calor, pausa na dança. Goles de água, sem exagero.</dd><dt>Botões</dt><dd>«Entendi»  «Quero outra coisa»  «Tirar dúvida: 0800 722 6001»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_MIX_MD_ALCOHOL" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_MIX_MD_ALCOHOL" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_MIX_MD_ALCOHOL" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_MIX_MD_ALCOHOL" aria-label="Comentário ou texto sugerido para CARD_CARE_MIX_MD_ALCOHOL" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_MIX_STIM_ALCOHOL" data-hash="eba0a529a4" data-optional="0">
+    <h3>CARD_CARE_MIX_STIM_ALCOHOL <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia combination.stim_alcohol: quando substância = stim («Bala, MD ou pó») e álcool junto = sim («Só álcool», «Bala + álcool», «Pó + álcool», «G + álcool», «Calmante + álcool», «Sim, teve álcool») e não (qual substância ∈ {coke («Só pó», «Pó + álcool»), md («Só bala / MD», «Bala + álcool»)})</dd><dt>Título</dt><dd>Estimulante com álcool pesa.</dd><dt>Título · quem ajuda</dt><dd>Estimulante com álcool pesa.</dd><dt>Texto</dt><dd>O álcool esconde o efeito e o corpo aguenta menos do que parece. Para os dois por hoje. Senta num lugar fresco, goles de água. Dor no peito ou coração disparado: 192.</dd><dt>Texto · quem ajuda</dt><dd>O álcool esconde o efeito e o corpo aguenta menos do que parece. Nada mais pra ela hoje. Lugar fresco, sentada, goles de água. Dor no peito ou coração disparado: 192.</dd><dt>Botões</dt><dd>«Entendi»  «Quero outra coisa»  «Tirar dúvida: 0800 722 6001»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_MIX_STIM_ALCOHOL" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_MIX_STIM_ALCOHOL" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_MIX_STIM_ALCOHOL" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_MIX_STIM_ALCOHOL" aria-label="Comentário ou texto sugerido para CARD_CARE_MIX_STIM_ALCOHOL" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_MIX_STIM_SEX" data-hash="8f7001ed1d" data-optional="0">
+    <h3>CARD_CARE_MIX_STIM_SEX <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia combination.stim_sex: quando substância = stim («Bala, MD ou pó») e azulzinho/poppers ∈ {pill («Azulzinho»), poppers («Poppers»)}</dd><dt>Título</dt><dd>Coração nos dois sentidos.</dd><dt>Título · quem ajuda</dt><dd>Coração nos dois sentidos.</dd><dt>Texto</dt><dd>Estimulante com azulzinho ou poppers força o coração. Não toma mais nada hoje. Senta, esfria. Dor no peito, desmaio ou ereção que não passa em 4 h: 192.</dd><dt>Texto · quem ajuda</dt><dd>Estimulante com azulzinho ou poppers força o coração. Nada mais pra ela hoje. Sentada, fresca. Dor no peito, desmaio ou ereção que não passa em 4 h: 192.</dd><dt>Botões</dt><dd>«Entendi»  «Quero outra coisa»  «Tirar dúvida: 0800 722 6001»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_MIX_STIM_SEX" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_MIX_STIM_SEX" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_MIX_STIM_SEX" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_MIX_STIM_SEX" aria-label="Comentário ou texto sugerido para CARD_CARE_MIX_STIM_SEX" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_COOL" data-hash="7233095550" data-optional="0">
+    <h3>CARD_CARE_COOL <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia care.cool_body: quando o que incomoda no corpo = heat («Muito calor») ou substância = stim («Bala, MD ou pó»)</dd><dt>Título</dt><dd>Esfriar o corpo..</dd><dt>Título · quem ajuda</dt><dd>Esfriar o corpo dela..</dd><dt>Texto</dt><dd>Para de se mexer um pouco. Pano molhado frio na nuca, axila ou atrás do joelho. Sombra, janela, vento. Muito quente e confuso: 192.</dd><dt>Texto · md</dt><dd>Pausa na dança, sai da muvuca. Pano frio na nuca, axila ou atrás do joelho. Vento, sombra. Muito quente e confuso: 192.</dd><dt>Texto · quem ajuda</dt><dd>Ajuda ela a parar um pouco. Pano frio na nuca, axila ou atrás do joelho. Sombra, vento. Muito quente e confusa: 192.</dd><dt>Texto · md · quem ajuda</dt><dd>Tira ela da dança e da muvuca. Pano frio na nuca, axila ou atrás do joelho. Vento, sombra. Muito quente e confusa: 192.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»  «Não tenho aqui»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_COOL" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_COOL" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_COOL" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_COOL" aria-label="Comentário ou texto sugerido para CARD_CARE_COOL" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_NOSE" data-hash="ed051694fa" data-optional="0">
+    <h3>CARD_CARE_NOSE <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia care.nose_rinse: quando o que incomoda no corpo = nose («Nariz ardendo»)</dd><dt>Título</dt><dd>Nariz ardendo..</dd><dt>Título · quem ajuda</dt><dd>Nariz dela ardendo..</dd><dt>Texto</dt><dd>Soro fisiológico no nariz: um jato ou umas gotas de cada lado. Ele lava o que ficou e alivia. Assoa devagar. Nada mais pelo nariz hoje. Sangue que não para: pronto-socorro.</dd><dt>Texto · quem ajuda</dt><dd>Soro fisiológico no nariz dela: um jato ou umas gotas de cada lado. Lava o que ficou e alivia. Assoar devagar. Sangue que não para: pronto-socorro.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»  «Não tenho aqui»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_NOSE" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_NOSE" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_NOSE" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_NOSE" aria-label="Comentário ou texto sugerido para CARD_CARE_NOSE" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_THROAT" data-hash="2aeaaf167f" data-optional="0">
+    <h3>CARD_CARE_THROAT <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia care.throat_soothe: quando o que incomoda no corpo = throat («Garganta ardendo»); só se responde = responsive («Responde normal», «Consigo») e respiração = normal («Normal», «Respiro bem, sem dor no peito»)</dd><dt>Título</dt><dd>Garganta ardendo..</dd><dt>Título · quem ajuda</dt><dd>Garganta dela ardendo..</dd><dt>Texto</dt><dd>Gargarejo com soro fisiológico ou água fria, e cospe. Depois, golinhos de água. Bala ou mel ajudam. Engolir difícil ou faltar ar: 192.</dd><dt>Texto · quem ajuda</dt><dd>Ajuda ela a gargarejar soro fisiológico ou água fria, e cuspir. Depois golinhos. Bala ou mel ajudam. Engolir difícil ou faltar ar: 192.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»  «Não tenho aqui»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_THROAT" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_THROAT" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_THROAT" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_THROAT" aria-label="Comentário ou texto sugerido para CARD_CARE_THROAT" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_NAUSEA" data-hash="4526654f69" data-optional="0">
+    <h3>CARD_CARE_NAUSEA <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia care.nausea_care: quando o que incomoda no corpo = nausea («Enjoo»)</dd><dt>Título</dt><dd>Enjoo..</dd><dt>Título · quem ajuda</dt><dd>Ela tá enjoada..</dd><dt>Texto</dt><dd>Fica sentado(a), não deita de barriga pra cima. Ar fresco e golinhos de água, devagar. Se vomitar com sono: de lado, e não fica só.</dd><dt>Texto · quem ajuda</dt><dd>Deixa ela sentada, nunca de barriga pra cima. Ar fresco, golinhos. Se vomitar com sono: de lado, e fica junto.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_NAUSEA" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_NAUSEA" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_NAUSEA" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_NAUSEA" aria-label="Comentário ou texto sugerido para CARD_CARE_NAUSEA" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_JAW" data-hash="3bddec5e84" data-optional="0">
+    <h3>CARD_CARE_JAW <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia care.jaw_ease: quando o que incomoda no corpo = jaw</dd><dt>Título</dt><dd>Mandíbula travando..</dd><dt>Título · quem ajuda</dt><dd>Mandíbula dela travando..</dd><dt>Texto</dt><dd>Chiclete ajuda. Ou massagem com a ponta dos dedos na frente da orelha, em círculos, devagar. Solta a língua do céu da boca.</dd><dt>Texto · quem ajuda</dt><dd>Um chiclete ajuda. Ou mostra: massagem com a ponta dos dedos na frente da orelha, em círculos, devagar.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_JAW" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_JAW" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_JAW" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_JAW" aria-label="Comentário ou texto sugerido para CARD_CARE_JAW" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_SIDE" data-hash="77d92298a5" data-optional="0">
+    <h3>CARD_CARE_SIDE <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia care.side_safe: quando substância = downer («G, calmante ou remédio», «Só álcool») ou qual substância ∈ {ghb («Só G», «G + álcool»), downer_pill («Só calmante ou remédio», «Calmante + álcool»), ket («Ket»), alcohol («Só álcool»)}</dd><dt>Título</dt><dd>Corpo pesado pede cuidado.</dd><dt>Título · quem ajuda</dt><dd>Corpo pesado pede cuidado.</dd><dt>Texto</dt><dd>Senta ou deita de lado, com alguém por perto. Nada de banho frio pra acordar. Não soma outro calmante nem álcool. Não acorda ou respira devagar: 192.</dd><dt>Texto · ghb</dt><dd>G derruba rápido. Senta ou deita de lado, com alguém por perto. Não repete a dose hoje. Nada pela boca se estiver apagando. Não acorda: 192.</dd><dt>Texto · ket</dt><dd>Senta ou deita onde não dá pra cair, de lado. Levanta devagar, com ajuda. Nada de água, piscina ou banheira agora.</dd><dt>Texto · quem ajuda</dt><dd>Deixa ela sentada ou deitada de lado, e fica junto. Nada de banho frio pra acordar. Nada mais pra ela. Não acorda ou respira devagar: 192.</dd><dt>Texto · ghb · quem ajuda</dt><dd>G derruba rápido. Deixa ela de lado, e fica junto. Nada pela boca se estiver apagando. Não acorda ou respira devagar: 192.</dd><dt>Texto · ket · quem ajuda</dt><dd>Deixa ela sentada ou deitada de lado, onde não dá pra cair. Ajuda a levantar devagar. Nada de água, piscina ou banheira agora.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_SIDE" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_SIDE" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_SIDE" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_SIDE" aria-label="Comentário ou texto sugerido para CARD_CARE_SIDE" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_PUT_AWAY" data-hash="10d37f8e5e" data-optional="0">
+    <h3>CARD_CARE_PUT_AWAY <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia care.put_away: quando substância ∈ {stim («Bala, MD ou pó»), downer («G, calmante ou remédio», «Só álcool»), psychedelic («Ácido, cogumelo, ket, erva ou lança»)}</dd><dt>Título</dt><dd>Guarda o resto longe.</dd><dt>Título · quem ajuda</dt><dd>Guarda o resto longe dela.</dd><dt>Texto</dt><dd>Não precisa jogar fora.. só tira da vista. Agora não é hora de mais nada. A onda baixa sozinha.</dd><dt>Texto · coke</dt><dd>Tira o pó da vista. O próximo tiro não traz o primeiro de volta.. só força o coração. Uma pessoa sóbria por perto ajuda.</dd><dt>Texto · md</dt><dd>Tira da vista. Mais uma bala não volta o começo.. só esquenta e cansa o corpo. A onda baixa sozinha.</dd><dt>Texto · alcohol</dt><dd>Para de beber por hoje. Troca o copo por água, aos goles. Não dirige.</dd><dt>Texto · ghb</dt><dd>Tira o G da vista. A dose que derruba fica muito perto da que você já tomou. Não repete hoje.</dd><dt>Texto · quem ajuda</dt><dd>Tira da vista dela, sem briga. Agora não é hora de mais nada. A onda baixa sozinha.</dd><dt>Texto · coke · quem ajuda</dt><dd>Tira o pó da vista, sem briga. Mais não traz o começo de volta.. só força o coração dela.</dd><dt>Texto · md · quem ajuda</dt><dd>Tira da vista, sem briga. Mais uma não volta o começo.. só esquenta e cansa o corpo dela.</dd><dt>Texto · alcohol · quem ajuda</dt><dd>Troca o copo dela por água, aos goles. Ninguém dirige.</dd><dt>Texto · ghb · quem ajuda</dt><dd>Tira o G da vista. A dose que derruba fica muito perto da que ela já tomou. Não repete hoje.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_PUT_AWAY" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_PUT_AWAY" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_PUT_AWAY" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_PUT_AWAY" aria-label="Comentário ou texto sugerido para CARD_CARE_PUT_AWAY" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_WAVE" data-hash="38565b3dd0" data-optional="0">
+    <h3>CARD_CARE_WAVE <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia care.ride_wave: quando substância = psychedelic («Ácido, cogumelo, ket, erva ou lança»)</dd><dt>Título</dt><dd>A percepção mudou. O chão não.</dd><dt>Título · quem ajuda</dt><dd>A percepção dela mudou. O chão não.</dd><dt>Texto</dt><dd>Não luta com a onda.. ela sobe e desce. Muda uma coisa: luz baixa ou som baixo. Fica perto de alguém sóbrio.</dd><dt>Texto · cannabis</dt><dd>Erva forte passa. Deita num lugar calmo, come algo doce, golinhos de água. Não é o que parece: o corpo tá seguro.</dd><dt>Texto · lsd</dt><dd>Não luta com a onda.. ela sobe e desce. Muda uma coisa: luz ou som. Um lugar conhecido, alguém sóbrio perto.</dd><dt>Texto · quem ajuda</dt><dd>Não discute o que ela vê. Muda uma coisa: luz baixa ou som baixo. Fala pouco e calmo: isso passa.</dd><dt>Texto · cannabis · quem ajuda</dt><dd>Deixa ela deitar num lugar calmo, com algo doce e golinhos de água. Fala calmo: isso passa.</dd><dt>Texto · lsd · quem ajuda</dt><dd>Não discute o que ela vê. Muda uma coisa: luz ou som. Fica perto, fala pouco: isso passa.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_WAVE" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_WAVE" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_WAVE" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_WAVE" aria-label="Comentário ou texto sugerido para CARD_CARE_WAVE" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_INHALANT" data-hash="1505456e5d" data-optional="0">
+    <h3>CARD_CARE_INHALANT <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia care.inhalant_air: quando qual substância = inhalant («Lança, loló»)</dd><dt>Título</dt><dd>Lança ou loló: para agora.</dd><dt>Título · quem ajuda</dt><dd>Lança ou loló: para agora.</dd><dt>Texto</dt><dd>Ar fresco, janela, senta. Não corre e não leva susto: o coração tá sensível. Longe de fogo. Tontura forte, desmaio ou coração falhando: 192.</dd><dt>Texto · quem ajuda</dt><dd>Ar fresco pra ela, sentada. Sem correr e sem susto: o coração tá sensível. Longe de fogo. Desmaio ou coração falhando: 192.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_INHALANT" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_INHALANT" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_INHALANT" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_INHALANT" aria-label="Comentário ou texto sugerido para CARD_CARE_INHALANT" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_POPPERS" data-hash="2cbb5f2101" data-optional="0">
+    <h3>CARD_CARE_POPPERS <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia care.poppers_care: quando azulzinho/poppers = poppers («Poppers»)</dd><dt>Título</dt><dd>Poppers: dois cuidados.</dd><dt>Título · quem ajuda</dt><dd>Poppers: dois cuidados.</dd><dt>Texto</dt><dd>Nunca engolir e longe do fogo. Se caiu na pele ou no olho: água corrente. Senta se tontear. E não junta com azulzinho.</dd><dt>Texto · quem ajuda</dt><dd>Nunca deixa ela engolir, e longe do fogo. Caiu na pele ou no olho: água corrente. Tonteou: sentada.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_POPPERS" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_POPPERS" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_POPPERS" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_POPPERS" aria-label="Comentário ou texto sugerido para CARD_CARE_POPPERS" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_PILL" data-hash="e4bf37d31e" data-optional="0">
+    <h3>CARD_CARE_PILL <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia care.pill_care: quando azulzinho/poppers = pill («Azulzinho»)</dd><dt>Título</dt><dd>Azulzinho: uma só.</dd><dt>Título · quem ajuda</dt><dd>Azulzinho: uma só.</dd><dt>Texto</dt><dd>Não toma outra hoje. Não junta com poppers. Ereção que não passa em 4 horas, dor no peito ou desmaio: pronto-socorro ou 192.</dd><dt>Texto · quem ajuda</dt><dd>Ela não toma outra hoje, nem poppers. Ereção que não passa em 4 horas, dor no peito ou desmaio: pronto-socorro ou 192.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_PILL" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_PILL" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_PILL" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_PILL" aria-label="Comentário ou texto sugerido para CARD_CARE_PILL" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_SETTLE" data-hash="46dbb7eef1" data-optional="0">
+    <h3>CARD_CARE_SETTLE <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia care.settle: quando sempre</dd><dt>Título</dt><dd>Um lugar firme pro corpo..</dd><dt>Título · quem ajuda</dt><dd>Um lugar firme pro corpo dela..</dd><dt>Texto</dt><dd>Senta ou deita em algo firme: chão, cadeira, sofá. Vira o celular com a tela pra baixo um segundo.. e volta quando quiser. Tô aqui.</dd><dt>Texto · quem ajuda</dt><dd>Ajuda a pessoa a sentar ou deitar em algo firme. Menos estímulo em volta. Fica do lado dela.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_SETTLE" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_SETTLE" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_SETTLE" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_SETTLE" aria-label="Comentário ou texto sugerido para CARD_CARE_SETTLE" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_SIPS" data-hash="1f5a7304fc" data-optional="0">
+    <h3>CARD_CARE_SIPS <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia care.sip_water: quando sempre; só se responde = responsive («Responde normal», «Consigo») e respiração = normal («Normal», «Respiro bem, sem dor no peito»)</dd><dt>Título</dt><dd>Um pouco de água, aos goles.</dd><dt>Título · quem ajuda</dt><dd>Água pra ela, aos goles.</dd><dt>Texto</dt><dd>Devagar. Sente a água descer.. o corpo agradece. Sem exagero: goles, não garrafas.</dd><dt>Texto · md</dt><dd>Goles de água ou isotônico, de tempos em tempos. Não litros: água demais também faz mal com bala.</dd><dt>Texto · alcohol</dt><dd>Goles de água, devagar. Se o estômago aceitar, algo pra comer junto.</dd><dt>Texto · quem ajuda</dt><dd>Oferece golinhos, devagar, se ela estiver bem acordada. Nunca dá líquido pra quem tá apagando.</dd><dt>Texto · md · quem ajuda</dt><dd>Golinhos de água ou isotônico pra ela, de tempos em tempos. Não litros: água demais faz mal com bala.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»  «Não tenho aqui»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_SIPS" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_SIPS" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_SIPS" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_SIPS" aria-label="Comentário ou texto sugerido para CARD_CARE_SIPS" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_AIR" data-hash="950a0dc77a" data-optional="0">
+    <h3>CARD_CARE_AIR <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia care.fresh_air: quando sempre</dd><dt>Título</dt><dd>Um pouco de ar..</dd><dt>Título · quem ajuda</dt><dd>Um pouco de ar pra ela..</dd><dt>Texto</dt><dd>Janela aberta, porta, varanda.. ou só sair da muvuca. Três respirações perto do ar fresco. Tô aqui com você.</dd><dt>Texto · quem ajuda</dt><dd>Janela aberta ou um canto mais arejado. Longe da muvuca. Fica do lado dela.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_AIR" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_AIR" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_AIR" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_AIR" aria-label="Comentário ou texto sugerido para CARD_CARE_AIR" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_FOOD" data-hash="48383232b2" data-optional="0">
+    <h3>CARD_CARE_FOOD <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia care.eat_something: quando sempre; só se responde = responsive («Responde normal», «Consigo») e respiração = normal («Normal», «Respiro bem, sem dor no peito»)</dd><dt>Título</dt><dd>Algo pequeno pra comer.</dd><dt>Título · quem ajuda</dt><dd>Algo pequeno pra ela comer.</dd><dt>Texto</dt><dd>Se o estômago aceitar: pão, fruta, bolacha, algo doce ou salgado. Dá chão pro corpo. Sem pressa.</dd><dt>Texto · quem ajuda</dt><dd>Se ela estiver bem acordada e o estômago aceitar: pão, fruta, bolacha. Nada pela boca se estiver sonolenta.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»  «Não tenho aqui»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_FOOD" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_FOOD" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_FOOD" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_FOOD" aria-label="Comentário ou texto sugerido para CARD_CARE_FOOD" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_TEETH" data-hash="f244a76db6" data-optional="0">
+    <h3>CARD_CARE_TEETH <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia care.brush_teeth: quando sempre; só se responde = responsive («Responde normal», «Consigo») e respiração = normal («Normal», «Respiro bem, sem dor no peito»)</dd><dt>Título</dt><dd>Escovar os dentes..</dd><dt>Título · quem ajuda</dt><dd>Escovar os dentes..</dd><dt>Texto</dt><dd>Parece bobo, mas o frescor e o gesto de sempre avisam o corpo que tá voltando. Devagar, sem força na gengiva.</dd><dt>Texto · quem ajuda</dt><dd>Se ela estiver firme, sugere escovar os dentes. O frescor e o gesto de sempre ajudam a voltar.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»  «Não tenho aqui»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_TEETH" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_TEETH" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_TEETH" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_TEETH" aria-label="Comentário ou texto sugerido para CARD_CARE_TEETH" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_SHOWER" data-hash="a7231fccac" data-optional="0">
+    <h3>CARD_CARE_SHOWER <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia care.cool_shower: quando sempre; só se responde = responsive («Responde normal», «Consigo») e respiração = normal («Normal», «Respiro bem, sem dor no peito») e substância ≠ downer («G, calmante ou remédio», «Só álcool») e não (qual substância ∈ {ghb («Só G», «G + álcool»), downer_pill («Só calmante ou remédio», «Calmante + álcool»), ket («Ket»), alcohol («Só álcool»)}) e mistura ≤ 1</dd><dt>Título</dt><dd>Um banho fresco..</dd><dt>Título · quem ajuda</dt><dd>Um banho fresco pra ela..</dd><dt>Texto</dt><dd>Morno pra fresco, rápido, com alguém em casa sabendo. Começa pelos pés e punhos. Tontura: senta ou sai, e fica no pano frio.</dd><dt>Texto · quem ajuda</dt><dd>Se ela estiver firme de pé: banho morno pra fresco, rápido, com você por perto. Tontura: sai e senta.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»  «Não tenho aqui»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_SHOWER" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_SHOWER" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_SHOWER" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_SHOWER" aria-label="Comentário ou texto sugerido para CARD_CARE_SHOWER" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CARE_MUSIC" data-hash="3719cb418c" data-optional="0">
+    <h3>CARD_CARE_MUSIC <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia care.soft_music: quando sempre</dd><dt>Título</dt><dd>Um som que acalma..</dd><dt>Título · quem ajuda</dt><dd>Um som que acalma..</dd><dt>Texto</dt><dd>Música sem letra, baixinho: piano, lo-fi, chuva. Só de fundo. O tempo tá do seu lado agora.</dd><dt>Texto · quem ajuda</dt><dd>Coloca algo sem letra, baixinho: piano, lo-fi, chuva. Só de fundo. O tempo tá do lado dela.</dd><dt>Botões</dt><dd>«Fiz»  «Quero outra»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_MUSIC" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_MUSIC" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CARE_MUSIC" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CARE_MUSIC" aria-label="Comentário ou texto sugerido para CARD_CARE_MUSIC" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_STEADY_TIPS" data-hash="f123478a34" data-optional="0">
+    <h3>CARD_STEADY_TIPS <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia steady_check.tips: quando substância ∈ {stim («Bala, MD ou pó»), downer («G, calmante ou remédio», «Só álcool»), psychedelic («Ácido, cogumelo, ket, erva ou lança»)}</dd><dt>Título</dt><dd>Tá mais tranquilo. Umas dicas curtas:</dd><dt>Texto</dt><dd>Descansa, bebe água aos poucos e fica perto de alguém de confiança.</dd><dt>Texto · estimulantes</dt><dd>Faz pausas longe do calor. Água aos poucos. Evita misturar com outras coisas.</dd><dt>Texto · depressores</dt><dd>Não misture com mais nada. Fique acompanhado(a). Se der sono forte, deite de lado.</dd><dt>Texto · psicodélicos</dt><dd>Lugar calmo, luz baixa e alguém sóbrio por perto. Isso passa.</dd><dt>Texto · quem ajuda</dt><dd>Deixe a pessoa descansar, com água aos poucos, e fique perto dela.</dd><dt>Texto · estimulantes · quem ajuda</dt><dd>Ajude a pessoa a fazer pausas longe do calor. Água aos poucos. Evite que ela misture com outras coisas.</dd><dt>Texto · depressores · quem ajuda</dt><dd>Não deixe a pessoa misturar com mais nada nem ficar sozinha. Se der sono forte, deite-a de lado.</dd><dt>Texto · psicodélicos · quem ajuda</dt><dd>Lugar calmo, luz baixa e alguém sóbrio perto dela. Fale com calma: isso passa.</dd><dt>Botões</dt><dd>«Valeu»  «Dúvida? 0800 722 6001»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_STEADY_TIPS" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_STEADY_TIPS" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_STEADY_TIPS" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_STEADY_TIPS" aria-label="Comentário ou texto sugerido para CARD_STEADY_TIPS" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_HOLD" data-hash="f735166165" data-optional="0">
+    <h3>CARD_HOLD <span class="badge">rascunho</span></h3>
+    <dl><dt>Aparece</dt><dd>estratégia steady_check.hold: quando sempre</dd><dt>Título</dt><dd>Tô aqui com você.</dd><dt>Texto</dt><dd>Sem pressa. Escolhe o que quiser no menu abaixo, ou só fica aqui e respira. Se piorar de verdade, o 192 tá no topo.</dd><dt>Texto · quem ajuda</dt><dd>Fica com a pessoa e observa a respiração dela. Escolhe algo no menu abaixo quando quiser. Se ela piorar ou não responder, o 192 tá no topo.</dd><dt>Botões</dt><dd>«Continuar aqui»  «Tô bem, encerrar»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_HOLD" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_HOLD" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_HOLD" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_HOLD" aria-label="Comentário ou texto sugerido para CARD_HOLD" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article>
+</section>
+<section id="s-risk">
+  <h2>Como o app estima o risco</h2>
+  <p class="lead">Os níveis (0 a 4) fazem sentido clinicamente? O nível de cada dimensão é o maior entre as linhas que valem.</p>
+  <article class="item" data-id="RISK-medical" data-hash="b45b4c2f48" data-optional="0">
+    <h3>risco médico <span class="badge">—</span></h3>
+    <dl><dt>nível 3</dt><dd>respiração = abnormal («Estranha ou ofegante»)</dd><dt>nível 3</dt><dd>responde = impaired («Pouco ou confusa», «Tá difícil, confuso»)</dd><dt>nível 2</dt><dd>como está agora (relatado) = worse</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-RISK-medical" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-RISK-medical" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-RISK-medical" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-RISK-medical" aria-label="Comentário ou texto sugerido para RISK-medical" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="RISK-impairment" data-hash="0e54b57a71" data-optional="0">
+    <h3>comprometimento <span class="badge">—</span></h3>
+    <dl><dt>nível 3</dt><dd>responde = impaired («Pouco ou confusa», «Tá difícil, confuso»)</dd><dt>nível 1</dt><dd>substância ∈ {stim («Bala, MD ou pó»), downer («G, calmante ou remédio», «Só álcool»), psychedelic («Ácido, cogumelo, ket, erva ou lança»)}</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-RISK-impairment" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-RISK-impairment" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-RISK-impairment" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-RISK-impairment" aria-label="Comentário ou texto sugerido para RISK-impairment" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="RISK-isolation" data-hash="737e54829a" data-optional="0">
+    <h3>isolamento <span class="badge">—</span></h3>
+    <dl><dt>nível 3</dt><dd>companhia = alone («Tô sozinho(a)») e alguém a caminho ≠ coming</dd><dt>nível 2</dt><dd>companhia = alone («Tô sozinho(a)») e alguém a caminho = coming</dd><dt>nível 2</dt><dd>companhia é desconhecido</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-RISK-isolation" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-RISK-isolation" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-RISK-isolation" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-RISK-isolation" aria-label="Comentário ou texto sugerido para RISK-isolation" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="RISK-emotional" data-hash="005e50c9b2" data-optional="0">
+    <h3>risco emocional <span class="badge">—</span></h3>
+    <dl><dt>nível 4</dt><dd>ansiedade (0–4) = 4 («Muita, pânico», «Em pânico»)</dd><dt>nível 3</dt><dd>ansiedade (0–4) = 3 («Bastante», «Ansiosa»)</dd><dt>nível 3</dt><dd>como está agora (relatado) = worse</dd><dt>nível 2</dt><dd>ansiedade (0–4) = 2</dd><dt>nível 1</dt><dd>ansiedade (0–4) ∈ {1 («Pouca», «Calma»), desconhecido («Não sei»)}</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-RISK-emotional" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-RISK-emotional" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-RISK-emotional" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-RISK-emotional" aria-label="Comentário ou texto sugerido para RISK-emotional" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="RISK-environmental" data-hash="8ff9028d51" data-optional="0">
+    <h3>ambiente <span class="badge">—</span></h3>
+    <dl><dt>nível 4</dt><dd>em perigo físico = sim (texto TT-007)</dd><dt>nível 2</dt><dd>barulho = loud («Muito barulho ou luz»)</dd><dt>nível 1</dt><dd>barulho ∈ {moderate («Barulho médio»), desconhecido («Não sei»)}</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-RISK-environmental" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-RISK-environmental" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-RISK-environmental" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-RISK-environmental" aria-label="Comentário ou texto sugerido para RISK-environmental" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="RISK-uncertainty" data-hash="ea5c9933a4" data-optional="0">
+    <h3>incerteza <span class="badge">—</span></h3>
+    <dl><dt>nível 4</dt><dd>janelas sem resposta ≥ 2</dd><dt>nível 3</dt><dd>janelas sem resposta = 1</dd><dt>nível 3</dt><dd>respiração é desconhecido</dd><dt>nível 3</dt><dd>quem está com o celular = helper («Outra pessoa») e responde é desconhecido</dd><dt>nível 3</dt><dd>quem está com o celular = self («Eu») e dor no peito é desconhecido</dd><dt>nível 3</dt><dd>quem está com o celular = helper («Outra pessoa») e convulsão é desconhecido</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-RISK-uncertainty" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-RISK-uncertainty" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-RISK-uncertainty" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-RISK-uncertainty" aria-label="Comentário ou texto sugerido para RISK-uncertainty" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="RISK-mixing" data-hash="022ab4b90a" data-optional="0">
+    <h3>mistura <span class="badge">—</span></h3>
+    <dl><dt>nível 3</dt><dd>álcool junto = sim («Só álcool», «Bala + álcool», «Pó + álcool», «G + álcool», «Calmante + álcool», «Sim, teve álcool») e qual substância ∈ {ghb («Só G», «G + álcool»), downer_pill («Só calmante ou remédio», «Calmante + álcool»), ket («Ket»)}</dd><dt>nível 3</dt><dd>azulzinho/poppers = both («Os dois»)</dd><dt>nível 2</dt><dd>álcool junto = sim («Só álcool», «Bala + álcool», «Pó + álcool», «G + álcool», «Calmante + álcool», «Sim, teve álcool») e substância = stim («Bala, MD ou pó»)</dd><dt>nível 2</dt><dd>substância = stim («Bala, MD ou pó») e azulzinho/poppers ∈ {pill («Azulzinho»), poppers («Poppers»)}</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-RISK-mixing" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-RISK-mixing" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-RISK-mixing" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-RISK-mixing" aria-label="Comentário ou texto sugerido para RISK-mixing" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article>
+</section>
+<section id="s-bands">
+  <h2>Faixas de gravidade</h2>
+  <p class="lead">Cada regra leva à faixa certa? Faixas marcadas «só desce com resposta explícita» nunca baixam só com o tempo.</p>
+  <article class="item" data-id="BR-P1-01" data-hash="6980f3f0b3" data-optional="0">
+    <h3>BR-P1-01 → P1 <span class="badge">—</span></h3>
+    <dl><dt>Faixa</dt><dd>P1: segurança ou companhia primeiro</dd><dt>Condição</dt><dd>risco médico ≥ 3</dd><dt>Só desce com resposta explícita</dt><dd>sim</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-BR-P1-01" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-BR-P1-01" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-BR-P1-01" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-BR-P1-01" aria-label="Comentário ou texto sugerido para BR-P1-01" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="BR-P1-03" data-hash="51ac21f747" data-optional="0">
+    <h3>BR-P1-03 → P1 <span class="badge">—</span></h3>
+    <dl><dt>Faixa</dt><dd>P1: segurança ou companhia primeiro</dd><dt>Condição</dt><dd>incerteza ≥ 3</dd><dt>Só desce com resposta explícita</dt><dd>não</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-BR-P1-03" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-BR-P1-03" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-BR-P1-03" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-BR-P1-03" aria-label="Comentário ou texto sugerido para BR-P1-03" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="BR-P1-04" data-hash="0e6a38815f" data-optional="0">
+    <h3>BR-P1-04 → P1 <span class="badge">—</span></h3>
+    <dl><dt>Faixa</dt><dd>P1: segurança ou companhia primeiro</dd><dt>Condição</dt><dd>isolamento ≥ 3 e risco emocional ≥ 3</dd><dt>Só desce com resposta explícita</dt><dd>sim</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-BR-P1-04" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-BR-P1-04" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-BR-P1-04" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-BR-P1-04" aria-label="Comentário ou texto sugerido para BR-P1-04" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="BR-P1-05" data-hash="8a2ffc299a" data-optional="0">
+    <h3>BR-P1-05 → P1 <span class="badge">proposta: precisa de aprovação</span></h3>
+    <dl><dt>Faixa</dt><dd>P1: segurança ou companhia primeiro</dd><dt>Condição</dt><dd>isolamento ≥ 2 e substância = downer («G, calmante ou remédio», «Só álcool»)</dd><dt>Só desce com resposta explícita</dt><dd>sim</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-BR-P1-05" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-BR-P1-05" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-BR-P1-05" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-BR-P1-05" aria-label="Comentário ou texto sugerido para BR-P1-05" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="BR-P1-06" data-hash="49470f2e0f" data-optional="0">
+    <h3>BR-P1-06 → P1 <span class="badge">—</span></h3>
+    <dl><dt>Faixa</dt><dd>P1: segurança ou companhia primeiro</dd><dt>Condição</dt><dd>isolamento ≥ 2 e tendência = worsening</dd><dt>Só desce com resposta explícita</dt><dd>sim</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-BR-P1-06" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-BR-P1-06" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-BR-P1-06" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-BR-P1-06" aria-label="Comentário ou texto sugerido para BR-P1-06" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="BR-P1-07" data-hash="ecdc5dc23d" data-optional="0">
+    <h3>BR-P1-07 → P1 <span class="badge">proposta: precisa de aprovação</span></h3>
+    <dl><dt>Faixa</dt><dd>P1: segurança ou companhia primeiro</dd><dt>Condição</dt><dd>mistura ≥ 3</dd><dt>Só desce com resposta explícita</dt><dd>sim</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-BR-P1-07" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-BR-P1-07" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-BR-P1-07" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-BR-P1-07" aria-label="Comentário ou texto sugerido para BR-P1-07" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="BR-P2-01" data-hash="9de95420c5" data-optional="0">
+    <h3>BR-P2-01 → P2 <span class="badge">—</span></h3>
+    <dl><dt>Faixa</dt><dd>P2: sofrimento importante, ainda interativo</dd><dt>Condição</dt><dd>risco emocional ≥ 3</dd><dt>Só desce com resposta explícita</dt><dd>sim</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-BR-P2-01" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-BR-P2-01" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-BR-P2-01" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-BR-P2-01" aria-label="Comentário ou texto sugerido para BR-P2-01" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="BR-P2-02" data-hash="ab5c65e89d" data-optional="0">
+    <h3>BR-P2-02 → P2 <span class="badge">—</span></h3>
+    <dl><dt>Faixa</dt><dd>P2: sofrimento importante, ainda interativo</dd><dt>Condição</dt><dd>ambiente ≥ 2 e risco emocional ≥ 2</dd><dt>Só desce com resposta explícita</dt><dd>sim</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-BR-P2-02" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-BR-P2-02" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-BR-P2-02" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-BR-P2-02" aria-label="Comentário ou texto sugerido para BR-P2-02" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="BR-P2-03" data-hash="0fefc99eb3" data-optional="0">
+    <h3>BR-P2-03 → P2 <span class="badge">proposta: precisa de aprovação</span></h3>
+    <dl><dt>Faixa</dt><dd>P2: sofrimento importante, ainda interativo</dd><dt>Condição</dt><dd>mistura ≥ 2</dd><dt>Só desce com resposta explícita</dt><dd>sim</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-BR-P2-03" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-BR-P2-03" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-BR-P2-03" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-BR-P2-03" aria-label="Comentário ou texto sugerido para BR-P2-03" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="BR-P3-99" data-hash="f87a1bd03b" data-optional="0">
+    <h3>BR-P3-99 → P3 <span class="badge">—</span></h3>
+    <dl><dt>Faixa</dt><dd>P3: estável: apoio leve</dd><dt>Condição</dt><dd>sempre</dd><dt>Só desce com resposta explícita</dt><dd>não</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-BR-P3-99" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-BR-P3-99" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-BR-P3-99" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-BR-P3-99" aria-label="Comentário ou texto sugerido para BR-P3-99" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article>
+</section>
+<section id="s-text">
+  <h2>Frases que acionam o app (texto livre)</h2>
+  <p class="lead">Faltam jeitos comuns de dizer isso no Brasil? Há falsos positivos? Acentos e maiúsculas são ignorados.</p>
+  <article class="item" data-id="TT-001" data-hash="7654840f1d" data-optional="0">
+    <h3>TT-001 · breathing_critical <span class="badge">—</span></h3>
+    <dl><dt>Exemplos que acionam</dt><dd>«nao consigo respirar»  «nao to conseguindo respirar»  «nao estou conseguindo respirar»  «nao consegue respirar»  «nao ta conseguindo respirar»  «nao esta conseguindo respirar»  «sem ar»  «falta de ar»  «parou de respirar»  «nao ta respirando»  «nao esta respirando»</dd><dt>O que registra</dt><dd>respiração = severely_abnormal</dd><dt>Com negação</dt><dd>(nao, sem, nunca, nem, nenhum, nenhuma) antes da frase: não age, pergunta Q_RED_FLAGS</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-TT-001" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-TT-001" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-TT-001" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-TT-001" aria-label="Comentário ou texto sugerido para TT-001" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="TT-002" data-hash="55c1aa5493" data-optional="0">
+    <h3>TT-002 · unresponsive_other <span class="badge">—</span></h3>
+    <dl><dt>Exemplos que acionam</dt><dd>«ele apagou»  «ele desmaiou»  «ele nao acorda»  «ele nao responde»  «ele desacordado»  «ele desacordada»  «ela apagou»  «ela desmaiou»  «ela nao acorda»  «ela nao responde»  «ela desacordado»  «ela desacordada»  «nao acorda mais»  «nao responde mais»  «desacordado»  «desacordada»</dd><dt>O que registra</dt><dd>responde = unresponsive</dd><dt>Com negação</dt><dd>(nao, sem, nunca, nem, nenhum, nenhuma) antes da frase: não age, pergunta Q_RESPONDS</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-TT-002" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-TT-002" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-TT-002" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-TT-002" aria-label="Comentário ou texto sugerido para TT-002" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="TT-003" data-hash="3e84a31d50" data-optional="0">
+    <h3>TT-003 · fainted_self <span class="badge">—</span></h3>
+    <dl><dt>Exemplos que acionam</dt><dd>«apaguei»  «desmaiei»</dd><dt>O que registra</dt><dd>desmaio relatado = yes</dd><dt>Com negação</dt><dd>(nao, sem, nunca, nem, nenhum, nenhuma) antes da frase: não age, pergunta Q_CLARITY</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-TT-003" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-TT-003" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-TT-003" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-TT-003" aria-label="Comentário ou texto sugerido para TT-003" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="TT-004" data-hash="a0d761c452" data-optional="0">
+    <h3>TT-004 · chest_critical <span class="badge">—</span></h3>
+    <dl><dt>Exemplos que acionam</dt><dd>«dor forte no peito»  «dor no peito»  «peito ta doendo»  «peito esta doendo»  «aperto no peito»</dd><dt>O que registra</dt><dd>dor no peito = yes</dd><dt>Com negação</dt><dd>(nao, sem, nunca, nem, nenhum, nenhuma) antes da frase: não age, pergunta Q_RED_FLAGS</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-TT-004" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-TT-004" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-TT-004" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-TT-004" aria-label="Comentário ou texto sugerido para TT-004" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="TT-005" data-hash="76c77ae1a2" data-optional="0">
+    <h3>TT-005 · seizure <span class="badge">—</span></h3>
+    <dl><dt>Exemplos que acionam</dt><dd>«convuls…»  «ta se debatendo»  «esta se debatendo»  «ataque epilept…»</dd><dt>O que registra</dt><dd>convulsão = yes</dd><dt>Com negação</dt><dd>(nao, sem, nunca, nem, nenhum, nenhuma) antes da frase: não age, pergunta Q_RED_FLAGS</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-TT-005" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-TT-005" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-TT-005" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-TT-005" aria-label="Comentário ou texto sugerido para TT-005" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="TT-006" data-hash="4e2d229fcc" data-optional="0">
+    <h3>TT-006 · self_harm_intent <span class="badge">—</span></h3>
+    <dl><dt>Exemplos que acionam</dt><dd>«quero morrer»  «vou me matar»  «me matar»  «acabar com a minha vida»  «acabar com minha vida»  «suicid…»</dd><dt>O que registra</dt><dd>intenção de se ferir = yes</dd><dt>Com negação</dt><dd>(nao, sem, nunca, nem, nenhum, nenhuma) antes da frase: não age, pergunta Q_RED_FLAGS</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-TT-006" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-TT-006" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-TT-006" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-TT-006" aria-label="Comentário ou texto sugerido para TT-006" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="TT-007" data-hash="3acb4de783" data-optional="0">
+    <h3>TT-007 · physically_unsafe <span class="badge">—</span></h3>
+    <dl><dt>Exemplos que acionam</dt><dd>«to em perigo»  «estou em perigo»  «vao me bater»  «me ameac…»  «nao to seguro»  «nao to segura»  «nao estou seguro»  «nao estou segura»</dd><dt>O que registra</dt><dd>em perigo físico = yes</dd><dt>Com negação</dt><dd>(nao, sem, nunca, nem, nenhum, nenhuma) antes da frase: não age, pergunta Q_RED_FLAGS</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-TT-007" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-TT-007" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-TT-007" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-TT-007" aria-label="Comentário ou texto sugerido para TT-007" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article>
+</section>
+<section id="s-other">
+  <h2>Outros textos (editorial, opcional) <span class="badge">opcional</span></h2>
+  <p class="lead">O tom é acolhedor e claro?</p>
+  <article class="item" data-id="CARD_CONFIRM_FRIEND" data-hash="bb729f802c" data-optional="1">
+    <h3>CARD_CONFIRM_FRIEND <span class="badge">rascunho</span></h3>
+    <dl><dt>Título</dt><dd>A pessoa que vinha já chegou?</dd><dt>Botões</dt><dd>«Chegou»  «Ainda não»  «Não vem mais»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CONFIRM_FRIEND" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CONFIRM_FRIEND" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CONFIRM_FRIEND" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CONFIRM_FRIEND" aria-label="Comentário ou texto sugerido para CARD_CONFIRM_FRIEND" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CONFIRM_RELOCATION" data-hash="820ef9d5d4" data-optional="1">
+    <h3>CARD_CONFIRM_RELOCATION <span class="badge">rascunho</span></h3>
+    <dl><dt>Título</dt><dd>Conseguiu ir pra um lugar mais calmo?</dd><dt>Botões</dt><dd>«Cheguei»  «Não consigo»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CONFIRM_RELOCATION" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CONFIRM_RELOCATION" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CONFIRM_RELOCATION" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CONFIRM_RELOCATION" aria-label="Comentário ou texto sugerido para CARD_CONFIRM_RELOCATION" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_CONFIRM_CONTACT" data-hash="ed8601f8f7" data-optional="1">
+    <h3>CARD_CONFIRM_CONTACT <span class="badge">rascunho</span></h3>
+    <dl><dt>Título</dt><dd>Conseguiu falar com alguém?</dd><dt>Botões</dt><dd>«Alguém tá vindo»  «Ninguém vem»  «Ainda tentando»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_CONFIRM_CONTACT" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_CONFIRM_CONTACT" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_CONFIRM_CONTACT" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_CONFIRM_CONTACT" aria-label="Comentário ou texto sugerido para CARD_CONFIRM_CONTACT" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_SESSION_CLOSED" data-hash="980be671ee" data-optional="1">
+    <h3>CARD_SESSION_CLOSED <span class="badge">rascunho</span></h3>
+    <dl><dt>Título</dt><dd>Que bom. Se cuida.</dd><dt>Texto</dt><dd>O que foi respondido fica só neste aparelho e é apagado sozinho em até 12h.</dd><dt>Botões</dt><dd>«Apagar agora»  «Começar de novo»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_SESSION_CLOSED" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_SESSION_CLOSED" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_SESSION_CLOSED" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_SESSION_CLOSED" aria-label="Comentário ou texto sugerido para CARD_SESSION_CLOSED" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article><article class="item" data-id="CARD_SAFE_FALLBACK" data-hash="d69b3f9460" data-optional="1">
+    <h3>CARD_SAFE_FALLBACK <span class="badge">rascunho</span></h3>
+    <dl><dt>Título</dt><dd>Algo não saiu como esperado.</dd><dt>Texto</dt><dd>Se precisar de ajuda agora, ligue 192.</dd><dt>Botões</dt><dd>«Ligar 192»  «Recomeçar»</dd></dl>
+    <fieldset><legend>Parecer</legend>
+      <label class="opt"><input type="radio" name="v-CARD_SAFE_FALLBACK" value="aprovado"> Aprovar</label>
+      <label class="opt"><input type="radio" name="v-CARD_SAFE_FALLBACK" value="ajustes"> Aprovar com ajustes</label>
+      <label class="opt"><input type="radio" name="v-CARD_SAFE_FALLBACK" value="reprovado"> Não aprovar</label>
+    </fieldset>
+    <textarea name="c-CARD_SAFE_FALLBACK" aria-label="Comentário ou texto sugerido para CARD_SAFE_FALLBACK" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
+    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
+  </article>
+</section>
+<p class="meta">Registro 0.1.0 · hash 3dd609a102323408 · motor assets/app.ebd78ac44e1a.js</p>
+<div class="bar"><div class="in">
+  <span class="grow" id="progress" role="status">0 de 99 itens com parecer</span>
+  <button type="button" id="copy">Copiar resumo</button>
+  <button type="button" onclick="window.print()">Imprimir ou PDF</button>
+  <button type="button" class="primary" id="download">Baixar retorno</button>
+</div></div>
+
+</div>
+<script>
+const FACTS={"registryHash":"3dd609a102323408","registryVersion":"0.1.0","bundle":"assets/app.ebd78ac44e1a.js","total":99};
+// Stable key: verdicts survive a rebuild; per-item hashes flag any item whose text changed since.
+const KEY="sos-lab-review:v1";
+const items=[...document.querySelectorAll("article.item")];
+let st={reviewer:{name:"",registration:"",specialty:""},items:{}};
+try{ st=Object.assign(st, JSON.parse(localStorage.getItem(KEY)||"{}")); }catch(e){}
+const save=()=>{ try{ localStorage.setItem(KEY, JSON.stringify(st)); }catch(e){} };
+const W={aprovado:"aprovado",ajustes:"com ajustes",reprovado:"não aprovado"};
+function paint(){
+  let n=0;
+  for(const el of items){
+    const id=el.dataset.id, s=st.items[id];
+    const changed=!!(s&&s.hash&&s.hash!==el.dataset.hash);
+    const done=!!(s&&s.verdict)&&!changed;
+    if(done) n++;
+    el.classList.toggle("done",done); el.classList.toggle("changed",changed);
+    el.querySelector(".changed-note").classList.toggle("hidden",!changed);
+    el.classList.toggle("hidden", document.getElementById("only-pending").checked && done);
+  }
+  document.getElementById("progress").textContent=n+" de "+FACTS.total+" itens com parecer";
+}
+for(const el of items){
+  const id=el.dataset.id, s=st.items[id];
+  if(s){ if(s.verdict){ const r=el.querySelector('input[value="'+s.verdict+'"]'); if(r) r.checked=true; } el.querySelector("textarea").value=s.comment||""; }
+  el.addEventListener("input",()=>{
+    const v=el.querySelector("input[type=radio]:checked");
+    st.items[id]={verdict:v?v.value:"",comment:el.querySelector("textarea").value,hash:el.dataset.hash};
+    save(); paint();
+  });
+}
+const who={"r-name":"name","r-reg":"registration","r-spec":"specialty"};
+for(const [k,f] of Object.entries(who)){ const el=document.getElementById(k); el.value=st.reviewer[f]||""; el.addEventListener("input",()=>{ st.reviewer[f]=el.value; save(); }); }
+document.getElementById("only-pending").addEventListener("change",paint);
+function exportData(){
+  return {kind:"sos-apollo-clinical-review",version:1,registryHash:FACTS.registryHash,registryVersion:FACTS.registryVersion,bundle:FACTS.bundle,
+    exportedAt:new Date().toISOString(),reviewer:st.reviewer,total:FACTS.total,
+    items:items.map((el)=>{ const s=st.items[el.dataset.id]||{}; return {id:el.dataset.id,hash:el.dataset.hash,reviewedHash:s.hash||"",
+      stale:!!(s.hash&&s.hash!==el.dataset.hash),optional:el.dataset.optional==="1",verdict:s.verdict||"",comment:s.comment||""}; })
+      .filter((x)=>x.verdict||x.comment)};
+}
+function summary(){
+  const d=exportData(), c={aprovado:0,ajustes:0,reprovado:0};
+  for(const x of d.items) if(c[x.verdict]!==undefined) c[x.verdict]++;
+  const lines=["Revisão clínica SOS Apollo (registro "+d.registryHash+")","Revisor(a): "+(d.reviewer.name||"—")+" · "+(d.reviewer.registration||"—"),
+    "Aprovados: "+c.aprovado+" · Com ajustes: "+c.ajustes+" · Não aprovados: "+c.reprovado+" · Sem parecer: "+(d.total-c.aprovado-c.ajustes-c.reprovado)];
+  const open=d.items.filter((x)=>x.verdict!=="aprovado"||x.comment);
+  if(open.length){ lines.push("","Itens com observações:"); for(const x of open) lines.push("- "+x.id+" ("+(W[x.verdict]||"sem parecer")+"): "+(x.comment||"")); }
+  return lines.join("\n");
+}
+document.getElementById("download").addEventListener("click",()=>{
+  const blob=new Blob([JSON.stringify(exportData(),null,2)],{type:"application/json"});
+  const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download="revisao-clinica-sos-"+FACTS.registryHash+".json"; a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+});
+document.getElementById("copy").addEventListener("click",async()=>{
+  const t=summary();
+  try{ await navigator.clipboard.writeText(t); document.getElementById("progress").textContent="Resumo copiado."; }
+  catch(e){ const ta=document.createElement("textarea"); ta.value=t; document.body.append(ta); ta.select(); document.execCommand("copy"); ta.remove(); }
+});
+paint();
+</script>
+</body>
+</html>

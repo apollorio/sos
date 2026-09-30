@@ -6,6 +6,9 @@
 import { describe, it, expect } from "vitest";
 import fc from "fast-check";
 import { processEvent, startSession } from "../../src/core/process-event";
+import { buildFacts } from "../../src/core/logic/facts";
+import { strategyIneligibility } from "../../src/core/planner/eligibility";
+import { REG } from "../../src/core/registry";
 import type { RawInput } from "../../src/core/domain/events";
 import type { StepResult } from "../../src/core/domain/decision";
 
@@ -17,7 +20,7 @@ type G =
   | { k: "text"; text: string; dt: number }
   | { k: "rt"; ev: "APP_HIDDEN" | "APP_VISIBLE" | "ONLINE" | "OFFLINE" | "TICK"; dt: number }
   | { k: "shell"; dt: number }
-  | { k: "chip"; dt: number };
+  | { k: "chip"; pick: number; dt: number };
 
 const dt = fc.integer({ min: 1, max: 900 });
 const stepArb: fc.Arbitrary<G> = fc.oneof(
@@ -26,7 +29,8 @@ const stepArb: fc.Arbitrary<G> = fc.oneof(
   { weight: 1, arbitrary: fc.record({ k: fc.constant("text" as const), text: fc.constantFrom(...TEXTS), dt }) },
   { weight: 3, arbitrary: fc.record({ k: fc.constant("rt" as const), ev: fc.constantFrom("APP_HIDDEN" as const, "APP_VISIBLE" as const, "ONLINE" as const, "OFFLINE" as const, "TICK" as const), dt }) },
   { weight: 1, arbitrary: fc.record({ k: fc.constant("shell" as const), dt }) },
-  { weight: 1, arbitrary: fc.record({ k: fc.constant("chip" as const), dt }) },
+  // Menu picks (L23) explore every chip on offer, so INV-027/029 are checked on user-chosen techniques too.
+  { weight: 3, arbitrary: fc.record({ k: fc.constant("chip" as const), pick: fc.nat(20), dt: fc.integer({ min: 1, max: 60 }) }) },
 );
 
 function run(steps: G[], onStep?: (prev: StepResult, next: StepResult, input: RawInput) => void): StepResult[] {
@@ -49,7 +53,10 @@ function run(steps: G[], onStep?: (prev: StepResult, next: StepResult, input: Ra
     } else if (g.k === "text") input = { kind: "text", id, at: t, text: g.text };
     else if (g.k === "rt") input = { kind: "runtime", id, at: t, event: g.ev };
     else if (g.k === "shell") input = { kind: "shell", id, at: t, action: "call_192" };
-    else input = { kind: "chip", id, at: t, chipId: "CHIP_FRIEND_ARRIVED" };
+    else {
+      const offered = r.output.chips;
+      input = { kind: "chip", id, at: t, chipId: offered.length ? offered[g.pick % offered.length]!.chipId : "CHIP_FRIEND_ARRIVED" };
+    }
     const next = processEvent(r.state, input);
     onStep?.(r, next, input);
     out.push(next);
@@ -115,6 +122,26 @@ describe("engine properties (random sequences)", () => {
         });
       }),
       { numRuns: Math.ceil(N / 2) },
+    );
+  });
+
+  it("time alone never replaces a help card with a question, unless someone is watched or the help lost a requirement (L22)", () => {
+    fc.assert(
+      fc.property(seq, (steps) => {
+        run(steps, (prev, next, input) => {
+          if (input.kind !== "runtime") return;
+          const before = prev.output.card;
+          const after = next.output.card;
+          if (before.kind !== "action" || before.band === "P0" || !before.strategy || next.log.band === "P0") return;
+          if (["emergency_escalation", "confirm_commitment", "terminal"].includes(before.skill) || after.kind !== "question") return;
+          const facts = buildFacts(next.state, input.at, REG).facts;
+          const watchful = facts["signal.actor"] === "helper" || Number(facts["risk.medical"]) >= 2;
+          const st = REG.strategy.get(`${before.skill}.${before.strategy}`)!;
+          const lost = strategyIneligibility(before.skill, st, { state: next.state, facts, band: next.log.band, now: input.at, reg: REG }, true) !== null;
+          expect(watchful || lost, `${before.cardId} → ${after.cardId} on ${input.event}`).toBe(true);
+        });
+      }),
+      RUNS,
     );
   });
 

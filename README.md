@@ -1,5 +1,8 @@
 # SOS Apollo
 
+> **Engineering entry points:** `CLAUDE.md` (project rules) · `app/_system/docs/BLUEPRINT.md` (v0.1 engine, verified) · `app/_system/docs/BLUEPRINT-v0.2-CONTINUITY.md` (v0.2 continuity plane) · `app/_audit/README.md` (audit trail). Site: `/` gateway · `/app/` SOS (beta) · `/app/lab/` beta lab for testers and clinicians (`app/_system/docs/BETA-LAB.md`). Demo: `app/_system/dist/simulator.html`.
+
+
 **Harm Control · Apollo::rio**
 
 > When it hits too hard, one useful thing at a time.

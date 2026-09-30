@@ -43,9 +43,17 @@ export function reduce(state: SessionState, ev: DomainEvent, now: number, reg: R
       const def = reg.strategy.get(key);
       if (!def) throw new Error(`reducer: unknown strategy ${key}`);
       const mem = (state.strategies[key] ??= { doneAt: null, blockedUntil: null, shows: 0 });
+      if (state.requested?.key === key) state.requested = null; // the request was answered
       if (ev.outcome === "done") mem.doneAt = now;
       else if (ev.outcome === "failed") mem.blockedUntil = now + def.blockSec * 1000; // L09: invalidate the strategy
       else mem.blockedUntil = now + def.cooldownSec * 1000;
+      return;
+    }
+
+    case "STRATEGY_REQUESTED": {
+      const key = `${ev.skill}.${ev.strategy}`;
+      if (!reg.strategy.get(key)) throw new Error(`reducer: unknown strategy ${key}`);
+      state.requested = { key, at: now };
       return;
     }
 
@@ -138,6 +146,8 @@ export function opToEvents(op: Op, state: SessionState, ctx?: { skill?: string; 
       if (!skill || !strategy) return [];
       return [{ type: "STRATEGY_OUTCOME", skill, strategy, outcome: op.outcome }];
     }
+    case "STRATEGY_REQUESTED":
+      return [{ type: "STRATEGY_REQUESTED", skill: op.skill, strategy: op.strategy }];
     case "COMMITMENT_CREATED":
       return [{ type: "COMMITMENT_CREATED", kind: op.kind }];
     case "COMMITMENT_RESOLVED":

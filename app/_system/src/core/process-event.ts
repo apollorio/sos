@@ -10,8 +10,8 @@ import { REG, type Reg } from "./registry";
 import type { RawInput } from "./domain/events";
 import type { SessionState } from "./domain/state";
 import { initialState } from "./domain/state";
-import type { CardView, ChipView, Decision, Effect, LogEntry, Output, SkillPick, StepResult, Why } from "./domain/decision";
-import type { Band, CardId, ChipId } from "../generated/registry.gen";
+import type { CardView, Decision, Effect, LogEntry, Output, SkillPick, StepResult, Why } from "./domain/decision";
+import type { Band, CardId } from "../generated/registry.gen";
 import { REGISTRY_HASH } from "../generated/registry.gen";
 import { ingest } from "./ingest/ingest";
 import { reduce, opToEvents, type ReduceNotes } from "./state/reducer";
@@ -21,13 +21,19 @@ import { nextCommitmentDue, pruneCommitments } from "./state/commitments";
 import { checkInvariants } from "./state/invariants";
 import { decide, pickKey } from "./planner/decide";
 import { variantFor } from "./planner/voi";
+import { chipsFor, REQUEST_TTL_MS } from "./planner/chips";
 import { buildFacts } from "./logic/facts";
+import { evaluate } from "./logic/predicate";
+import type { DomainEvent } from "./domain/events";
+import type { StrategyPriors } from "./continuity/types";
 
 export const ENGINE_VERSION = "0.1.0";
 
 export interface ProcessOptions {
   /** dev: invariant violations throw. prod: they render CARD_SAFE_FALLBACK. */
   mode?: "dev" | "prod";
+  /** v0.2: longitudinal priors. Reorder eligible strategies only; never a fact (INV-020/021). */
+  priors?: StrategyPriors;
 }
 
 export function startSession(sessionId: string, at: number, reg: Reg = REG, opts: ProcessOptions = {}): StepResult {
@@ -48,11 +54,20 @@ export function processEvent(prev: SessionState, input: RawInput, reg: Reg = REG
   let rejected: StepResult["rejected"];
   let summary = "duplicate";
   let eventTypes: string[] = [];
+  let events: DomainEvent[] = [];
   let explicitStep = false;
+  let ingestNotice: Output["notice"];
+  let helpedCard: string | null = null;
 
   if (duplicate) rejected = "DUPLICATE";
   else {
+    // L25: the time an ACCEPTED answer took (visible time only) feeds the derived fact `pace`. Taps on help cards do not
+    // count (doing an exercise for a minute is not hesitation), nor do rejected or stale taps.
+    helpedCard = s.card && s.card.kind === "action" && (s.card.skill === "grounding" || s.card.skill === "care") ? s.card.instanceId : null;
+    const answering = input.kind === "tap" && s.card?.kind === "question" && s.card.instanceId === input.cardInstanceId
+      ? Math.max(0, now - Math.max(s.card.shownAt, s.visibility.since)) : null;
     const ing = ingest(s, input, now, reg);
+    if (answering !== null && !ing.rejected) s.answerPace = [...(s.answerPace ?? []), { ms: answering, at: now }].slice(-5);
     summary = ing.summary;
     if (ing.rejected) rejected = ing.rejected;
     if (ing.human) {
@@ -61,39 +76,61 @@ export function processEvent(prev: SessionState, input: RawInput, reg: Reg = REG
       if (s.forcedQuestion && s.card?.questionId === s.forcedQuestion) s.forcedQuestion = null;
     }
     explicitStep = ing.human && !ing.rejected;
+    if (ing.notice) ingestNotice = ing.notice;
     for (const ev of ing.events) reduce(s, ev, now, reg, notes);
     eventTypes = ing.events.map((e) => e.type);
+    events = ing.events;
   }
 
-  if (notes.wiped) return terminal(s, "CARD_SESSION_CLOSED", now, reg, summary, eventTypes, [{ type: "WIPE_STORAGE" }], rejected);
+  if (notes.wiped) return terminal(s, "CARD_SESSION_CLOSED", now, reg, summary, eventTypes, events, [{ type: "WIPE_STORAGE" }], rejected);
 
   accrueSilence(s, now, reg);
   const expired = expireSignals(s, now);
   if (expired.length) notes.notes.push(`expired:${expired.join(",")}`);
   pruneCommitments(s, now);
 
-  if (s.status !== "active") return terminal(s, "CARD_SESSION_CLOSED", now, reg, summary, eventTypes, [{ type: "KEEP_AWAKE", on: false }], rejected);
+  if (s.status !== "active") return terminal(s, "CARD_SESSION_CLOSED", now, reg, summary, eventTypes, events, [{ type: "KEEP_AWAKE", on: false }], rejected);
 
-  const decision = decide(s, now, reg, explicitStep);
+  const decision = decide(s, now, reg, explicitStep, opts.priors);
   const effects: Effect[] = [];
   const card = applyDecision(s, decision, now, reg, effects);
 
   const violations = checkInvariants(s, decision, card, now, reg);
   if (violations.length) {
     if (mode === "dev") throw new Error(`Invariant violation: ${violations.join(" | ")}`);
-    return terminal(s, "CARD_SAFE_FALLBACK", now, reg, summary, eventTypes, [], rejected, violations);
+    return terminal(s, "CARD_SAFE_FALLBACK", now, reg, summary, eventTypes, events, [], rejected, violations);
   }
 
   effects.push({ type: "KEEP_AWAKE", on: decision.band === "P0" });
+  // L22: silence on a help card brings presence, not a question. (HR-008 still watches silence when there is medical risk.)
+  // L28: on a question, silence means thinking: say so, never hurry.
+  const quiet = decision.band !== "P0" && s.silence.count >= 1;
+  const presence = quiet ? (card.kind === "question" ? ("THINKING" as const) : PRESENCE_LINES[s.seq % PRESENCE_LINES.length]) : undefined;
+  // A question asked again (its answer aged out, a safety re-check): say why, so it never feels like a jump.
+  const recheck = card.kind === "question" && card.questionId && (s.questions[card.questionId]?.asks ?? 0) >= 2 ? ("RECHECK" as const) : undefined;
+  // The live flows' voice (v1): after a "Fiz" on a technique or a care tip, one line of reassurance, rotating.
+  const didIt = explicitStep && helpedCard !== null && input.kind === "tap" && input.cardInstanceId === helpedCard
+    && events.some((e) => e.type === "STRATEGY_OUTCOME" && e.outcome === "done");
+  const done = didIt ? AFTER_DONE[Object.values(s.strategies).filter((m) => m.doneAt != null).length % AFTER_DONE.length] : undefined;
+  const notice = notes.notice ?? ingestNotice ?? (rejected === "STALE_CARD" ? ("STALE_TAP" as const) : presence ?? recheck ?? done);
+  const finalFacts = buildFacts(s, now, reg).facts;
+  const amb = reg.data.ambient.breath;
+  const breath = decision.band !== "P0" && evaluate(amb.when, finalFacts).ok ? { inhaleSec: amb.inhaleSec, holdSec: amb.holdSec, exhaleSec: amb.exhaleSec } : null;
   const output: Output = {
     card,
-    chips: chipsFor(s, decision.band, reg),
-    ...(notes.notice ? { notice: notes.notice } : rejected === "STALE_CARD" ? { notice: "STALE_TAP" as const } : {}),
+    chips: decision.band === "P0" ? [] : chipsFor(s, finalFacts, decision.band, now, reg),
+    ...(breath ? { breath } : {}),
+    ...(notice ? { notice } : {}),
     effects,
     nextWakeAt: nextWakeAt(s, now, reg),
   };
-  return { state: s, output, log: logEntry(s, now, summary, eventTypes, decision.band, decision.pick, decision.why, [], notes), ...(rejected ? { rejected } : {}) };
+  return { state: s, output, log: logEntry(s, now, summary, eventTypes, decision.band, decision.pick, decision.why, [], notes), events, ...(rejected ? { rejected } : {}) };
 }
+
+/** L22: quiet lines of presence, one per card (rotating by card, stable while the card stays). */
+const PRESENCE_LINES = ["PRESENCE", "PRESENCE_WAVE", "PRESENCE_MINUTE"] as const;
+/** After "Fiz" (audit 012, lines from the live v1 flows `torto`/`panico`). */
+const AFTER_DONE = ["DONE_1", "DONE_2", "DONE_3", "DONE_4", "DONE_5"] as const;
 
 /* ───────────────────────────── bookkeeping ───────────────────────────── */
 
@@ -126,7 +163,9 @@ function buildCardView(s: SessionState, pick: SkillPick, band: Band, now: number
 
 function applyDecision(s: SessionState, d: Decision, now: number, reg: Reg, effects: Effect[]): CardView {
   const key = pickKey(d.pick);
-  const same = s.card !== null && s.card.key === key && s.card.band === d.band;
+  // L28: the same card in another non-P0 band is still the same card (same instance: a tap in flight stays valid).
+  const same = s.card !== null && s.card.key === key && (s.card.band === d.band || (s.card.band !== "P0" && d.band !== "P0"));
+  if (same && s.card) s.card = { ...s.card, band: d.band };
 
   if (!same) {
     // New foreground card → new instance id (old taps become stale, INV-015).
@@ -173,16 +212,6 @@ function stripShown(c: CardView & { shownAt?: number }): CardView {
   return view;
 }
 
-function chipsFor(s: SessionState, band: Band, reg: Reg): ChipView[] {
-  if (band === "P0") return [];
-  const out: ChipView[] = [];
-  for (const chip of reg.data.chips) {
-    if (!chip.bands.includes(band)) continue;
-    if (s.commitments.some((c) => c.kind === chip.whenPending && c.status === "pending")) out.push({ chipId: chip.id as ChipId, actionId: chip.action.id });
-  }
-  return out.slice(0, 1);
-}
-
 /** Earliest instant at which the decision could change with no new input (piecewise-constant guarantee). */
 function nextWakeAt(s: SessionState, now: number, reg: Reg): number | null {
   const cands: (number | null)[] = [
@@ -198,7 +227,10 @@ function nextWakeAt(s: SessionState, now: number, reg: Reg): number | null {
   for (const [qid, mem] of Object.entries(s.questions)) {
     const q = reg.question.get(qid);
     if (q && mem?.lastUnknownAt != null && mem.lastUnknownAt + q.cooldownSec * 1000 > now) cands.push(mem.lastUnknownAt + q.cooldownSec * 1000);
+    if (q?.minIntervalSec && mem?.lastAskedAt != null) cands.push(mem.lastAskedAt + q.minIntervalSec * 1000); // L24 boundary
   }
+  for (const p of s.answerPace ?? []) cands.push(p.at + reg.data.pace.windowSec * 1000); // a sample leaves the pace window
+  if (s.requested) cands.push(s.requested.at + REQUEST_TTL_MS + 1); // a menu pick stops being in force
   const future = cands.filter((x): x is number => x !== null && x > now);
   return future.length ? Math.min(...future) : null;
 }
@@ -210,6 +242,7 @@ function terminal(
   reg: Reg,
   summary: string,
   eventTypes: string[],
+  events: DomainEvent[],
   effects: Effect[],
   rejected: StepResult["rejected"],
   violations: string[] = [],
@@ -236,6 +269,7 @@ function terminal(
     state: s,
     output: { card: view, chips: [], effects, nextWakeAt: null },
     log: logEntry(s, now, summary, eventTypes, band, { ...pick, skill: "steady_check" }, why, violations, { notes: [] }, "terminal"),
+    events,
     ...(rejected ? { rejected } : {}),
   };
 }

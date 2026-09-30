@@ -11,6 +11,7 @@ import { EngineLoop } from "./engine-loop";
 import { openStore } from "./storage/session-store";
 import { wireBrowserSignals } from "./signals-browser";
 import { now } from "./clock";
+import { attachContinuity } from "./continuity/boot-continuity";
 
 const failToShell = () => document.documentElement.classList.remove("js-ok");
 window.addEventListener("error", failToShell);
@@ -32,7 +33,9 @@ async function main(): Promise<void> {
   wireBrowserSignals((event) => void loop.dispatch({ kind: "runtime", event }));
   await loop.start();
   document.documentElement.classList.add("js-ok");
-  if ("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(() => undefined);
+  // Continuity plane (v0.2): attached AFTER the first card is on screen; never awaited by the acute path (INV-019).
+  void attachContinuity(loop, now).catch(() => undefined);
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(() => undefined);
 }
 
 main().catch(failToShell);

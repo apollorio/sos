@@ -1,2 +1,3 @@
 .cursor/
 *.log
+node_modules/
