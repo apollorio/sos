@@ -34,7 +34,10 @@
     "DONE_2": "O que você sente agora é intenso.. não é permanente.",
     "DONE_3": "O efeito vai passando.. às vezes sobe, às vezes baixa. A direção é o fim.",
     "DONE_4": "Você fez o que deu. Isso já é muito. Tô aqui.",
-    "DONE_5": "Não precisa estar bem agora. Só o próximo minuto."
+    "DONE_5": "Não precisa estar bem agora. Só o próximo minuto.",
+    "DONE_H1": "Você tá fazendo o certo ficando junto.",
+    "DONE_H2": "Isso tem pico.. e depois baixa. Tô aqui com vocês.",
+    "DONE_H3": "Um passo de cada vez. Você não tá sozinho(a) nisso."
   },
   "handoff": { "trusted_message": "Oi, não tô muito bem e preciso de alguém comigo. Pode vir ou me ligar agora?" },
   "chips": {
@@ -148,23 +151,6 @@
         "moderate": "Barulho médio",
         "loud": "Muito barulho ou luz",
         "unknown": "Não sei"
-      }
-    },
-    "CARD_Q_SUBSTANCE": {
-      "review": "draft",
-      "clinical": true,
-      "title": { "default": "O que você usou?", "helper": "O que a pessoa usou?" },
-      "body": {
-        "default": "Sem julgamento.. só pra eu saber como cuidar de você. Fica só neste aparelho.",
-        "helper": "Sem julgamento.. só pra eu saber como te ajudar a cuidar dela. Fica só neste aparelho."
-      },
-      "actions": {
-        "stim": "Bala, MD ou pó",
-        "downer": "G, calmante ou remédio",
-        "alcohol_only": "Só álcool",
-        "psychedelic": "Ácido, cogumelo, ket, erva ou lança",
-        "none": "Nada",
-        "unknown": "Não sei / misturei muita coisa"
       }
     },
     "CARD_P0_CALL": {
@@ -412,77 +398,22 @@
       "body": "Se precisar de ajuda agora, ligue 192.",
       "actions": { "call_192": "Ligar 192", "restart": "Recomeçar" }
     },
-    "CARD_Q_WHICH_STIM": {
-      "review": "draft",
-      "clinical": true,
-      "title": { "default": "Qual deles? Teve álcool junto?", "helper": "Qual deles? Teve álcool junto?" },
-      "body": { "default": "Um toque só responde as duas coisas.", "helper": "Um toque só responde as duas coisas." },
-      "actions": {
-        "md": "Só bala / MD",
-        "md_alcohol": "Bala + álcool",
-        "coke": "Só pó",
-        "coke_alcohol": "Pó + álcool",
-        "unknown": "Outro / não sei"
-      }
-    },
-    "CARD_Q_WHICH_DOWNER": {
-      "review": "draft",
-      "clinical": true,
-      "title": { "default": "Qual deles? Teve álcool junto?", "helper": "Qual deles? Teve álcool junto?" },
-      "body": { "default": "Um toque só responde as duas coisas.", "helper": "Um toque só responde as duas coisas." },
-      "actions": {
-        "ghb": "Só G",
-        "ghb_alcohol": "G + álcool",
-        "downer_pill": "Só calmante ou remédio",
-        "downer_pill_alcohol": "Calmante + álcool",
-        "unknown": "Outro / não sei"
-      }
-    },
-    "CARD_Q_WHICH_PSY": {
-      "review": "draft",
-      "clinical": true,
-      "title": { "default": "Qual deles?", "helper": "Qual deles?" },
-      "body": {
-        "default": "Cada um pede um cuidado diferente. Sem julgamento.",
-        "helper": "Cada um pede um cuidado diferente. Sem julgamento."
-      },
-      "actions": {
-        "lsd": "Ácido, doce ou cogumelo",
-        "ket": "Ket",
-        "cannabis": "Erva, maconha",
-        "inhalant": "Lança, loló",
-        "unknown": "Outra coisa / não sei"
-      }
-    },
     "CARD_Q_ALCOHOL": {
       "review": "draft",
       "clinical": true,
-      "title": { "default": "Rolou álcool junto?", "helper": "Ela bebeu álcool junto?" },
-      "body": { "default": "Misturar muda o cuidado. Só isso.", "helper": "Misturar muda o cuidado. Só isso." },
-      "actions": { "yes": "Sim, teve álcool", "no": "Não", "unknown": "Não sei" }
-    },
-    "CARD_Q_SEX": {
-      "review": "draft",
-      "clinical": true,
-      "title": { "default": "Tomou algo pra transar?", "helper": "Ela tomou algo pra transar?" },
+      "title": { "default": "E bebida, rolou hoje?", "helper": "E bebida, ela tomou hoje?" },
       "body": {
-        "default": "Sem julgamento. Azulzinho (Viagra, Cialis) ou poppers mudam o que é perigoso misturar.",
-        "helper": "Sem julgamento. Azulzinho (Viagra, Cialis) ou poppers mudam o que é perigoso misturar."
+        "default": "Sem problema nenhum. Só muda o jeito de cuidar.",
+        "helper": "Sem problema nenhum. Só muda o jeito de cuidar."
       },
-      "actions": {
-        "pill": "Azulzinho",
-        "poppers": "Poppers",
-        "both": "Os dois",
-        "none": "Nada disso",
-        "unknown": "Não sei"
-      }
+      "actions": { "yes": "Rolou, sim", "no": "Não", "unknown": "Não lembro" }
     },
     "CARD_Q_BODY": {
       "review": "draft",
       "clinical": true,
-      "title": { "default": "O que mais incomoda no corpo?", "helper": "O que mais incomoda nela agora?" },
+      "title": { "default": "Tem algo incomodando no corpo?", "helper": "Tem algo incomodando o corpo dela?" },
       "body": {
-        "default": "Me diz uma coisa só. A gente cuida dela primeiro.",
+        "default": "Me fala uma coisa só. A gente cuida dela primeiro.",
         "helper": "Uma coisa só. A gente cuida disso primeiro."
       },
       "actions": {
@@ -495,62 +426,72 @@
     },
     "CARD_CARE_MIX_DOWNERS": {
       "review": "draft",
-      "title": { "default": "Álcool com isso soma.", "helper": "Álcool com isso soma." },
+      "title": { "default": "Dois pesos juntos somam.", "helper": "Dois pesos juntos somam." },
       "body": {
-        "default": "Os dois derrubam a respiração juntos. **Não toma mais nada hoje.** Não fica sozinho(a). Deu sono pesado: deita **de lado**. Não acorda ou respira devagar: 192.",
-        "helper": "Os dois derrubam a respiração juntos. **Nada mais pra ela hoje.** Não deixa ela sozinha. Sono pesado: **de lado**, joelho dobrado. Não acorda ou respira devagar: 192."
+        "default": "Em cima desse peso, bebida ou calmante deixam a respiração lenta. Hoje não soma mais nada. Fica perto de alguém. Sono pesado: **de lado**.",
+        "helper": "Em cima desse peso, bebida ou calmante deixam a respiração lenta. Nada mais pra ela hoje. Não sai de perto. Sono pesado: **de lado**."
       },
-      "actions": { "ok": "Entendi", "not_this": "Quero outra coisa", "call_poison": "Tirar dúvida: 0800 722 6001" },
+      "actions": { "ok": "Tá bom", "not_this": "Quero outra coisa", "call_poison": "Tirar dúvida: 0800 722 6001" },
       "clinical": true
     },
     "CARD_CARE_MIX_POPPERS_PILL": {
       "review": "draft",
-      "title": { "default": "Poppers com azulzinho, não.", "helper": "Poppers com azulzinho, não." },
-      "body": {
-        "default": "Juntos derrubam a pressão de um jeito perigoso. **Sem mais poppers hoje.** Senta ou deita e levanta devagar. Desmaio, dor no peito ou tontura forte: 192.",
-        "helper": "Juntos derrubam a pressão de um jeito perigoso. **Sem mais poppers pra ela hoje.** Deixa ela sentada ou deitada. Desmaio, dor no peito ou tontura forte: 192."
+      "title": {
+        "default": "Com remédio de ereção, isso derruba a pressão.",
+        "helper": "Com remédio de ereção, isso derruba a pressão."
       },
-      "actions": { "ok": "Entendi", "not_this": "Quero outra coisa", "call_poison": "Tirar dúvida: 0800 722 6001" },
+      "body": {
+        "default": "Juntos podem baixar a pressão de um jeito perigoso. Bora parar aqui hoje. Senta ou deita e levanta devagar. Desmaio ou dor no peito: 192.",
+        "helper": "Juntos podem baixar a pressão de um jeito perigoso. Nada mais pra ela hoje. Sentada ou deitada. Desmaio ou dor no peito: 192."
+      },
+      "actions": { "ok": "Tá bom", "not_this": "Quero outra coisa", "call_poison": "Tirar dúvida: 0800 722 6001" },
       "clinical": true
     },
     "CARD_CARE_MIX_COKE_ALCOHOL": {
       "review": "draft",
-      "title": { "default": "Pó com álcool pesa no coração.", "helper": "Pó com álcool pesa no coração." },
-      "body": {
-        "default": "Juntos, o corpo faz uma terceira coisa, mais forte e mais longa. **Para os dois por hoje.** Senta num lugar fresco. Dor no peito ou coração disparado: 192.",
-        "helper": "Juntos, o corpo faz uma terceira coisa, mais forte e mais longa. **Nada mais pra ela hoje.** Lugar fresco, sentada. Dor no peito ou coração disparado: 192."
+      "title": {
+        "default": "Bebida com essa aceleração pesa no coração.",
+        "helper": "Bebida com essa aceleração pesa no coração."
       },
-      "actions": { "ok": "Entendi", "not_this": "Quero outra coisa", "call_poison": "Tirar dúvida: 0800 722 6001" },
+      "body": {
+        "default": "Juntos, o corpo faz uma terceira coisa, mais forte e mais longa. Bora dar um tempo nos dois. Lugar fresco. Dor no peito: 192.",
+        "helper": "Juntos, o corpo faz uma terceira coisa, mais forte e mais longa. Nada mais pra ela hoje. Lugar fresco. Dor no peito: 192."
+      },
+      "actions": { "ok": "Tá bom", "not_this": "Quero outra coisa", "call_poison": "Tirar dúvida: 0800 722 6001" },
       "clinical": true
     },
     "CARD_CARE_MIX_MD_ALCOHOL": {
       "review": "draft",
-      "title": { "default": "Bala com álcool esquenta.", "helper": "Bala com álcool esquenta." },
+      "title": { "default": "Bebida com essa energia esquenta.", "helper": "Bebida com essa energia esquenta." },
       "body": {
-        "default": "Juntos, esquentam e secam o corpo, e escondem o cansaço. **Para de beber agora.** Sai do calor, descansa da dança. Goles de água, sem exagero.",
-        "helper": "Juntos, esquentam e secam o corpo, e escondem o cansaço. **Sem mais álcool pra ela.** Tira ela do calor, pausa na dança. Goles de água, sem exagero."
+        "default": "Juntos esquentam, secam e escondem o cansaço. Troca o copo por água aos goles, sai do calor, pausa na dança. Tô contigo.",
+        "helper": "Juntos esquentam, secam e escondem o cansaço. Troca o copo dela por água aos goles, tira do calor, pausa na dança."
       },
-      "actions": { "ok": "Entendi", "not_this": "Quero outra coisa", "call_poison": "Tirar dúvida: 0800 722 6001" },
+      "actions": { "ok": "Tá bom", "not_this": "Quero outra coisa", "call_poison": "Tirar dúvida: 0800 722 6001" },
       "clinical": true
     },
     "CARD_CARE_MIX_STIM_SEX": {
       "review": "draft",
-      "title": { "default": "Coração nos dois sentidos.", "helper": "Coração nos dois sentidos." },
-      "body": {
-        "default": "Estimulante com azulzinho ou poppers força o coração. **Não toma mais nada hoje.** Senta, esfria. Dor no peito, desmaio ou ereção que não passa em 4 h: 192.",
-        "helper": "Estimulante com azulzinho ou poppers força o coração. **Nada mais pra ela hoje.** Sentada, fresca. Dor no peito, desmaio ou ereção que não passa em 4 h: 192."
+      "title": {
+        "default": "O coração tá sendo puxado dos dois lados.",
+        "helper": "O coração tá sendo puxado dos dois lados."
       },
-      "actions": { "ok": "Entendi", "not_this": "Quero outra coisa", "call_poison": "Tirar dúvida: 0800 722 6001" },
+      "body": {
+        "default": "Remédio de ereção com essa aceleração força o coração. Hoje não soma mais nada. Senta, esfria. Dor no peito ou ereção por 4 h: 192.",
+        "helper": "Remédio de ereção com essa aceleração força o coração. Nada mais pra ela hoje. Sentada, fresca. Dor no peito: 192."
+      },
+      "actions": { "ok": "Tá bom", "not_this": "Quero outra coisa", "call_poison": "Tirar dúvida: 0800 722 6001" },
       "clinical": true
     },
     "CARD_CARE_COOL": {
       "review": "draft",
-      "title": { "default": "Esfriar o corpo..", "helper": "Esfriar o corpo dela.." },
+      "title": { "default": "Bora baixar esse calor..", "helper": "Bora baixar o calor dela.." },
       "body": {
-        "default": "Para de se mexer um pouco. Pano molhado frio na **nuca, axila ou atrás do joelho**. Sombra, janela, vento. Muito quente **e** confuso: 192.",
-        "md": "Pausa na dança, sai da muvuca. Pano frio na **nuca, axila ou atrás do joelho**. Vento, sombra. Muito quente **e** confuso: 192.",
+        "default": "Uma pausa no movimento. Pano molhado frio na **nuca, axila ou atrás do joelho**, e um vento. Muito quente **e** confuso: 192.",
+        "love_energy": "Pausa na dança, sai um pouco da muvuca. Pano frio na **nuca, axila ou atrás do joelho**. Muito quente **e** confuso: 192.",
+        "long_engine": "O motor tá ligado há tempo.. deixa ele esfriar. Senta, pano frio na **nuca ou axila**, vento. Muito quente **e** confuso: 192.",
         "helper": "Ajuda ela a parar um pouco. Pano frio na **nuca, axila ou atrás do joelho**. Sombra, vento. Muito quente **e** confusa: 192.",
-        "md.helper": "Tira ela da dança e da muvuca. Pano frio na **nuca, axila ou atrás do joelho**. Vento, sombra. Muito quente **e** confusa: 192."
+        "love_energy.helper": "Tira ela da dança e da muvuca. Pano frio na **nuca, axila ou atrás do joelho**. Vento, sombra. Muito quente **e** confusa: 192."
       },
       "actions": { "done": "Fiz", "not_this": "Quero outra", "no_have": "Não tenho aqui" },
       "clinical": true
@@ -569,8 +510,8 @@
       "review": "draft",
       "title": { "default": "Garganta ardendo..", "helper": "Garganta dela ardendo.." },
       "body": {
-        "default": "Gargarejo com **soro fisiológico** ou água fria, e cospe. Depois, golinhos de água. Bala ou mel ajudam. Engolir difícil ou faltar ar: 192.",
-        "helper": "Ajuda ela a gargarejar **soro fisiológico** ou água fria, e cuspir. Depois golinhos. Bala ou mel ajudam. Engolir difícil ou faltar ar: 192."
+        "default": "Gargarejo com **soro fisiológico** ou água fria, e cospe. Depois, golinhos de água. Pastilha ou mel ajudam. Engolir difícil ou faltar ar: 192.",
+        "helper": "Ajuda ela a gargarejar **soro fisiológico** ou água fria, e cuspir. Depois golinhos. Pastilha ou mel ajudam. Engolir difícil ou faltar ar: 192."
       },
       "actions": { "done": "Fiz", "not_this": "Quero outra", "no_have": "Não tenho aqui" },
       "clinical": true
@@ -599,30 +540,34 @@
       "review": "draft",
       "title": { "default": "Corpo pesado pede cuidado.", "helper": "Corpo pesado pede cuidado." },
       "body": {
-        "default": "Senta ou deita **de lado**, com alguém por perto. Nada de banho frio pra acordar. Não soma outro calmante nem álcool. Não acorda ou respira devagar: 192.",
-        "ghb": "G derruba rápido. Senta ou deita **de lado**, com alguém por perto. Não repete a dose hoje. Nada pela boca se estiver apagando. Não acorda: 192.",
-        "ket": "Senta ou deita onde não dá pra cair, **de lado**. Levanta devagar, com ajuda. Nada de água, piscina ou banheira agora.",
-        "helper": "Deixa ela sentada ou deitada **de lado**, e fica junto. Nada de banho frio pra acordar. Nada mais pra ela. Não acorda ou respira devagar: 192.",
-        "ghb.helper": "G derruba rápido. Deixa ela **de lado**, e fica junto. Nada pela boca se estiver apagando. Não acorda ou respira devagar: 192.",
-        "ket.helper": "Deixa ela sentada ou deitada **de lado**, onde não dá pra cair. Ajuda a levantar devagar. Nada de água, piscina ou banheira agora."
+        "default": "Senta ou deita **de lado**, perto de alguém. Nada de banho frio pra acordar. Não acorda ou respira devagar: 192.",
+        "warm_cliff": "Quando despenca assim, deita **de lado**, perto de alguém. Nada pela boca se estiver apagando. Não acorda: 192.",
+        "heavy_nod": "Esse sono pesado pede alguém do lado. Deita **de lado**, joelho dobrado. Respiração lenta ou não acorda: 192.",
+        "unplugged": "Senta ou deita onde não dá pra cair, **de lado**. Levanta devagar, com ajuda. Nada de água funda agora.",
+        "wired_sleepy": "Sono depois de acelerar pede alguém do lado. **De lado**, joelho dobrado. Respiração lenta ou não acorda: 192.",
+        "helper": "Deixa ela sentada ou deitada **de lado**, e fica junto. Nada de banho frio pra acordar. Não acorda ou respira devagar: 192.",
+        "warm_cliff.helper": "Quando despenca assim: **de lado**, e fica junto. Nada pela boca se estiver apagando. Não acorda ou respira devagar: 192.",
+        "heavy_nod.helper": "Esse sono pesado pede você do lado. **De lado**, joelho dobrado. Respiração lenta ou não acorda: 192.",
+        "unplugged.helper": "Deixa ela sentada ou deitada **de lado**, onde não dá pra cair. Ajuda a levantar devagar."
       },
       "actions": { "done": "Fiz", "not_this": "Quero outra" },
       "clinical": true
     },
     "CARD_CARE_PUT_AWAY": {
       "review": "draft",
-      "title": { "default": "Guarda o resto longe.", "helper": "Guarda o resto longe dela." },
+      "title": { "default": "Deixa o resto longe, só por agora.", "helper": "Deixa o resto longe dela, só por agora." },
       "body": {
-        "default": "Não precisa jogar fora.. só tira da vista. Agora não é hora de mais nada. A onda baixa sozinha.",
-        "coke": "Tira o pó da vista. O próximo tiro não traz o primeiro de volta.. só força o coração. Uma pessoa sóbria por perto ajuda.",
-        "md": "Tira da vista. Mais uma bala não volta o começo.. só esquenta e cansa o corpo. A onda baixa sozinha.",
-        "alcohol": "Para de beber por hoje. Troca o copo por água, aos goles. Não dirige.",
-        "ghb": "Tira o G da vista. A dose que derruba fica muito perto da que você já tomou. Não repete hoje.",
-        "helper": "Tira da vista dela, sem briga. Agora não é hora de mais nada. A onda baixa sozinha.",
-        "coke.helper": "Tira o pó da vista, sem briga. Mais não traz o começo de volta.. só força o coração dela.",
-        "md.helper": "Tira da vista, sem briga. Mais uma não volta o começo.. só esquenta e cansa o corpo dela.",
-        "alcohol.helper": "Troca o copo dela por água, aos goles. Ninguém dirige.",
-        "ghb.helper": "Tira o G da vista. A dose que derruba fica muito perto da que ela já tomou. Não repete hoje."
+        "default": "Não precisa jogar fora.. só tirar da vista. A onda baixa sozinha, e eu fico aqui contigo.",
+        "love_energy": "Mais uma não traz o começo de volta.. só esquenta e cansa. Deixa longe da vista. A onda baixa sozinha.",
+        "short_wired": "A próxima não devolve o começo.. só pesa no coração. Deixa longe da vista, que a gente atravessa essa junto.",
+        "spike_crash": "O vazio depois da pancada passa. A próxima só puxa outro vazio. Deixa longe e fica aqui comigo.",
+        "long_engine": "O motor precisa desligar sozinho. Mais só estica a noite e a queda. Deixa longe, bora descansar o corpo.",
+        "warm_cliff": "Quando despenca assim, a próxima fica muito perto da que derruba. Hoje não repete, tá? Deixa longe.",
+        "heavy_nod": "Com o corpo pesado assim, hoje não soma nada. Deixa longe e fica perto de alguém.",
+        "loose_clumsy": "Troca o copo por água, aos goles. E hoje ninguém dirige, combinado?",
+        "helper": "Tira da vista dela, sem briga. A onda baixa sozinha. Você tá fazendo o certo ficando junto.",
+        "warm_cliff.helper": "Quando despenca assim, a próxima fica muito perto da que derruba. Nada mais pra ela hoje. Deixa longe.",
+        "loose_clumsy.helper": "Troca o copo dela por água, aos goles. Hoje ninguém dirige."
       },
       "actions": { "done": "Fiz", "not_this": "Quero outra" },
       "clinical": true
@@ -631,42 +576,45 @@
       "review": "draft",
       "title": { "default": "A percepção mudou. O chão não.", "helper": "A percepção dela mudou. O chão não." },
       "body": {
-        "default": "Não luta com a onda.. ela sobe e desce. Muda **uma** coisa: luz baixa **ou** som baixo. Fica perto de alguém sóbrio.",
-        "cannabis": "Erva forte passa. Deita num lugar calmo, come algo doce, golinhos de água. Não é o que parece: o corpo tá seguro.",
-        "lsd": "Não luta com a onda.. ela sobe e desce. Muda **uma** coisa: luz **ou** som. Um lugar conhecido, alguém sóbrio perto.",
+        "default": "Não luta com a onda.. ela sobe e desce. Muda **uma** coisa: luz baixa **ou** som baixo. Fica perto de alguém tranquilo.",
+        "living_world": "As coisas parecem vivas.. deixa elas serem. A onda sobe e desce. Um lugar conhecido, alguém tranquilo perto.",
+        "long_patterns": "Os padrões e o tempo quebrado cansam, mas passam. Muda **uma** coisa: luz **ou** som. Fechar o olho um pouco pode ajudar.",
+        "soft_hungry": "Tá leve e esquisito.. passa. Deita num lugar calmo, come algo doce, golinhos de água. O corpo tá seguro.",
+        "unplugged": "Senta ou deita onde não dá pra cair. Levanta devagar, com ajuda. O corpo volta, no tempo dele.",
+        "wired_strange": "Acelerado com o mundo diferente: senta, baixa **uma** coisa (luz ou som) e respira junto com a bola.",
         "helper": "Não discute o que ela vê. Muda **uma** coisa: luz baixa **ou** som baixo. Fala pouco e calmo: isso passa.",
-        "cannabis.helper": "Deixa ela deitar num lugar calmo, com algo doce e golinhos de água. Fala calmo: isso passa.",
-        "lsd.helper": "Não discute o que ela vê. Muda **uma** coisa: luz **ou** som. Fica perto, fala pouco: isso passa."
+        "soft_hungry.helper": "Deixa ela deitar num lugar calmo, com algo doce e golinhos de água. Fala calmo: isso passa.",
+        "long_patterns.helper": "Não discute o que ela vê. Muda **uma** coisa: luz **ou** som. Fica perto, fala pouco: isso passa."
       },
       "actions": { "done": "Fiz", "not_this": "Quero outra" },
       "clinical": true
     },
     "CARD_CARE_INHALANT": {
       "review": "draft",
-      "title": { "default": "Lança ou loló: para agora.", "helper": "Lança ou loló: para agora." },
+      "title": { "default": "Tontura que vem e passa..", "helper": "Tontura que vem e passa.." },
       "body": {
-        "default": "Ar fresco, janela, senta. Não corre e não leva susto: o coração tá sensível. Longe de fogo. Tontura forte, desmaio ou coração falhando: 192.",
-        "helper": "Ar fresco pra ela, sentada. Sem correr e sem susto: o coração tá sensível. Longe de fogo. Desmaio ou coração falhando: 192."
+        "default": "Senta, ar fresco, janela. Longe de fogo. Nada disso pela boca. Caiu na pele ou no olho: água corrente. Desmaio ou coração falhando: 192.",
+        "helper": "Senta ela, ar fresco. Longe de fogo. Nada disso pela boca. Caiu na pele ou no olho: água corrente. Desmaio ou coração falhando: 192."
       },
       "actions": { "done": "Fiz", "not_this": "Quero outra" },
       "clinical": true
     },
     "CARD_CARE_POPPERS": {
       "review": "draft",
-      "title": { "default": "Poppers: dois cuidados.", "helper": "Poppers: dois cuidados." },
+      "title": { "default": "O que se cheira: dois cuidados.", "helper": "O que se cheira: dois cuidados." },
       "body": {
-        "default": "**Nunca engolir** e longe do fogo. Se caiu na pele ou no olho: água corrente. Senta se tontear. E não junta com azulzinho.",
-        "helper": "Nunca deixa ela **engolir**, e longe do fogo. Caiu na pele ou no olho: água corrente. Tonteou: sentada."
+        "default": "**Nunca engolir** e longe do fogo. Se caiu na pele ou no olho: água corrente. Senta se tontear. E não junta com remédio de ereção.",
+        "helper": "Nunca deixa ela **engolir**, e longe do fogo. Caiu na pele ou no olho: água corrente. Tonteou: sentada. E nada de remédio de ereção junto."
       },
       "actions": { "done": "Fiz", "not_this": "Quero outra" },
       "clinical": true
     },
     "CARD_CARE_PILL": {
       "review": "draft",
-      "title": { "default": "Azulzinho: uma só.", "helper": "Azulzinho: uma só." },
+      "title": { "default": "Remédio de ereção: um só hoje.", "helper": "Remédio de ereção: um só hoje." },
       "body": {
-        "default": "Não toma outra hoje. Não junta com poppers. Ereção que não passa em 4 horas, dor no peito ou desmaio: pronto-socorro ou 192.",
-        "helper": "Ela não toma outra hoje, nem poppers. Ereção que não passa em 4 horas, dor no peito ou desmaio: pronto-socorro ou 192."
+        "default": "Hoje não toma outro, e nada de cheirinho que dá tontura junto. Ereção que não passa em 4 horas, dor no peito ou desmaio: pronto-socorro ou 192.",
+        "helper": "Ela não toma outro hoje, e nada de cheirinho que dá tontura junto. Ereção que não passa em 4 horas, dor no peito ou desmaio: pronto-socorro ou 192."
       },
       "actions": { "done": "Fiz", "not_this": "Quero outra" },
       "clinical": true
@@ -675,11 +623,11 @@
       "review": "draft",
       "title": { "default": "Um pouco de água, aos goles.", "helper": "Água pra ela, aos goles." },
       "body": {
-        "default": "Devagar. Sente a água descer.. o corpo agradece. Sem exagero: goles, não garrafas.",
-        "md": "Goles de água ou isotônico, de tempos em tempos. **Não litros**: água demais também faz mal com bala.",
-        "alcohol": "Goles de água, devagar. Se o estômago aceitar, algo pra comer junto.",
+        "default": "Devagar. Sente a água descer.. o corpo agradece. Goles, não garrafas.",
+        "love_energy": "Com essa energia, golinhos de água ou isotônico de tempos em tempos. Não precisa de litros.",
+        "loose_clumsy": "Goles de água, devagar. Se o estômago aceitar, algo pra comer junto.",
         "helper": "Oferece golinhos, devagar, se ela estiver bem acordada. Nunca dá líquido pra quem tá apagando.",
-        "md.helper": "Golinhos de água ou isotônico pra ela, de tempos em tempos. **Não litros**: água demais faz mal com bala."
+        "love_energy.helper": "Golinhos de água ou isotônico pra ela, de tempos em tempos. Não precisa de litros."
       },
       "actions": { "done": "Fiz", "not_this": "Quero outra", "no_have": "Não tenho aqui" },
       "clinical": true
@@ -735,13 +683,13 @@
     },
     "CARD_CARE_MIX_STIM_ALCOHOL": {
       "review": "draft",
-      "clinical": true,
-      "title": { "default": "Estimulante com álcool pesa.", "helper": "Estimulante com álcool pesa." },
+      "title": { "default": "Bebida em cima da aceleração pesa.", "helper": "Bebida em cima da aceleração pesa." },
       "body": {
-        "default": "O álcool esconde o efeito e o corpo aguenta menos do que parece. **Para os dois por hoje.** Senta num lugar fresco, goles de água. Dor no peito ou coração disparado: 192.",
-        "helper": "O álcool esconde o efeito e o corpo aguenta menos do que parece. **Nada mais pra ela hoje.** Lugar fresco, sentada, goles de água. Dor no peito ou coração disparado: 192."
+        "default": "A bebida esconde o quanto o corpo tá cansado. Bora dar um tempo nos dois. Lugar fresco, goles de água. Dor no peito: 192.",
+        "helper": "A bebida esconde o quanto o corpo dela tá cansado. Nada mais hoje. Lugar fresco, goles de água. Dor no peito: 192."
       },
-      "actions": { "ok": "Entendi", "not_this": "Quero outra coisa", "call_poison": "Tirar dúvida: 0800 722 6001" }
+      "actions": { "ok": "Tá bom", "not_this": "Quero outra coisa", "call_poison": "Tirar dúvida: 0800 722 6001" },
+      "clinical": true
     },
     "CARD_CARE_SETTLE": {
       "review": "draft",
@@ -751,6 +699,148 @@
         "helper": "Ajuda a pessoa a sentar ou deitar em algo firme. Menos estímulo em volta. Fica do lado dela."
       },
       "actions": { "done": "Fiz", "not_this": "Quero outra" }
+    },
+    "CARD_Q_FEEL": {
+      "review": "draft",
+      "clinical": true,
+      "title": { "default": "Como tá o corpo agora?", "helper": "Como tá o corpo dela agora?" },
+      "body": {
+        "default": "Do seu jeito, sem julgamento. É só pra eu cuidar do jeito certo.",
+        "helper": "Do jeito que você tá vendo. É só pra gente cuidar do jeito certo."
+      },
+      "actions": {
+        "racing": "Acelerado, ligado, coração a mil",
+        "heavy": "Pesado, lento, com sono",
+        "strange": "O mundo tá diferente, estranho",
+        "mixed": "Duas coisas ao mesmo tempo",
+        "none": "Nada disso, é mais a cabeça",
+        "unknown": "Não sei dizer"
+      }
+    },
+    "CARD_Q_RACE_KIND": {
+      "review": "draft",
+      "clinical": true,
+      "title": { "default": "E essa energia puxa pra quê?", "helper": "E essa energia puxa ela pra quê?" },
+      "body": { "default": "Não tem resposta errada.", "helper": "Não tem resposta errada." },
+      "actions": {
+        "people": "Gente perto, música, abraço",
+        "doing": "Falar, fazer coisa, não parar",
+        "body_off": "Acelerado, mas o corpo meio longe",
+        "unknown": "Não sei"
+      }
+    },
+    "CARD_Q_RACE_LENGTH": {
+      "review": "draft",
+      "clinical": true,
+      "title": { "default": "Parece mais uma onda ou um motor?", "helper": "Parece mais uma onda ou um motor?" },
+      "body": {
+        "default": "Só pra eu saber o ritmo que a gente tá.",
+        "helper": "Só pra eu saber o ritmo que vocês tão."
+      },
+      "actions": {
+        "short": "Onda que sobe e baixa rápido",
+        "engine": "Motor que não desliga, sem sono",
+        "spike": "Pancada forte e curtinha, depois vazio",
+        "unknown": "Não sei"
+      }
+    },
+    "CARD_Q_HEAVY_KIND": {
+      "review": "draft",
+      "clinical": true,
+      "title": { "default": "Esse peso tá mais como?", "helper": "Esse peso nela tá mais como?" },
+      "body": { "default": "Me conta do jeito que vier.", "helper": "Me conta do jeito que você vê." },
+      "actions": {
+        "loose": "Solto, depois foi ficando torto",
+        "cliff": "Tava bem e do nada despencou",
+        "nod": "Sono pesado, cabeça caindo",
+        "unplugged": "O corpo parece desligado, longe",
+        "unknown": "Não sei"
+      }
+    },
+    "CARD_Q_STRANGE_KIND": {
+      "review": "draft",
+      "clinical": true,
+      "title": { "default": "O que tá mais diferente?", "helper": "O que tá mais diferente pra ela?" },
+      "body": { "default": "Tá tudo bem não saber explicar.", "helper": "Tá tudo bem não saber explicar." },
+      "actions": {
+        "alive": "As coisas parecem vivas, respirando",
+        "patterns": "Padrões, repetição, tempo quebrado",
+        "light": "Leve: tempo engraçado, riso, fome",
+        "body": "O corpo, mais do que o que se vê",
+        "buzz": "Tontura e calor que vêm e passam rápido",
+        "unknown": "Não sei"
+      }
+    },
+    "CARD_Q_MIXED_KIND": {
+      "review": "draft",
+      "clinical": true,
+      "title": { "default": "Quais duas coisas estão juntas?", "helper": "Quais duas coisas estão juntas nela?" },
+      "body": {
+        "default": "Isso me ajuda a cuidar melhor. Sem pressa.",
+        "helper": "Isso me ajuda a cuidar melhor dela. Sem pressa."
+      },
+      "actions": {
+        "wired_body": "Acelerado e o corpo mole, longe",
+        "wired_sleepy": "Tava acelerado e agora bateu um sono estranho",
+        "wired_strange": "Acelerado e o mundo diferente",
+        "unknown": "Não sei"
+      }
+    },
+    "CARD_Q_MEDS": {
+      "review": "draft",
+      "clinical": true,
+      "title": { "default": "Tomou algum remédio hoje?", "helper": "Ela tomou algum remédio hoje?" },
+      "body": {
+        "default": "Qualquer um conta, até de farmácia. Alguns mudam o que é seguro juntar.",
+        "helper": "Qualquer um conta, até de farmácia. Alguns mudam o que é seguro juntar."
+      },
+      "actions": {
+        "erection": "Pra ereção",
+        "sedative": "Calmante ou pra dormir",
+        "other": "Outro remédio",
+        "none": "Nenhum",
+        "unknown": "Não lembro"
+      }
+    },
+    "CARD_Q_URGE": {
+      "review": "draft",
+      "clinical": true,
+      "title": { "default": "Tá batendo vontade de mais?", "helper": "Ela tá com vontade de mais?" },
+      "body": {
+        "default": "Aquela vontade de voltar pro começo. Normal. Só me fala, sem julgamento.",
+        "helper": "Aquela vontade de voltar pro começo. Normal. Sem julgamento."
+      },
+      "actions": { "strong": "Muita", "some": "Um pouco", "no": "Não", "unknown": "Prefiro não dizer" }
+    },
+    "CARD_CARE_MIX_RUSH_SLEEP": {
+      "review": "draft",
+      "title": { "default": "Sono depois de acelerar pede atenção.", "helper": "Sono depois de acelerar pede atenção." },
+      "body": {
+        "default": "Pode ter vindo algo mais junto. Fica perto de alguém. Sono pesado: deita **de lado**. Respiração lenta ou não acorda: 192. Tô aqui.",
+        "helper": "Pode ter vindo algo mais junto. Não deixa ela sozinha. Sono pesado: **de lado**. Respiração lenta ou não acorda: 192."
+      },
+      "actions": { "ok": "Tá bom", "not_this": "Quero outra coisa", "call_poison": "Tirar dúvida: 0800 722 6001" },
+      "clinical": true
+    },
+    "CARD_CARE_MIX_WIRED_UNPLUGGED": {
+      "review": "draft",
+      "title": { "default": "Acelerado com o corpo longe..", "helper": "Acelerada com o corpo longe.." },
+      "body": {
+        "default": "O corpo quer ir, mas o chão tá estranho. Senta onde não dá pra cair. Levanta devagar, com alguém. Hoje não soma mais nada, tá?",
+        "helper": "Ela quer ir, mas o chão tá estranho. Senta ela onde não dá pra cair. Levanta devagar, junto. Hoje nada mais pra ela."
+      },
+      "actions": { "ok": "Tá bom", "not_this": "Quero outra coisa", "call_poison": "Tirar dúvida: 0800 722 6001" },
+      "clinical": true
+    },
+    "CARD_CARE_URGE": {
+      "review": "draft",
+      "clinical": true,
+      "title": { "default": "A vontade é uma onda.", "helper": "A vontade é uma onda." },
+      "body": {
+        "default": "Ela sobe e desce sozinha se ninguém alimentar. Bora deixar passar juntos: água, algo pra comer, um canto quieto.",
+        "helper": "Ela sobe e desce sozinha. Fica junto enquanto passa: água, algo pra comer, um canto quieto. Sem sermão, só companhia."
+      },
+      "actions": { "done": "Bora deixar passar", "not_this": "Quero outra coisa" }
     }
   },
   "continuity": {
@@ -793,26 +883,52 @@
       "reportedTrend.worse": "relatou estar pior",
       "actor.self": "a própria pessoa está usando o SOS",
       "actor.helper": "alguém está ajudando",
-      "substance.coke": "disse ter usado pó (cocaína)",
-      "substance.md": "disse ter usado bala/MD",
-      "substance.ket": "disse ter usado ket",
-      "substance.ghb": "disse ter usado G (GHB/GBL)",
-      "substance.downer_pill": "disse ter usado calmante, remédio ou opioide",
-      "substance.alcohol": "disse ter bebido só álcool",
-      "substance.cannabis": "disse ter usado maconha",
-      "substance.lsd": "disse ter usado ácido, doce ou cogumelo",
-      "substance.inhalant": "disse ter usado lança ou loló",
-      "alcohol.yes": "disse que bebeu álcool junto",
-      "alcohol.no": "disse que não bebeu álcool",
-      "sexEnhancer.pill": "disse ter tomado azulzinho",
-      "sexEnhancer.poppers": "disse ter usado poppers",
-      "sexEnhancer.both": "disse ter usado poppers e azulzinho",
-      "sexEnhancer.none": "disse não ter usado nada pra sexo",
+      "substance.coke": "registro antigo: aceleração curta",
+      "substance.md": "registro antigo: energia com vontade de gente perto",
+      "substance.ket": "registro antigo: corpo desligado, longe",
+      "substance.ghb": "registro antigo: bem e depois despencou",
+      "substance.downer_pill": "registro antigo: calmante ou remédio",
+      "substance.alcohol": "registro antigo: só bebida",
+      "substance.cannabis": "registro antigo: leve, com riso e fome",
+      "substance.lsd": "registro antigo: padrões e tempo quebrado",
+      "substance.inhalant": "registro antigo: tontura e calor rápidos",
+      "alcohol.yes": "disse que bebeu junto",
+      "alcohol.no": "disse que não bebeu",
+      "sexEnhancer.pill": "registro antigo: remédio de ereção",
+      "sexEnhancer.poppers": "registro antigo: tontura rápida no sexo",
+      "sexEnhancer.both": "registro antigo: remédio de ereção e tontura rápida",
+      "sexEnhancer.none": "registro antigo: nada pra sexo",
       "discomfort.nose": "nariz ardendo",
       "discomfort.throat": "garganta ardendo",
       "discomfort.heat": "muito calor",
       "discomfort.nausea": "enjoo",
-      "discomfort.jaw": "mandíbula travando"
+      "discomfort.jaw": "mandíbula travando",
+      "substanceClass.mixed": "descreveu duas sensações ao mesmo tempo",
+      "pattern.love_energy": "descreveu energia com vontade de gente perto",
+      "pattern.short_wired": "descreveu aceleração que sobe e baixa rápido",
+      "pattern.long_engine": "descreveu aceleração longa, sem sono",
+      "pattern.spike_crash": "descreveu uma pancada curta e depois vazio",
+      "pattern.wired_unplugged": "descreveu aceleração com o corpo longe",
+      "pattern.wired_sleepy": "descreveu sono estranho depois de acelerar",
+      "pattern.wired_strange": "descreveu aceleração com o mundo diferente",
+      "pattern.loose_clumsy": "descreveu ficar solto e depois torto",
+      "pattern.warm_cliff": "descreveu estar bem e despencar",
+      "pattern.heavy_nod": "descreveu sono pesado, cabeça caindo",
+      "pattern.unplugged": "descreveu o corpo desligado, longe",
+      "pattern.living_world": "descreveu as coisas parecendo vivas",
+      "pattern.long_patterns": "descreveu padrões e tempo quebrado",
+      "pattern.soft_hungry": "descreveu um estado leve, com riso e fome",
+      "pattern.buzz_brief": "descreveu tontura e calor rápidos",
+      "energyKind.people": "energia puxando pra gente perto",
+      "energyKind.doing": "energia puxando pra fazer coisas",
+      "energyKind.body_off": "energia com o corpo longe",
+      "meds.erection": "disse ter tomado remédio pra ereção",
+      "meds.sedative": "disse ter tomado calmante ou remédio pra dormir",
+      "meds.other": "disse ter tomado outro remédio",
+      "meds.none": "disse não ter tomado remédio",
+      "urge.strong": "disse sentir muita vontade de mais",
+      "urge.some": "disse sentir um pouco de vontade de mais",
+      "urge.no": "disse não sentir vontade de mais"
     },
     "strategyPhrases": {
       "reduce_stimulation.relocate": "sair do barulho",
@@ -838,22 +954,25 @@
       "care.side_safe": "deitar de lado, acompanhado",
       "care.put_away": "guardar o resto longe",
       "care.ride_wave": "atravessar a onda",
-      "care.inhalant_air": "ar fresco (inalante)",
-      "care.poppers_care": "cuidados com poppers",
-      "care.pill_care": "cuidados com azulzinho",
+      "care.inhalant_air": "ar fresco (tontura rápida)",
+      "care.poppers_care": "cuidados com o que se cheira",
+      "care.pill_care": "cuidados com remédio de ereção",
       "care.sip_water": "água aos goles",
       "care.fresh_air": "ar fresco",
       "care.eat_something": "comer algo pequeno",
       "care.brush_teeth": "escovar os dentes",
       "care.cool_shower": "banho fresco",
       "care.soft_music": "música calma",
-      "combination.downers": "aviso: álcool com depressor",
-      "combination.poppers_pill": "aviso: poppers com azulzinho",
-      "combination.coke_alcohol": "aviso: pó com álcool",
-      "combination.md_alcohol": "aviso: bala com álcool",
-      "combination.stim_sex": "aviso: estimulante com azulzinho ou poppers",
-      "combination.stim_alcohol": "aviso: estimulante com álcool",
-      "care.settle": "sentar ou deitar num lugar firme"
+      "combination.downers": "aviso: dois pesos juntos",
+      "combination.poppers_pill": "aviso: tontura rápida com remédio de ereção",
+      "combination.coke_alcohol": "aviso: aceleração curta com bebida",
+      "combination.md_alcohol": "aviso: energia com bebida esquenta",
+      "combination.stim_sex": "aviso: aceleração com remédio de ereção",
+      "combination.stim_alcohol": "aviso: aceleração com bebida",
+      "care.settle": "sentar ou deitar num lugar firme",
+      "combination.rush_then_sleep": "aviso: sono depois de acelerar",
+      "combination.wired_unplugged": "aviso: acelerado com o corpo longe",
+      "care.urge_wave": "atravessar a vontade de mais"
     },
     "outcomePhrases": { "done": "feito", "failed": "não conseguiu", "declined": "não quis" },
     "bandPhrases": {

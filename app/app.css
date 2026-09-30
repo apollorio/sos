@@ -45,3 +45,19 @@ body:has(.ambient-breath.on) { padding-bottom:64px; }
 .channel { margin:20px 0 0; padding:10px 12px; border:1px dashed var(--line); border-radius:12px; color:var(--muted); font-size:14px; text-align:center; }
 .channel a { color:inherit; }
 html[data-channel="release"] .channel { display:none; }
+/* Ctrl+H lab panel (beta lab operators only; memory only). */
+.lab-panel { width:min(96vw, 980px); max-height:90vh; padding:0; border:1px solid var(--line); border-radius:16px; background:var(--bg); color:var(--fg); }
+.lab-panel::backdrop { background:rgba(0,0,0,.6); }
+.lab-head { position:sticky; top:0; display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:12px 14px; background:var(--card); border-bottom:1px solid var(--line); }
+.lab-tabs { display:flex; gap:6px; flex:1; }
+.lab-tab, .lab-close { min-height:36px; padding:6px 12px; border-radius:10px; border:1px solid var(--line); background:transparent; color:var(--fg); font:inherit; font-size:14px; cursor:pointer; }
+.lab-tab.on { background:var(--fg); color:var(--bg); }
+.lab-body { padding:12px 14px; overflow:auto; max-height:calc(90vh - 64px); }
+.lab-note { margin:0 0 10px; color:var(--muted); font-size:13px; }
+.lab-table { width:100%; border-collapse:collapse; font-size:13px; }
+.lab-table th, .lab-table td { text-align:left; padding:5px 6px; border-bottom:1px solid var(--line); vertical-align:top; }
+.lab-table .num { font-variant-numeric:tabular-nums; white-space:nowrap; }
+.lab-dim { color:var(--muted); }
+.lab-P0 td { color:var(--p0); }
+.lab-frame { width:100%; height:70vh; border:1px solid var(--line); border-radius:10px; background:#fff; }
+.lab-link { display:inline-block; margin:0 0 8px; color:var(--p2); font-size:14px; }

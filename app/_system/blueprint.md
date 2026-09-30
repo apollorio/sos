@@ -122,15 +122,16 @@ every minute of silence, and no calming technique at all for a person alone. Fou
 | L23 | **A way out and a menu, always.** Every non-P0 card offers techniques, people to reach and "how I am", filtered by the same contraindications and perspective rules. |
 | L24 | **No question repeated within its interval** (`minIntervalSec`); "Prefiro só continuar" is always an answer. |
 
-### 2c · Pista: laws L25–L27 (audit 011)
+### 2c · Pista: laws L25–L30 (audits 011–014)
 
 | | Law |
 |---|---|
 | L25 | **Pace is read, never reported.** The time a person takes to answer (derived `pace`) may make the app ask less and offer simpler things first; it never becomes anxiety, never moves a band, never diagnoses. |
-| L26 | **What was used only adds care.** Asked directly («O que você usou?», then «Qual deles? Teve álcool junto?»: one tap answers both), one question between two helps, never before the first help; a dangerous combination raises the band (P1/P2) and brings its warning at once, never P0 by itself; no dose, no second substance, no antidote (INV-030). |
+| L26 | **What was used only adds care.** Learned the way a friend would, from how the body feels (L30), one question between two helps, never before the first help; a dangerous combination raises the band (P1/P2) and brings its warning at once, never P0 by itself; no dose, no second substance, no antidote (INV-030). ~~Asked directly («O que você usou?», then «Qual deles? Teve álcool junto?»)~~: retired in audit 014. |
 | L27 | **Breathing is the background, not a step.** A slow orb (in 4 · hold 1 · out 6) paces the breath behind every non-P0 card while breathing is normal and the person responds; the breathing card is retired. |
 | L28 | **Only the person moves the screen** (audit 012). Time (a timer, an answer ageing out, a follow-up falling due) never replaces a card, question or help; it waits for the next tap. Only P0 can. |
 | L29 | **No grading.** The app never asks the person to grade how they are (audit 013): no better/worse buttons, no «how are you now?», no timed check-in. What it knows comes from what they choose to tell and tap. |
+| L30 | **Discreet discovery, from the same side** (audit 014, studies/004). The app never asks «o que você usou?» and never names a substance to the person (INV-034, linted over every card, chip, notice and summary phrase). It asks how the body feels, then one gentle detail at a time, and follows the care that body needs. The inferred `pattern` is a hypothesis for care, shown only to the lab operator (Pista, Ctrl+H), never a fact (L15, L16). |
 
 Anxiety is asked **once** per session (`Q_ANXIETY maxAsks 1`, answer valid 1 h). The loop alternates a technique and a
 care tip (`help.last`), rotating least-shown first, forever: see `app/_audit/011-pista/` and `scripts/converse.ts`.
@@ -225,7 +226,7 @@ flowchart LR
   Q --> A3["loud → reduce_stimulation.relocate"]
   A1 & A2 & A3 --> X{"outcomes differ?"}
   X -- yes --> D["DECISIVE → worth one tap"]
-  S --> Q2["Q_SUBSTANCE"]
+  S --> Q2["Q_ALCOHOL (pattern buzz_brief)"]
   Q2 --> B1["any answer → same card"] --> I["IRRELEVANT → never asked"]
 ```
 
@@ -236,6 +237,30 @@ Three behaviours emerge without a line of flow code:
 - **Asking stops when it stops mattering.** The budget caps questions in a row, and a question never interrupts an intervention already on screen.
 
 Cost: about 20 pure evaluations per step, around **0.7 ms** on a laptop. Target on low-end Android: under 16 ms.
+
+### 5b · Discreet discovery (audit 014, L30)
+
+The same VOI engine drives a friend-like conversation about the body (studies/004: `akinator-effects-flow.md`,
+`suggested_flows.md`). Nothing asks what was used; nothing names a substance. Each question is asked only if some answer
+changes the next help (so «E bebida?» is skipped when it cannot change anything), and a help always sits between two
+questions (L21).
+
+```mermaid
+flowchart TD
+  F["«Como tá o corpo agora?» (Q_FEEL)"] -->|Acelerado| R["«E essa energia puxa pra quê?» (Q_RACE_KIND)"]
+  F -->|Pesado| H["«Esse peso tá mais como?» (Q_HEAVY_KIND)"]
+  F -->|O mundo tá diferente| S["«O que tá mais diferente?» (Q_STRANGE_KIND)"]
+  F -->|Duas coisas| M["«Quais duas coisas estão juntas?» (Q_MIXED_KIND)"]
+  R -->|fazer coisa| L["«Mais uma onda ou um motor?» (Q_RACE_LENGTH)"]
+  R & L & H & S & M --> P["pattern (operator only): love_energy · short_wired · long_engine · spike_crash · warm_cliff · heavy_nod · buzz_brief …"]
+  P --> A["«E bebida, rolou hoje?» (Q_ALCOHOL, if decisive)"]
+  P --> D["«Tomou algum remédio hoje?» (Q_MEDS)"]
+  P --> U["«Tá batendo vontade de mais?» (Q_URGE, racing patterns)"]
+  A & D --> W["combination warning at once (P1/P2, never P0 by itself)"]
+  U --> V["«A vontade é uma onda.» (care.urge_wave)"]
+```
+
+Golden stories: `pista-energia-bebida-remedio`, `pista-despencou-bebida-helper`, `tontura-com-remedio-de-erecao`.
 
 ---
 
@@ -352,8 +377,8 @@ registry/
 | `contact_trusted_person` | P1–P2 | `stay_close` → `message_whatsapp` (network) → `message_sms` → `crisis_line` (CVV 188, self only) | "Não tenho ninguém" blocks both message strategies |
 | `confirm_commitment` | P1–P3 | per commitment kind | generalizes `confirm_arrival` |
 | `grounding` | P1–P3 | `cold_water` → `feet_floor` → `double_sigh` → `five_senses` → `humming` → `press_wall`, **rotating** least-shown first (`breath_pacer` retired: the orb, L27) | breathing exercises and cold water need normal breathing + responsive (INV-027); `five_senses` deferred while pace = slow (L25) |
-| `combination` | P1–P3 | `downers` · `poppers_pill` · `coke_alcohol` · `md_alcohol` · `stim_alcohol` · `stim_sex` | audit 011: the warning for what was mixed, the moment it is known; never alternates, never P0 by itself |
-| `care` | P1–P3 | what the person reported first (`cool_body`, `inhalant_air`, `nose_rinse`, `throat_soothe`, `nausea_care`, `jaw_ease`), then safety notes (`poppers_care`, `pill_care`), then the substance (`side_safe`, `ride_wave`, `put_away`), then everyday care (`sip_water`, `fresh_air`, `eat_something`, `brush_teeth`, `cool_shower`, `soft_music`), rotating | nothing by mouth unless `can_swallow`; shower only when `awake`; copy per substance (`drug` variant) |
+| `combination` | P1–P3 | `rush_then_sleep` · `downers` · `poppers_pill` · `coke_alcohol` · `md_alcohol` · `stim_alcohol` · `stim_sex` · `wired_unplugged` | audits 011/014: the warning for what was mixed, the moment it is described (by effects, never by name); never alternates, never P0 by itself |
+| `care` | P1–P3 | what the person reported first (`cool_body`, `inhalant_air`, `nose_rinse`, `throat_soothe`, `nausea_care`, `jaw_ease`), then safety notes (`pill_care`, `urge_wave`; ~~`poppers_care`~~ retired in 014), then the body feel (`side_safe`, `ride_wave`, `put_away`), then everyday care (`sip_water`, `fresh_air`, `eat_something`, `brush_teeth`, `cool_shower`, `soft_music`), rotating | nothing by mouth unless `can_swallow`; shower only when `awake`; copy per pattern, then class (`drug` variant: `pattern.actor` → `pattern` → class) |
 | `steady_check` | P1–P3 | `tips` (P3, by substance class) → `check_later` (P3) → **`hold`** (always eligible) | **new**: without it P3 had no skill and totality could not be proven |
 
 **Why 7 and not 6:** the latest brainstorm fixed 6 skills. The audit found no skill for P3 and no guaranteed fallback anywhere, which leaves a blank screen as a possible outcome. `steady_check.hold` closes that hole and makes totality provable. Decision D10 asks you to approve it.

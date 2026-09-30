@@ -17,7 +17,9 @@ import { processEvent } from "../../src/core/process-event";
 const NOW = 1_800_000_000_000;
 const sessions = Object.keys(PERSONAS).map((p) => ({ p, steps: converse(p, 90).steps }));
 const everyStep: StepResult[] = [...sessions.flatMap((s) => s.steps), ...SCENARIOS.flatMap((sc) => runScenario(sc))];
-const DISCOVERY = ["Q_SUBSTANCE", "Q_WHICH_STIM", "Q_WHICH_DOWNER", "Q_WHICH_PSY", "Q_ALCOHOL", "Q_SEX", "Q_BODY"];
+const PATTERN_QS = ["Q_RACE_KIND", "Q_RACE_LENGTH", "Q_HEAVY_KIND", "Q_STRANGE_KIND", "Q_MIXED_KIND"];
+const DISCOVERY = ["Q_FEEL", ...PATTERN_QS, "Q_ALCOHOL", "Q_MEDS", "Q_URGE", "Q_BODY"];
+const RETIRED_ASKS = ["Q_SUBSTANCE", "Q_WHICH_STIM", "Q_WHICH_DOWNER", "Q_WHICH_PSY", "Q_SEX"];
 
 describe("pista: discovery, care loop, pace and the breathing orb (audit 011)", () => {
   it("anxiety is asked once per session (Q_ANXIETY maxAsks 1); afterwards the person's own reports and the pace carry it", () => {
@@ -103,15 +105,19 @@ describe("pista: discovery, care loop, pace and the breathing orb (audit 011)", 
     }
   });
 
-  it("combinations raise attention, never P0 by themselves (L26): every mixing level ends in P1/P2 with its warning", () => {
-    const combos: Record<string, string>[] = [
-      { substanceClass: "downer", substance: "ghb", alcohol: "yes" },
-      { substanceClass: "stim", substance: "coke", alcohol: "yes" },
-      { substanceClass: "stim", substance: "md", alcohol: "yes" },
-      { substanceClass: "stim", sexEnhancer: "both" },
-      { substanceClass: "stim", sexEnhancer: "pill" },
+  it("combinations raise attention, never P0 by themselves (L26): every described mix ends in P1/P2 with its warning (audit 014: by effects, never by name)", () => {
+    const combos: [Record<string, string>, string][] = [
+      [{ substanceClass: "downer", pattern: "warm_cliff", alcohol: "yes" }, "downers"],
+      [{ substanceClass: "downer", pattern: "heavy_nod", meds: "sedative" }, "downers"],
+      [{ substanceClass: "stim", pattern: "short_wired", alcohol: "yes" }, "coke_alcohol"],
+      [{ substanceClass: "stim", pattern: "love_energy", alcohol: "yes" }, "md_alcohol"],
+      [{ substanceClass: "stim", energyKind: "doing", pattern: "long_engine", alcohol: "yes" }, "stim_alcohol"],
+      [{ substanceClass: "stim", pattern: "long_engine", meds: "erection" }, "stim_sex"],
+      [{ substanceClass: "psychedelic", pattern: "buzz_brief", meds: "erection" }, "poppers_pill"],
+      [{ substanceClass: "mixed", pattern: "wired_sleepy" }, "rush_then_sleep"],
+      [{ substanceClass: "mixed", pattern: "wired_unplugged" }, "wired_unplugged"],
     ];
-    for (const c of combos) {
+    for (const [c, strategy] of combos) {
       const s: SessionState = initialState("M", NOW - 60_000);
       s.lastAt = NOW;
       const base = { actor: "self", responsiveness: "responsive", breathing: "normal", chest: "no", company: "with_someone", noise: "quiet", anxiety: 1, ...c };
@@ -119,7 +125,7 @@ describe("pista: discovery, care loop, pace and the breathing orb (audit 011)", 
       const d = decideCore(s, NOW, REG).decision;
       expect(d.band, JSON.stringify(c)).not.toBe("P0");
       expect(["P1", "P2"], JSON.stringify(c)).toContain(d.band);
-      expect(d.pick.skill, JSON.stringify(c)).toBe("combination");
+      expect(`${d.pick.skill}.${d.pick.strategy}`, JSON.stringify(c)).toBe(`combination.${strategy}`);
     }
   });
 
@@ -155,5 +161,82 @@ describe("pista: discovery, care loop, pace and the breathing orb (audit 011)", 
     expect(REG.data.questions.flatMap((q) => Object.values(q.variants).flatMap((v) => v.answers.flatMap((a) => Object.keys(a.set))))).not.toContain("reportedTrend");
     const labels = Object.values(LOCALES["pt-BR"]!.cards).flatMap((c) => Object.values(c.actions)).concat(Object.values(LOCALES["pt-BR"]!.chips).map((c) => c.label));
     for (const l of labels) expect(l, l).not.toMatch(/melhorou|piorou|tá melhor|tá piorando|me chama (em|daqui)/i);
+    // No timed hold in any copy either (owner, audit 013): «espera 10 minutos», «daqui a 10 min»…
+    const copy = Object.values(LOCALES["pt-BR"]!.cards).flatMap((c) => [...Object.values(c.title ?? {}), ...Object.values(c.body ?? {})]);
+    for (const t of copy) expect(t, t).not.toMatch(/\b\d+\s?min(utos?)?\b|dez minutos/i);
+  });
+});
+
+/* ───────────── L30 (audit 014, studies/004): discovery is discreet, like a friend on the same side ───────────── */
+describe("discreet discovery (L30, INV-034)", () => {
+  const NAMES = /\b(bala|md|mdma|ecstasy|pó|cocaína|cocaina|crack|ket|ketamina|ghb|gbl|ácido|acido|lsd|cogumelos?|erva|maconha|lança|loló|lolo|poppers|azulzinho|viagra|cialis|heroína|heroina|fentanil|metanfetamina|drogas?)\b/i;
+  const ASKS = /o que (voc[eê]|a pessoa|ela|ele) (usou|tomou|cheirou|fumou)/i;
+
+  it("the old «O que você usou?» questions are retired and never asked again", () => {
+    for (const id of RETIRED_ASKS) {
+      expect(REG.question.get(id), id).toBeUndefined();
+      expect((REG.data.conventions as { retiredIds?: string[] }).retiredIds, id).toContain(id);
+    }
+    for (const r of everyStep) expect(RETIRED_ASKS).not.toContain(r.output.card.questionId);
+  });
+
+  it("nothing the person sees or shares names a substance or asks what was used", () => {
+    const loc = LOCALES["pt-BR"]!;
+    const texts: [string, string][] = [];
+    const walk = (id: string, v: unknown): void => {
+      if (typeof v === "string") texts.push([id, v]);
+      else if (v && typeof v === "object") for (const [k, x] of Object.entries(v)) if (k !== "review" && k !== "clinical") walk(`${id}.${k}`, x);
+    };
+    walk("cards", loc.cards); walk("chips", loc.chips); walk("notices", loc.notices);
+    walk("signalPhrases", loc.continuity?.signalPhrases); walk("strategyPhrases", loc.continuity?.strategyPhrases);
+    expect(texts.length).toBeGreaterThan(300);
+    for (const [id, t] of texts) {
+      expect(NAMES.test(t), `${id}: ${t}`).toBe(false);
+      expect(ASKS.test(t), `${id}: ${t}`).toBe(false);
+    }
+  });
+
+  it("the body comes first: «Como tá o corpo agora?» precedes every pattern, bebida or remédio question", () => {
+    for (const { p, steps } of sessions) {
+      let feltAsked = false;
+      for (const r of steps) {
+        const q = r.output.card.questionId;
+        if (q === "Q_FEEL") feltAsked = true;
+        if (q && [...PATTERN_QS, "Q_ALCOHOL", "Q_MEDS", "Q_URGE"].includes(q)) expect(feltAsked, `${p}: ${q} before Q_FEEL`).toBe(true);
+      }
+    }
+  });
+
+  it("a pattern question only follows the matching body feel, and only while the pattern is still open", () => {
+    const needs: Record<string, string> = { Q_RACE_KIND: "stim", Q_HEAVY_KIND: "downer", Q_STRANGE_KIND: "psychedelic", Q_MIXED_KIND: "mixed" };
+    for (const r of everyStep) {
+      const q = r.output.card.questionId;
+      if (!q || !(q in needs) || r.log.why.policyRule === "KEEP_QUESTION") continue;
+      const f = buildFacts(r.state, r.state.lastAt, REG).facts;
+      expect(f["signal.substanceClass"], q).toBe(needs[q]);
+    }
+  });
+
+  it("the three golden stories reach their warning by description alone (energy + bebida, despencou + bebida, tontura + remédio)", () => {
+    const want: Record<string, string[]> = {
+      "pista-energia-bebida-remedio": ["combination.md_alcohol", "combination.stim_sex", "care.urge_wave", "care.put_away"],
+      "pista-despencou-bebida-helper": ["care.side_safe", "care.put_away", "combination.downers"],
+      "tontura-com-remedio-de-erecao": ["care.inhalant_air", "combination.poppers_pill"],
+    };
+    for (const [name, picks] of Object.entries(want)) {
+      const ran = runScenario(SCENARIOS.find((s) => s.name === name)!);
+      const seen = new Set(ran.map((r) => `${r.output.card.skill}.${r.output.card.strategy}`));
+      for (const pick of picks) expect(seen.has(pick), `${name}: ${pick}`).toBe(true);
+      expect(ran.every((r) => r.log.band !== "P0"), name).toBe(true);
+    }
+  });
+
+  it("a helper hears helper lines after a help (DONE_H*), never the lines meant for the person in crisis", () => {
+    for (const r of everyStep) {
+      const n = r.output.notice ?? "";
+      if (!/^DONE_/.test(n)) continue;
+      const helper = buildFacts(r.state, r.state.lastAt, REG).facts["signal.actor"] === "helper";
+      expect(/^DONE_H\d$/.test(n), `${n} for ${helper ? "helper" : "self"}`).toBe(helper);
+    }
   });
 });

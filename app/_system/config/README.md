@@ -16,7 +16,7 @@ npm run registry:codegen  # registry.json → src/generated/registry.gen.ts (lit
 npm run registry:lint     # referential integrity (add -- --release for the production gate)
 npm run typecheck         # tsc --strict
 npm test                  # scenarios · properties · lint mutations · architecture · triggers · continuity · handoff · trust (~8 s)
-npm run test:exhaustive   # 3.5 M-state proof (~3 min)
+npm run test:exhaustive   # ~4.9 M-state proof, Tiers A·B·C·D + coverage (~7 min)
 npm run simulate [name]   # print what a person would see, step by step, with the "why"
 npm run build             # app/ (the deployed /app/): assets/app.<hash>.js + SRI + stamped sw.js + beta/release channel;
                           # then dist/simulator.html and the beta lab app/lab/ (hub, missions, clinical review, simulator)

@@ -133,8 +133,25 @@ const TIER_B: Dim[] = [
   { name: "exhausted", values: [false, true] },
 ];
 
-/* ───────── Tier D (audit 011): what was used × the care loop × pace, over decideCore ───────── */
-const CLASS_OF: Record<string, string> = { coke: "stim", md: "stim", ghb: "downer", downer_pill: "downer", alcohol: "downer", ket: "psychedelic", cannabis: "psychedelic", lsd: "psychedelic", inhalant: "psychedelic" };
+/* ───────── Tier D (audits 011, 014): the body feel and its pattern × bebida × remédio × vontade × the care loop × pace ───────── */
+// Audit 014 (L30): nothing asks what was used. «Como tá o corpo agora?» sets the class, one discriminator sets the
+// pattern (studies/004), so class and pattern only ever come in the pairs the questions can produce: one dimension.
+const FEEL: Record<string, Record<string, string>> = {
+  unknown: {}, none: { substanceClass: "none" },
+  stim: { substanceClass: "stim" },
+  "stim/people": { substanceClass: "stim", energyKind: "people", pattern: "love_energy" },
+  "stim/doing": { substanceClass: "stim", energyKind: "doing" },
+  "stim/doing/short": { substanceClass: "stim", energyKind: "doing", pattern: "short_wired" },
+  "stim/doing/engine": { substanceClass: "stim", energyKind: "doing", pattern: "long_engine" },
+  "stim/doing/spike": { substanceClass: "stim", energyKind: "doing", pattern: "spike_crash" },
+  "stim/body_off": { substanceClass: "stim", energyKind: "body_off", pattern: "wired_unplugged" },
+  downer: { substanceClass: "downer" },
+  ...Object.fromEntries(["loose_clumsy", "warm_cliff", "heavy_nod", "unplugged"].map((p) => [`downer/${p}`, { substanceClass: "downer", pattern: p }])),
+  psychedelic: { substanceClass: "psychedelic" },
+  ...Object.fromEntries(["living_world", "long_patterns", "soft_hungry", "unplugged", "buzz_brief"].map((p) => [`psychedelic/${p}`, { substanceClass: "psychedelic", pattern: p }])),
+  mixed: { substanceClass: "mixed" },
+  ...Object.fromEntries(["wired_unplugged", "wired_sleepy", "wired_strange"].map((p) => [`mixed/${p}`, { substanceClass: "mixed", pattern: p }])),
+};
 const TIER_D: Dim[] = [
   { name: "actor", values: ["self", "helper"] },
   { name: "responsiveness", values: ["responsive", "impaired"] },
@@ -143,24 +160,29 @@ const TIER_D: Dim[] = [
   { name: "seizure", values: ["no"] },
   { name: "company", values: ["with_someone"] },
   { name: "anxiety", values: [1, 3, 4] },
-  { name: "substanceClass", values: ["stim", "downer", "psychedelic", "none", "unknown"] },
-  { name: "substance", values: ["coke", "md", "ghb", "downer_pill", "alcohol", "ket", "cannabis", "lsd", "inhalant", "unknown"] },
+  { name: "feel", values: Object.keys(FEEL) },
   { name: "alcohol", values: ["yes", "no", "unknown"] },
-  { name: "sexEnhancer", values: ["pill", "poppers", "both", "none", "unknown"] },
+  // «Nenhum» remédio and «Não» vontade read exactly like unknown in every rule (only erection/sedative and strong/some count).
+  { name: "meds", values: ["erection", "sedative", "unknown"] },
+  { name: "urge", values: ["strong", "unknown"] },
   { name: "discomfort", values: ["nose", "throat", "heat", "nausea", "jaw", "unknown"] },
   { name: "helpLast", values: ["none", "grounding", "care", "combination", "steady_check"] },
   { name: "groundingDone", values: [false, true] },
   { name: "pace", values: ["unknown", "slow"] },
   { name: "helpExhausted", values: [false, true] },
 ];
-function reachableD(c: Record<string, Primitive>): boolean {
-  const sub = String(c["substance"]);
-  if (sub !== "unknown" && CLASS_OF[sub] !== c["substanceClass"]) return false; // "which one?" is asked only under its class
-  if (sub === "alcohol" && c["alcohol"] !== "yes") return false; // "Só álcool" records alcohol = yes
-  const used = ["stim", "downer", "psychedelic"].includes(String(c["substanceClass"]));
-  if (!used && (sub !== "unknown" || c["alcohol"] !== "unknown" || c["sexEnhancer"] !== "unknown")) return false; // asked only after a substance
-  if (c["helpLast"] === "none" && c["groundingDone"] === true) return false;
-  return true;
+const DOWNERISH = (x: Record<string, Primitive>) => x["substanceClass"] === "downer" || ["loose_clumsy", "warm_cliff", "heavy_nod", "unplugged", "wired_sleepy"].includes(String(x["pattern"])) || x["meds"] === "sedative";
+/** Tier D state → the signals it stands for (feel expands into class / energyKind / pattern), or null when unreachable. */
+function expandD(c: Record<string, Primitive>): Record<string, Primitive> | null {
+  const { feel, ...rest } = c;
+  const x: Record<string, Primitive> = { ...rest, ...FEEL[String(feel)]! };
+  const used = ["stim", "downer", "psychedelic", "mixed"].includes(String(x["substanceClass"]));
+  // bebida and remédio are asked only after a body feel that is «something»; the urge only after a racing pattern.
+  if (!used && (x["alcohol"] !== "unknown" || x["meds"] !== "unknown")) return null;
+  const urgeOpen = x["pattern"] !== undefined && (x["substanceClass"] === "stim" || ["wired_unplugged", "wired_strange"].includes(String(x["pattern"])));
+  if (!urgeOpen && x["urge"] !== "unknown") return null;
+  if (x["helpLast"] === "none" && x["groundingDone"] === true) return null;
+  return x;
 }
 
 const coverage = new Set<string>();
@@ -227,30 +249,28 @@ describe("exhaustive decision space", () => {
     expect(n).toBeGreaterThan(10_000);
   });
 
-  it("Tier D — what was used, combinations, the care loop and pace: total, never P0 by itself, nothing unsafe by mouth", () => {
+  it("Tier D — body feel, pattern, bebida, remédio, vontade, the care loop and pace: total, never P0 by itself, nothing unsafe by mouth", () => {
     let n = 0;
     const MOUTH = new Set(["sip_water", "eat_something", "throat_soothe", "brush_teeth"]);
-    for (const c of cartesian(TIER_D)) {
-      if (!reachableD(c)) continue;
+    for (const c0 of cartesian(TIER_D)) {
+      const c = expandD(c0);
+      if (!c) continue;
       const s = mkState(c);
       if (!s) continue;
       const { decision: d } = decideCore(s, NOW, REG);
       assertDecision(c, s, d, coverage);
-      const where = JSON.stringify(c);
+      const where = JSON.stringify(c0);
       const f = buildFacts(s, NOW, REG).facts;
-      // L26: no hard rule reads what was used, so a combination alone is never P0.
+      // L26: no hard rule reads what was described, so a combination alone is never P0.
       if (d.band === "P0") throw new Error(`P0 without a red flag ${where}`);
       if (d.pick.skill === "combination" && Number(f["risk.mixing"]) < 2) throw new Error(`combination warning without a combination ${where}`);
       if (Number(f["risk.mixing"]) >= 3 && d.band !== "P1") throw new Error(`mixing 3 not in P1 ${where}`);
       if (d.pick.skill === "care" && MOUTH.has(d.pick.strategy ?? "") && (c["breathing"] !== "normal" || c["responsiveness"] !== "responsive")) throw new Error(`by mouth while breathing/responsiveness not normal ${where}`);
-      if (d.pick.strategy === "cool_shower" && (c["substanceClass"] === "downer" || ["ghb", "downer_pill", "ket", "alcohol"].includes(String(c["substance"])) || c["responsiveness"] !== "responsive")) throw new Error(`shower while sedated ${where}`);
-      if (d.pick.strategy === "breath_pacer") throw new Error(`retired breath card picked ${where}`);
+      if (d.pick.strategy === "cool_shower" && (DOWNERISH(c) || c["responsiveness"] !== "responsive")) throw new Error(`shower while sedated ${where}`);
+      if (d.pick.strategy === "breath_pacer" || d.pick.strategy === "poppers_care") throw new Error(`retired card picked ${where}`);
+      if (d.pick.skill === "assess") throw new Error(`decideCore picked a question ${where}`);
       // L25: pace never moves the band.
-      if (c["helpExhausted"] === true) {
-    // Every technique and care tip was refused (blocked): what is left must still be help (contact, then the fallback).
-    for (const sk of REG.data.skills) if (sk.id === "grounding" || sk.id === "care") for (const st of sk.strategies) s.strategies[`${sk.id}.${st.id}`] = { doneAt: null, blockedUntil: NOW + 1e6, shows: 1 };
-  }
-  if (c["pace"] === "slow") {
+      if (c["pace"] === "slow") {
         const quick = decideCore({ ...s, answerPace: [] }, NOW, REG).decision;
         if (quick.band !== d.band) throw new Error(`pace changed the band ${where}`);
       }
@@ -343,7 +363,8 @@ describe("exhaustive decision space", () => {
       ["contact_trusted_person.message_sms", "prefers-sms"],
       ["contact_trusted_person.crisis_line", "nobody-to-call"],
       // Audits 011–012: everyday care tips come after «Um lugar firme pro corpo» (rotation), so only a session reaches them.
-      ["care.put_away", "pista-bala-alcool-azulzinho"],
+      // Audit 014: «A vontade é uma onda» comes after the body's own care (cool_body wins while it is fresh), so only a session reaches it.
+      ["care.urge_wave", "pista-energia-bebida-remedio"],
       ["care.eat_something", "grounding-rotation"],
       ["care.brush_teeth", "grounding-rotation"],
       ["care.cool_shower", "grounding-rotation"],

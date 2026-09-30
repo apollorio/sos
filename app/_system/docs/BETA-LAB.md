@@ -16,7 +16,22 @@ every rule and text the engine uses. Nothing in the lab sends data anywhere.
 | `/app/lab/simulador.html` | copy of `dist/simulator.html` | The engineering simulator (same engine, "why" panel, virtual clock, no dialer). |
 | `/app/legacy.html` | moved from `app/index.html` | The previous production page, for comparison. Guarded by `npm run e2e:legacy`. |
 
+| `/app/local.html` | stamped by `npm run build` | **Local copy** of the app that runs straight from disk (`file://`, double-click): same engine as a classic script (`assets/local.<hash>.js`), because browsers block module scripts and SRI on `file://`. For the owner's machine and quick tests; the preview URL serves `/app/`. |
+
 Everything under `app/lab/` and the stamped parts of `app/` are build output: `npm run build`, never by hand.
+
+### Hidden lab panel: Ctrl+H (audit 014)
+
+In the app itself (`/app/` and `/app/local.html`), **Ctrl+H** opens and closes a lab panel over the current screen:
+
+- **Registro**: every step of this session (time, band, input, rule → card, notice), newest first, up to 300 steps.
+- **Pista**: what the engine has understood so far (body feel, most compatible effect pattern from studies/004, bebida,
+  remédio, vontade, what hurts, mixing level, warnings and care given, next question, pace). A pattern is a hypothesis
+  for care, never a fact about a substance (L30); the person never sees this tab.
+- **Simulador**: the lab simulator in a frame, with a link to open it in a new tab.
+
+It lives in memory only (nothing stored or sent, gone with the page) and never changes a decision. There is no button
+for it: a person in crisis never lands there by accident.
 `npm run build:check` and `npm test` fail when any of it is stale.
 
 ## How the lab stays honest
@@ -30,7 +45,7 @@ Everything under `app/lab/` and the stamped parts of `app/` are build output: `n
   example phrases. Every item carries a content hash; a verdict given on an older text is flagged as "changed".
 - **Its required scope is wider than the release lint.** The lint requires sign-off on the 16 cards flagged `clinical`,
   the proposed hard rules and `meta.status`. The sheet also asks for every triage question and every strategy card,
-  including the grounding exercises whose contraindications were audit 003's first blocker (96 required items, 6 optional since audit 012: substance questions, combination warnings and care tips were added in 011).
+  including the grounding exercises whose contraindications were audit 003's first blocker (required items since audit 014: the discreet discovery questions, 8 combination warnings and the care tips; see the sheet for the live count).
   Whether those cards should also be flagged `clinical` in `pt-BR.json` (making the lint match) is an owner decision.
 - **The beta notice is automatic.** `scripts/build.ts` stamps `<html data-channel="beta">` whenever
   `registry:lint --release` has errors; the notice disappears only when the gate is green.

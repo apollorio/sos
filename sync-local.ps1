@@ -10,8 +10,11 @@ Write-Host ""
 Write-Host "Commit:" (git log --oneline -1)
 $sim = "app\_system\dist\simulator.html"
 $stamp = Select-String -Path $sim -Pattern "build-stamp" -List
-$hold  = Select-String -Path $sim -Pattern "CARD_STEADY_CHECK|check_later|CHIP_REPORT_WORSE" -List
-if ($stamp -and -not $hold) { Write-Host "OK: simulator.html is the current build (shows 'versão do motor' in the header)." -ForegroundColor Green }
+# ASCII markers only (Windows PowerShell 5.1 reads this file as ANSI). Q_FEEL = the discreet body question (audit 014).
+$feel  = Select-String -Path $sim -Pattern "Q_FEEL" -List
+if ($stamp -and $feel) { Write-Host "OK: simulator.html is the current build (engine version in the header; discovery starts with the body question)." -ForegroundColor Green }
 else { Write-Host "STALE: simulator.html is an old build. Run this script again and check the git output above." -ForegroundColor Red }
 Write-Host "Open:  $PSScriptRoot\$sim  (Ctrl+F5 in the browser)"
-Write-Host "Open:  $PSScriptRoot\app\index.html  (through a local server, or the gateway)"
+if (Test-Path "app\local.html") { Write-Host "Open:  $PSScriptRoot\app\local.html  (double-click: runs straight from disk; Ctrl+H opens the lab panel)" -ForegroundColor Green }
+else { Write-Host "MISSING: app\local.html (old checkout?). Run this script again." -ForegroundColor Red }
+Write-Host "Open:  $PSScriptRoot\app\index.html  (through a local server, e.g. 'npx serve .' in this folder, then /app/)"

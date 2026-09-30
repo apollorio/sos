@@ -5,6 +5,9 @@
  *   app/index.html                 <script type="module" src="./assets/app.<hash>.js" integrity="sha384-…">
  *                                  <html data-channel="beta|release"> — "beta" while `registry:lint --release` is red
  *   app/sw.js                      VERSION = hash of every shell file; SHELL lists the hashed bundle
+ *   app/local.html                 the same page for opening straight from disk (file://): browsers refuse module scripts
+ *                                  and SRI there, so it loads a classic bundle (assets/local.<hash>.js) with no integrity.
+ *                                  Lab/local use only; production is index.html (module + SRI).
  * Every path is relative, so the same files work at /app/ on production and on any preview host.
  *
  *   npm run build              write
@@ -19,7 +22,7 @@ import { lintRegistry } from "./registry-lint";
 /** The deployed app folder, relative to app/_system (where every npm script runs). */
 export const SITE = "..";
 export type Channel = "beta" | "release";
-export interface Stamped { file: string; integrity: string; version: string; channel: Channel; html: string; sw: string }
+export interface Stamped { file: string; integrity: string; version: string; channel: Channel; html: string; sw: string; localFile: string; localHtml: string }
 
 const SCRIPT_TAG = /<script type="module" src="[^"]*"[^>]*><\/script>/;
 const HTML_TAG = /<html lang="pt-BR" data-channel="[a-z]+">/;
@@ -32,7 +35,7 @@ export function releaseChannel(): Channel {
 }
 
 /** Pure: given the bundle text, the channel and the current shell files, compute every stamped artifact. */
-export function stamp(dir: string, js: string, channel: Channel): Stamped {
+export function stamp(dir: string, js: string, channel: Channel, localJs = ""): Stamped {
   const hash = createHash("sha256").update(js).digest("hex").slice(0, 12);
   const file = `assets/app.${hash}.js`;
   const integrity = `sha384-${createHash("sha384").update(js).digest("base64")}`;
@@ -51,23 +54,32 @@ export function stamp(dir: string, js: string, channel: Channel): Stamped {
   const sw = sw0
     .replace(VERSION_LINE, `const VERSION = "${version}"; // stamped by scripts/build.ts from the content of every shell file`)
     .replace(SHELL_LINE, `const SHELL = ["./", "./index.html", "./app.css", "./${file}", "./manifest.webmanifest"];`);
-  return { file, integrity, version, channel, html, sw };
+  const localFile = `assets/local.${createHash("sha256").update(localJs).digest("hex").slice(0, 12)}.js`;
+  const localHtml = html
+    .replace(/<script type="module" src="[^"]*"[^>]*><\/script>/, `<!-- LOCAL COPY for file:// (lab): classic bundle, no SRI. Production is index.html. -->\n  <script defer src="./${localFile}"></script>`)
+    .replace('href="./lab/"', 'href="./lab/index.html"');
+  return { file, integrity, version, channel, html, sw, localFile, localHtml };
 }
 
 /** Writes a stamped deploy into `dir`, removing superseded bundles (a deploy replaces the whole shell). */
-export function writeStamped(dir: string, js: string, channel: Channel): Stamped {
-  const s = stamp(dir, js, channel);
+export function writeStamped(dir: string, js: string, channel: Channel, localJs = ""): Stamped {
+  const s = stamp(dir, js, channel, localJs);
   mkdirSync(join(dir, "assets"), { recursive: true });
-  for (const f of readdirSync(join(dir, "assets"))) if (/^app\.[0-9a-f]+\.js$/.test(f) && `assets/${f}` !== s.file) unlinkSync(join(dir, "assets", f));
+  for (const f of readdirSync(join(dir, "assets"))) {
+    if (/^app\.[0-9a-f]+\.js$/.test(f) && `assets/${f}` !== s.file) unlinkSync(join(dir, "assets", f));
+    if (/^local\.[0-9a-f]+\.js$/.test(f) && `assets/${f}` !== s.localFile) unlinkSync(join(dir, "assets", f));
+  }
   writeFileSync(join(dir, s.file), js);
+  writeFileSync(join(dir, s.localFile), localJs);
+  writeFileSync(join(dir, "local.html"), s.localHtml);
   writeFileSync(join(dir, "index.html"), s.html);
   writeFileSync(join(dir, "sw.js"), s.sw);
   return s;
 }
 
 /** Problems that make the committed app/ differ from what the current sources produce (empty = up to date). */
-export function checkStamped(dir: string, js: string, channel: Channel): string[] {
-  const s = stamp(dir, js, channel);
+export function checkStamped(dir: string, js: string, channel: Channel, localJs = ""): string[] {
+  const s = stamp(dir, js, channel, localJs);
   const bundles = existsSync(join(dir, "assets")) ? readdirSync(join(dir, "assets")).filter((f) => /^app\.[0-9a-f]+\.js$/.test(f)) : [];
   return [
     !existsSync(join(dir, s.file)) && `missing app/${s.file}`,
@@ -75,24 +87,28 @@ export function checkStamped(dir: string, js: string, channel: Channel): string[
     bundles.some((f) => `assets/${f}` !== s.file) && `stale bundles in app/assets: ${bundles.filter((f) => `assets/${f}` !== s.file).join(", ")}`,
     readFileSync(join(dir, "index.html"), "utf8") !== s.html && "app/index.html is not stamped for the current bundle and channel",
     readFileSync(join(dir, "sw.js"), "utf8") !== s.sw && "app/sw.js VERSION/SHELL is stale",
+    (!existsSync(join(dir, "local.html")) || readFileSync(join(dir, "local.html"), "utf8") !== s.localHtml) && "app/local.html is stale",
+    (!existsSync(join(dir, s.localFile)) || readFileSync(join(dir, s.localFile), "utf8") !== localJs) && `app/${s.localFile} is stale`,
   ].filter((p): p is string => typeof p === "string");
 }
 
-export async function bundle(): Promise<string> {
-  const r = await build({ entryPoints: ["src/runtime/boot.ts"], bundle: true, format: "esm", target: "es2020", minify: true, write: false, charset: "utf8", legalComments: "none" });
+export async function bundle(format: "esm" | "iife" = "esm"): Promise<string> {
+  const r = await build({ entryPoints: ["src/runtime/boot.ts"], bundle: true, format, target: "es2020", minify: true, write: false, charset: "utf8", legalComments: "none" });
   return r.outputFiles[0]!.text;
 }
 
 if (process.argv[1]?.endsWith("build.ts")) {
   const js = await bundle();
+  const localJs = await bundle("iife");
   const channel = releaseChannel();
   if (process.argv.includes("--check")) {
-    const problems = checkStamped(SITE, js, channel);
+    const problems = checkStamped(SITE, js, channel, localJs);
     if (problems.length) { for (const p of problems) console.error(`✖ ${p}`); console.error("Run: npm run build"); process.exit(1); }
-    const s = stamp(SITE, js, channel);
+    const s = stamp(SITE, js, channel, localJs);
     console.log(`✔ app/ is stamped for the current sources (${s.file}, ${s.version}, channel ${channel})`);
   } else {
-    const s = writeStamped(SITE, js, channel);
+    const s = writeStamped(SITE, js, channel, localJs);
     console.log(`✔ app/${s.file} ${(js.length / 1024).toFixed(1)} KB · ${s.integrity.slice(0, 22)}… · sw ${s.version} · channel ${channel}`);
+    console.log(`✔ app/local.html + ${s.localFile} (open straight from disk, lab only)`);
   }
 }

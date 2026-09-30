@@ -43,7 +43,7 @@ export interface SummaryLocale {
   professional: Record<string, string>;
 }
 
-const EXPOSURE_SIGNALS = new Set(["substanceClass", "substance", "alcohol", "sexEnhancer"]); // only with the EXPOSURE_CONTEXT scope (L26)
+const EXPOSURE_SIGNALS = new Set(["substanceClass", "substance", "alcohol", "sexEnhancer", "pattern", "energyKind", "meds", "urge"]); // only with the EXPOSURE_CONTEXT scope (L26)
 const COURSE_EVENTS = new Set(["EMERGENCY_CALL_REPORTED", "HELP_ON_SCENE", "CORRECTION", "APP_HIDDEN", "APP_VISIBLE", "EPISODE_STARTED", "EPISODE_ENDED"]);
 const INTERVENTION_SKILLS = new Set(["reduce_stimulation", "contact_trusted_person", "grounding", "care", "combination", "steady_check"]);
 

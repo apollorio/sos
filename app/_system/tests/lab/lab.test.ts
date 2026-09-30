@@ -43,7 +43,7 @@ describe("clinical review sheet", () => {
       expect(f.text, `${i.id} · ${f.label}`).not.toMatch(/^\{|⚠/);
       expect(f.text.length, `${i.id} · ${f.label}`).toBeGreaterThan(0);
     }
-    expect(describePredicate({ all: [{ gte: ["risk.isolation", 2] }, { eq: ["signal.substanceClass", "downer"] }] })).toBe("isolamento ≥ 2 e substância = downer («G, calmante ou remédio», «Só álcool»)");
+    expect(describePredicate({ all: [{ gte: ["risk.isolation", 2] }, { eq: ["signal.substanceClass", "downer"] }] })).toBe("isolamento ≥ 2 e como tá o corpo = downer («Pesado, lento, com sono»)");
     expect(describePredicate({ all: [{ any: [{ eq: ["signal.noise", "loud"] }, { gte: ["risk.medical", 3] }] }, { always: true }] })).toBe("(barulho = loud («Muito barulho ou luz») ou risco médico ≥ 3) e sempre");
   });
 
@@ -66,6 +66,14 @@ describe("tester missions", () => {
     for (const m of ms) for (const s of m.steps) {
       expect(s.act, m.scenario).not.toContain("⚠");
       expect(s.see.length, m.scenario).toBeGreaterThan(0);
+    }
+  });
+
+  it("missions tell stories by effects, never by substance names (L30, audit 014)", () => {
+    const NAMES = /\b(bala|md|mdma|ecstasy|pó|cocaína|ket|ketamina|ghb|gbl|\bG\b|ácido|lsd|cogumelos?|maconha|lança|loló|poppers|azulzinho|drogas?)\b/i;
+    for (const m of missions()) {
+      expect(NAMES.test(`${m.title} ${m.story} ${m.watch}`), m.scenario).toBe(false);
+      for (const s of m.steps) expect(NAMES.test(`${s.act} ${s.see}`), `${m.scenario}: ${s.act}`).toBe(false);
     }
   });
 
