@@ -148,7 +148,7 @@ export const SCENARIOS: Scenario[] = [
     doc: "Stable person ends the session and erases it: 'Tô bem, encerrar' closes, 'Apagar agora' wipes storage (L20); the runtime then starts a fresh session.",
     steps: [
       { answer: "self" }, { answer: "none" }, { answer: "yes" },
-      { answer: "low", expect: { band: "P3", cardId: "CARD_STEADY_CHECK" } },
+      { answer: "low", expect: { band: "P3", cardId: "CARD_HOLD" } },
       { tap: "im_fine_end", expect: { cardId: "CARD_SESSION_CLOSED", status: "ended" } },
       { tap: "wipe", expect: { status: "wiped" } },
     ],
@@ -333,7 +333,7 @@ export const SCENARIOS: Scenario[] = [
   },
   {
     name: "menu-pick-and-blocks",
-    doc: "L23: the menu is always there. 'Não tenho água aqui' takes cold water off it; a technique picked from it comes next; 'Tá piorando' is said when the person wants and is acknowledged.",
+    doc: "L23: the menu is always there. 'Não tenho água aqui' takes cold water off it; a technique picked from it comes next; the only thing left to say is 'Tô bem, quero encerrar' (no better/worse grading, L29).",
     steps: [
       { answer: "self" }, { answer: "none" }, { answer: "yes" },
       { answer: "panic", expect: { strategy: "cold_water" } },
@@ -341,7 +341,7 @@ export const SCENARIOS: Scenario[] = [
       { chip: "CHIP_TOOL_COLD", expect: { rejected: "UNKNOWN_ACTION" } },
       { chip: "CHIP_TOOL_HUM", expect: { skill: "grounding", strategy: "humming", policyRule: "USER_REQUEST" } },
       { tap: "done", after: 30, expect: { questionId: "Q_COMPANY" } },
-      { chip: "CHIP_REPORT_WORSE", expect: { band: "P1", notice: "ACK_WORSE" } },
+      { chip: "CHIP_REPORT_END", expect: { cardId: "CARD_SESSION_CLOSED", status: "ended" } },
     ],
   },
   {

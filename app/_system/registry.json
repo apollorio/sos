@@ -36,7 +36,23 @@
       "Every card copy lives in registry/locales/<locale>.json and carries a review status.",
       "Retired IDs stay listed in conventions.retiredIds and are never reused."
     ],
-    "retiredIds": ["grounding.breath_pacer", "CHIP_TOOL_BREATH", "P3-012", "steady_check.tips"]
+    "retiredIds": [
+      "grounding.breath_pacer",
+      "CHIP_TOOL_BREATH",
+      "P3-012",
+      "steady_check.tips",
+      "Q_HOW_NOW",
+      "CARD_Q_HOW_NOW",
+      "CARD_CONFIRM_CHECKIN",
+      "CARD_STEADY_CHECK",
+      "P1-010",
+      "P2-010",
+      "P3-010",
+      "CHECK_IN",
+      "steady_check.check_later",
+      "CHIP_REPORT_BETTER",
+      "CHIP_REPORT_WORSE"
+    ]
   },
   "laws": [
     {
@@ -114,6 +130,10 @@
     {
       "id": "L28",
       "text": "Only the person moves the screen. A timer, an answer ageing out, a follow-up falling due or returning to the app never replaces a card, question or help; it waits for the next tap. The one exception is an emergency (P0). A question may be thought about for as long as the person needs."
+    },
+    {
+      "id": "L29",
+      "text": "The app never asks the person to grade how they are. No 'better/worse' buttons, no 'how are you now?', no follow-up after N minutes. The person can end the session or ask for a person at any time; what the app knows, it learns from what they choose to tell (what they used, what hurts) and from what they tap."
     }
   ],
   "regions": {
@@ -700,25 +720,6 @@
           ]
         }
       }
-    },
-    {
-      "id": "Q_HOW_NOW",
-      "priority": 90,
-      "cooldownSec": 120,
-      "maxAsks": 3,
-      "bands": ["P1", "P2", "P3"],
-      "variants": {
-        "any": {
-          "card": "CARD_Q_HOW_NOW",
-          "answers": [
-            { "id": "better", "set": { "reportedTrend": "better" } },
-            { "id": "same", "set": { "reportedTrend": "same" } },
-            { "id": "worse", "set": { "reportedTrend": "worse" } },
-            { "id": "unknown", "unknown": true, "set": { "reportedTrend": "unknown" } }
-          ]
-        }
-      },
-      "minIntervalSec": 600
     }
   ],
   "textTriggers": {
@@ -783,7 +784,7 @@
           "\\bsuicid\\w*\\b"
         ],
         "set": { "selfHarm": "yes" },
-        "onNegated": { "ask": "Q_HOW_NOW" }
+        "onNegated": { "ask": "Q_RED_FLAGS" }
       },
       {
         "id": "TT-007",
@@ -795,7 +796,7 @@
           "\\bnao (to|estou) (seguro|segura)\\b"
         ],
         "set": { "physicallyUnsafe": "yes" },
-        "onNegated": { "ask": "Q_HOW_NOW" }
+        "onNegated": { "ask": "Q_RED_FLAGS" }
       }
     ]
   },
@@ -1122,14 +1123,6 @@
       "snoozeSec": 180,
       "maxSnoozes": 2,
       "confirmCard": "CARD_CONFIRM_CONTACT",
-      "onMissed": []
-    },
-    {
-      "id": "CHECK_IN",
-      "defaultDueSec": 600,
-      "snoozeSec": 300,
-      "maxSnoozes": 1,
-      "confirmCard": "CARD_CONFIRM_CHECKIN",
       "onMissed": []
     }
   ],
@@ -1569,7 +1562,7 @@
       "id": "steady_check",
       "kind": "intervention",
       "bands": ["P1", "P2", "P3"],
-      "doc": "Stable-state support + the universal fallback 'hold' strategy that guarantees the decision function is total.",
+      "doc": "Universal fallback 'hold' (always eligible: totality, INV-018). Audit 013 (owner): no check-ins. It never asks how the person is, never promises to call back, and has no better/worse buttons.",
       "strategies": [
         {
           "id": "tips",
@@ -1582,16 +1575,6 @@
           "blockSec": 1800,
           "retired": true,
           "doc": "Retired (audit 012, owner): «Tá mais tranquilo. Umas dicas curtas» assumed calm and offered «Me chama em 10 min». Replaced by the care loop, which knows what was used."
-        },
-        {
-          "id": "check_later",
-          "when": { "always": true },
-          "bandsOnly": ["P3"],
-          "requires": [],
-          "card": "CARD_STEADY_CHECK",
-          "onShow": [],
-          "cooldownSec": 900,
-          "blockSec": 900
         },
         {
           "id": "hold",
@@ -1610,12 +1593,6 @@
   "policies": {
     "P1": [
       { "id": "P1-005", "when": { "eq": ["commitment.due", true] }, "skill": "confirm_commitment" },
-      {
-        "id": "P1-010",
-        "when": { "eq": ["session.resumedAfterGap", true] },
-        "skill": "assess",
-        "question": "Q_HOW_NOW"
-      },
       { "id": "P1-012", "when": { "gte": ["risk.mixing", 2] }, "skill": "combination" },
       {
         "id": "P1-015",
@@ -1651,12 +1628,6 @@
     ],
     "P2": [
       { "id": "P2-005", "when": { "eq": ["commitment.due", true] }, "skill": "confirm_commitment" },
-      {
-        "id": "P2-010",
-        "when": { "eq": ["session.resumedAfterGap", true] },
-        "skill": "assess",
-        "question": "Q_HOW_NOW"
-      },
       { "id": "P2-012", "when": { "gte": ["risk.mixing", 2] }, "skill": "combination" },
       {
         "id": "P2-020",
@@ -1675,12 +1646,6 @@
     ],
     "P3": [
       { "id": "P3-005", "when": { "eq": ["commitment.due", true] }, "skill": "confirm_commitment" },
-      {
-        "id": "P3-010",
-        "when": { "eq": ["session.resumedAfterGap", true] },
-        "skill": "assess",
-        "question": "Q_HOW_NOW"
-      },
       {
         "id": "P3-050",
         "when": { "all": [{ "neq": ["help.last", "none"] }, { "neq": ["help.last", "care"] }] },
@@ -1712,7 +1677,6 @@
     { "id": "CARD_Q_ALCOHOL", "kind": "question" },
     { "id": "CARD_Q_SEX", "kind": "question" },
     { "id": "CARD_Q_BODY", "kind": "question" },
-    { "id": "CARD_Q_HOW_NOW", "kind": "question" },
     {
       "id": "CARD_P0_CALL",
       "kind": "action",
@@ -2300,29 +2264,12 @@
       ]
     },
     {
-      "id": "CARD_STEADY_CHECK",
-      "kind": "action",
-      "bands": ["P3"],
-      "actions": [
-        { "id": "keep_going", "emphasis": "primary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }] },
-        { "id": "im_fine_end", "emphasis": "secondary", "ops": [{ "op": "SESSION_END" }] }
-      ]
-    },
-    {
       "id": "CARD_HOLD",
       "kind": "action",
       "bands": ["P1", "P2", "P3"],
       "actions": [
-        {
-          "id": "better",
-          "emphasis": "primary",
-          "ops": [{ "op": "SIGNALS_REPORTED", "set": { "reportedTrend": "better" } }]
-        },
-        {
-          "id": "worse",
-          "emphasis": "secondary",
-          "ops": [{ "op": "SIGNALS_REPORTED", "set": { "reportedTrend": "worse" } }]
-        }
+        { "id": "ok", "emphasis": "primary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }] },
+        { "id": "im_fine_end", "emphasis": "secondary", "ops": [{ "op": "SESSION_END" }] }
       ],
       "variantKeys": ["actor"]
     },
@@ -2404,37 +2351,6 @@
           "id": "still_trying",
           "emphasis": "secondary",
           "ops": [{ "op": "COMMITMENT_RESOLVED", "kind": "CONTACT_REPLY", "outcome": "snooze" }]
-        }
-      ]
-    },
-    {
-      "id": "CARD_CONFIRM_CHECKIN",
-      "kind": "action",
-      "bands": ["P1", "P2", "P3"],
-      "actions": [
-        {
-          "id": "better",
-          "emphasis": "primary",
-          "ops": [
-            { "op": "COMMITMENT_RESOLVED", "kind": "CHECK_IN", "outcome": "done" },
-            { "op": "SIGNALS_REPORTED", "set": { "reportedTrend": "better" } }
-          ]
-        },
-        {
-          "id": "same",
-          "emphasis": "secondary",
-          "ops": [
-            { "op": "COMMITMENT_RESOLVED", "kind": "CHECK_IN", "outcome": "done" },
-            { "op": "SIGNALS_REPORTED", "set": { "reportedTrend": "same" } }
-          ]
-        },
-        {
-          "id": "worse",
-          "emphasis": "secondary",
-          "ops": [
-            { "op": "COMMITMENT_RESOLVED", "kind": "CHECK_IN", "outcome": "done" },
-            { "op": "SIGNALS_REPORTED", "set": { "reportedTrend": "worse" } }
-          ]
         }
       ]
     },
@@ -2652,20 +2568,6 @@
         "id": "pick",
         "ops": [{ "op": "STRATEGY_REQUESTED", "skill": "contact_trusted_person", "strategy": "crisis_line" }]
       }
-    },
-    {
-      "id": "CHIP_REPORT_BETTER",
-      "bands": ["P1", "P2", "P3"],
-      "group": "report",
-      "notice": "ACK_BETTER",
-      "action": { "id": "better", "ops": [{ "op": "SIGNALS_REPORTED", "set": { "reportedTrend": "better" } }] }
-    },
-    {
-      "id": "CHIP_REPORT_WORSE",
-      "bands": ["P1", "P2", "P3"],
-      "group": "report",
-      "notice": "ACK_WORSE",
-      "action": { "id": "worse", "ops": [{ "op": "SIGNALS_REPORTED", "set": { "reportedTrend": "worse" } }] }
     },
     {
       "id": "CHIP_REPORT_END",

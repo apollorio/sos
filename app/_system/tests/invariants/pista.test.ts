@@ -5,6 +5,7 @@
 import { describe, it, expect } from "vitest";
 import { converse, PERSONAS } from "../../scripts/converse";
 import { REG } from "../../src/core/registry";
+import { LOCALES } from "../../src/ui/locale";
 import { initialState, type SessionState } from "../../src/core/domain/state";
 import { decideCore } from "../../src/core/planner/decide";
 import { buildFacts } from "../../src/core/logic/facts";
@@ -141,5 +142,18 @@ describe("pista: discovery, care loop, pace and the breathing orb (audit 011)", 
       expect(r.output.card.strategy).not.toBe("tips");
       expect(r.output.card.actions.map((a) => a.id)).not.toContain("check_later");
     }
+  });
+
+  it("L29 (audit 013): nothing in the app asks the person to grade how they are, or promises a check later", () => {
+    for (const c of REG.data.cards) for (const a of c.actions ?? []) {
+      expect(["better", "worse", "same"], `${c.id}.${a.id}`).not.toContain(a.id);
+      expect(a.ops.some((o) => o.op === "SIGNALS_REPORTED" && "reportedTrend" in o.set), `${c.id}.${a.id} reports a trend`).toBe(false);
+      expect(a.ops.some((o) => o.op === "COMMITMENT_CREATED" && o.kind === "CHECK_IN"), `${c.id}.${a.id}`).toBe(false);
+    }
+    for (const c of REG.data.chips) expect(c.action.ops.some((o) => o.op === "SIGNALS_REPORTED" && "reportedTrend" in o.set), c.id).toBe(false);
+    expect(REG.data.commitments.map((c) => c.id)).not.toContain("CHECK_IN");
+    expect(REG.data.questions.flatMap((q) => Object.values(q.variants).flatMap((v) => v.answers.flatMap((a) => Object.keys(a.set))))).not.toContain("reportedTrend");
+    const labels = Object.values(LOCALES["pt-BR"]!.cards).flatMap((c) => Object.values(c.actions)).concat(Object.values(LOCALES["pt-BR"]!.chips).map((c) => c.label));
+    for (const l of labels) expect(l, l).not.toMatch(/melhorou|piorou|tá melhor|tá piorando|me chama (em|daqui)/i);
   });
 });

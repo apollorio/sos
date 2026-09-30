@@ -49,7 +49,7 @@ function follow(answers: Record<string, string>, minutes: number): Session {
 const asks = (s: Session, qid: string) => s.steps.filter((r, i) => r.output.card.questionId === qid && s.steps[i - 1]?.output.card.instanceId !== r.output.card.instanceId).length;
 
 describe("acolhimento: help-first rhythm (audit 010)", () => {
-  const PANIC = { Q_ACTOR: "self", Q_RED_FLAGS: "none", Q_CLARITY: "yes", Q_ANXIETY: "panic", Q_NOISE: "quiet", Q_HOW_NOW: "same" };
+  const PANIC = { Q_ACTOR: "self", Q_RED_FLAGS: "none", Q_CLARITY: "yes", Q_ANXIETY: "panic", Q_NOISE: "quiet" };
 
   for (const company of ["with", "alone"]) {
     it(`self in panic (${company}): help after a short triage, then never two questions in a row; no "how are you" loop in 15 min`, () => {
@@ -58,7 +58,6 @@ describe("acolhimento: help-first rhythm (audit 010)", () => {
       const first = s.steps.find((r) => r.output.card.kind === "action")!;
       expect(first.output.card.skill).toBe("grounding"); // a calming technique first, even alone (L21, P1-015/P2-040)
       expect(asks(s, "Q_ANXIETY")).toBeLessThanOrEqual(2);
-      expect(asks(s, "Q_HOW_NOW")).toBe(0);
       // After the first help, never two different questions back to back (critical safety re-checks excepted).
       const firstHelp = s.steps.indexOf(first);
       const cards = s.steps.slice(firstHelp).map((r) => r.output.card);
@@ -75,7 +74,7 @@ describe("acolhimento: help-first rhythm (audit 010)", () => {
   it("before audit 010 the same session asked 'Quanto de ansiedade?' after every exercise: the limit is now data (L24)", () => {
     const q = REG.question.get("Q_ANXIETY")!;
     expect(q.minIntervalSec).toBeGreaterThanOrEqual(600);
-    expect(REG.question.get("Q_HOW_NOW")!.minIntervalSec).toBeGreaterThanOrEqual(600);
+    expect(REG.question.get("Q_HOW_NOW")).toBeUndefined(); // audit 013: no "how are you" question exists at all (L29)
     for (const c of REG.data.cards) for (const a of c.actions ?? []) expect(a.ops.some((o) => o.op === "SIGNALS_EXPIRED" && o.signals.includes("anxiety")), `${c.id}.${a.id}`).toBe(false);
   });
 

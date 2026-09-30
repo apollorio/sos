@@ -409,16 +409,6 @@ nav.toc a{font-size:14px;background:var(--card);border:1px solid var(--line);bor
     </fieldset>
     <textarea name="c-CARD_Q_BODY" aria-label="Comentário ou texto sugerido para CARD_Q_BODY" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
     <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
-  </article><article class="item" data-id="CARD_Q_HOW_NOW" data-hash="2368973de3" data-optional="0">
-    <h3>CARD_Q_HOW_NOW <span class="badge">rascunho</span></h3>
-    <dl><dt>Pergunta</dt><dd>Que bom que você voltou.</dd><dt>Texto</dt><dd>Como você está agora? Se preferir, é só continuar.</dd><dt>Texto · quem ajuda</dt><dd>Como a pessoa está agora? Se preferir, é só continuar.</dd><dt>«Um pouco melhor»</dt><dd>registra: como está agora (relatado) = better</dd><dt>«Igual»</dt><dd>registra: como está agora (relatado) = same</dd><dt>«Pior»</dt><dd>registra: como está agora (relatado) = worse</dd><dt>«Prefiro só continuar»</dt><dd>registra: como está agora (relatado) = unknown</dd></dl>
-    <fieldset><legend>Parecer</legend>
-      <label class="opt"><input type="radio" name="v-CARD_Q_HOW_NOW" value="aprovado"> Aprovar</label>
-      <label class="opt"><input type="radio" name="v-CARD_Q_HOW_NOW" value="ajustes"> Aprovar com ajustes</label>
-      <label class="opt"><input type="radio" name="v-CARD_Q_HOW_NOW" value="reprovado"> Não aprovar</label>
-    </fieldset>
-    <textarea name="c-CARD_Q_HOW_NOW" aria-label="Comentário ou texto sugerido para CARD_Q_HOW_NOW" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
-    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
   </article>
 </section>
 <section id="s-guidance">
@@ -804,19 +794,9 @@ nav.toc a{font-size:14px;background:var(--card);border:1px solid var(--line);bor
     </fieldset>
     <textarea name="c-CARD_STEADY_TIPS" aria-label="Comentário ou texto sugerido para CARD_STEADY_TIPS" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
     <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
-  </article><article class="item" data-id="CARD_STEADY_CHECK" data-hash="7668be69f3" data-optional="0">
-    <h3>CARD_STEADY_CHECK <span class="badge">rascunho</span></h3>
-    <dl><dt>Aparece</dt><dd>estratégia steady_check.check_later: quando sempre</dd><dt>Título</dt><dd>Tô aqui com você.</dd><dt>Texto</dt><dd>Se quiser, escolha uma técnica ou um cuidado abaixo. Eu fico aqui, sem pressa.</dd><dt>Botões</dt><dd>«Quero continuar aqui»  «Tô bem, encerrar»</dd></dl>
-    <fieldset><legend>Parecer</legend>
-      <label class="opt"><input type="radio" name="v-CARD_STEADY_CHECK" value="aprovado"> Aprovar</label>
-      <label class="opt"><input type="radio" name="v-CARD_STEADY_CHECK" value="ajustes"> Aprovar com ajustes</label>
-      <label class="opt"><input type="radio" name="v-CARD_STEADY_CHECK" value="reprovado"> Não aprovar</label>
-    </fieldset>
-    <textarea name="c-CARD_STEADY_CHECK" aria-label="Comentário ou texto sugerido para CARD_STEADY_CHECK" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
-    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
-  </article><article class="item" data-id="CARD_HOLD" data-hash="7b9c4c35a2" data-optional="0">
+  </article><article class="item" data-id="CARD_HOLD" data-hash="f735166165" data-optional="0">
     <h3>CARD_HOLD <span class="badge">rascunho</span></h3>
-    <dl><dt>Aparece</dt><dd>estratégia steady_check.hold: quando sempre</dd><dt>Título</dt><dd>Tô aqui com você.</dd><dt>Texto</dt><dd>Fica onde está e respira devagar. Se piorar, liga 192.</dd><dt>Texto · quem ajuda</dt><dd>Fica com a pessoa e observa a respiração. Se piorar ou ela não responder, ligue 192.</dd><dt>Botões</dt><dd>«Melhorou»  «Piorou»</dd></dl>
+    <dl><dt>Aparece</dt><dd>estratégia steady_check.hold: quando sempre</dd><dt>Título</dt><dd>Tô aqui com você.</dd><dt>Texto</dt><dd>Sem pressa. Escolhe o que quiser no menu abaixo, ou só fica aqui e respira. Se piorar de verdade, o 192 tá no topo.</dd><dt>Texto · quem ajuda</dt><dd>Fica com a pessoa e observa a respiração dela. Escolhe algo no menu abaixo quando quiser. Se ela piorar ou não responder, o 192 tá no topo.</dd><dt>Botões</dt><dd>«Continuar aqui»  «Tô bem, encerrar»</dd></dl>
     <fieldset><legend>Parecer</legend>
       <label class="opt"><input type="radio" name="v-CARD_HOLD" value="aprovado"> Aprovar</label>
       <label class="opt"><input type="radio" name="v-CARD_HOLD" value="ajustes"> Aprovar com ajustes</label>
@@ -829,9 +809,9 @@ nav.toc a{font-size:14px;background:var(--card);border:1px solid var(--line);bor
 <section id="s-risk">
   <h2>Como o app estima o risco</h2>
   <p class="lead">Os níveis (0 a 4) fazem sentido clinicamente? O nível de cada dimensão é o maior entre as linhas que valem.</p>
-  <article class="item" data-id="RISK-medical" data-hash="431c2d22d4" data-optional="0">
+  <article class="item" data-id="RISK-medical" data-hash="b45b4c2f48" data-optional="0">
     <h3>risco médico <span class="badge">—</span></h3>
-    <dl><dt>nível 3</dt><dd>respiração = abnormal («Estranha ou ofegante»)</dd><dt>nível 3</dt><dd>responde = impaired («Pouco ou confusa», «Tá difícil, confuso»)</dd><dt>nível 2</dt><dd>como está agora (relatado) = worse («Pior»)</dd></dl>
+    <dl><dt>nível 3</dt><dd>respiração = abnormal («Estranha ou ofegante»)</dd><dt>nível 3</dt><dd>responde = impaired («Pouco ou confusa», «Tá difícil, confuso»)</dd><dt>nível 2</dt><dd>como está agora (relatado) = worse</dd></dl>
     <fieldset><legend>Parecer</legend>
       <label class="opt"><input type="radio" name="v-RISK-medical" value="aprovado"> Aprovar</label>
       <label class="opt"><input type="radio" name="v-RISK-medical" value="ajustes"> Aprovar com ajustes</label>
@@ -859,9 +839,9 @@ nav.toc a{font-size:14px;background:var(--card);border:1px solid var(--line);bor
     </fieldset>
     <textarea name="c-RISK-isolation" aria-label="Comentário ou texto sugerido para RISK-isolation" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
     <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
-  </article><article class="item" data-id="RISK-emotional" data-hash="735d0ba0a2" data-optional="0">
+  </article><article class="item" data-id="RISK-emotional" data-hash="005e50c9b2" data-optional="0">
     <h3>risco emocional <span class="badge">—</span></h3>
-    <dl><dt>nível 4</dt><dd>ansiedade (0–4) = 4 («Muita, pânico», «Em pânico»)</dd><dt>nível 3</dt><dd>ansiedade (0–4) = 3 («Bastante», «Ansiosa»)</dd><dt>nível 3</dt><dd>como está agora (relatado) = worse («Pior»)</dd><dt>nível 2</dt><dd>ansiedade (0–4) = 2</dd><dt>nível 1</dt><dd>ansiedade (0–4) ∈ {1 («Pouca», «Calma»), desconhecido («Não sei»)}</dd></dl>
+    <dl><dt>nível 4</dt><dd>ansiedade (0–4) = 4 («Muita, pânico», «Em pânico»)</dd><dt>nível 3</dt><dd>ansiedade (0–4) = 3 («Bastante», «Ansiosa»)</dd><dt>nível 3</dt><dd>como está agora (relatado) = worse</dd><dt>nível 2</dt><dd>ansiedade (0–4) = 2</dd><dt>nível 1</dt><dd>ansiedade (0–4) ∈ {1 («Pouca», «Calma»), desconhecido («Não sei»)}</dd></dl>
     <fieldset><legend>Parecer</legend>
       <label class="opt"><input type="radio" name="v-RISK-emotional" value="aprovado"> Aprovar</label>
       <label class="opt"><input type="radio" name="v-RISK-emotional" value="ajustes"> Aprovar com ajustes</label>
@@ -1059,9 +1039,9 @@ nav.toc a{font-size:14px;background:var(--card);border:1px solid var(--line);bor
     </fieldset>
     <textarea name="c-TT-005" aria-label="Comentário ou texto sugerido para TT-005" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
     <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
-  </article><article class="item" data-id="TT-006" data-hash="2c809aea5a" data-optional="0">
+  </article><article class="item" data-id="TT-006" data-hash="4e2d229fcc" data-optional="0">
     <h3>TT-006 · self_harm_intent <span class="badge">—</span></h3>
-    <dl><dt>Exemplos que acionam</dt><dd>«quero morrer»  «vou me matar»  «me matar»  «acabar com a minha vida»  «acabar com minha vida»  «suicid…»</dd><dt>O que registra</dt><dd>intenção de se ferir = yes</dd><dt>Com negação</dt><dd>(nao, sem, nunca, nem, nenhum, nenhuma) antes da frase: não age, pergunta Q_HOW_NOW</dd></dl>
+    <dl><dt>Exemplos que acionam</dt><dd>«quero morrer»  «vou me matar»  «me matar»  «acabar com a minha vida»  «acabar com minha vida»  «suicid…»</dd><dt>O que registra</dt><dd>intenção de se ferir = yes</dd><dt>Com negação</dt><dd>(nao, sem, nunca, nem, nenhum, nenhuma) antes da frase: não age, pergunta Q_RED_FLAGS</dd></dl>
     <fieldset><legend>Parecer</legend>
       <label class="opt"><input type="radio" name="v-TT-006" value="aprovado"> Aprovar</label>
       <label class="opt"><input type="radio" name="v-TT-006" value="ajustes"> Aprovar com ajustes</label>
@@ -1069,9 +1049,9 @@ nav.toc a{font-size:14px;background:var(--card);border:1px solid var(--line);bor
     </fieldset>
     <textarea name="c-TT-006" aria-label="Comentário ou texto sugerido para TT-006" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
     <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
-  </article><article class="item" data-id="TT-007" data-hash="466459fc8f" data-optional="0">
+  </article><article class="item" data-id="TT-007" data-hash="3acb4de783" data-optional="0">
     <h3>TT-007 · physically_unsafe <span class="badge">—</span></h3>
-    <dl><dt>Exemplos que acionam</dt><dd>«to em perigo»  «estou em perigo»  «vao me bater»  «me ameac…»  «nao to seguro»  «nao to segura»  «nao estou seguro»  «nao estou segura»</dd><dt>O que registra</dt><dd>em perigo físico = yes</dd><dt>Com negação</dt><dd>(nao, sem, nunca, nem, nenhum, nenhuma) antes da frase: não age, pergunta Q_HOW_NOW</dd></dl>
+    <dl><dt>Exemplos que acionam</dt><dd>«to em perigo»  «estou em perigo»  «vao me bater»  «me ameac…»  «nao to seguro»  «nao to segura»  «nao estou seguro»  «nao estou segura»</dd><dt>O que registra</dt><dd>em perigo físico = yes</dd><dt>Com negação</dt><dd>(nao, sem, nunca, nem, nenhum, nenhuma) antes da frase: não age, pergunta Q_RED_FLAGS</dd></dl>
     <fieldset><legend>Parecer</legend>
       <label class="opt"><input type="radio" name="v-TT-007" value="aprovado"> Aprovar</label>
       <label class="opt"><input type="radio" name="v-TT-007" value="ajustes"> Aprovar com ajustes</label>
@@ -1114,16 +1094,6 @@ nav.toc a{font-size:14px;background:var(--card);border:1px solid var(--line);bor
     </fieldset>
     <textarea name="c-CARD_CONFIRM_CONTACT" aria-label="Comentário ou texto sugerido para CARD_CONFIRM_CONTACT" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
     <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
-  </article><article class="item" data-id="CARD_CONFIRM_CHECKIN" data-hash="3abeffd2f8" data-optional="1">
-    <h3>CARD_CONFIRM_CHECKIN <span class="badge">rascunho</span></h3>
-    <dl><dt>Título</dt><dd>Passou um tempinho. Como está agora?</dd><dt>Botões</dt><dd>«Melhor»  «Igual»  «Pior»</dd></dl>
-    <fieldset><legend>Parecer</legend>
-      <label class="opt"><input type="radio" name="v-CARD_CONFIRM_CHECKIN" value="aprovado"> Aprovar</label>
-      <label class="opt"><input type="radio" name="v-CARD_CONFIRM_CHECKIN" value="ajustes"> Aprovar com ajustes</label>
-      <label class="opt"><input type="radio" name="v-CARD_CONFIRM_CHECKIN" value="reprovado"> Não aprovar</label>
-    </fieldset>
-    <textarea name="c-CARD_CONFIRM_CHECKIN" aria-label="Comentário ou texto sugerido para CARD_CONFIRM_CHECKIN" placeholder="Comentário ou texto sugerido (opcional)"></textarea>
-    <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
   </article><article class="item" data-id="CARD_SESSION_CLOSED" data-hash="980be671ee" data-optional="1">
     <h3>CARD_SESSION_CLOSED <span class="badge">rascunho</span></h3>
     <dl><dt>Título</dt><dd>Que bom. Se cuida.</dd><dt>Texto</dt><dd>O que foi respondido fica só neste aparelho e é apagado sozinho em até 12h.</dd><dt>Botões</dt><dd>«Apagar agora»  «Começar de novo»</dd></dl>
@@ -1146,9 +1116,9 @@ nav.toc a{font-size:14px;background:var(--card);border:1px solid var(--line);bor
     <p class="note changed-note hidden">O texto deste item mudou desde a sua avaliação. Confira de novo.</p>
   </article>
 </section>
-<p class="meta">Registro 0.1.0 · hash b596ba8c28a8d05b · motor assets/app.f97bdca419e3.js</p>
+<p class="meta">Registro 0.1.0 · hash 3dd609a102323408 · motor assets/app.ebd78ac44e1a.js</p>
 <div class="bar"><div class="in">
-  <span class="grow" id="progress" role="status">0 de 102 itens com parecer</span>
+  <span class="grow" id="progress" role="status">0 de 99 itens com parecer</span>
   <button type="button" id="copy">Copiar resumo</button>
   <button type="button" onclick="window.print()">Imprimir ou PDF</button>
   <button type="button" class="primary" id="download">Baixar retorno</button>
@@ -1156,7 +1126,7 @@ nav.toc a{font-size:14px;background:var(--card);border:1px solid var(--line);bor
 
 </div>
 <script>
-const FACTS={"registryHash":"b596ba8c28a8d05b","registryVersion":"0.1.0","bundle":"assets/app.f97bdca419e3.js","total":102};
+const FACTS={"registryHash":"3dd609a102323408","registryVersion":"0.1.0","bundle":"assets/app.ebd78ac44e1a.js","total":99};
 // Stable key: verdicts survive a rebuild; per-item hashes flag any item whose text changed since.
 const KEY="sos-lab-review:v1";
 const items=[...document.querySelectorAll("article.item")];

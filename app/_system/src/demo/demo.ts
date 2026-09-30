@@ -5,6 +5,7 @@
  *   · a "brain" panel: band, commanding rule, VOI class of every question, signals with age, commitments
  *   · autoplay of the golden scenarios
  */
+import { REGISTRY_HASH } from "../generated/registry.gen";
 import { REG } from "../core/registry";
 import { LOCALES } from "../ui/locale";
 import { renderStep } from "../ui/render";
@@ -95,6 +96,12 @@ function pistaRows(s: StepResult["state"], facts: Record<string, unknown>): [str
     ["Próxima pergunta da pista", next ? `<code>${next}</code>` : "<span class='dim'>nenhuma agora</span>", "uma pergunta no máximo entre duas ajudas, nunca antes da 1ª ajuda"],
     ["Ritmo das respostas", `<code>${esc(String(facts["pace"]))}</code>`, "derivado; lento = 90 s ou mais por resposta, 2 vezes"],
   ];
+}
+
+/** Which build is this? A stale copy on disk is the most common reason a page "does not match" (audit 013). */
+function stampBuild() {
+  const el = document.getElementById("build-stamp");
+  if (el) el.textContent = `versão do motor: registro ${REGISTRY_HASH} · ${REG.data.skills.length} habilidades · ${REG.data.questions.length} perguntas · ${REG.data.chips.length} botões de menu`;
 }
 
 function renderBrain(r: StepResult) {
@@ -237,6 +244,7 @@ $("k-capsule").addEventListener("click", async () => {
 let loop: EngineLoop;
 
 async function boot() {
+  stampBuild();
   const phone = $("phone-screen");
   loop = new EngineLoop(memStore(), (r) => {
     renderStep(phone, r, locale, REG, {

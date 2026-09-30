@@ -29,7 +29,7 @@ describe("clinical review sheet", () => {
     for (const [id, c] of Object.entries(L.cards)) if (c.clinical) expect(required.has(id), id).toBe(true);
     for (const c of D.cards as { id: string }[]) expect(ids, c.id).toContain(c.id); // every card is there, once
     // Wider than the lint: every triage question and every strategy card (grounding contraindications, audit 003 J1).
-    for (const id of ["CARD_GROUNDING_BREATH", "CARD_GROUNDING_FEET", "CARD_GROUNDING_SENSES", "CARD_Q_CLARITY", "CARD_Q_HOW_NOW"]) expect(required.has(id), id).toBe(true);
+    for (const id of ["CARD_GROUNDING_BREATH", "CARD_GROUNDING_FEET", "CARD_GROUNDING_SENSES", "CARD_Q_CLARITY"] ) expect(required.has(id), id).toBe(true);
   });
 
   it("item ids are unique and hashes change when the reviewed text changes", () => {

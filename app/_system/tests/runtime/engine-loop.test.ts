@@ -55,7 +55,7 @@ describe("engine loop vs. storage", () => {
     await loop.start();
     const erased = loop.current!.sessionId;
     for (const a of ["self", "none", "yes", "low"]) await tap(a);
-    expect(renders.at(-1)!.output.card.cardId).toBe("CARD_STEADY_CHECK");
+    expect(renders.at(-1)!.output.card.cardId).toBe("CARD_HOLD");
     await tap("im_fine_end");
     expect(renders.at(-1)!.output.card.cardId).toBe("CARD_SESSION_CLOSED");
     await tap("wipe"); // back-to-back: earlier saves are still in flight

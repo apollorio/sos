@@ -130,6 +130,7 @@ every minute of silence, and no calming technique at all for a person alone. Fou
 | L26 | **What was used only adds care.** Asked directly («O que você usou?», then «Qual deles? Teve álcool junto?»: one tap answers both), one question between two helps, never before the first help; a dangerous combination raises the band (P1/P2) and brings its warning at once, never P0 by itself; no dose, no second substance, no antidote (INV-030). |
 | L27 | **Breathing is the background, not a step.** A slow orb (in 4 · hold 1 · out 6) paces the breath behind every non-P0 card while breathing is normal and the person responds; the breathing card is retired. |
 | L28 | **Only the person moves the screen** (audit 012). Time (a timer, an answer ageing out, a follow-up falling due) never replaces a card, question or help; it waits for the next tap. Only P0 can. |
+| L29 | **No grading.** The app never asks the person to grade how they are (audit 013): no better/worse buttons, no «how are you now?», no timed check-in. What it knows comes from what they choose to tell and tap. |
 
 Anxiety is asked **once** per session (`Q_ANXIETY maxAsks 1`, answer valid 1 h). The loop alternates a technique and a
 care tip (`help.last`), rotating least-shown first, forever: see `app/_audit/011-pista/` and `scripts/converse.ts`.

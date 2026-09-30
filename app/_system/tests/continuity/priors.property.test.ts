@@ -92,8 +92,8 @@ describe("strategy priors (longitudinal personalization)", () => {
 
   it("reorderByPriors is stable, keeps fallbacks last and never adds or removes", () => {
     const def = REG.skill.get("steady_check")!.strategies;
-    const out = reorderByPriors("steady_check", def, { "steady_check.hold": "helpful", "steady_check.check_later": "helpful" });
-    expect(out.map((s) => s.id)).toEqual(["check_later", "tips", "hold"]);
+    const out = reorderByPriors("steady_check", def, { "steady_check.hold": "helpful" });
+    expect(out.map((s) => s.id)).toEqual(["tips", "hold"]);
     const g = REG.skill.get("grounding")!.strategies;
     expect(reorderByPriors("grounding", g, { "grounding.breath_pacer": "unhelpful", "grounding.five_senses": "helpful" }).map((s) => s.id)).toEqual(["five_senses", "cold_water", "feet_floor", "double_sigh", "humming", "press_wall", "breath_pacer"]);
   });

@@ -8,7 +8,7 @@ import { LOCALES } from "../../src/ui/locale";
 import type { SkillPick } from "../../src/core/domain/decision";
 
 export const ACTOR_NEUTRAL = new Set([
-  "CARD_Q_ACTOR", "CARD_Q_NOISE", "CARD_STEADY_CHECK", "CARD_SESSION_CLOSED", "CARD_SAFE_FALLBACK",
+  "CARD_Q_ACTOR", "CARD_Q_NOISE", "CARD_SESSION_CLOSED", "CARD_SAFE_FALLBACK",
   "CARD_CONFIRM_FRIEND", "CARD_CONFIRM_RELOCATION", "CARD_CONFIRM_CONTACT", "CARD_CONFIRM_CHECKIN",
 ]);
 
