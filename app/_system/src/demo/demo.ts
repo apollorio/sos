@@ -6,6 +6,7 @@
  *   · autoplay of the golden scenarios
  */
 import { REGISTRY_HASH } from "../generated/registry.gen";
+import { pistaRows } from "../ui/pista";
 import { REG } from "../core/registry";
 import { LOCALES } from "../ui/locale";
 import { renderStep } from "../ui/render";
@@ -60,44 +61,6 @@ function toast(msg: string) {
   (el as unknown as { _t?: number })._t = window.setTimeout(() => (el.hidden = true), 3200);
 }
 
-/** Plain words for what was recorded (one value can come from several buttons, e.g. «Bala + álcool» and «Só bala»). */
-const SAID: Record<string, Record<string, string>> = {
-  substanceClass: { stim: "estimulante (bala, MD ou pó)", downer: "depressor (G, calmante, remédio ou álcool)", psychedelic: "psicodélico / dissociativo", none: "nada" },
-  substance: { md: "bala / MD", coke: "pó (cocaína)", ghb: "G (GHB/GBL)", downer_pill: "calmante, remédio ou opioide", alcohol: "só álcool", lsd: "ácido ou cogumelo", ket: "ket", cannabis: "erva", inhalant: "lança ou loló" },
-  alcohol: { yes: "sim", no: "não" },
-  sexEnhancer: { pill: "azulzinho", poppers: "poppers", both: "azulzinho + poppers", none: "nada disso" },
-  discomfort: { nose: "nariz ardendo", throat: "garganta ardendo", heat: "muito calor", nausea: "enjoo", jaw: "mandíbula travando" },
-};
-function saidAs(signal: string, value: unknown): string {
-  if (value === "unknown" || value === undefined) return "<span class='dim'>ainda não sabido</span>";
-  return `<b>${esc(SAID[signal]?.[String(value)] ?? String(value))}</b>`;
-}
-
-function pistaRows(s: StepResult["state"], facts: Record<string, unknown>): [string, string, string][] {
-  const phrase = (k: string) => locale.continuity?.strategyPhrases?.[k] ?? k;
-  const shown = (skill: string) => REG.data.skills.find((x) => x.id === skill)!.strategies
-    .filter((st) => (s.strategies[`${skill}.${st.id}`]?.shows ?? 0) > 0)
-    .map((st) => `${esc(phrase(`${skill}.${st.id}`))}${s.strategies[`${skill}.${st.id}`]?.doneAt != null ? " ✔" : ""}`);
-  const mixing = Number(facts["risk.mixing"] ?? 0);
-  const mixNote = ["nenhuma mistura conhecida", "", "mistura que pesa (faixa P2 no mínimo)", "mistura perigosa (faixa P1)", ""][mixing] ?? "";
-  const next = ["Q_SUBSTANCE", "Q_WHICH_STIM", "Q_WHICH_DOWNER", "Q_WHICH_PSY", "Q_ALCOHOL", "Q_SEX", "Q_BODY"].find((id) => {
-    const q = REG.question.get(id)!;
-    return s.band ? !!askable(q, s, facts as never, s.band.current, s.lastAt, REG) : false;
-  });
-  return [
-    ["Usou", saidAs("substanceClass", facts["signal.substanceClass"]), "O que você usou? (1 toque)"],
-    ["Qual", saidAs("substance", facts["signal.substance"]), "Qual deles? Teve álcool junto? (mesmo toque responde o álcool)"],
-    ["Álcool junto", saidAs("alcohol", facts["signal.alcohol"]), facts["signal.alcohol"] === "no" ? "escolheu «Só …» quando havia «+ álcool»" : ""],
-    ["Pra transar", saidAs("sexEnhancer", facts["signal.sexEnhancer"]), "azulzinho / poppers"],
-    ["No corpo", saidAs("discomfort", facts["signal.discomfort"]), "pergunta ou menu «Cuidar do corpo»"],
-    ["Mistura", `<b>${mixing}</b>`, mixNote],
-    ["Avisos mostrados", shown("combination").join(" · ") || "<span class='dim'>nenhum</span>", "aparecem assim que a mistura é conhecida"],
-    ["Cuidados dados", shown("care").join(" · ") || "<span class='dim'>nenhum</span>", "alternam com as técnicas, sem fim"],
-    ["Próxima pergunta da pista", next ? `<code>${next}</code>` : "<span class='dim'>nenhuma agora</span>", "uma pergunta no máximo entre duas ajudas, nunca antes da 1ª ajuda"],
-    ["Ritmo das respostas", `<code>${esc(String(facts["pace"]))}</code>`, "derivado; lento = 90 s ou mais por resposta, 2 vezes"],
-  ];
-}
-
 /** Which build is this? A stale copy on disk is the most common reason a page "does not match" (audit 013). */
 function stampBuild() {
   const el = document.getElementById("build-stamp");
@@ -122,7 +85,8 @@ function renderBrain(r: StepResult) {
   $("b-because").innerHTML = why.because.map((l) => `<li><code>${esc(l.path)}</code> <span class="op">${esc(l.op)}</span> ${l.expected === null ? "" : `<code>${esc(JSON.stringify(l.expected))}</code>`}</li>`).join("") || "<li>—</li>";
 
   // Pista (audit 012): the follow-up of what was used, in the words the person tapped.
-  $("b-pista").innerHTML = pistaRows(s, facts).map(([k, v, note]) => `<tr><th scope="row">${esc(k)}</th><td>${v}</td><td class="dim">${esc(note)}</td></tr>`).join("");
+  $("b-pista").innerHTML = pistaRows(s, facts, REG, (k) => locale.continuity?.strategyPhrases?.[k] ?? k)
+    .map((row) => `<tr><th scope="row">${esc(row.label)}</th><td><b>${esc(row.value)}</b></td><td class="dim">${esc(row.note)}</td></tr>`).join("");
 
   // Risk vector
   $("b-risk").innerHTML = Object.entries(risk).map(([d, v]) =>

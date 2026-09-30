@@ -20,7 +20,22 @@ describe("app/ is a consistent, content-addressed deploy", () => {
     const js = readFileSync(at(file!));
     expect(createHash("sha256").update(js).digest("hex").slice(0, 12)).toBe(hash);
     expect(`sha384-${createHash("sha384").update(js).digest("base64")}`).toBe(integrity);
-    expect(readdirSync(at("assets")).filter((f) => f.endsWith(".js"))).toEqual([file!.slice("assets/".length)]);
+    expect(readdirSync(at("assets")).filter((f) => /^app\..*\.js$/.test(f))).toEqual([file!.slice("assets/".length)]);
+  });
+
+  it("local.html (audit 014) is the same shell for file://: one classic hashed bundle, no module, no SRI, never precached", () => {
+    const local = readFileSync(at("local.html"), "utf8");
+    const l = /<script defer src="\.\/(assets\/local\.([0-9a-f]{12})\.js)"><\/script>/.exec(local);
+    expect(l).not.toBeNull();
+    const js = readFileSync(at(l![1]!));
+    expect(createHash("sha256").update(js).digest("hex").slice(0, 12)).toBe(l![2]);
+    expect(readdirSync(at("assets")).filter((f) => /^local\..*\.js$/.test(f))).toEqual([l![1]!.slice("assets/".length)]);
+    expect(local).not.toMatch(/type="module"|integrity=/);
+    expect(local).toContain('href="tel:192"');
+    // Same shell otherwise (192 bar, static help, CSP, beta notice): only the script tag and the lab link differ.
+    const shellOf = (h: string) => h.replace(/<!--[^]*?-->/g, "").replace(/<script[^>]*><\/script>/g, "").replace(/\.\/lab\/index\.html/g, "./lab/").replace(/\s+/g, " ");
+    expect(shellOf(local)).toBe(shellOf(html));
+    expect(sw).not.toContain("local.");
   });
 
   it("every shell reference is relative, so the same files work at /app/ and on any preview host", () => {

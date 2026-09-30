@@ -102,6 +102,7 @@ export function processEvent(prev: SessionState, input: RawInput, reg: Reg = REG
   }
 
   effects.push({ type: "KEEP_AWAKE", on: decision.band === "P0" });
+  const finalFacts = buildFacts(s, now, reg).facts;
   // L22: silence on a help card brings presence, not a question. (HR-008 still watches silence when there is medical risk.)
   // L28: on a question, silence means thinking: say so, never hurry.
   const quiet = decision.band !== "P0" && s.silence.count >= 1;
@@ -111,9 +112,10 @@ export function processEvent(prev: SessionState, input: RawInput, reg: Reg = REG
   // The live flows' voice (v1): after a "Fiz" on a technique or a care tip, one line of reassurance, rotating.
   const didIt = explicitStep && helpedCard !== null && input.kind === "tap" && input.cardInstanceId === helpedCard
     && events.some((e) => e.type === "STRATEGY_OUTCOME" && e.outcome === "done");
-  const done = didIt ? AFTER_DONE[Object.values(s.strategies).filter((m) => m.doneAt != null).length % AFTER_DONE.length] : undefined;
+  // L10: a helper hears lines for the one who stays, never lines addressed to the person in crisis.
+  const lines = finalFacts["signal.actor"] === "helper" ? AFTER_DONE_HELPER : AFTER_DONE;
+  const done = didIt ? lines[Object.values(s.strategies).filter((m) => m.doneAt != null).length % lines.length] : undefined;
   const notice = notes.notice ?? ingestNotice ?? (rejected === "STALE_CARD" ? ("STALE_TAP" as const) : presence ?? recheck ?? done);
-  const finalFacts = buildFacts(s, now, reg).facts;
   const amb = reg.data.ambient.breath;
   const breath = decision.band !== "P0" && evaluate(amb.when, finalFacts).ok ? { inhaleSec: amb.inhaleSec, holdSec: amb.holdSec, exhaleSec: amb.exhaleSec } : null;
   const output: Output = {
@@ -131,6 +133,7 @@ export function processEvent(prev: SessionState, input: RawInput, reg: Reg = REG
 const PRESENCE_LINES = ["PRESENCE", "PRESENCE_WAVE", "PRESENCE_MINUTE"] as const;
 /** After "Fiz" (audit 012, lines from the live v1 flows `torto`/`panico`). */
 const AFTER_DONE = ["DONE_1", "DONE_2", "DONE_3", "DONE_4", "DONE_5"] as const;
+const AFTER_DONE_HELPER = ["DONE_H1", "DONE_H2", "DONE_H3"] as const;
 
 /* ───────────────────────────── bookkeeping ───────────────────────────── */
 

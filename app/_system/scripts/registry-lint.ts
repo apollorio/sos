@@ -224,7 +224,7 @@ export function lintRegistry(opts: { release?: boolean; reg?: Reg; locales?: Rec
     checkOps(`${c.id}.onMissed`, c.onMissed);
   }
   /* Chips (L23): pending chips need a commitment; tools/talk chips request exactly one strategy; notices exist. */
-  const NOTICE_IDS = ["TEXT_UNMATCHED", "STALE_TAP", "PRESENCE", "PRESENCE_WAVE", "PRESENCE_MINUTE", "THINKING", "RECHECK", "DONE_1", "DONE_2", "DONE_3", "DONE_4", "DONE_5", "ACK_BETTER", "ACK_WORSE", "ACK_BODY"];
+  const NOTICE_IDS = ["TEXT_UNMATCHED", "STALE_TAP", "PRESENCE", "PRESENCE_WAVE", "PRESENCE_MINUTE", "THINKING", "RECHECK", "DONE_1", "DONE_2", "DONE_3", "DONE_4", "DONE_5", "DONE_H1", "DONE_H2", "DONE_H3", "ACK_BETTER", "ACK_WORSE", "ACK_BODY"];
   const NOTICES = new Set(NOTICE_IDS);
   for (const c of d.chips) {
     checkOps(`${c.id}.action`, c.action.ops);
@@ -287,6 +287,21 @@ export function lintRegistry(opts: { release?: boolean; reg?: Reg; locales?: Rec
       [/pra (descer|baixar)\b.*\b(toma|usa|fuma|bebe)|\b(toma|usa|fuma|bebe) (um|uma|outro|outra) .*pra (descer|baixar)/i, "a second substance to come down"],
     ];
     for (const [id, lc] of Object.entries(loc.cards)) for (const t of allText(lc)) for (const [rx, what] of FORBIDDEN) if (rx.test(t)) err(`${code}: ${id} gives ${what}: "${t.slice(0, 60)}…" (INV-030)`);
+    /* INV-034 (L30): discovery is discreet. Nothing the person sees names a substance or asks what was used. */
+    const NAMES = /\b(bala|md|mdma|ecstasy|pó|cocaína|cocaina|crack|ket|ketamina|ghb|gbl|ácido|acido|lsd|cogumelos?|erva|maconha|lança|lança-perfume|loló|lolo|poppers|azulzinho|viagra|cialis|heroína|heroina|fentanil|metanfetamina|drogas?)\b/i;
+    const ASKS = /o que (voc[eê]|a pessoa|ela|ele) (usou|tomou|cheirou|fumou)/i;
+    const seen: [string, string][] = [
+      ...Object.entries(loc.cards).flatMap(([id, lc]) => allText(lc).map((t) => [id, t] as [string, string])),
+      ...Object.entries(loc.chips).map(([id, c]) => [id, c.label] as [string, string]),
+      ...Object.entries(loc.notices).map(([id, t]) => [id, t] as [string, string]),
+      // The summaries the person shares (friend / health professional) speak the same way.
+      ...Object.entries(loc.continuity?.signalPhrases ?? {}).map(([id, t]) => [`signalPhrases.${id}`, t] as [string, string]),
+      ...Object.entries(loc.continuity?.strategyPhrases ?? {}).map(([id, t]) => [`strategyPhrases.${id}`, t] as [string, string]),
+    ];
+    for (const [id, t] of seen) {
+      if (NAMES.test(t)) err(`${code}: ${id} names a substance: "${t.slice(0, 70)}…" (INV-034, L30)`);
+      if (ASKS.test(t)) err(`${code}: ${id} asks what was used: "${t.slice(0, 70)}…" (INV-034, L30)`);
+    }
   }
 
   /* ── Grounding physiology (INV-027): the paced-breathing exercise must be gated by breathing=normal ── */

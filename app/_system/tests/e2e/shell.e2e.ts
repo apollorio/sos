@@ -75,6 +75,44 @@ try {
   (await pm.locator(".card .title").textContent()) === "Hmmm de boca fechada." ? ok("menu: picking «Hmmm (vibração)» opens that technique (L23)") : fail("menu pick did not open the technique");
   if (shots) await pm.screenshot({ path: `${shots}/5-menu.png`, fullPage: true });
 
+  // 3c. Audit 014 (L30): discovery like a friend, and the hidden lab panel (Ctrl+H) with this session's log and Pista.
+  const pd = await (await browser.newContext({ viewport: { width: 390, height: 780 } })).newPage();
+  await pd.goto(APP);
+  await pd.waitForSelector("html.js-ok .card");
+  const said: string[] = [];
+  const tapD = async (label: string) => { await pd.getByRole("button", { name: label, exact: true }).click(); said.push((await pd.locator(".card").textContent()) ?? ""); };
+  for (const label of ["Eu", "Respiro bem, sem dor no peito", "Consigo", "Muita, pânico", "Fiz", "Sim, aqui comigo", "Fiz", "Tranquilo", "Fiz"]) await tapD(label);
+  (await pd.locator(".card .title").textContent()) === "Como tá o corpo agora?"
+    ? ok("discovery starts from the body: «Como tá o corpo agora?» after three helps (L30)") : fail(`expected the body question, got ${await pd.locator(".card .title").textContent()}`);
+  await tapD("Acelerado, ligado, coração a mil");
+  await tapD("Fiz");
+  (await pd.locator(".card .title").textContent()) === "E essa energia puxa pra quê?"
+    ? ok("then one gentle detail: «E essa energia puxa pra quê?»") : fail(`expected the energy question, got ${await pd.locator(".card .title").textContent()}`);
+  said.every((t) => !/o que (você|a pessoa) usou/i.test(t)) ? ok("never «O que você usou?» on any screen of the walk") : fail("a screen asked what was used");
+  (await pd.locator("dialog.lab-panel").count()) === 0 ? ok("lab panel: absent until asked for (no button, nothing in the DOM)") : fail("lab panel rendered without Ctrl+H");
+  await pd.keyboard.press("Control+h");
+  const panel = pd.locator("dialog.lab-panel");
+  (await panel.isVisible()) && (await panel.locator(".lab-table tr").count()) >= 12
+    ? ok(`Ctrl+H opens the lab panel with this session's log (${(await panel.locator(".lab-table tr").count()) - 1} steps)`) : fail("Ctrl+H did not open the log");
+  await panel.getByRole("button", { name: "Pista" }).click();
+  /acelerado/i.test((await panel.locator(".lab-table").textContent()) ?? "") ? ok("lab panel · Pista shows what the body feel was, for the operator only") : fail("Pista tab empty");
+  if (shots) await pd.screenshot({ path: `${shots}/6-lab-panel.png` });
+  await pd.keyboard.press("Control+h");
+  !(await panel.isVisible()) ? ok("Ctrl+H again closes it") : fail("Ctrl+H did not close the panel");
+
+  // 3d. The local copy runs straight from disk (file://): classic script, no module/SRI, same engine (audit 014).
+  const pf = await (await browser.newContext({ viewport: { width: 390, height: 780 } })).newPage();
+  const pageErrors: string[] = [];
+  pf.on("pageerror", (e) => pageErrors.push(e.message));
+  await pf.goto(`file://${join(REPO_ROOT, "app", "local.html")}`);
+  await pf.waitForSelector("html.js-ok .card", { timeout: 5000 }).catch(() => undefined);
+  (await pf.evaluate(() => document.documentElement.classList.contains("js-ok"))) && pageErrors.length === 0
+    ? ok("app/local.html boots from file:// (engine alive, no page error)") : fail(`local.html did not boot from file:// ${pageErrors.join(" | ")}`);
+  (await pf.locator("#sos").getAttribute("href")) === "tel:192" ? ok("app/local.html keeps the tel:192 bar") : fail("local.html lost the 192 bar");
+  await pf.getByRole("button", { name: "Eu", exact: true }).click();
+  await pf.keyboard.press("Control+h");
+  (await pf.locator("dialog.lab-panel .lab-table tr").count()) >= 3 ? ok("Ctrl+H works in the local copy too") : fail("Ctrl+H missing in local.html");
+
   // 3. Engine crash → fail to shell.
   await p.evaluate(() => { setTimeout(() => { throw new Error("boom"); }); });
   await p.waitForTimeout(100);

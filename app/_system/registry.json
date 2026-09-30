@@ -51,7 +51,18 @@
       "CHECK_IN",
       "steady_check.check_later",
       "CHIP_REPORT_BETTER",
-      "CHIP_REPORT_WORSE"
+      "CHIP_REPORT_WORSE",
+      "Q_SUBSTANCE",
+      "Q_WHICH_STIM",
+      "Q_WHICH_DOWNER",
+      "Q_WHICH_PSY",
+      "Q_SEX",
+      "CARD_Q_SUBSTANCE",
+      "CARD_Q_WHICH_STIM",
+      "CARD_Q_WHICH_DOWNER",
+      "CARD_Q_WHICH_PSY",
+      "CARD_Q_SEX",
+      "care.poppers_care"
     ]
   },
   "laws": [
@@ -121,7 +132,7 @@
     },
     {
       "id": "L26",
-      "text": "What was used only adds care. Substances and combinations are asked directly (one tap may answer two things, e.g. «Bala + álcool»), one question between two helps, and help never waits for them. A dangerous combination raises attention (band), never P0 by itself; the app never suggests a dose, a second substance or an 'antidote'."
+      "text": "What was used only adds care. It is learned the way a friend would, from how the body feels (L30), one question between two helps and never before the first help. A dangerous combination raises attention (band), never P0 by itself; the app never suggests a dose, a second substance or an 'antidote'."
     },
     {
       "id": "L27",
@@ -134,6 +145,10 @@
     {
       "id": "L29",
       "text": "The app never asks the person to grade how they are. No 'better/worse' buttons, no 'how are you now?', no follow-up after N minutes. The person can end the session or ask for a person at any time; what the app knows, it learns from what they choose to tell (what they used, what hurts) and from what they tap."
+    },
+    {
+      "id": "L30",
+      "text": "Discovery is discreet and from the same side. The app never asks 'what did you use?' and never names a substance to the person. It asks how the body feels (fast, heavy, the world different, two at once), then one gentle detail at a time, and follows the care that body needs. The pattern it infers is a hypothesis for care, visible only to the lab operator, never a fact about substances (L15, L16; studies/004)."
     }
   ],
   "regions": {
@@ -228,9 +243,17 @@
       "domain": ["quiet", "moderate", "loud", "unknown"],
       "ttlSec": 600,
       "latched": [],
-      "critical": false
+      "critical": false,
+      "ttlByValue": { "quiet": 3600, "moderate": 1800 }
     },
-    { "id": "company", "domain": ["alone", "with_someone", "unknown"], "ttlSec": 900, "latched": [], "critical": false },
+    {
+      "id": "company",
+      "domain": ["alone", "with_someone", "unknown"],
+      "ttlSec": 900,
+      "latched": [],
+      "critical": false,
+      "ttlByValue": { "with_someone": 3600 }
+    },
     {
       "id": "companion",
       "domain": ["none", "coming", "arrived", "unknown"],
@@ -240,12 +263,12 @@
     },
     {
       "id": "substanceClass",
-      "domain": ["none", "stim", "downer", "psychedelic", "unknown"],
+      "domain": ["none", "stim", "downer", "psychedelic", "mixed", "unknown"],
       "ttlSec": 14400,
       "latched": [],
       "critical": false,
       "explicitOnly": true,
-      "doc": "Operational context only. Never inferred from symptoms. Never exported."
+      "doc": "How the body feels overall, in the person's own words (Q_FEEL): stim = fast/wired, downer = heavy/slow, psychedelic = the world feels different, mixed = two at once. Never a substance name; never exported without EXPOSURE_CONTEXT."
     },
     {
       "id": "substance",
@@ -254,7 +277,7 @@
       "latched": [],
       "critical": false,
       "explicitOnly": true,
-      "doc": "Which one, when the person says so (Akinator follow-up of substanceClass). Operational context only. Explicit answer only, never inferred from symptoms or text. Never exported."
+      "doc": "RETIRED (audit 014): the app no longer asks what was used (L30). Kept so the ID is never reused; nothing sets or reads it."
     },
     {
       "id": "alcohol",
@@ -272,7 +295,7 @@
       "latched": [],
       "critical": false,
       "explicitOnly": true,
-      "doc": "Erection pill (sildenafil/tadalafil) and/or poppers, for the combination rules. Operational context only. Explicit answer only, never inferred from symptoms or text. Never exported."
+      "doc": "RETIRED (audit 014): replaced by meds (Q_MEDS) and the buzz_brief pattern. Kept so the ID is never reused."
     },
     {
       "id": "discomfort",
@@ -281,6 +304,58 @@
       "latched": [],
       "critical": false,
       "doc": "What bothers the body most right now, as the person says it (question or body chip). Picks a care tip; never a diagnosis."
+    },
+    {
+      "id": "pattern",
+      "domain": [
+        "love_energy",
+        "short_wired",
+        "long_engine",
+        "spike_crash",
+        "wired_unplugged",
+        "wired_sleepy",
+        "wired_strange",
+        "loose_clumsy",
+        "warm_cliff",
+        "heavy_nod",
+        "unplugged",
+        "living_world",
+        "long_patterns",
+        "soft_hungry",
+        "buzz_brief",
+        "unknown"
+      ],
+      "ttlSec": 14400,
+      "latched": [],
+      "critical": false,
+      "explicitOnly": true,
+      "doc": "Effect pattern the person described (studies/004 'Akinator de efeitos'), a HYPOTHESIS for care. Shown only to the lab operator (Ctrl+H, simulator) as compatibility, never to the person, never a substance fact (L15, L16, L30)."
+    },
+    {
+      "id": "energyKind",
+      "domain": ["people", "doing", "body_off", "unknown"],
+      "ttlSec": 14400,
+      "latched": [],
+      "critical": false,
+      "explicitOnly": true,
+      "doc": "What the fast energy pulls toward (Q_RACE_KIND): people/music/touch, doing/talking, or fast with the body far away."
+    },
+    {
+      "id": "meds",
+      "domain": ["erection", "sedative", "other", "none", "unknown"],
+      "ttlSec": 14400,
+      "latched": [],
+      "critical": false,
+      "explicitOnly": true,
+      "doc": "Any medicine taken today (Q_MEDS). Changes what is dangerous to combine."
+    },
+    {
+      "id": "urge",
+      "domain": ["strong", "some", "no", "unknown"],
+      "ttlSec": 1800,
+      "latched": [],
+      "critical": false,
+      "doc": "Wanting more to get back to the start (Q_URGE). Brings the urge-wave care card, never a lecture."
     },
     {
       "id": "reportedTrend",
@@ -557,88 +632,53 @@
       }
     },
     {
-      "id": "Q_SUBSTANCE",
+      "id": "Q_FEEL",
       "priority": 55,
       "cooldownSec": 600,
       "maxAsks": 2,
       "bands": ["P1", "P2", "P3"],
+      "when": { "neq": ["help.last", "none"] },
       "variants": {
         "any": {
-          "card": "CARD_Q_SUBSTANCE",
+          "card": "CARD_Q_FEEL",
           "answers": [
-            { "id": "stim", "set": { "substanceClass": "stim" } },
-            { "id": "downer", "set": { "substanceClass": "downer" } },
-            { "id": "alcohol_only", "set": { "substanceClass": "downer", "substance": "alcohol", "alcohol": "yes" } },
-            { "id": "psychedelic", "set": { "substanceClass": "psychedelic" } },
+            { "id": "racing", "set": { "substanceClass": "stim" } },
+            { "id": "heavy", "set": { "substanceClass": "downer" } },
+            { "id": "strange", "set": { "substanceClass": "psychedelic" } },
+            { "id": "mixed", "set": { "substanceClass": "mixed" } },
             { "id": "none", "set": { "substanceClass": "none" } },
             { "id": "unknown", "set": { "substanceClass": "unknown" }, "unknown": true }
           ]
         }
+      }
+    },
+    {
+      "id": "Q_RACE_KIND",
+      "priority": 56,
+      "cooldownSec": 600,
+      "maxAsks": 2,
+      "bands": ["P1", "P2", "P3"],
+      "when": {
+        "all": [
+          { "neq": ["help.last", "none"] },
+          { "eq": ["signal.substanceClass", "stim"] },
+          { "unknown": "signal.pattern" }
+        ]
       },
-      "when": { "neq": ["help.last", "none"] }
-    },
-    {
-      "id": "Q_WHICH_STIM",
-      "priority": 56,
-      "cooldownSec": 600,
-      "maxAsks": 2,
-      "bands": ["P1", "P2", "P3"],
-      "when": { "all": [{ "neq": ["help.last", "none"] }, { "eq": ["signal.substanceClass", "stim"] }] },
       "variants": {
         "any": {
-          "card": "CARD_Q_WHICH_STIM",
+          "card": "CARD_Q_RACE_KIND",
           "answers": [
-            { "id": "md", "set": { "substance": "md", "alcohol": "no" } },
-            { "id": "md_alcohol", "set": { "substance": "md", "alcohol": "yes" } },
-            { "id": "coke", "set": { "substance": "coke", "alcohol": "no" } },
-            { "id": "coke_alcohol", "set": { "substance": "coke", "alcohol": "yes" } },
-            { "id": "unknown", "set": { "substance": "unknown" }, "unknown": true }
+            { "id": "people", "set": { "energyKind": "people", "pattern": "love_energy" } },
+            { "id": "doing", "set": { "energyKind": "doing" } },
+            { "id": "body_off", "set": { "energyKind": "body_off", "pattern": "wired_unplugged" } },
+            { "id": "unknown", "set": { "energyKind": "unknown" }, "unknown": true }
           ]
         }
       }
     },
     {
-      "id": "Q_WHICH_DOWNER",
-      "priority": 56,
-      "cooldownSec": 600,
-      "maxAsks": 2,
-      "bands": ["P1", "P2", "P3"],
-      "when": { "all": [{ "neq": ["help.last", "none"] }, { "eq": ["signal.substanceClass", "downer"] }] },
-      "variants": {
-        "any": {
-          "card": "CARD_Q_WHICH_DOWNER",
-          "answers": [
-            { "id": "ghb", "set": { "substance": "ghb", "alcohol": "no" } },
-            { "id": "ghb_alcohol", "set": { "substance": "ghb", "alcohol": "yes" } },
-            { "id": "downer_pill", "set": { "substance": "downer_pill", "alcohol": "no" } },
-            { "id": "downer_pill_alcohol", "set": { "substance": "downer_pill", "alcohol": "yes" } },
-            { "id": "unknown", "set": { "substance": "unknown" }, "unknown": true }
-          ]
-        }
-      }
-    },
-    {
-      "id": "Q_WHICH_PSY",
-      "priority": 56,
-      "cooldownSec": 600,
-      "maxAsks": 2,
-      "bands": ["P1", "P2", "P3"],
-      "when": { "all": [{ "neq": ["help.last", "none"] }, { "eq": ["signal.substanceClass", "psychedelic"] }] },
-      "variants": {
-        "any": {
-          "card": "CARD_Q_WHICH_PSY",
-          "answers": [
-            { "id": "lsd", "set": { "substance": "lsd" } },
-            { "id": "ket", "set": { "substance": "ket" } },
-            { "id": "cannabis", "set": { "substance": "cannabis" } },
-            { "id": "inhalant", "set": { "substance": "inhalant" } },
-            { "id": "unknown", "unknown": true, "set": { "substance": "unknown" } }
-          ]
-        }
-      }
-    },
-    {
-      "id": "Q_ALCOHOL",
+      "id": "Q_RACE_LENGTH",
       "priority": 57,
       "cooldownSec": 600,
       "maxAsks": 2,
@@ -646,14 +686,184 @@
       "when": {
         "all": [
           { "neq": ["help.last", "none"] },
-          { "in": ["signal.substanceClass", ["stim", "downer", "psychedelic"]] },
-          { "neq": ["signal.substance", "alcohol"] },
+          { "eq": ["signal.energyKind", "doing"] },
+          { "unknown": "signal.pattern" }
+        ]
+      },
+      "variants": {
+        "any": {
+          "card": "CARD_Q_RACE_LENGTH",
+          "answers": [
+            { "id": "short", "set": { "pattern": "short_wired" } },
+            { "id": "engine", "set": { "pattern": "long_engine" } },
+            { "id": "spike", "set": { "pattern": "spike_crash" } },
+            { "id": "unknown", "set": { "pattern": "unknown" }, "unknown": true }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q_HEAVY_KIND",
+      "priority": 56,
+      "cooldownSec": 600,
+      "maxAsks": 2,
+      "bands": ["P1", "P2", "P3"],
+      "when": {
+        "all": [
+          { "neq": ["help.last", "none"] },
+          { "eq": ["signal.substanceClass", "downer"] },
+          { "unknown": "signal.pattern" }
+        ]
+      },
+      "variants": {
+        "any": {
+          "card": "CARD_Q_HEAVY_KIND",
+          "answers": [
+            { "id": "loose", "set": { "pattern": "loose_clumsy" } },
+            { "id": "cliff", "set": { "pattern": "warm_cliff" } },
+            { "id": "nod", "set": { "pattern": "heavy_nod" } },
+            { "id": "unplugged", "set": { "pattern": "unplugged" } },
+            { "id": "unknown", "set": { "pattern": "unknown" }, "unknown": true }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q_STRANGE_KIND",
+      "priority": 56,
+      "cooldownSec": 600,
+      "maxAsks": 2,
+      "bands": ["P1", "P2", "P3"],
+      "when": {
+        "all": [
+          { "neq": ["help.last", "none"] },
+          { "eq": ["signal.substanceClass", "psychedelic"] },
+          { "unknown": "signal.pattern" }
+        ]
+      },
+      "variants": {
+        "any": {
+          "card": "CARD_Q_STRANGE_KIND",
+          "answers": [
+            { "id": "alive", "set": { "pattern": "living_world" } },
+            { "id": "patterns", "set": { "pattern": "long_patterns" } },
+            { "id": "light", "set": { "pattern": "soft_hungry" } },
+            { "id": "body", "set": { "pattern": "unplugged" } },
+            { "id": "buzz", "set": { "pattern": "buzz_brief" } },
+            { "id": "unknown", "set": { "pattern": "unknown" }, "unknown": true }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q_MIXED_KIND",
+      "priority": 56,
+      "cooldownSec": 600,
+      "maxAsks": 2,
+      "bands": ["P1", "P2", "P3"],
+      "when": {
+        "all": [
+          { "neq": ["help.last", "none"] },
+          { "eq": ["signal.substanceClass", "mixed"] },
+          { "unknown": "signal.pattern" }
+        ]
+      },
+      "variants": {
+        "any": {
+          "card": "CARD_Q_MIXED_KIND",
+          "answers": [
+            { "id": "wired_body", "set": { "pattern": "wired_unplugged" } },
+            { "id": "wired_sleepy", "set": { "pattern": "wired_sleepy", "breathing": "unknown", "chest": "unknown" } },
+            { "id": "wired_strange", "set": { "pattern": "wired_strange" } },
+            { "id": "unknown", "set": { "pattern": "unknown" }, "unknown": true }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q_MEDS",
+      "priority": 59,
+      "cooldownSec": 900,
+      "maxAsks": 1,
+      "bands": ["P1", "P2", "P3"],
+      "when": {
+        "all": [
+          { "neq": ["help.last", "none"] },
+          { "in": ["signal.substanceClass", ["stim", "downer", "psychedelic", "mixed"]] },
           {
             "any": [
-              { "known": "signal.substance" },
-              { "eq": ["question.Q_WHICH_STIM.asked", true] },
-              { "eq": ["question.Q_WHICH_DOWNER.asked", true] },
-              { "eq": ["question.Q_WHICH_PSY.asked", true] }
+              { "known": "signal.alcohol" },
+              { "eq": ["question.Q_ALCOHOL.asked", true] },
+              { "known": "signal.pattern" },
+              { "eq": ["question.Q_RACE_KIND.asked", true] },
+              { "eq": ["question.Q_HEAVY_KIND.asked", true] },
+              { "eq": ["question.Q_STRANGE_KIND.asked", true] },
+              { "eq": ["question.Q_MIXED_KIND.asked", true] }
+            ]
+          }
+        ]
+      },
+      "variants": {
+        "any": {
+          "card": "CARD_Q_MEDS",
+          "answers": [
+            { "id": "erection", "set": { "meds": "erection" } },
+            { "id": "sedative", "set": { "meds": "sedative" } },
+            { "id": "other", "set": { "meds": "other" } },
+            { "id": "none", "set": { "meds": "none" } },
+            { "id": "unknown", "set": { "meds": "unknown" }, "unknown": true }
+          ]
+        }
+      }
+    },
+    {
+      "id": "Q_URGE",
+      "priority": 62,
+      "cooldownSec": 900,
+      "maxAsks": 2,
+      "bands": ["P1", "P2", "P3"],
+      "when": {
+        "all": [
+          { "neq": ["help.last", "none"] },
+          {
+            "any": [
+              { "eq": ["signal.substanceClass", "stim"] },
+              { "in": ["signal.pattern", ["wired_unplugged", "wired_strange"]] }
+            ]
+          },
+          { "known": "signal.pattern" }
+        ]
+      },
+      "variants": {
+        "any": {
+          "card": "CARD_Q_URGE",
+          "answers": [
+            { "id": "strong", "set": { "urge": "strong" } },
+            { "id": "some", "set": { "urge": "some" } },
+            { "id": "no", "set": { "urge": "no" } },
+            { "id": "unknown", "set": { "urge": "unknown" }, "unknown": true }
+          ]
+        }
+      },
+      "minIntervalSec": 1800
+    },
+    {
+      "id": "Q_ALCOHOL",
+      "priority": 58,
+      "cooldownSec": 600,
+      "maxAsks": 2,
+      "bands": ["P1", "P2", "P3"],
+      "when": {
+        "all": [
+          { "neq": ["help.last", "none"] },
+          { "in": ["signal.substanceClass", ["stim", "downer", "psychedelic", "mixed"]] },
+          {
+            "any": [
+              { "known": "signal.pattern" },
+              { "eq": ["question.Q_RACE_KIND.asked", true] },
+              { "eq": ["question.Q_HEAVY_KIND.asked", true] },
+              { "eq": ["question.Q_STRANGE_KIND.asked", true] },
+              { "eq": ["question.Q_MIXED_KIND.asked", true] }
             ]
           }
         ]
@@ -670,32 +880,6 @@
       }
     },
     {
-      "id": "Q_SEX",
-      "priority": 58,
-      "cooldownSec": 900,
-      "maxAsks": 1,
-      "bands": ["P1", "P2", "P3"],
-      "when": {
-        "all": [
-          { "neq": ["help.last", "none"] },
-          { "in": ["signal.substanceClass", ["stim", "downer", "psychedelic"]] },
-          { "any": [{ "known": "signal.alcohol" }, { "eq": ["question.Q_ALCOHOL.asked", true] }] }
-        ]
-      },
-      "variants": {
-        "any": {
-          "card": "CARD_Q_SEX",
-          "answers": [
-            { "id": "pill", "set": { "sexEnhancer": "pill" } },
-            { "id": "poppers", "set": { "sexEnhancer": "poppers" } },
-            { "id": "both", "set": { "sexEnhancer": "both" } },
-            { "id": "none", "set": { "sexEnhancer": "none" } },
-            { "id": "unknown", "unknown": true, "set": { "sexEnhancer": "unknown" } }
-          ]
-        }
-      }
-    },
-    {
       "id": "Q_BODY",
       "priority": 65,
       "cooldownSec": 900,
@@ -705,7 +889,7 @@
       "when": {
         "all": [
           { "neq": ["help.last", "none"] },
-          { "in": ["signal.substanceClass", ["stim", "downer", "psychedelic"]] }
+          { "in": ["signal.substanceClass", ["stim", "downer", "psychedelic", "mixed"]] }
         ]
       },
       "variants": {
@@ -886,18 +1070,13 @@
     }
   ],
   "risk": {
-    "doc": "Ordinal 0..4 per dimension. Level = MAX of matching rows (monotone, no weights, no fake precision). 'impairment' is computed and logged but no band rule reads it in v1 (BR-P1-02 was removed: shadowed by BR-P1-01, found by the coverage gate). 'mixing' (audit 011) is the combination of what the person said they used: 3 = depressants together (alcohol with G, a sedative pill or ket) or poppers with an erection pill; 2 = alcohol with a stimulant (coke, MD or unknown), or a stimulant with an erection pill or poppers.",
+    "doc": "Ordinal 0..4 per dimension. Level = MAX of matching rows (monotone, no weights, no fake precision). 'impairment' is computed and logged but no band rule reads it in v1 (BR-P1-02 was removed: shadowed by BR-P1-01, found by the coverage gate). 'mixing' (audits 011, 014) combines what the person DESCRIBED, never a substance name: 3 = something heavy (a cliff, a nod, a body far away, or a sedative medicine) with drink or a sedative on top; a fast dizzy buzz with an erection medicine; sudden sleep after being wired. 2 = drink on top of being wired; wired with an erection medicine; wired with the body far away.",
     "dimensions": ["medical", "impairment", "isolation", "emotional", "environmental", "uncertainty", "mixing"],
     "rules": [
       { "dimension": "medical", "level": 3, "when": { "eq": ["signal.breathing", "abnormal"] } },
       { "dimension": "medical", "level": 3, "when": { "eq": ["signal.responsiveness", "impaired"] } },
       { "dimension": "medical", "level": 2, "when": { "eq": ["signal.reportedTrend", "worse"] } },
       { "dimension": "impairment", "level": 3, "when": { "eq": ["signal.responsiveness", "impaired"] } },
-      {
-        "dimension": "impairment",
-        "level": 1,
-        "when": { "in": ["signal.substanceClass", ["stim", "downer", "psychedelic"]] }
-      },
       {
         "dimension": "isolation",
         "level": 3,
@@ -936,25 +1115,72 @@
         "when": { "all": [{ "eq": ["signal.actor", "helper"] }, { "unknown": "signal.seizure" }] }
       },
       {
+        "dimension": "impairment",
+        "level": 1,
+        "when": { "in": ["signal.substanceClass", ["stim", "downer", "psychedelic", "mixed"]] }
+      },
+      {
         "dimension": "mixing",
         "level": 3,
         "when": {
-          "all": [{ "eq": ["signal.alcohol", "yes"] }, { "in": ["signal.substance", ["ghb", "downer_pill", "ket"]] }]
+          "any": [
+            {
+              "all": [
+                { "eq": ["signal.alcohol", "yes"] },
+                {
+                  "any": [
+                    { "in": ["signal.pattern", ["warm_cliff", "heavy_nod", "unplugged"]] },
+                    { "eq": ["signal.meds", "sedative"] }
+                  ]
+                }
+              ]
+            },
+            {
+              "all": [
+                { "eq": ["signal.meds", "sedative"] },
+                { "in": ["signal.pattern", ["warm_cliff", "heavy_nod", "unplugged", "loose_clumsy"]] }
+              ]
+            }
+          ]
         }
       },
-      { "dimension": "mixing", "level": 3, "when": { "eq": ["signal.sexEnhancer", "both"] } },
+      {
+        "dimension": "mixing",
+        "level": 3,
+        "when": { "all": [{ "eq": ["signal.meds", "erection"] }, { "eq": ["signal.pattern", "buzz_brief"] }] }
+      },
+      { "dimension": "mixing", "level": 3, "when": { "eq": ["signal.pattern", "wired_sleepy"] } },
       {
         "dimension": "mixing",
         "level": 2,
-        "when": { "all": [{ "eq": ["signal.alcohol", "yes"] }, { "eq": ["signal.substanceClass", "stim"] }] }
+        "when": {
+          "all": [
+            { "eq": ["signal.alcohol", "yes"] },
+            {
+              "any": [
+                { "eq": ["signal.substanceClass", "stim"] },
+                { "in": ["signal.pattern", ["wired_unplugged", "wired_strange"]] }
+              ]
+            }
+          ]
+        }
       },
       {
         "dimension": "mixing",
         "level": 2,
         "when": {
-          "all": [{ "eq": ["signal.substanceClass", "stim"] }, { "in": ["signal.sexEnhancer", ["pill", "poppers"]] }]
+          "all": [
+            {
+              "any": [
+                { "eq": ["signal.substanceClass", "stim"] },
+                { "in": ["signal.pattern", ["wired_unplugged", "wired_strange"]] }
+              ]
+            },
+            { "eq": ["signal.meds", "erection"] }
+          ]
         }
-      }
+      },
+      { "dimension": "mixing", "level": 2, "when": { "eq": ["signal.pattern", "wired_unplugged"] } }
     ]
   },
   "bandRules": [
@@ -976,7 +1202,18 @@
       "id": "BR-P1-05",
       "band": "P1",
       "sticky": true,
-      "when": { "all": [{ "gte": ["risk.isolation", 2] }, { "eq": ["signal.substanceClass", "downer"] }] },
+      "when": {
+        "all": [
+          { "gte": ["risk.isolation", 2] },
+          {
+            "any": [
+              { "eq": ["signal.substanceClass", "downer"] },
+              { "in": ["signal.pattern", ["loose_clumsy", "warm_cliff", "heavy_nod", "unplugged", "wired_sleepy"]] },
+              { "eq": ["signal.meds", "sedative"] }
+            ]
+          }
+        ]
+      },
       "review": "proposed"
     },
     {
@@ -1020,8 +1257,15 @@
       "all": [
         { "eq": ["signal.responsiveness", "responsive"] },
         { "eq": ["signal.breathing", "normal"] },
-        { "neq": ["signal.substanceClass", "downer"] },
-        { "not": { "in": ["signal.substance", ["ghb", "downer_pill", "ket", "alcohol"]] } },
+        {
+          "not": {
+            "any": [
+              { "eq": ["signal.substanceClass", "downer"] },
+              { "in": ["signal.pattern", ["loose_clumsy", "warm_cliff", "heavy_nod", "unplugged", "wired_sleepy"]] },
+              { "eq": ["signal.meds", "sedative"] }
+            ]
+          }
+        },
         { "lte": ["risk.mixing", 1] }
       ]
     },
@@ -1304,12 +1548,39 @@
       "id": "combination",
       "kind": "intervention",
       "bands": ["P1", "P2", "P3"],
-      "doc": "Audit 011 (L26): what the person said they MIXED, each warning once the combination is known, before anything else that is not P0 or a critical question. Never alternates, never waits; once shown it rests for 30 min (cooldown). No dose, no second substance, no antidote (INV-030).",
+      "doc": "Audits 011, 014 (L26, L30): a warning for what the person DESCRIBED together (never a substance name), the moment it is known. Never alternates, never waits; rests 30 min once shown. No dose, no second substance, no antidote (INV-030).",
       "strategies": [
+        {
+          "id": "rush_then_sleep",
+          "when": { "eq": ["signal.pattern", "wired_sleepy"] },
+          "requires": [],
+          "card": "CARD_CARE_MIX_RUSH_SLEEP",
+          "onShow": [],
+          "cooldownSec": 1800,
+          "blockSec": 3600
+        },
         {
           "id": "downers",
           "when": {
-            "all": [{ "eq": ["signal.alcohol", "yes"] }, { "in": ["signal.substance", ["ghb", "downer_pill", "ket"]] }]
+            "any": [
+              {
+                "all": [
+                  { "eq": ["signal.alcohol", "yes"] },
+                  {
+                    "any": [
+                      { "in": ["signal.pattern", ["warm_cliff", "heavy_nod", "unplugged"]] },
+                      { "eq": ["signal.meds", "sedative"] }
+                    ]
+                  }
+                ]
+              },
+              {
+                "all": [
+                  { "eq": ["signal.meds", "sedative"] },
+                  { "in": ["signal.pattern", ["warm_cliff", "heavy_nod", "unplugged", "loose_clumsy"]] }
+                ]
+              }
+            ]
           },
           "requires": [],
           "card": "CARD_CARE_MIX_DOWNERS",
@@ -1319,7 +1590,7 @@
         },
         {
           "id": "poppers_pill",
-          "when": { "eq": ["signal.sexEnhancer", "both"] },
+          "when": { "all": [{ "eq": ["signal.meds", "erection"] }, { "eq": ["signal.pattern", "buzz_brief"] }] },
           "requires": [],
           "card": "CARD_CARE_MIX_POPPERS_PILL",
           "onShow": [],
@@ -1328,7 +1599,9 @@
         },
         {
           "id": "coke_alcohol",
-          "when": { "all": [{ "eq": ["signal.substance", "coke"] }, { "eq": ["signal.alcohol", "yes"] }] },
+          "when": {
+            "all": [{ "eq": ["signal.alcohol", "yes"] }, { "in": ["signal.pattern", ["short_wired", "spike_crash"]] }]
+          },
           "requires": [],
           "card": "CARD_CARE_MIX_COKE_ALCOHOL",
           "onShow": [],
@@ -1337,7 +1610,7 @@
         },
         {
           "id": "md_alcohol",
-          "when": { "all": [{ "eq": ["signal.substance", "md"] }, { "eq": ["signal.alcohol", "yes"] }] },
+          "when": { "all": [{ "eq": ["signal.alcohol", "yes"] }, { "eq": ["signal.pattern", "love_energy"] }] },
           "requires": [],
           "card": "CARD_CARE_MIX_MD_ALCOHOL",
           "onShow": [],
@@ -1348,9 +1621,18 @@
           "id": "stim_alcohol",
           "when": {
             "all": [
-              { "eq": ["signal.substanceClass", "stim"] },
-              { "eq": ["signal.alcohol", "yes"] },
-              { "not": { "in": ["signal.substance", ["coke", "md"]] } }
+              {
+                "all": [
+                  { "eq": ["signal.alcohol", "yes"] },
+                  {
+                    "any": [
+                      { "eq": ["signal.substanceClass", "stim"] },
+                      { "in": ["signal.pattern", ["wired_unplugged", "wired_strange"]] }
+                    ]
+                  }
+                ]
+              },
+              { "not": { "in": ["signal.pattern", ["short_wired", "spike_crash", "love_energy"]] } }
             ]
           },
           "requires": [],
@@ -1362,10 +1644,27 @@
         {
           "id": "stim_sex",
           "when": {
-            "all": [{ "eq": ["signal.substanceClass", "stim"] }, { "in": ["signal.sexEnhancer", ["pill", "poppers"]] }]
+            "all": [
+              {
+                "any": [
+                  { "eq": ["signal.substanceClass", "stim"] },
+                  { "in": ["signal.pattern", ["wired_unplugged", "wired_strange"]] }
+                ]
+              },
+              { "eq": ["signal.meds", "erection"] }
+            ]
           },
           "requires": [],
           "card": "CARD_CARE_MIX_STIM_SEX",
+          "onShow": [],
+          "cooldownSec": 1800,
+          "blockSec": 3600
+        },
+        {
+          "id": "wired_unplugged",
+          "when": { "eq": ["signal.pattern", "wired_unplugged"] },
+          "requires": [],
+          "card": "CARD_CARE_MIX_WIRED_UNPLUGGED",
           "onShow": [],
           "cooldownSec": 1800,
           "blockSec": 3600
@@ -1376,11 +1675,21 @@
       "id": "care",
       "kind": "intervention",
       "bands": ["P1", "P2", "P3"],
-      "doc": "Practical care (audit 011), in order: heat, what bothers the BODY, the SUBSTANCE itself, then everyday care anyone can do. Alternates with grounding through help.last, so the loop never ends and never repeats a tip inside its cooldown. No dose, no volume, no second substance, no antidote (L26, INV-030). Anything that needs swallowing needs a responsive person; the shower needs 'awake'. Rotates (least shown first) so every option gets its turn before one repeats. Combination warnings live in their own skill ('combination') so they never wait behind the alternation.",
+      "doc": "Practical care (audit 011), in order: heat, what bothers the BODY, the SUBSTANCE itself, then everyday care anyone can do. Alternates with grounding through help.last, so the loop never ends and never repeats a tip inside its cooldown. No dose, no volume, no second substance, no antidote (L26, INV-030). Anything that needs swallowing needs a responsive person; the shower needs 'awake'. Rotates (least shown first) so every option gets its turn before one repeats. Combination warnings live in their own skill ('combination') so they never wait behind the alternation. Audit 014: keyed on the described pattern (signal.pattern), never on a substance; the copy never names one.",
       "strategies": [
         {
           "id": "cool_body",
-          "when": { "any": [{ "eq": ["signal.discomfort", "heat"] }, { "eq": ["signal.substanceClass", "stim"] }] },
+          "when": {
+            "any": [
+              { "eq": ["signal.discomfort", "heat"] },
+              {
+                "any": [
+                  { "eq": ["signal.substanceClass", "stim"] },
+                  { "in": ["signal.pattern", ["wired_unplugged", "wired_strange"]] }
+                ]
+              }
+            ]
+          },
           "requires": [],
           "card": "CARD_CARE_COOL",
           "onShow": [],
@@ -1390,7 +1699,7 @@
         },
         {
           "id": "inhalant_air",
-          "when": { "eq": ["signal.substance", "inhalant"] },
+          "when": { "eq": ["signal.pattern", "buzz_brief"] },
           "requires": [],
           "card": "CARD_CARE_INHALANT",
           "onShow": [],
@@ -1446,11 +1755,13 @@
           "onShow": [],
           "cooldownSec": 1800,
           "blockSec": 3600,
-          "keepFirst": true
+          "keepFirst": true,
+          "retired": true,
+          "doc": "Retired (audit 014): the fast dizzy buzz (buzz_brief) card covers it without naming anything."
         },
         {
           "id": "pill_care",
-          "when": { "eq": ["signal.sexEnhancer", "pill"] },
+          "when": { "eq": ["signal.meds", "erection"] },
           "requires": [],
           "card": "CARD_CARE_PILL",
           "onShow": [],
@@ -1459,11 +1770,22 @@
           "keepFirst": true
         },
         {
+          "id": "urge_wave",
+          "when": { "in": ["signal.urge", ["strong", "some"]] },
+          "requires": [],
+          "card": "CARD_CARE_URGE",
+          "onShow": [],
+          "cooldownSec": 1200,
+          "blockSec": 1800,
+          "keepFirst": true
+        },
+        {
           "id": "side_safe",
           "when": {
             "any": [
               { "eq": ["signal.substanceClass", "downer"] },
-              { "in": ["signal.substance", ["ghb", "downer_pill", "ket", "alcohol"]] }
+              { "in": ["signal.pattern", ["loose_clumsy", "warm_cliff", "heavy_nod", "unplugged", "wired_sleepy"]] },
+              { "eq": ["signal.meds", "sedative"] }
             ]
           },
           "requires": [],
@@ -1475,7 +1797,9 @@
         },
         {
           "id": "ride_wave",
-          "when": { "eq": ["signal.substanceClass", "psychedelic"] },
+          "when": {
+            "any": [{ "eq": ["signal.substanceClass", "psychedelic"] }, { "eq": ["signal.pattern", "wired_strange"] }]
+          },
           "requires": [],
           "card": "CARD_CARE_WAVE",
           "onShow": [],
@@ -1485,7 +1809,7 @@
         },
         {
           "id": "put_away",
-          "when": { "in": ["signal.substanceClass", ["stim", "downer", "psychedelic"]] },
+          "when": { "in": ["signal.substanceClass", ["stim", "downer", "psychedelic", "mixed"]] },
           "requires": [],
           "card": "CARD_CARE_PUT_AWAY",
           "onShow": [],
@@ -1670,12 +1994,15 @@
     { "id": "CARD_Q_ANXIETY_SELF", "kind": "question" },
     { "id": "CARD_Q_ANXIETY_HELPER", "kind": "question" },
     { "id": "CARD_Q_NOISE", "kind": "question" },
-    { "id": "CARD_Q_SUBSTANCE", "kind": "question" },
-    { "id": "CARD_Q_WHICH_STIM", "kind": "question" },
-    { "id": "CARD_Q_WHICH_DOWNER", "kind": "question" },
-    { "id": "CARD_Q_WHICH_PSY", "kind": "question" },
+    { "id": "CARD_Q_FEEL", "kind": "question" },
+    { "id": "CARD_Q_RACE_KIND", "kind": "question" },
+    { "id": "CARD_Q_RACE_LENGTH", "kind": "question" },
+    { "id": "CARD_Q_HEAVY_KIND", "kind": "question" },
+    { "id": "CARD_Q_STRANGE_KIND", "kind": "question" },
+    { "id": "CARD_Q_MIXED_KIND", "kind": "question" },
+    { "id": "CARD_Q_MEDS", "kind": "question" },
+    { "id": "CARD_Q_URGE", "kind": "question" },
     { "id": "CARD_Q_ALCOHOL", "kind": "question" },
-    { "id": "CARD_Q_SEX", "kind": "question" },
     { "id": "CARD_Q_BODY", "kind": "question" },
     {
       "id": "CARD_P0_CALL",
@@ -1966,6 +2293,38 @@
       "variantKeys": ["actor"]
     },
     {
+      "id": "CARD_CARE_MIX_RUSH_SLEEP",
+      "kind": "action",
+      "bands": ["P1", "P2", "P3"],
+      "variantKeys": ["actor"],
+      "actions": [
+        { "id": "ok", "emphasis": "primary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }] },
+        { "id": "not_this", "emphasis": "secondary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "declined" }] },
+        {
+          "id": "call_poison",
+          "emphasis": "low",
+          "handoff": { "channel": "tel", "target": "poison" },
+          "ops": [{ "op": "HANDOFF_OPENED", "channel": "tel", "target": "poison" }]
+        }
+      ]
+    },
+    {
+      "id": "CARD_CARE_MIX_WIRED_UNPLUGGED",
+      "kind": "action",
+      "bands": ["P1", "P2", "P3"],
+      "variantKeys": ["actor"],
+      "actions": [
+        { "id": "ok", "emphasis": "primary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }] },
+        { "id": "not_this", "emphasis": "secondary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "declined" }] },
+        {
+          "id": "call_poison",
+          "emphasis": "low",
+          "handoff": { "channel": "tel", "target": "poison" },
+          "ops": [{ "op": "HANDOFF_OPENED", "channel": "tel", "target": "poison" }]
+        }
+      ]
+    },
+    {
       "id": "CARD_CARE_MIX_DOWNERS",
       "kind": "action",
       "bands": ["P1", "P2", "P3"],
@@ -2166,6 +2525,16 @@
     },
     {
       "id": "CARD_CARE_PILL",
+      "kind": "action",
+      "bands": ["P1", "P2", "P3"],
+      "variantKeys": ["actor"],
+      "actions": [
+        { "id": "done", "emphasis": "primary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "done" }] },
+        { "id": "not_this", "emphasis": "secondary", "ops": [{ "op": "STRATEGY_OUTCOME", "outcome": "declined" }] }
+      ]
+    },
+    {
+      "id": "CARD_CARE_URGE",
       "kind": "action",
       "bands": ["P1", "P2", "P3"],
       "variantKeys": ["actor"],
@@ -2738,6 +3107,11 @@
       "id": "INV-033",
       "text": "A step without human input never changes the card on screen (same instance, taps stay valid) unless the new band is P0 (L28).",
       "enforcedBy": ["runtime", "property", "scenario"]
+    },
+    {
+      "id": "INV-034",
+      "text": "No copy the person can see names a substance or asks what was used (L30); question cards ask about the body, feelings or medicines only.",
+      "enforcedBy": ["lint", "property"]
     }
   ],
   "storage": {

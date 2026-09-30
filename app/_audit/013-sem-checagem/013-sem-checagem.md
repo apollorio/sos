@@ -17,7 +17,7 @@ forcing the user to choose «ok I'm better now», aff, again and again checking 
 The fallback card now says «Tô aqui com você. Sem pressa…» with «Continuar aqui» and «Tô bem, encerrar». The menu keeps
 «Tô bem, quero encerrar» under a heading «Encerrar». IDs are listed in `conventions.retiredIds` and never reused.
 
-What the app still learns, without grading: what was used (one tap: «Bala + álcool»), what hurts, and what the person
+What the app still learns, without grading: ~~what was used (one tap: «Bala + álcool»)~~ how the body feels, never what was used (superseded by audit 014, L30), what hurts, and what the person
 taps. The **192 bar and the emergency triggers are untouched** (text «não consigo respirar», the red-flag question).
 Removing «Tá piorando» removes one way to escalate by button; the person can still tap 192, type what is happening, or
 end the session. Flagged for clinical review.

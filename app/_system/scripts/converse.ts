@@ -10,10 +10,10 @@ import { resolveCard } from "../src/ui/locale";
 import type { StepResult } from "../src/core/domain/decision";
 
 export const PERSONAS: Record<string, { story: string; answers: Record<string, string>; answerSec?: number }> = {
-  bala: { story: "Pânico numa festa: bala + álcool + azulzinho, nariz ardendo.", answers: { Q_ACTOR: "self", Q_RED_FLAGS: "none", Q_CLARITY: "yes", Q_ANXIETY: "panic", Q_COMPANY: "with", Q_NOISE: "loud", Q_SUBSTANCE: "stim", Q_WHICH_STIM: "md", Q_ALCOHOL: "yes", Q_SEX: "pill", Q_BODY: "nose" } },
-  po: { story: "Pó com álcool, sozinho, garganta ardendo.", answers: { Q_ACTOR: "self", Q_RED_FLAGS: "none", Q_CLARITY: "yes", Q_ANXIETY: "high", Q_COMPANY: "alone", Q_NOISE: "quiet", Q_SUBSTANCE: "stim", Q_WHICH_STIM: "coke", Q_ALCOHOL: "yes", Q_SEX: "none", Q_BODY: "throat" } },
-  g: { story: "Amigo(a) com G e álcool, acordado(a) e respirando normal.", answers: { Q_ACTOR: "helper", Q_RESPONDS: "normal", Q_BREATHING: "normal", Q_RED_FLAGS: "none", Q_ANXIETY: "anxious", Q_NOISE: "moderate", Q_SUBSTANCE: "downer", Q_WHICH_DOWNER: "ghb", Q_ALCOHOL: "yes", Q_SEX: "none", Q_BODY: "nausea" } },
-  panico: { story: "Pânico sem nada usado, lento pra responder.", answerSec: 25, answers: { Q_ACTOR: "self", Q_RED_FLAGS: "none", Q_CLARITY: "yes", Q_ANXIETY: "panic", Q_COMPANY: "with", Q_NOISE: "quiet", Q_SUBSTANCE: "none" } },
+  bala: { story: "Pânico numa festa: energia de abraço e música, bebeu, tomou remédio de ereção, nariz ardendo.", answers: { Q_ACTOR: "self", Q_RED_FLAGS: "none", Q_CLARITY: "yes", Q_ANXIETY: "panic", Q_COMPANY: "with", Q_NOISE: "loud", Q_FEEL: "racing", Q_RACE_KIND: "people", Q_ALCOHOL: "yes", Q_MEDS: "erection", Q_URGE: "some", Q_BODY: "nose" } },
+  po: { story: "Sozinho, acelerado em ondas curtas, bebeu, garganta ardendo, vontade de mais.", answers: { Q_ACTOR: "self", Q_RED_FLAGS: "none", Q_CLARITY: "yes", Q_ANXIETY: "high", Q_COMPANY: "alone", Q_NOISE: "quiet", Q_FEEL: "racing", Q_RACE_KIND: "doing", Q_RACE_LENGTH: "short", Q_ALCOHOL: "yes", Q_MEDS: "none", Q_URGE: "strong", Q_BODY: "throat" } },
+  g: { story: "Amigo(a) que estava bem e despencou, bebeu também; acordado(a) e respirando normal.", answers: { Q_ACTOR: "helper", Q_RESPONDS: "normal", Q_BREATHING: "normal", Q_RED_FLAGS: "none", Q_ANXIETY: "anxious", Q_NOISE: "moderate", Q_FEEL: "heavy", Q_HEAVY_KIND: "cliff", Q_ALCOHOL: "yes", Q_MEDS: "none", Q_BODY: "nausea" } },
+  panico: { story: "Pânico, nada usado, lento pra responder.", answerSec: 95, answers: { Q_ACTOR: "self", Q_RED_FLAGS: "none", Q_CLARITY: "yes", Q_ANXIETY: "panic", Q_COMPANY: "with", Q_NOISE: "quiet", Q_FEEL: "none" } },
 };
 
 export function converse(name: string, minutes: number): { steps: StepResult[]; lines: string[] } {

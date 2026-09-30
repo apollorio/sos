@@ -12,6 +12,7 @@ import { openStore } from "./storage/session-store";
 import { wireBrowserSignals } from "./signals-browser";
 import { now } from "./clock";
 import { attachContinuity } from "./continuity/boot-continuity";
+import { attachLabPanel } from "../ui/lab-panel";
 
 const failToShell = () => document.documentElement.classList.remove("js-ok");
 window.addEventListener("error", failToShell);
@@ -22,13 +23,17 @@ async function main(): Promise<void> {
   if (!root) return;
   const locale = LOCALES[REG.data.meta.defaultLocale]!;
   const store = await openStore(REG.data.storage.retentionHours, REG.data.storage.logMaxEntries, now);
-  const loop: EngineLoop = new EngineLoop(store, (r) =>
+  // Ctrl+H: hidden lab panel (this session's log, the Pista, the simulator). Memory only; never changes a decision.
+  const lab = attachLabPanel(REG, locale);
+  const loop: EngineLoop = new EngineLoop(store, (r) => {
     renderStep(root, r, locale, REG, {
       tap: (cardInstanceId, actionId) => void loop.dispatch({ kind: "tap", cardInstanceId, actionId }),
       text: (text) => void loop.dispatch({ kind: "text", text }),
       chip: (chipId) => void loop.dispatch({ kind: "chip", chipId }),
-    }),
-  );
+    });
+    // After the card is on screen, and isolated: the lab view can never delay or break what the person sees.
+    try { lab.record(r); } catch { /* lab only */ }
+  });
   document.getElementById("sos")?.addEventListener("click", () => void loop.dispatch({ kind: "shell", action: "call_192" }));
   wireBrowserSignals((event) => void loop.dispatch({ kind: "runtime", event }));
   await loop.start();

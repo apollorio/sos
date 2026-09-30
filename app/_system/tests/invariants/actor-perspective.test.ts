@@ -49,13 +49,15 @@ describe("actor perspective (L10)", () => {
     expect(d.pick.variantKeys[0]).toBe("stim.helper");
     expect(body(d.pick.cardId, d.pick.variantKeys)).toMatch(/^Ajuda ela/);
     const self = decideCore(afterHelp({ actor: "self", company: "with_someone", responsiveness: "responsive", breathing: "normal", chest: "no", anxiety: 1, noise: "quiet", substanceClass: "stim" }), NOW, REG).decision;
-    expect(body(self.pick.cardId, self.pick.variantKeys)).toMatch(/^Para de se mexer/);
+    expect(body(self.pick.cardId, self.pick.variantKeys)).toMatch(/^Uma pausa no movimento/);
   });
 
-  it("the substance question asks a helper about the person", () => {
+  it("the body-feel question asks a helper about the person, never what was used (L30, audit 014)", () => {
     const s = state({ actor: "helper", company: "with_someone" });
-    const pick = SKILLS.assess.select({ state: s, facts: buildFacts(s, NOW, REG).facts, band: "P3", now: NOW, reg: REG, questionId: "Q_SUBSTANCE" })!;
-    expect(title(pick.cardId, pick.variantKeys)).toBe("O que a pessoa usou?");
+    const pick = SKILLS.assess.select({ state: s, facts: buildFacts(s, NOW, REG).facts, band: "P3", now: NOW, reg: REG, questionId: "Q_FEEL" })!;
+    expect(title(pick.cardId, pick.variantKeys)).toBe("Como tá o corpo dela agora?");
+    const self = SKILLS.assess.select({ state: state({ actor: "self", company: "with_someone" }), facts: buildFacts(state({ actor: "self", company: "with_someone" }), NOW, REG).facts, band: "P3", now: NOW, reg: REG, questionId: "Q_FEEL" })!;
+    expect(title(self.cardId, self.variantKeys)).toBe("Como tá o corpo agora?");
   });
 
   it("sweep: every non-P0 card a helper can reach resolves to helper copy or is declared actor-neutral", () => {

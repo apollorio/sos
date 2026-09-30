@@ -12,9 +12,9 @@ export function variantKeysFor(card: CardDef | undefined, ctx: SkillCtx, reason?
     keys.push(`${sub}.${actor}`, sub); // perspective first: a helper never gets tips addressed to the person in crisis (L10)
   }
   if (vk.includes("drug")) {
-    // Which one, when the person said so (L26). Unknown falls through to the class, then to the plain copy.
-    const drug = String(ctx.facts["signal.substance"] ?? "unknown");
-    if (drug !== "unknown") keys.push(`${drug}.${actor}`, drug);
+    // The pattern the person DESCRIBED (L30), never a substance. Unknown falls through to the class, then the plain copy.
+    const pattern = String(ctx.facts["signal.pattern"] ?? "unknown");
+    if (pattern !== "unknown") keys.push(`${pattern}.${actor}`, pattern);
     const sub = String(ctx.facts["signal.substanceClass"] ?? "unknown");
     if (sub !== "unknown") keys.push(`${sub}.${actor}`, sub);
   }
