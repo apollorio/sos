@@ -1,0 +1,125 @@
+flowchart TD
+  START(["▶ Bateu Forte · Usei algo"]) --> torto_a1
+  torto_a1{"<b>a1</b><br/>Que bom que você abriu isso. Tô aqui com você. O que tá acontecendo m…"}
+  class torto_a1 choice
+  torto_a2{"<b>a2</b><br/>Entendi. O que você está sentindo mais agora?"}
+  class torto_a2 choice
+  torto_a2_unclear("<b>a2_unclear</b><br/>Não saber é tudo bem. Às vezes a gente só sente que precisa de apoio.…")
+  class torto_a2_unclear info
+  torto_a3_stim[["<b>a3_stim</b><br/>Estimulantes aceleram o coração e a mente.. isso assusta, mas o corpo…<br/>☐ Água gelada no rosto, nuca ou pun…"]]
+  class torto_a3_stim task,orphan
+  torto_a3_psych("<b>a3_psych</b><br/>Psicodélicos e dissociativos alteram como você percebe a realidade.. …")
+  class torto_a3_psych info
+  torto_redirect_panico[/"<b>redirect_panico</b><br/>O que você descreveu parece mais próximo de uma crise de ansiedade.. …<br/>↪ Quer ir para o suporte de Pânico?"/]
+  class torto_redirect_panico redirect
+  torto_redirect_trava[/"<b>redirect_trava</b><br/>Essa sensação de ser observado ou de estar travado tem um protocolo q…<br/>↪ Quer ir para o suporte de Travei?"/]
+  class torto_redirect_trava redirect
+  torto_m1("<b>m1</b><br/>Você abriu este espaço.. isso já é um passo. Não precisa resolver nad…")
+  class torto_m1 info
+  torto_m2[["<b>m2</b><br/>Antes de mais nada, vamos colocar o seu corpo num lugar mais seguro:<br/>☐ Senta ou deita em algum lugar est…<br/>☐ Vira o celular com a tela para ba…"]]
+  class torto_m2 task
+  torto_m3[["<b>m3</b><br/>Se ainda não jogou água fria.. faz agora. Se já fez, repete mais uma …<br/>☐ Água gelada no rosto ou nas mãos"]]
+  class torto_m3 task
+  torto_m4[["<b>m4</b><br/>Agora o ambiente:<br/>☐ Diminui o volume do que estiver t…<br/>☐ Encontra um cantinho mais quieto …"]]
+  class torto_m4 task
+  torto_m5{"<b>m5</b><br/>Como você está em relação a antes de abrir isso?"}
+  class torto_m5 choice
+  torto_m6_better("<b>m6_better</b><br/>O pico pode estar mudando.. ou não ainda. Os dois são normais. Contin…")
+  class torto_m6_better info
+  torto_m6_same("<b>m6_same</b><br/>Normal. O pico ainda está rolando. O corpo precisa de tempo para proc…")
+  class torto_m6_same info
+  torto_m6_worse{"<b>m6_worse</b><br/>Obrigado por me contar. Se está piorando, você pode precisar de ajuda…"}
+  class torto_m6_worse choice
+  torto_action_samu{{"<b>action_samu</b><br/>Liga agora.. continuo aqui com você:<br/>📞 SAMU — 192<br/>📞 Bombeiros — 193"}}
+  class torto_action_samu action
+  torto_m7("<b>m7</b><br/>Vamos respirar juntos agora: Inspira lenta e profundamente pelo nariz…")
+  class torto_m7 info
+  torto_m8[["<b>m8</b><br/>Trazendo você de volta para o presente:<br/>☐ Nomeia 5 coisas que você vê<br/>☐ Toca em algo próximo"]]
+  class torto_m8 task
+  torto_m9[["<b>m9</b><br/>Duas coisas práticas agora:<br/>☐ Afasta qualquer substância de per…<br/>☐ Hidratar (água ou suco)"]]
+  class torto_m9 task
+  torto_m10("<b>m10</b><br/>O que você sente agora é intenso.. não é permanente, mesmo parecendo.…")
+  class torto_m10 info
+  torto_m11{"<b>m11</b><br/>Tem alguém de confiança que você pode contactar agora?"}
+  class torto_m11 choice
+  torto_m11_yes("<b>m11_yes</b><br/>Liga ou manda mensagem. Você não precisa explicar tudo.. só diz: 'Tô …")
+  class torto_m11_yes info
+  torto_m11_no{{"<b>m11_no</b><br/>Tudo bem. Tem um serviço gratuito, anônimo e humano disponível agora:<br/>📞 CVV — 188 (gratuito, 24h)"}}
+  class torto_m11_no action
+  torto_m12("<b>m12</b><br/>O efeito vai passando gradualmente.. às vezes sobe, às vezes baixa, m…")
+  class torto_m12 info
+  torto_m13[["<b>m13</b><br/>Se quiser, tem uma coisa que ajuda o tempo a passar:<br/>☐ Coloca uma música instrumental ca…"]]
+  class torto_m13 task
+  torto_m14("<b>m14</b><br/>Você ficou aqui um tempo. Respirou. Fez o que deu. Isso não apaga a d…")
+  class torto_m14 info
+  torto_m15(["<b>m15</b><br/>Se ainda estiver pesado, não precisa estar bem agora. Este espaço fic…"])
+  class torto_m15 info,endn
+  torto_fast_stim[["<b>fast_stim</b><br/>Toque em cada tarefa conforme você for fazendo:<br/>☐ Choque térmico no rosto<br/>☐ Reduzir estímulos<br/>☐ Guardar tudo"]]
+  class torto_fast_stim task
+  torto_harm_alcohol[["<b>harm_alcohol</b><br/>Álcool desidrata e acelera o coração. Faça uma de cada vez:<br/>☐ 1 copo de água (250 mL) por dose<br/>☐ Comer proteína, fibra ou gordura …<br/>☐ Não dirigir nem operar máquinas<br/>☐ Pausa reflexiva (10 segundos) ⟨crt_pause⟩"]]
+  class torto_harm_alcohol task
+  torto_harm_injection[["<b>harm_injection</b><br/>Segurança física primeiro.. uma de cada vez:<br/>☐ Seringa estéril, uso único<br/>☐ Kit de teste se tiver<br/>☐ Não misturar depressores<br/>☐ Respiração lenta se ansioso ⟨breath_guide⟩"]]
+  class torto_harm_injection task
+  torto_fast_psych[["<b>fast_psych</b><br/>Psicodélicos alteram percepção.. não a realidade. Uma coisa de cada v…<br/>☐ Trocar som / ruído marrom<br/>☐ Mudar cômodo ou luz<br/>☐ Doce na boca<br/>☐ Não lutar contra o estranho"]]
+  class torto_fast_psych task
+  torto_a1 -->|"Usei algo e tá muito pesado"| torto_a2
+  torto_a1 -->|"Bebi álcool e tô mal"| torto_harm_alcohol
+  torto_a1 -->|"Não usei nada, mas tô muito mal"| torto_redirect_panico
+  torto_a1 -->|"Não sei bem o que sinto"| torto_a2_unclear
+  torto_a2 -->|"Coração acelerado, agitação, calor"| torto_fast_stim
+  torto_a2 -->|"Tudo parece distante ou irreal"| torto_a3_psych
+  torto_a2 -->|"Pânico puro, sem controle"| torto_redirect_panico
+  torto_a2 -->|"Sensação de estar sendo observado"| torto_redirect_trava
+  torto_a2 -->|"Usei por injeção / seringa"| torto_harm_injection
+  torto_a2_unclear -.->|continuar| torto_m1
+  torto_a3_stim ==>|"joguei água fria"| torto_fast_stim
+  torto_a3_psych -.->|continuar| torto_fast_psych
+  torto_redirect_panico -->|ficar aqui| torto_m1
+  torto_redirect_panico -->|"ir para panico"| FLOW_panico
+  torto_redirect_trava -->|ficar aqui| torto_m1
+  torto_redirect_trava -->|"ir para trava"| FLOW_trava
+  torto_m1 -.->|continuar| torto_m2
+  torto_m2 ==>|"feito isso."| torto_m3
+  torto_m3 ==>|"água fria de novo"| torto_m4
+  torto_m4 ==>|"feito."| torto_m5
+  torto_m5 -->|"Um pouco melhor"| torto_m6_better
+  torto_m5 -->|"Mais ou menos igual"| torto_m6_same
+  torto_m5 -->|"Piorei, tô muito mal"| torto_m6_worse
+  torto_m6_better -.->|continuar| torto_m7
+  torto_m6_same -.->|continuar| torto_m7
+  torto_m6_worse -->|"Ligo para o SAMU (192)"| torto_action_samu
+  torto_m6_worse -->|"Continue tentando aqui comigo"| torto_m7
+  torto_action_samu -.->|continuar| torto_m7
+  torto_m7 -.->|continuar| torto_m8
+  torto_m8 ==>|"ancorado aqui."| torto_m9
+  torto_m9 ==>|"feito."| torto_m10
+  torto_m10 -.->|continuar| torto_m11
+  torto_m11 -->|"Sim, tem alguém"| torto_m11_yes
+  torto_m11 -->|"Não tem ninguém disponível agora"| torto_m11_no
+  torto_m11 -->|"Prefiro ficar quieto por agora"| torto_m12
+  torto_m11_yes -.->|continuar| torto_m12
+  torto_m11_no -.->|continuar| torto_m12
+  torto_m12 -.->|continuar| torto_m13
+  torto_m13 ==>|"música ligada."| torto_m14
+  torto_m14 -.->|continuar| torto_m15
+  torto_m15 -.->|continuar| EXIT
+  torto_fast_stim ==>|"continuo aqui"| torto_m1
+  torto_harm_alcohol ==>|"feito"| torto_m1
+  torto_harm_injection ==>|"continuo aqui"| torto_fast_stim
+  torto_fast_psych ==>|"continuo aqui"| torto_m1
+  torto_a1 -. "⚡ preciso de algo agora" .-> torto_fast_stim
+  FLOW_panico(["→ fluxo panico"])
+  class FLOW_panico ext
+  FLOW_trava(["→ fluxo trava"])
+  class FLOW_trava ext
+  EXIT(["fecha · volta à Home"])
+  class EXIT ext
+  classDef choice fill:#1b1030,stroke:#a855f7,color:#eee
+  classDef info fill:#0f1a24,stroke:#38bdf8,color:#ddd
+  classDef task fill:#0f2419,stroke:#34d399,color:#ddd
+  classDef action fill:#2a0f12,stroke:#ef4444,color:#fff,stroke-width:2px
+  classDef redirect fill:#241a0a,stroke:#f59e0b,color:#eee
+  classDef endn fill:#111,stroke:#fff,color:#fff,stroke-width:3px
+  classDef orphan stroke-dasharray:6 4,opacity:0.55
+  classDef risk stroke:#ff0055,stroke-width:4px
+  classDef ext fill:#333,stroke:#999,color:#fff

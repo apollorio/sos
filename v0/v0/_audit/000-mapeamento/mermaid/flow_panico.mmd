@@ -1,0 +1,108 @@
+flowchart TD
+  START(["▶ Pânico · Ansiedade"]) --> panico_a1
+  panico_a1{"<b>a1</b><br/>Tô aqui com você. Me conta.. o que está acontecendo mais agora?"}
+  class panico_a1 choice
+  panico_a2{"<b>a2</b><br/>O que você está sentindo mais no corpo agora?"}
+  class panico_a2 choice
+  panico_a2_unclear("<b>a2_unclear</b><br/>Não saber é tudo bem. Você está aqui.. e isso já é muito. Vamos junto…")
+  class panico_a2_unclear info
+  panico_a3_moderate[["<b>a3_moderate</b><br/>Isso é pânico.. o cérebro grita perigo quando não há. Primeiro, água …<br/>☐ Água gelada no rosto, nuca ou pun…"]]
+  class panico_a3_moderate task
+  panico_a3_severe[["<b>a3_severe</b><br/>Isso é muito desconfortável.. mas seu corpo não está morrendo. Está e…<br/>☐ Água gelada no rosto, nuca ou pun…"]]
+  class panico_a3_severe task
+  panico_redirect_torto[/"<b>redirect_torto</b><br/>Se você usou algo, temos um suporte mais específico para isso que pod…<br/>↪ Quer ir para o suporte de Bateu Forte?"/]
+  class panico_redirect_torto redirect
+  panico_m1("<b>m1</b><br/>Você não está em perigo real. O pânico é alarme falso.. coração acele…")
+  class panico_m1 info
+  panico_m3[["<b>m3</b><br/>Agora o Humming.. vibração que acalma o nervo vago:<br/>☐ Fecha a boca e faz um 'hmmmmm' co…"]]
+  class panico_m3 task
+  panico_m4[["<b>m4</b><br/>Uma âncora física agora:<br/>☐ Água gelada nas mãos, nuca ou ros…"]]
+  class panico_m4 task
+  panico_m5{"<b>m5</b><br/>Como você está em relação a alguns minutos atrás?"}
+  class panico_m5 choice
+  panico_m6_better("<b>m6_better</b><br/>O pico pode estar baixando um pouco.. ou não ainda. Os dois são norma…")
+  class panico_m6_better info
+  panico_m6_same("<b>m6_same</b><br/>O pânico tem pico.. e depois baixa. Mesmo parecendo eterno, não é ete…")
+  class panico_m6_same info
+  panico_m7[["<b>m7</b><br/>Agora o 5-4-3-2-1.. trazendo você para o presente:<br/>☐ 5 coisas que você consegue VER<br/>☐ 4 coisas que você consegue TOCAR<br/>☐ 3 sons que você consegue OUVIR<br/>☐ Respiração alternada (5 min)"]]
+  class panico_m7 task
+  panico_m8[["<b>m8</b><br/>Agora o corpo:<br/>☐ Postura de segurança"]]
+  class panico_m8 task
+  panico_m9("<b>m9</b><br/>Continuo aqui com você. O pânico não dura para sempre. Tem início, me…")
+  class panico_m9 info
+  panico_m10("<b>m10</b><br/>O pânico acontece quando o alarme do cérebro dispara sem perigo real.…")
+  class panico_m10 info
+  panico_m11{"<b>m11</b><br/>Você gostaria de chamar alguém para ficar com você?"}
+  class panico_m11 choice
+  panico_m11_yes("<b>m11_yes</b><br/>Manda mensagem para alguém de confiança: 'Tô com uma crise de ansieda…")
+  class panico_m11_yes info
+  panico_m12("<b>m12</b><br/>Respirar devagar ainda é a ferramenta mais poderosa que você tem agor…")
+  class panico_m12 info
+  panico_m13{{"<b>m13</b><br/>Se quiser uma voz humana agora:<br/>📞 CVV — 188 (gratuito, 24h)"}}
+  class panico_m13 action
+  panico_m14("<b>m14</b><br/>Você ficou aqui. Não saiu no pior momento. Isso não resolve tudo.. ma…")
+  class panico_m14 info
+  panico_m15(["<b>m15</b><br/>Se ainda estiver mal, tudo bem não estar bem. CVV 188.. voz humana, 2…"])
+  class panico_m15 info,endn
+  panico_fast_panic[["<b>fast_panic</b><br/>O pânico engana o cérebro dizendo que há perigo imediato. Vamos envia…<br/>☐ Segurar algo muito frio<br/>☐ Respiração 4-6 (10 vezes) ⟨breath_guide⟩<br/>☐ Suspiro Duplo (faça 3x)<br/>☐ Vibração suave (humming)"]]
+  class panico_fast_panic task
+  panico_breath_46[["<b>breath_46</b><br/>Respiração diafragmática.. a mais eficaz agora:<br/>☐ 4-6-10.. inspira, segura, expira ⟨breath_guide⟩"]]
+  class panico_breath_46 task
+  panico_mindfulness_5[["<b>mindfulness_5</b><br/>Mindfulness breve (5 min).. observar sem julgar:<br/>☐ Observar o ar 5 minutos"]]
+  class panico_mindfulness_5 task
+  panico_m2[["<b>m2</b><br/>Primeiro.. o Suspiro Duplo:<br/>☐ Suspiro Duplo.. 3 vezes"]]
+  class panico_m2 task
+  panico_draw_distract[["<b>draw_distract</b><br/>Atividade leve.. ocupar as mãos:<br/>☐ Rabiscar ou escrever 5 minutos"]]
+  class panico_draw_distract task
+  panico_box_breath_high[["<b>box_breath_high</b><br/>Se ainda intenso.. box breathing (4-4-4-4):<br/>☐ Box 4×4.. 4 ciclos ⟨breath_guide⟩"]]
+  class panico_box_breath_high task
+  panico_a1 -->|"Coração acelerado, falta de ar"| panico_a3_moderate
+  panico_a1 -->|"Usei algo que pode ter causado isso"| panico_redirect_torto
+  panico_a1 -->|"Sensação de perigo sem razão clara"| panico_a2
+  panico_a1 -->|"Não sei, só sei que tô muito mal"| panico_a2_unclear
+  panico_a2 -->|"Formigamento, tontura, mãos suando"| panico_a3_severe
+  panico_a2 -->|"Coração acelerado, agonia, aperto no …"| panico_a3_moderate
+  panico_a2 -->|"Pensamentos em espiral, não consigo p…"| panico_a3_moderate
+  panico_a2_unclear -.->|continuar| panico_m1
+  panico_a3_moderate ==>|"joguei água fria"| panico_m1
+  panico_a3_severe ==>|"joguei água fria"| panico_m1
+  panico_redirect_torto -->|ficar aqui| panico_m1
+  panico_redirect_torto -->|"ir para torto"| FLOW_torto
+  panico_m1 -.->|continuar| panico_breath_46
+  panico_m3 ==>|"senti a vibração."| panico_draw_distract
+  panico_m4 ==>|"feito isso."| panico_box_breath_high
+  panico_m5 -->|"Um pouco melhor"| panico_m6_better
+  panico_m5 -->|"Igual ou ainda muito mal"| panico_m6_same
+  panico_m6_better -.->|continuar| panico_m7
+  panico_m6_same -.->|continuar| panico_m7
+  panico_m7 ==>|"voltei para o presente."| panico_m8
+  panico_m8 ==>|"estou apoiado."| panico_m9
+  panico_m9 -.->|continuar| panico_m10
+  panico_m10 -.->|continuar| panico_m11
+  panico_m11 -->|"Sim, vou chamar alguém"| panico_m11_yes
+  panico_m11 -->|"Prefiro ficar quieto por agora"| panico_m12
+  panico_m11_yes -.->|continuar| panico_m12
+  panico_m12 -.->|continuar| panico_m13
+  panico_m13 -.->|continuar| panico_m14
+  panico_m14 -.->|continuar| panico_m15
+  panico_m15 -.->|continuar| EXIT
+  panico_fast_panic ==>|"continuo aqui"| panico_m1
+  panico_breath_46 ==>|"respirei"| panico_m2
+  panico_mindfulness_5 ==>|"observei"| panico_m3
+  panico_m2 ==>|"feito as 3 vezes."| panico_mindfulness_5
+  panico_draw_distract ==>|"rabischei"| panico_m4
+  panico_box_breath_high ==>|"box feito"| panico_m5
+  panico_a1 -. "⚡ preciso de algo agora" .-> panico_fast_panic
+  FLOW_torto(["→ fluxo torto"])
+  class FLOW_torto ext
+  EXIT(["fecha · volta à Home"])
+  class EXIT ext
+  classDef choice fill:#1b1030,stroke:#a855f7,color:#eee
+  classDef info fill:#0f1a24,stroke:#38bdf8,color:#ddd
+  classDef task fill:#0f2419,stroke:#34d399,color:#ddd
+  classDef action fill:#2a0f12,stroke:#ef4444,color:#fff,stroke-width:2px
+  classDef redirect fill:#241a0a,stroke:#f59e0b,color:#eee
+  classDef endn fill:#111,stroke:#fff,color:#fff,stroke-width:3px
+  classDef orphan stroke-dasharray:6 4,opacity:0.55
+  classDef risk stroke:#ff0055,stroke-width:4px
+  classDef ext fill:#333,stroke:#999,color:#fff

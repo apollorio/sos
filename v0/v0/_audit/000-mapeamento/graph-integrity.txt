@@ -1,0 +1,76 @@
+ACTION torto.action_samu  tel:192 "SAMU  — 192"
+ACTION torto.action_samu  tel:193 "Bombeiros  — 193"
+ACTION torto.m11_no  tel:188 "CVV  — 188 (gratuito, 24h)"
+END torto.m15 [info]
+VARIANT torto.harm_alcohol.ha4 = crt_pause 
+VARIANT torto.harm_injection.hi4 = breath_guide 4-6
+UNREACHABLE torto.a3_stim
+FLOW torto: nodes=31 edges=46 start=a1
+ACTION panico.m13  tel:188 "CVV  — 188 (gratuito, 24h)"
+END panico.m15 [info]
+VARIANT panico.fast_panic.fp_b46 = breath_guide 4-6
+VARIANT panico.breath_46.b46 = breath_guide 4-6
+VARIANT panico.box_breath_high.box4 = breath_guide box-4
+FLOW panico: nodes=28 edges=37 start=a1
+ACTION realidade.m11_no  tel:188 "CVV  — 188 (gratuito, 24h)"
+END realidade.m15 [info]
+UNREACHABLE realidade.redirect_panico
+FLOW realidade: nodes=25 edges=33 start=a1
+ACTION trava.m8_yes  sms:?body=Ei%2C+tô+passando+por+algo+difícil+agora+e+precisaria+de+companhia.+Pode+vir+ou+ficar+na+linha? "Mandar SMS de apoio"
+ACTION trava.m8_no  tel:188 "CVV  — 188 (gratuito, 24h)"
+END trava.m15 [info]
+VARIANT trava.fast_trava.ft3 = sms sms:?body=Ei%2C+t%C3%B4+travado+de+ansiedade+num+lugar+e+n%C3%A3o+t%C3%B4+conseguindo+sair+sozinho.+Voc%C3%AA+pode+me+buscar+ou+ficar+na+linha+comigo%3F
+VARIANT trava.crt_before_sms.crt_sms = crt_pause 
+FLOW trava: nodes=27 edges=37 start=a1
+ACTION falar.a2_crisis  tel:188 "CVV  — 188 (agora, de graça, 24h)"
+ACTION falar.a3_safe  tel:188 "CVV  — 188 (agora, de graça)"
+VARIANT falar.m4.t_voice = media https://assets.apollo.rio.br/vid/the-voice/tv-show.mp4
+VARIANT falar.m4.t_friend = contact_pick crisis_generic
+ACTION falar.m6_hard  tel:188 "Ligar CVV 188.. escuta emocional"
+ACTION falar.m6_hard caps_list #caps "Ver CAPS no Rio (24h · SUS)"
+ACTION falar.m11_no  tel:188 "Ligar CVV 188"
+ACTION falar.m11_no caps_list #caps "CAPS Rio.. mapa e telefones"
+END falar.m15 [info]
+VARIANT falar.fast_ground.t_voice = media https://assets.apollo.rio.br/vid/the-voice/tv-show.mp4
+VARIANT falar.fast_ground.fg4 = call tel:188
+VARIANT falar.crt_pause_node.crt1 = crt_pause 
+ACTION falar.wa_from_yes whatsapp https://wa.me/?text=PLACEHOLDER "WhatsApp.. pedir companhia"
+UNREACHABLE falar.a3_safe
+FLOW falar: nodes=35 edges=47 start=a1
+ACTION samu.action_192  tel:192 "SAMU  — 192"
+ACTION samu.action_192  tel:193 "Bombeiros  — 193"
+ACTION samu.a2_mental  tel:188 "CVV  — 188 (gratuito, agora)"
+ACTION samu.m10  tel:188 "CVV  — 188 (para você também)"
+ACTION samu.m10 caps_list #caps "CAPS III Rio (7 unidades 24h)"
+END samu.m15 [info]
+ACTION samu.instant_rescue  tel:192 "Ligar para o SAMU (192)"
+ACTION samu.instant_rescue  tel:193 "Ligar para os Bombeiros (193)"
+ACTION samu.caps_link caps_list #caps "Ver CAPS III Rio"
+ACTION samu.caps_link  tel:188 "CVV  — 188"
+UNREACHABLE samu.a1
+UNREACHABLE samu.action_192
+UNREACHABLE samu.a2_mental
+UNREACHABLE samu.a2_unsure
+UNREACHABLE samu.m2_emotional
+UNREACHABLE samu.m10
+FLOW samu: nodes=26 edges=32 start=instant_rescue
+RISK_ON_ENTER cssrs.c1 = LOW
+RISK_CHOICE cssrs.c1 "Sim" = LOW
+VARIANT cssrs.c1_yes.c1b = breath_guide 4-6
+RISK_CHOICE cssrs.c2 "Sim" = MODERATE
+RISK_CHOICE cssrs.c3 "Sim" = MODERATE
+RISK_CHOICE cssrs.c4 "Sim" = HIGH
+VARIANT cssrs.c4_yes.c4box = breath_guide box-4
+RISK_CHOICE cssrs.c5 "Sim" = HIGH
+RISK_CHOICE cssrs.c6 "Sim, recentemente" = EMERGENT
+RISK_CHOICE cssrs.c6 "Sim, mas faz tempo" = MODERATE
+ACTION cssrs.c6_past  tel:188 "CVV  — 188 (gratuito, 24h)"
+LOCKED cssrs.emergent_panel
+ACTION cssrs.emergent_panel  tel:188 "CVV  — 188 (agora)"
+ACTION cssrs.emergent_panel  tel:192 "SAMU  — 192"
+RISK_ON_ENTER cssrs.lethal_means = HIGH
+ACTION cssrs.caps_nearby caps_list #caps "Ver CAPS III Rio (7 unidades)"
+ACTION cssrs.caps_nearby  tel:188 "CVV  — 188"
+FLOW cssrs: nodes=19 edges=34 start=c1
+ENTRY_CSSRS from falar.cssrs_entry
+PROPS action.actions, action.alertBox, action.autoTo, action.cls, action.crisis, action.flowAccent, action.flowIcon, action.flowTitle, action.href, action.icon, action.label, action.locked, action.text, action.type, action.variant, action.whatsappTemplate, choice.choices, choice.delta, choice.label, choice.riskLevel, choice.riskOnEnter, choice.text, choice.to, choice.type, info.autoTo, info.evidenceHint, info.exactPhrase, info.isDone, info.text, info.type, redirect.redirectFlow, redirect.stayTo, redirect.suggestion, redirect.text, redirect.type, task.allDoneTo, task.breathCycles, task.breathPattern, task.crisis, task.desc, task.doneText, task.evidenceHint, task.exactPhrase, task.flowAccent, task.flowIcon, task.flowTitle, task.href, task.icon, task.id, task.label, task.mediaSrc, task.riskOnEnter, task.sequentialTasks, task.tasks, task.text, task.type, task.variant, task.whatsappTemplate

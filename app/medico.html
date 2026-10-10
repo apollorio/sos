@@ -1,30 +1,53 @@
 <!doctype html>
-<html lang="pt-BR" data-channel="beta">
+<html lang="pt-BR" data-channel="beta" data-theme="light" data-apollo-boot="tokens">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#101828">
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover, interactive-widget=overlays-content">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#101010" media="(prefers-color-scheme: dark)">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="apple-mobile-web-app-title" content="Modo médico">
   <meta name="robots" content="noindex, nofollow">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'self'; font-src 'self'; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.apollo.rio.br; style-src 'self' 'unsafe-inline' https://cdn.apollo.rio.br https://cdn.jsdelivr.net; img-src 'self' data: https://cdn.apollo.rio.br https://assets.apollo.rio.br; connect-src 'self' https://cdn.apollo.rio.br https://assets.apollo.rio.br; font-src 'self' https://cdn.apollo.rio.br https://assets.apollo.rio.br https://fonts.gstatic.com https://cdn.jsdelivr.net; manifest-src 'self'; worker-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'self'">
   <title>SOS Apollo · Modo Médico</title>
+  <script>window.apolloIconConfig=window.apolloIconConfig||{};window.__APOLLO_BOOT__='tokens';</script>
+  <script src="https://cdn.apollo.rio.br/v1.0.0/core.js?trules" fetchpriority="high" data-apollo-core="page"></script>
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@3.5.0/fonts/remixicon.css" rel="stylesheet">
+  <link rel="stylesheet" href="../../../theme/uni.css">
   <link rel="stylesheet" href="./report.css">
 </head>
-<body data-page="medico" class="page-medico">
-  <!-- Modo Médico: a structured handoff of THIS device's current episode, read locally and updated live
-       while the app is open. Nothing is sent anywhere; "Copiar resumo" and "PDF" are explicit taps. -->
-  <div class="toolbar no-print">
-    <a class="tb-btn" href="./">Voltar ao app</a>
+<body data-page="medico" class="page-medico ax-body">
+  <!-- Doctor-first crisis handoff. Close fecha — nunca history.back. -->
+  <div class="ax-top-blur no-print" aria-hidden="true"></div>
+  <header class="toolbar ax-top no-print" role="banner">
+    <div class="ax-top-l">
+      <div class="ax-top-brand" aria-label="Modo médico">
+        <div class="ax-top-logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="12" height="12" fill="none" aria-hidden="true"><path d="M12 3v18M8 8h8M8 16h8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
+        </div>
+        <span class="ax-top-wm">modo<b>::</b>médico</span>
+      </div>
+    </div>
     <span class="tb-status" id="live-status" role="status" aria-live="polite"></span>
-    <label class="scenario hidden"><span>Cenário</span> <select id="scenario"></select></label>
-    <a class="tb-btn" href="./relatorio.html">Relatório</a>
-    <button type="button" class="tb-btn" id="btn-copy">Copiar resumo</button>
-    <button type="button" class="tb-btn primary" id="btn-print">Salvar / imprimir PDF</button>
-  </div>
-  <p class="channel no-print">Versão beta de teste. Os textos clínicos do app ainda estão em revisão. Em emergência: <a href="tel:192">192</a>.</p>
+    <div class="ax-top-r">
+      <button type="button" class="ax-ic" id="btn-print" aria-label="Salvar PDF" title="Salvar PDF"><i class="ri-file-pdf-2-line" aria-hidden="true"></i></button>
+      <button type="button" class="ax-ic" id="btn-copy" aria-label="Copiar resumo" title="Copiar resumo"><i class="ri-file-copy-2-fill" aria-hidden="true"></i></button>
+      <a class="ax-ic" href="./relatorio.html" aria-label="Abrir relatório" title="Abrir relatório"><i class="ri-dossier-line" aria-hidden="true"></i></a>
+    </div>
+  </header>
+  <label class="scenario hidden no-print"><span>Cenário</span> <select id="scenario"></select></label>
+  <p class="channel no-print">Beta clínico · emergência <a href="tel:192">192</a></p>
+
   <main class="document" id="doc">
-    <noscript><p class="waiting">Esta página lê o episódio do app neste aparelho e precisa de JavaScript. Em emergência, ligue 192.</p></noscript>
+    <noscript><p class="waiting">Esta página lê o episódio neste aparelho e precisa de JavaScript. Em emergência, ligue 192.</p></noscript>
   </main>
-  <script src="./file-boot.js" data-bundle="./assets/report.a573492be3b9.classic.js" defer></script>
-  <script type="module" src="./assets/report.ae807f98ab5f.js" integrity="sha384-OEpmW9VheyAVb4UMIjOIDMSa63ulT+pxltftsMsrZ6aX08dUUYrJjRvGVCPR3iuk"></script>
+
+
+  <script src="./medico.close.js" defer></script>
+  <script src="./file-boot.js" data-bundle="./assets/report.5abdf7c73e0e.classic.js" defer></script>
+  <script type="module" src="./assets/report.1bf0da378333.js" integrity="sha384-HdXj0soFGu+8fSf43ZCJljpxdMKUlOh0ddTCjgiGoEIGLIFaUgUru5Tsdf2PccBf"></script>
 </body>
 </html>

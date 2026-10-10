@@ -72,19 +72,19 @@
       '#pl-glow.is-dim { opacity:.45; }',
       '#pl-glow.is-open { scale:3.2; opacity:0; }',
       '@keyframes pl-breathe { 0%,100% { transform:scale(.86); } 50% { transform:scale(1.08); } }',
-      '.pl-tit { position:relative; z-index:1; font-family:"Bricolage Grotesque","Space Grotesk",system-ui,sans-serif;',
-      '  font-size:clamp(1.55rem,6.4vw,3.6rem); font-weight:300; text-align:center; max-width:88%; padding:0 1rem; line-height:1.4;',
+      '.pl-tit { position:relative; z-index:1; font-family:var(--ff-heading);',
+      '  font-size:var(--fs-h2); font-weight:300; text-align:center; max-width:88%; padding:0 1rem; line-height:1.4;',
       '  letter-spacing:-.02em; opacity:0; transform:translateY(10px); color:rgba(240,234,244,.66); pointer-events:none;',
       '  -webkit-user-select:none; user-select:none; text-wrap:balance; }',
       '.pl-tit b { font-weight:500; color:rgba(240,234,244,.84); }',
       '.pl-tit em { font-size:75%; opacity:.6; }',
       '.pl-foot { position:absolute; left:0; right:0; bottom:calc(env(safe-area-inset-bottom,0px) + 18px); z-index:2;',
-      '  display:grid; justify-items:center; gap:14px; font-family:"Space Grotesk",system-ui,sans-serif; }',
-      '.pl-hint { font-size:13px; letter-spacing:.06em; color:rgba(214,210,222,.62); opacity:0;',
+      '  display:grid; justify-items:center; gap:14px; font-family:var(--ff-body,var(--ff-main)); }',
+      '.pl-hint { background:none; border:0; padding:var(--s-2) var(--s-3); min-height:var(--s-6); cursor:pointer; font-size:var(--fs-p2); letter-spacing:.06em; color:var(--txt-heading); opacity:1;',
       '  transition:opacity 1.4s ' + EASE + '; }',
       '.pl-hint.is-on { opacity:1; }',
-      '.pl-sos { display:flex; gap:18px; font-size:12px; }',
-      '.pl-sos a { color:rgba(214,210,222,.55); text-decoration:none; min-height:32px; display:inline-flex; align-items:center; gap:6px; padding:0 6px; }',
+      '.pl-sos { display:flex; gap:18px; font-size:var(--fs-p3); }',
+      '.pl-sos a { color:rgba(214,210,222,.55); text-decoration:none; min-height:var(--s-6); display:inline-flex; align-items:center; gap:6px; padding:0 6px; }',
       '.pl-sos a b { color:rgba(214,210,222,.78); font-weight:500; }',
       '@media (prefers-reduced-motion: reduce) { #pl-glow { animation:none; } .pl-tit { transform:none !important; } }'
     ].join('\n');
@@ -98,39 +98,51 @@
     pre.id = 'preloader';
     pre.setAttribute('role', 'dialog');
     pre.setAttribute('aria-label', 'Chegando no espaço seguro. Toque para entrar.');
+    pre.setAttribute('aria-modal', 'true');
     pre.innerHTML =
       '<div id="pl-glow" aria-hidden="true"></div>' +
       '<div class="pl-tit" aria-live="polite"></div>' +
       '<div class="pl-foot">' +
-        '<span class="pl-hint">toque para entrar</span>' +
+        '<button type="button" class="pl-hint" id="pl-enter">toque para entrar</button>' +
         '<nav class="pl-sos" aria-label="Ajuda por telefone">' +
           '<a href="tel:188"><b>188</b> falar com alguém</a>' +
           '<a href="tel:192"><b>192</b> SAMU</a>' +
         '</nav>' +
       '</div>';
     document.body.appendChild(pre);
-    /* tapping a phone link must dial, not skip the ritual */
-    pre.querySelectorAll('.pl-sos a').forEach(function (a) {
-      a.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
-    });
+    Array.from(document.body.children).forEach(function (el) { if (el !== pre && !el.inert) { el.inert = true; el.dataset.plInert = '1'; } });
+    pre.querySelector('#pl-enter').focus({ preventScroll: true });
     return { pre: pre, tit: pre.querySelector('.pl-tit'), glow: pre.querySelector('#pl-glow'), hint: pre.querySelector('.pl-hint') };
   }
 
   function skipController(pre) {
     var wake = null;
-    function onPointer() { if (wake) wake(); }
-    pre.addEventListener('pointerdown', onPointer, { passive: true });
+    var activated = false;
+    function onPointer(e) {
+      if (e && e.target.closest('a')) return;
+      if (!activated) { activated = true; if (window.SOS && window.SOS.enterApp) window.SOS.enterApp(); }
+      if (wake) wake();
+    }
+    pre.addEventListener('click', onPointer);
     document.addEventListener('keydown', onKey);
-    function onKey(e) { if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') onPointer(); }
+    function onKey(e) {
+      if (e.key === 'Escape') { e.preventDefault(); onPointer(e); }
+      if (e.key !== 'Tab') return;
+      var controls = Array.from(pre.querySelectorAll('button, a[href]'));
+      var first = controls[0], last = controls[controls.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
     return {
       wait: function (ms) {
         return new Promise(function (resolve) {
           var id = setTimeout(function () { wake = null; resolve(false); }, ms);
           wake = function () { clearTimeout(id); wake = null; resolve(true); };
+          if (activated) wake();
         });
       },
       dispose: function () {
-        pre.removeEventListener('pointerdown', onPointer);
+        pre.removeEventListener('click', onPointer);
         document.removeEventListener('keydown', onKey);
         wake = null;
       }
@@ -180,6 +192,9 @@
     parts.pre.style.opacity = '0';
     return new Promise(function (r) { setTimeout(r, FADE_OUT_MS); }).then(function () {
       parts.pre.remove();
+      document.querySelectorAll('[data-pl-inert]').forEach(function (el) { el.inert = false; delete el.dataset.plInert; });
+      var orb = document.getElementById('orb');
+      if (orb) orb.focus({ preventScroll: true });
       window.dispatchEvent(new CustomEvent('preloader:revealed'));
     });
   }
@@ -194,7 +209,7 @@
     { t: '', hold: 1200 },
     { t: '<span style="display:block;font-size:2.4em;font-weight:400;line-height:.9;margin-bottom:.2em">Respire..</span>tem muita vida que ainda não aconteceu', hold: 4500 },
     { t: '', hold: 900 },
-    { t: '<span style="font-size:62%"><i class="ri-lock-fill" style="font-size:2.6rem;opacity:.7"></i><br>Espaço protegido e anônimo</span><br><span style="font-size:42%;opacity:.5">Não guardamos suas informações aqui</span>', hold: 5200 },
+    { t: '<span style="font-size:var(--fs-p2)"><i class="ri-lock-fill" aria-hidden="true" style="font-size:2.6em"></i><br>Espaço protegido e anônimo</span><br><span style="font-size:var(--fs-p3);color:var(--txt-color)">Não guardamos suas informações aqui</span>', hold: 5200 },
     { t: '', hold: 700 }
   ];
   /* Returning in the same session: one line, then straight in. */
@@ -208,8 +223,6 @@
     var parts = mount();
     var skip = skipController(parts.pre);
 
-    preload('./style.css?v=001-abraco', 'style');
-    preload(ROOT.classList.contains('sos-app') ? './calm-orb.html?v=1.0' : './isos.html?v=001', ROOT.classList.contains('sos-app') ? 'document' : 'fetch');
 
     /* Glow first. From the gateway it is already "on" — same breath, new page. */
     if (fromGateway) {
@@ -241,6 +254,9 @@
         if (await skip.wait(s.hold)) return exit(parts, skip);
       }
     }
+    // The ritual may finish, but entry stays gesture-driven for browser audio policy.
+    parts.tit.innerHTML = '<b>um momento pra você</b>'; parts.tit.style.opacity = '1';
+    await skip.wait(2147483647);
     return exit(parts, skip);
   }
 
@@ -250,6 +266,7 @@
       releaseNight();
       var p = document.getElementById('preloader');
       if (p) p.remove();
+      document.querySelectorAll('[data-pl-inert]').forEach(function (el) { el.inert = false; delete el.dataset.plInert; });
       window.dispatchEvent(new CustomEvent('preloader:revealed'));
     });
   }

@@ -1,202 +1,252 @@
-/* App-only visual layer. The legacy page and clinical content keep their styles. */
+/* SOS · app layer (index.html). Night surface on the core dark tokens; the legacy page and clinical copy keep theirs.
+   Sections: 1 page · 2 header · 3 menu (CardNav) · 4 menu controls · 5 orb · 6 tiles · 7 sheet · 8 states · 9 media. */
+
+/* ── 1 · Page ── */
 html.sos-app {
   color-scheme: dark;
-  background: #000;
-  --bg: #000;
-  --bg-elev: #101011;
-  --bg-sheet: #101011;
-  --bg-glass: rgba(16, 16, 17, .97);
-  --text: #c9c9ce;
-  --text-soft: #aaaab2;
-  --text-faint: #8d8d97;
-  --border-sub: rgba(255, 255, 255, .055);
-  --border-soft: rgba(255, 255, 255, .085);
-  --orb-scale-min: .7;
-  --orb-scale-max: 1;
+  height: auto;
+  overflow: visible;
+  background: var(--black-50);
+  --bg-elev: var(--bg);
+  --bg-sheet: var(--bg);
+  --bg-glass: var(--bg);
+  --orb-scale-min: .64;
+  --orb-scale-max: 1.04;
   --m-quick: .2s;
   --m-soft: .4s;
   --m-calm: .65s;
   --m-slow: .9s;
-  --fs-scale: 1;
-  --cn-ease: cubic-bezier(.16, 1, .3, 1);
-  --cn-mono: "SUSE Mono", "Space Mono", ui-monospace, monospace;
 }
 html.sos-app body {
   display: grid;
-  grid-template-rows: auto minmax(0, 1fr) auto auto;
-  height: 100%;
-  height: 100dvh;
-  min-height: 0;
-  padding: 0 max(18px, env(safe-area-inset-right)) env(safe-area-inset-bottom) max(18px, env(safe-area-inset-left));
-  background: #000;
+  grid-template-rows: auto 1fr;
+  height: auto;
+  min-height: 100dvh;
+  overflow: visible;
+  padding: 0 max(var(--s-3), var(--safe-right)) 0 max(var(--s-3), var(--safe-left));
+  background: var(--black-50);
 }
+/* core.js injects custom scrollbars whose theme stylesheet 404s on the CDN: unstyled, they become an invisible,
+   clickable 30 px grid row on desktop. The app keeps native scrolling. */
+html.sos-app #apollo-sb-y, html.sos-app #apollo-sb-x { display: none !important; }
+.sos-app #app-main {
+  display: grid;
+  grid-template-rows: minmax(min-content, 1fr) auto auto;
+  width: min(100%, 440px);
+  min-width: 0;
+  justify-self: center;
+}
+
+/* ── 2 · Header: focus + burger, far right ── */
 .sos-app .global-header {
   position: relative;
   inset: auto;
+  z-index: var(--z-header);
   width: min(100%, 440px);
+  min-height: calc(var(--s-7) + var(--s-6) + var(--safe-top));
   margin: 0 auto;
-  min-height: calc(64px + var(--safe-top));
-  padding-top: calc(8px + var(--safe-top));
+  padding-top: calc(var(--s-2) + var(--safe-top));
+  pointer-events: none;
   transition: opacity .6s var(--e-calm), transform .65s var(--e-calm);
 }
-.sos-app .btn-icon { color: #97979f; background: transparent; width: 44px; height: 44px; border-radius: 10px; }
-.sos-app .btn-icon.zen { color: #ceced4; }
+.sos-app .btn-icon { width: 44px; height: 44px; border-radius: 10px; color: var(--txt-color); background: transparent; }
+.sos-app .btn-icon.zen { color: var(--txt-heading); }
 .sos-app .btn-icon svg { width: 21px; height: 21px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.sos-app #btn-zen.zen .focus-hide, .sos-app #btn-zen:not(.zen) .focus-show { display: none; }
 
-/* ═══ CardNav (Apollo DS port) — ghost bar; only the opened cards carry glass ═══ */
-.sos-app .global-header { pointer-events: none; z-index: var(--z-header); }
-.sos-app .card-nav { position: absolute; top: calc(4px + var(--safe-top)); left: -8px; right: -8px; height: 56px; border-radius: 20px; overflow: hidden; pointer-events: auto; transition: height .6s var(--cn-ease); }
-.sos-app .card-nav[data-engine="gsap"], .sos-app .card-nav[data-engine="gsap"] .nav-card, .sos-app .card-nav[data-engine="gsap"] .nav-controls { transition: none; }
-.sos-app .card-nav-top { position: absolute; inset: 0 0 auto; height: 56px; display: flex; align-items: center; gap: 2px; padding: 0 4px 0 8px; z-index: 2; }
+/* ── 3 · Menu · Apollo DS CardNav: ghost bar, the cards carry the surface, card 03 is the one that stands out ── */
+.sos-app .card-nav {
+  position: absolute; top: calc(4px + var(--safe-top)); left: 0; right: 0;
+  height: 56px; overflow: hidden; border-radius: var(--r);
+  background: transparent; pointer-events: auto;
+  transition: height .6s var(--ease);
+}
+.sos-app .card-nav[data-engine="gsap"],
+.sos-app .card-nav[data-engine="gsap"] .nav-card,
+.sos-app .card-nav[data-engine="gsap"] .nav-controls { transition: none; }
+.sos-app .card-nav-top {
+  position: absolute; inset: 0 0 auto; z-index: 2; height: 56px;
+  display: flex; align-items: center; gap: var(--s-2);
+}
 .sos-app .card-nav-spacer { flex: 1; }
-/* two unequal bars that complete into a full X on open */
-.sos-app .burger { display: grid; justify-items: start; align-content: center; gap: 6px; width: 44px; height: 44px; padding: 0 12px; border: 0; border-radius: 10px; background: transparent; color: #97979f; cursor: pointer; transition: transform .25s var(--cn-ease), color .2s; }
-.sos-app .burger span { display: block; height: 1.5px; background: currentColor; border-radius: 999px; transition: width .35s var(--cn-ease), transform .35s var(--cn-ease); }
+
+/* burger: two unequal bars → X (aria-expanded) */
+.sos-app .burger {
+  display: grid; justify-items: start; align-content: center; gap: 6px;
+  min-width: 44px; min-height: 44px; padding: 5px;
+  border: 0; border-radius: var(--r-xs); background: none; cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.sos-app .burger span {
+  display: block; height: 1.5px; border-radius: var(--r-pill); background: var(--txt-color);
+  transition: width .35s var(--ease), transform .35s var(--ease), background .2s;
+}
 .sos-app .burger span:first-child { width: 20px; }
 .sos-app .burger span:last-child { width: 12px; }
-.sos-app .burger[aria-expanded="true"] { color: #d4d4da; }
+.sos-app .burger:hover span { background: var(--txt-heading); }
 .sos-app .burger[aria-expanded="true"] span { width: 20px; }
 .sos-app .burger[aria-expanded="true"] span:first-child { transform: translateY(3.75px) rotate(45deg); }
 .sos-app .burger[aria-expanded="true"] span:last-child { transform: translateY(-3.75px) rotate(-45deg); }
-.sos-app .burger:active { transform: scale(.92); }
-.sos-app .card-nav-content { position: absolute; left: 0; right: 0; top: 56px; bottom: 0; padding: 4px 8px 8px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; visibility: hidden; pointer-events: none; }
-.sos-app .card-nav-content::-webkit-scrollbar { display: none; }
+
+/* body: one column; scrolls inside itself when calm-nav.js clamps the height to the screen */
+.sos-app .card-nav-content {
+  position: absolute; top: 56px; right: 0; bottom: 0; left: 0;
+  display: flex; flex-direction: column; gap: var(--s-2);
+  padding: var(--s-1) 0 calc(var(--s-2) + env(safe-area-inset-bottom, 0px));
+  overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch;
+  visibility: hidden; pointer-events: none;
+}
 .sos-app .card-nav--open .card-nav-content { visibility: visible; pointer-events: auto; }
-.sos-app .nav-card, .sos-app .nav-controls {
-  flex: 0 0 auto;
-  opacity: 0; transform: translateY(40px); transition: opacity .45s var(--cn-ease), transform .6s var(--cn-ease);
-}
+
+/* cards: hug their content; label on top, links below */
 .sos-app .nav-card {
-  border-radius: 15px;
-  background: rgba(16, 16, 17, .93); backdrop-filter: blur(40px) saturate(1.4); -webkit-backdrop-filter: blur(40px) saturate(1.4);
-  box-shadow: inset 0 0 0 1px rgba(225, 225, 225, .08);
+  flex: 0 0 auto; min-width: 0;
+  display: flex; flex-direction: column; gap: 12px;
+  padding: 25px 20px 10px;
+  border-radius: var(--r-sm);
+  background: var(--bg);
+  box-shadow: inset 0 0 0 1px var(--white-7);
+  opacity: 0; transform: translateY(40px);
+  transition: opacity .45s var(--ease), transform .6s var(--ease);
 }
-.sos-app .card-nav--open .nav-card, .sos-app .card-nav--open .nav-controls { opacity: 1; transform: none; }
-/* Von Restorff: one size, one weight in the whole menu — hierarchy only by family, colour and contrast */
-.sos-app .nav-card { --nav-fs: 13px; display: flex; flex-direction: column; gap: 8px; padding: 16px 16px 12px 18px; font-size: var(--nav-fs); font-weight: 400; line-height: 1.35; -webkit-tap-highlight-color: transparent; }
-.sos-app .nav-card--primary { background: #cfcfd4; box-shadow: none; }
-.sos-app .nav-card-label { display: block; font-family: var(--ff-head); font-size: var(--nav-fs); font-weight: 400; line-height: 1.35; color: rgba(225, 225, 225, .86); letter-spacing: -.01em; zoom: var(--fs-scale); }
-.sos-app .nav-card--primary .nav-card-label { color: #0f0f0f; }
-.sos-app .nav-card-label small { display: block; margin-bottom: 2px; font-family: var(--cn-mono); font-size: var(--nav-fs); font-weight: 400; letter-spacing: 0; text-transform: none; color: rgba(225, 225, 225, .36); }
-.sos-app .nav-card--primary .nav-card-label small { color: rgba(15, 15, 15, .5); }
-.sos-app .nav-card-links { display: flex; flex-direction: column; gap: 0; zoom: var(--fs-scale); }
-.sos-app a.nav-card-link { display: flex; align-items: center; gap: 6px; min-height: 40px; font-family: var(--ff-body); font-size: var(--nav-fs); font-weight: 400; line-height: 1.35; color: rgba(225, 225, 225, .52); text-decoration: none; transition: color .2s, transform .3s var(--cn-ease); }
-.sos-app a.nav-card-link i { font-size: 1.1em; flex-shrink: 0; }
-.sos-app .nav-card--primary .nav-card-link { color: rgba(15, 15, 15, .66); }
-.sos-app a.nav-card-link[href^="tel:"] { color: rgba(225, 225, 225, .74); }
-.sos-app .nav-elapsed { font-family: var(--cn-mono); font-size: var(--nav-fs); font-weight: 400; color: rgba(225, 225, 225, .34); font-variant-numeric: tabular-nums; }
-@media (hover: hover) {
-  .sos-app .nav-card-link:hover { color: rgba(225, 225, 225, .88); transform: translateX(3px); }
-  .sos-app .nav-card--primary .nav-card-link:hover { color: #0f0f0f; }
-  .sos-app .burger:hover { color: #d4d4da; }
+.sos-app .card-nav--open .nav-card { opacity: 1; transform: none; }
+.sos-app .nav-card-label {
+  margin-bottom: 12px;
+  font: 600 var(--fs-h3)/1.25 var(--ff-heading); letter-spacing: .22px;
+  color: var(--txt-heading);
 }
-.sos-app .nav-card-link:active { transform: translateX(3px); }
+.sos-app .nav-card-label small {
+  display: block; margin-bottom: var(--s-1);
+  font: 400 var(--fs-p4)/1.25 var(--ff-mono); letter-spacing: .12em; text-transform: uppercase;
+  color: var(--txt-color);
+}
+.sos-app .nav-card-links { display: flex; flex-direction: column; gap: 1px; }
+/* row: arrow, then the label (wraps on its own, the arrow never drops to a line by itself) */
+.sos-app a.nav-card-link {
+  display: flex; align-items: center; gap: var(--s-1);
+  padding: 3px 0; border-radius: var(--r-xs);
+  font: 400 var(--fs-p2)/1.2 var(--ff-body, inherit); letter-spacing: .5px;
+  color: var(--txt-color); text-decoration: none; overflow-wrap: anywhere;
+  -webkit-tap-highlight-color: transparent;
+  transition: color .2s, transform .3s var(--ease);
+}
+.sos-app a.nav-card-link > i { flex: 0 0 auto; font-size: 1.05em; line-height: 1; color: inherit; opacity: .85; }
+.sos-app a.nav-card-link > i svg { width: 1em; height: 1em; vertical-align: middle; }
+.sos-app a.nav-card-link:active { color: var(--txt-heading); transform: translateX(3px); }
+@media (hover: hover) { .sos-app a.nav-card-link:hover { color: var(--txt-heading); transform: translateX(3px); } }
+.sos-app .nav-elapsed { margin-left: auto; font-family: var(--ff-mono); font-size: var(--fs-p3); font-variant-numeric: tabular-nums; white-space: nowrap; color: inherit; }
+/* the emergency line reads first */
+.sos-app a.nav-card-link[href="tel:192"] { color: var(--c-red); }
 
-/* branched tree (Apollo DS BranchedMenu): the label folds, links grow from one trunk, the lit path runs trunk → leaf */
-.sos-app .nav-tree-head { appearance: none; -webkit-appearance: none; position: relative; width: 100%; margin: 0; padding: 0; border: 0; background: none; text-align: left; cursor: pointer; transition: color .2s; }
-.sos-app .nav-card--tree:not([data-open]) .nav-tree-head { color: rgba(225, 225, 225, .55); }
-.sos-app .nav-tree-title { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
-.sos-app .nav-tree-count { font-family: var(--cn-mono); color: rgba(225, 225, 225, .3); }
-.sos-app .nav-tree-marker { position: absolute; left: -9px; bottom: 1px; width: 2px; height: 16px; border-radius: 999px; background: rgba(225, 225, 225, .8); opacity: 0; transition: opacity .15s; }
-.sos-app .nav-card--tree[data-open] .nav-tree-marker { opacity: 1; }
-.sos-app .nav-tree-body { display: grid; grid-template-rows: 0fr; transition: grid-template-rows .32s var(--cn-ease); }
-.sos-app .nav-card--tree[data-open] .nav-tree-body { grid-template-rows: 1fr; }
-.sos-app .nav-tree-fold { min-height: 0; overflow: hidden; margin-left: -18px; padding-left: 18px; }
-.sos-app .nav-tree { position: relative; }
-.sos-app .nav-tree-lines { position: absolute; top: 0; left: -12px; overflow: visible; pointer-events: none; opacity: 0; transition: opacity .2s;
-  -webkit-mask-image: linear-gradient(to bottom, transparent, #000 10%); mask-image: linear-gradient(to bottom, transparent, #000 10%); }
-.sos-app .nav-card--tree[data-open] .nav-tree-lines { opacity: 1; transition: opacity .25s .08s; }
-.sos-app .nav-tree-lines path { fill: none !important; stroke-width: 1.5px !important; stroke-linecap: round !important; stroke-linejoin: round !important; }
-.sos-app .nav-tree-base { stroke: rgba(225, 225, 225, .12) !important; }
-.sos-app .nav-tree-reach { stroke: rgba(225, 225, 225, .8) !important; transition: stroke-dashoffset .45s var(--cn-ease); }
-.sos-app .nav-tree-reach[data-tone="red"] { stroke: var(--c-red) !important; }
-.sos-app .nav-tree a.nav-card-link { padding-left: 22px; }
-.sos-app .nav-tree a.nav-card-link[data-lit] { color: rgba(225, 225, 225, .88); }
-.sos-app .nav-tree a.nav-card-link[data-tone="red"] { color: var(--c-red); }
+/* card 03 (Von Restorff): the only light surface in the menu — light card, dark ink */
+.sos-app .nav-card--primary { background: var(--txt-heading); box-shadow: none; }
+.sos-app .nav-card--primary .nav-card-label,
+.sos-app .nav-card--primary .nav-card-label small { color: var(--bg); }
+.sos-app .nav-card--primary a.nav-card-link { color: rgba(var(--rgb-theme), .9); }
+.sos-app .nav-card--primary a.nav-card-link:active { color: var(--bg); }
+@media (hover: hover) { .sos-app .nav-card--primary a.nav-card-link:hover { color: var(--bg); } }
 
-/* discreet controls — text size · volume · play/pause: no surface, no border, no shadow */
-.sos-app .nav-controls { display: flex; align-items: center; gap: 6px; padding: 8px 12px 8px 8px; background: none; border: 0; box-shadow: none; }
-.sos-app .nav-ctl-pair { display: inline-flex; align-items: center; gap: 2px; color: rgba(225, 225, 225, .35); }
-.sos-app .nav-ctl-spacer { flex: 1; }
+/* scrim behind the open menu */
+.sos-app .menu-overlay {
+  position: fixed; inset: 0; z-index: calc(var(--z-header) - 1);
+  background: rgba(0, 0, 0, .6);
+  opacity: 0; visibility: hidden; pointer-events: none;
+  transition: opacity .4s var(--e-calm), visibility .4s var(--e-calm);
+}
+.sos-app body.is-menu-open .menu-overlay { opacity: 1; visibility: visible; pointer-events: auto; }
+.sos-app body.is-menu-open .orb-zone { opacity: .3; }
+.sos-app body.is-menu-open .options-zone,
+.sos-app body.is-menu-open .sos-strip { opacity: .18; transition: opacity .4s var(--e-calm); }
+.sos-app body.is-menu-open .warm-toast { opacity: 0; visibility: hidden; }
+
+/* ── 4 · Menu controls: text size · volume · play/pause, no surface ── */
+.sos-app .nav-controls {
+  flex: 0 0 auto; display: flex; flex-wrap: wrap; align-items: center; gap: var(--s-2);
+  min-height: 34px; padding: var(--s-1) var(--s-1) 2px;
+  opacity: 0; transform: translateY(40px);
+  transition: opacity .45s var(--ease), transform .6s var(--ease);
+}
+.sos-app .card-nav--open .nav-controls { opacity: 1; transform: none; }
+.sos-app .nav-ctl-pair { display: inline-flex; align-items: center; color: var(--txt-color); }
+.sos-app .nav-ctl-spacer { flex: 0 0 4px; }
 .sos-app .nav-ctl {
-  display: inline-grid; place-items: center; min-width: 32px; height: 32px; padding: 0 7px; border: 0; border-radius: 10px; cursor: pointer;
-  font: 400 12px/1 var(--ff-body); color: rgba(225, 225, 225, .67);
-  background: none; box-shadow: none;
-  transition: color .2s, transform .25s var(--cn-ease), opacity .2s;
+  display: inline-grid; place-items: center; min-width: 44px; height: 44px; padding: 0 var(--s-2);
+  border: 0; border-radius: var(--r-xs); background: none; cursor: pointer;
+  font: 400 var(--fs-p2)/1 var(--ff-body, inherit); color: var(--txt-color);
+  -webkit-tap-highlight-color: transparent;
+  transition: color .2s, background-color .2s, transform .25s var(--ease), opacity .2s;
 }
-.sos-app .nav-ctl sup { font-size: .72em; margin-left: 1px; vertical-align: .45em; line-height: 0; }
-.sos-app .nav-ctl:active { transform: scale(.92); }
-.sos-app .nav-ctl:disabled { opacity: .35; cursor: default; }
-.sos-app .nav-ctl-read { min-width: 34px; text-align: center; font: 400 10px/1 var(--ff-body); letter-spacing: .06em; color: rgba(225, 225, 225, .35); font-variant-numeric: tabular-nums; }
-.sos-app .nav-ctl--play svg { width: 13px; height: 13px; fill: currentColor; stroke: none; }
+.sos-app .nav-ctl--lg { font-size: var(--fs-h6); }
+.sos-app .nav-ctl sup { margin-left: 1px; font-size: .62em; line-height: 0; vertical-align: .5em; }
+.sos-app .nav-ctl:active { transform: scale(.92); background: var(--card); }
+.sos-app .nav-ctl:disabled { opacity: .3; cursor: default; }
+@media (hover: hover) { .sos-app .nav-ctl:not(:disabled):hover { color: var(--txt-heading); } }
+.sos-app .nav-ctl-read { min-width: 44px; text-align: center; font: 400 var(--fs-p3)/1.3 var(--ff-mono); letter-spacing: .02em; font-variant-numeric: tabular-nums; color: var(--txt-color); }
+.sos-app .nav-ctl--play { width: 44px; padding: 0; border-radius: 50%; corner-shape: round; }
+.sos-app .nav-ctl--play svg { width: var(--s-4); height: var(--s-4); fill: currentColor; stroke: none; }
 .sos-app .nav-ctl--play .ico-pause, .sos-app .nav-ctl--play[aria-pressed="true"] .ico-play { display: none; }
 .sos-app .nav-ctl--play[aria-pressed="true"] .ico-pause { display: block; }
-.sos-app .nav-ctl--play[aria-pressed="true"] { color: rgba(225, 225, 225, .88); }
-@media (hover: hover) { .sos-app .nav-ctl:not(:disabled):hover { color: rgba(225, 225, 225, .88); } }
-.sos-app .nav-vol { --vol: 95%; -webkit-appearance: none; appearance: none; width: 84px; height: 32px; margin: 0; background: transparent; cursor: pointer; opacity: .35; }
-.sos-app .nav-vol::-webkit-slider-runnable-track { height: 1px; border-radius: 999px; background: linear-gradient(90deg, rgba(225,225,225,.55) var(--vol), rgba(225,225,225,.12) var(--vol)); }
-.sos-app .nav-vol::-moz-range-track { height: 1px; border-radius: 999px; background: rgba(225,225,225,.12); }
-.sos-app .nav-vol::-moz-range-progress { height: 1px; border-radius: 999px; background: rgba(225,225,225,.55); }
-.sos-app .nav-vol::-webkit-slider-thumb { -webkit-appearance: none; width: 9px; height: 9px; margin-top: -4px; border: 0; border-radius: 50%; background: #d4d4da; box-shadow: 0 0 0 4px rgba(225,225,225,.06); }
-.sos-app .nav-vol::-moz-range-thumb { width: 9px; height: 9px; border: 0; border-radius: 50%; background: #d4d4da; }
+.sos-app .nav-ctl--play[aria-pressed="true"] { color: var(--txt-heading); }
+.sos-app .nav-vol {
+  --vol: 95%; flex: 1 1 auto; min-width: var(--s-7); width: auto; height: 44px; margin: 0;
+  -webkit-appearance: none; appearance: none; background: transparent; cursor: pointer; opacity: .8; touch-action: pan-x;
+}
+.sos-app .nav-vol::-webkit-slider-runnable-track { height: 3px; border-radius: var(--r-pill); background: linear-gradient(90deg, var(--txt-color) var(--vol), var(--gray-6) var(--vol)); }
+.sos-app .nav-vol::-moz-range-track { height: 3px; border-radius: var(--r-pill); background: var(--gray-6); }
+.sos-app .nav-vol::-moz-range-progress { height: 3px; border-radius: var(--r-pill); background: var(--txt-color); }
+.sos-app .nav-vol::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; margin-top: -7.5px; border: 0; border-radius: 50%; background: var(--txt-hover); }
+.sos-app .nav-vol::-moz-range-thumb { width: 18px; height: 18px; border: 0; border-radius: 50%; background: var(--txt-hover); }
 .sos-app .nav-vol:focus-visible { outline-offset: 0; border-radius: 6px; }
-.sos-app body.is-menu-open .orb-zone { opacity: .3; }
-.sos-app body.is-menu-open .warm-toast { top: auto; bottom: calc(20px + var(--safe-bottom)); }
-.sos-app body.is-menu-open .options-zone, .sos-app body.is-menu-open .sos-strip { opacity: .18; transition: opacity .4s var(--e-calm); }
+.sos-app .nav-audio-status { flex-basis: 100%; text-align: center; opacity: .4; font: 400 var(--fs-p3)/1.4 var(--ff-body); color: var(--txt-color); }
+.sos-app .nav-audio-status[data-state="error"] { color: var(--c-red); }
 
-/* text size: reading surfaces follow --fs-scale (0.9 → 1.4), set by calm-nav.js */
-.sos-app #node-area, .sos-app .flow-indicator, .sos-app .sheet-close, .sos-app .breathe-label, .sos-app .breathe-sub,
-.sos-app .option-box .opt-title, .sos-app .option-box .opt-sub, .sos-app .sos-strip a, .sos-app .warm-toast { zoom: var(--fs-scale); }
-.sos-app #btn-zen.zen .focus-hide, .sos-app #btn-zen:not(.zen) .focus-show { display: none; }
+/* ── 5 · Orb: breathing anchor ── */
 .sos-app .orb-zone {
-  position: relative;
-  inset: auto;
-  min-height: 0;
-  padding: 10px 0 26px;
-  gap: 20px;
+  position: relative; inset: auto; min-height: 0;
+  gap: var(--s-3); padding: var(--s-2) 0 var(--s-3);
   transition: opacity .6s var(--e-calm), transform .65s var(--e-calm);
 }
-.sos-app body.is-sheet-open .orb-zone { filter: none; opacity: .12; transform: scale(.97); }
 .sos-app .breathe-label {
-  margin: 0;
-  font-size: clamp(21px, 5.8vw, 26px);
-  line-height: 1.35;
-  letter-spacing: -.035em;
-  color: #c6c6ce;
-  opacity: 1;
-  -webkit-mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, .6) 0%, rgba(0, 0, 0, .2) 100%);
-  mask-image: linear-gradient(to top, #000 0%, rgba(0, 0, 0, .6) 0%, rgba(0, 0, 0, .2) 100%);
+  min-height: 4.05em; margin: 0;
+  font-size: var(--fs-h2); line-height: 1.35; letter-spacing: -.035em;
+  color: var(--txt-heading); opacity: 1;
+  overflow-wrap: anywhere; text-wrap: balance;
 }
-.sos-app .breathe-main { color: #c6c6ce; font-weight: 400; }
-.sos-app .breathe-quick { color: #aaaab4; }
-.sos-app .orb-shell { width: min(58vw, 29dvh, 254px); padding: 0; margin: 0; box-sizing: border-box; }
-.sos-app .orb-aura { inset: -12%; border-radius: 50%; background: radial-gradient(circle closest-side, rgba(92, 150, 236, calc(.07 + var(--orb-halo) * .13)) 0%, rgba(124, 104, 226, calc(.04 + var(--orb-halo) * .08)) 52%, rgba(80, 190, 205, calc(.01 + var(--orb-halo) * .03)) 78%, transparent 100%); filter: none; opacity: calc(.55 + var(--orb-halo) * .45); }
-.sos-app .orb-rim { box-shadow: none; }
-.sos-app .magic-ball { appearance: none; filter: none; background: #000; cursor: pointer; border: 0; border-radius: 50%; padding: 0; }
+.sos-app .breathe-main { font-weight: 400; color: var(--txt-heading); }
+.sos-app .breathe-quick { color: var(--txt-color); }
+.sos-app .breathe-sub { min-height: 2.8em; max-width: 32ch; margin: 0; font-size: var(--fs-p3); letter-spacing: .015em; color: var(--gray-11); opacity: 1; }
+.sos-app .orb-shell { box-sizing: border-box; width: min(54vw, 25dvh, 240px); margin: 0; padding: 0; }
+.sos-app .orb-stage { transform: scale(var(--orb-scale-min)); }
+.sos-app .orb-stage.is-ready { animation: sos-breathe var(--orb-breathe-dur) var(--e-breath) var(--orb-breathe-delay) infinite both; }
+.sos-app .orb-stage.is-ready .orb-aura { animation: sos-halo var(--orb-breathe-dur) var(--e-breath) var(--orb-breathe-delay) infinite both; }
+.sos-app .orb-stage.is-paused, .sos-app .orb-stage.is-paused .orb-aura { animation-play-state: paused; }
+.sos-app .orb-aura {
+  inset: -12%; border-radius: 50%; corner-shape: round; filter: none; opacity: .45;
+  background: radial-gradient(circle closest-side, color-mix(in srgb, var(--c-blue) 24%, transparent), color-mix(in srgb, var(--c-purple) 12%, transparent) 52%, transparent 100%);
+}
+.sos-app .orb-rim { border: 1px solid color-mix(in srgb, var(--c-blue) 24%, transparent); box-shadow: none; corner-shape: round; }
+.sos-app .magic-ball { appearance: none; padding: 0; border: 0; border-radius: 50%; corner-shape: round; background: var(--black-50); filter: none; cursor: pointer; }
 .sos-app .magic-ball iframe { display: block; width: 100%; height: 100%; border: 0; border-radius: inherit; pointer-events: none; }
-.sos-app .breathe-sub { margin: 0; color: #8d8d97; opacity: 1; letter-spacing: .015em; font-size: 12px; }
+.sos-app .orb-fallback { animation: calm-breathe 12s ease-in-out infinite; }
+.sos-app .orb-fallback:has(.paused), .sos-app body.is-sheet-open .orb-fallback { animation-play-state: paused; }
+@keyframes sos-breathe { 0%,100% { transform: scale(var(--orb-scale-min)); } 33.333%,50% { transform: scale(var(--orb-scale-max)); } }
+@keyframes sos-halo { 0%,100% { opacity: .45; transform: scale(.94); } 33.333%,50% { opacity: .9; transform: scale(1.08); } }
+@keyframes calm-breathe { 0%,100% { transform: scale(.82); } 33.333%,50% { transform: scale(1); } }
+
+/* ── 6 · Tiles + phone strip ── */
 .sos-app .options-zone {
-  position: relative;
-  inset: auto;
-  width: min(100%, 440px);
-  max-width: none;
-  justify-self: center;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-  transform: none;
-  transition: none;
+  position: relative; inset: auto; justify-self: center;
+  width: min(100%, 440px); max-width: none;
+  grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s-2);
+  transform: none; transition: none;
 }
 .sos-app .options-zone::before { content: none; }
 .sos-app .option-box {
-  aspect-ratio: auto;
-  min-height: 102px;
-  padding: 14px 4px;
-  gap: 5px;
-  border-radius: 21px;
+  aspect-ratio: auto; min-height: 102px;
+  gap: var(--s-1); padding: calc(var(--s-3) - var(--s-1)) var(--s-1);
+  border-radius: var(--r);
   background: color-mix(in srgb, var(--tile-hue) 5%, rgba(18, 15, 24, .72));
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--tile-hue) 10%, transparent);
-  backdrop-filter: blur(24px) saturate(1.1);
-  -webkit-backdrop-filter: blur(24px) saturate(1.1);
   transition: background .25s ease, transform .3s var(--e-calm);
 }
 .sos-app .option-box[data-flow="samu"] {
@@ -204,65 +254,107 @@ html.sos-app body {
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--c-red) 26%, transparent);
 }
 .sos-app .option-box:active { transform: scale(.96); background: color-mix(in srgb, var(--tile-hue) 12%, rgba(18, 15, 24, .8)); }
-.sos-app .opt-icon { width: 38px; height: 38px; margin: 0 0 4px; border-radius: 50%; background: color-mix(in srgb, var(--tile-hue) 12%, transparent) !important; color: var(--tile-hue); }
-.sos-app .opt-icon i, .sos-app .opt-icon svg { width: 20px; height: 20px; font-size: 20px; color: var(--tile-hue) !important; }
-.sos-app .option-box .opt-title { color: #c4c4cd; font-size: 13px; font-weight: 400; line-height: 1.3; }
-.sos-app .option-box .opt-sub { color: #8d8d97; font-size: 11px; line-height: 1.3; }
-.sos-app .sos-strip { position: relative; inset: auto; min-height: 58px; align-items: center; gap: 18px; }
-.sos-app .sos-strip a { min-height: 44px; font-size: 11px; gap: 5px; color: #8d8d97; }
-.sos-app .sos-strip a b { color: #aaaab2; font-weight: 500; }
-.sos-app .info-overlay { position: fixed; background: rgba(0, 0, 0, .72); backdrop-filter: none; -webkit-backdrop-filter: none; }
+@media (hover: hover) { .sos-app .option-box:hover { background: color-mix(in srgb, var(--tile-hue) 9%, rgba(18, 15, 24, .76)); } }
+.sos-app .opt-icon { width: 38px; height: 38px; margin: 0 0 var(--s-1); border-radius: 50%; corner-shape: round; background: color-mix(in srgb, var(--tile-hue) 12%, transparent); color: var(--tile-hue); }
+.sos-app .opt-icon i, .sos-app .opt-icon svg { width: 1.25em; height: 1.25em; font-size: var(--fs-h5); color: var(--tile-hue); }
+.sos-app .option-box .opt-title { font-size: var(--fs-p); font-weight: 400; line-height: 1.3; color: var(--txt-heading); overflow-wrap: anywhere; }
+.sos-app .option-box .opt-sub { font-size: var(--fs-p3); line-height: 1.3; color: var(--gray-11); overflow-wrap: anywhere; }
+/* 188 / 192 glued to the bottom edge: sticky, so it never scrolls away and never covers the tiles; it owns the safe area */
+.sos-app .sos-strip {
+  position: sticky; inset: auto auto 0; z-index: calc(var(--z-options) + 1);
+  display: flex; flex-wrap: wrap; justify-content: space-between; gap: var(--s-2);
+  padding-bottom: calc(var(--s-2) + var(--safe-bottom));
+  background: var(--black-50);
+}
+.sos-app .sos-strip a { gap: var(--s-1); min-height: var(--s-6); margin: 0; padding: var(--s-2) 0; font-size: var(--fs-p3); color: var(--gray-11); }
+.sos-app .sos-strip a b { font-weight: 500; color: var(--txt-color); }
+
+/* ── 7 · Flow sheet ── */
+.sos-app .info-overlay { position: fixed; background: rgba(0, 0, 0, .72); -webkit-backdrop-filter: none; backdrop-filter: none; }
 .sos-app .info-content {
-  max-width: 480px;
-  max-height: calc(100dvh - var(--safe-top) - 30px);
-  background: var(--bg-sheet);
-  border-radius: 28px 28px 0 0;
-  box-shadow: 0 -1px 0 rgba(255,255,255,.07);
-  scrollbar-width: none;
+  max-width: 480px; max-height: calc(100dvh - var(--safe-top) - 30px);
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+  background: var(--bg-sheet); box-shadow: 0 -1px 0 rgba(255, 255, 255, .07);
   scroll-padding-top: 100px;
 }
-.sos-app .info-content::-webkit-scrollbar { display: none; }
-.sos-app .sheet-handle { width: 28px; height: 3px; margin-top: 12px; background: #424248; }
-.sos-app .progress-fill { background: #7f8e98; opacity: .6; transition-duration: .7s; }
-.sos-app .flow-indicator { letter-spacing: .04em; padding-top: 10px; }
-.sos-app .crisis-bar { background: var(--bg-sheet); }
-.sos-app .crisis-bar-btn { background: #171719; border-color: transparent; }
-.sos-app .crisis-bar-btn--samu { background: #221a1a; border-color: rgba(222,138,126,.09); }
-.sos-app .flow-header h2 { font-size: 23px; color: #d0d0d7; font-weight: 400; }
-.sos-app .flow-header i { font-size: 21px; }
-.sos-app #node-area .node-text { font-size: 16px; line-height: 1.7; }
-.sos-app .choice-btn, .sos-app .action-btn, .sos-app .task-card { background: #18181b; border-color: transparent; border-radius: 17px; }
-.sos-app .choice-btn:active, .sos-app .action-btn:active, .sos-app .task-card:active { background: #222226; }
-.sos-app .action-btn.danger { background: #261d1d; border-color: var(--tint-red-border); }
-.sos-app .task-card.completed { background: #19221e; border-color: var(--tint-success-border); }
-.sos-app .sheet-close { min-height: 48px; color: #aaaab2; }
-.sos-app .warm-toast { background: #171719; border-color: var(--border-sub); color: #c4c4cd; box-shadow: none; backdrop-filter: none; bottom: auto; top: calc(68px + var(--safe-top)); font-size: 12px; }
-.sos-app :focus-visible { outline: 2px solid #a0b6c7; outline-offset: 4px; }
+.sos-app .sheet-handle { width: 28px; height: 3px; margin-top: 12px; background: var(--border-strong); }
+.sos-app .progress-fill { background: var(--c-blue); opacity: .6; transition-duration: .7s; }
+/* the flow name already heads the sheet (.flow-header): the indicator stays only as the dialog's accessible name */
+.sos-app .flow-indicator { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* 188 / 192: one slim row, always reachable, never a block of cards */
+.sos-app .crisis-bar { gap: var(--s-2); margin-bottom: var(--s-3); padding: var(--s-2) var(--s-4) 10px; background: var(--bg-sheet); }
+.sos-app .crisis-bar-btn { flex: 1; min-height: 44px; padding: 6px 12px; gap: 6px; border-color: transparent; border-radius: var(--r-pill); background: var(--card); font-size: var(--fs-p2); font-weight: 500; }
+.sos-app .crisis-bar-btn--samu { border-color: rgba(222, 138, 126, .09); background: var(--tint-red-bg); }
+.sos-app .crisis-bar-btn i { font-size: 1.1em; }
+.sos-app .crisis-bar-label strong { font-size: var(--fs-p2); }
+.sos-app .crisis-bar-label em { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+/* flow title: a quiet label, not a headline */
+.sos-app .flow-header { gap: 10px; margin: 0 0 var(--s-3); }
+.sos-app .flow-header h2 { font-size: var(--fs-h5); font-weight: 400; color: var(--txt-color); }
+.sos-app .flow-header i { font-size: var(--fs-h6); opacity: .8; }
+/* reading order: support text (soft) → the question (the one bright line) → answers (one group) */
+.sos-app #node-area .node-text { margin-bottom: var(--s-3); font-size: var(--fs-p); line-height: 1.6; color: var(--txt-color); }
+.sos-app #node-area .node-question { margin: var(--s-1) 0 var(--s-3); font-size: var(--fs-h6); font-weight: 500; line-height: 1.35; letter-spacing: -.01em; color: var(--txt-heading); text-wrap: balance; }
+/* quotes / highlighted phrases (renderExactPhrase): near-white text, almost no fill, a clearer accent line (colour comes from the flow) */
+.sos-app #node-area .exact-phrase { margin-bottom: var(--s-3); padding: 12px var(--s-3); border-left-width: 3px; border-left-color: var(--quote, var(--txt-color)) !important; border-left-color: oklch(from var(--quote, var(--txt-color)) calc(l + .08) calc(c * 1.8) h) !important; border-radius: 0 var(--r-sm) var(--r-sm) 0; background: rgba(255, 255, 255, .015); color: rgba(255, 255, 255, .92); font-size: var(--fs-p); line-height: 1.55; }
+.sos-app .choice-list, .sos-app .action-list { gap: var(--s-2); margin-top: 0; }
+.sos-app .choice-btn, .sos-app .action-btn, .sos-app .task-card { border-color: transparent; border-radius: var(--r); background: var(--card); }
+.sos-app .choice-btn { min-height: 52px; padding: 14px var(--s-3); font-weight: 400; line-height: 1.35; color: var(--txt-hover); }
+.sos-app .choice-btn:active, .sos-app .action-btn:active, .sos-app .task-card:active { background: var(--card-hover); }
+.sos-app .action-btn.danger { border-color: var(--tint-red-border); background: var(--tint-red-bg); }
+.sos-app .task-card.completed { border-color: var(--tint-success-border); background: var(--tint-success-bg); }
+.sos-app .task-content .t-label, .sos-app .task-content .t-desc { display: block; }
+.sos-app .fast-lane { margin-top: var(--s-3); border-color: var(--white-7); background: transparent; color: var(--txt-color); }
+.sos-app .sheet-close { min-height: 48px; color: var(--txt-color); }
+.sos-app .warm-toast {
+  top: calc(var(--s-6) + var(--s-2) + var(--safe-top)); bottom: auto;
+  width: 100%; max-width: none; padding: var(--s-1) 0;
+  border: 0; background: none; box-shadow: none; backdrop-filter: none;
+  font-size: var(--fs-p3); color: var(--txt-color);
+}
+
+/* ── 8 · States ── */
+.sos-app body.is-sheet-open .orb-zone { filter: none; opacity: .12; transform: scale(.97); }
+.sos-app :focus-visible { outline: 2px solid var(--c-blue); outline-offset: 4px; box-shadow: none; }
+.sos-app .card-nav-top button:focus-visible { outline-offset: -2px; }
 .sos-app .magic-ball:focus-visible { border-radius: 50%; }
-.sos-app .orb-fallback { animation: calm-breathe 12s ease-in-out infinite; }
-.sos-app .orb-fallback:has(.paused), .sos-app body.is-sheet-open .orb-fallback { animation-play-state: paused; }
-@keyframes calm-breathe { 0%,100% { transform: scale(.82); } 33.333%,50% { transform: scale(1); } }
-@media (hover: hover) { .sos-app .option-box:hover { background: color-mix(in srgb, var(--tile-hue) 9%, rgba(18, 15, 24, .76)); } .sos-app .btn-icon:hover { background: #101012; } }
+@media (hover: hover) { .sos-app .btn-icon:hover { background: var(--card); } }
+
+/* ── 9 · Short phones · landscape + computer · reduced motion ── */
 @media (max-height: 690px) and (orientation: portrait) {
-  .sos-app .global-header { min-height: calc(52px + var(--safe-top)); padding-top: var(--safe-top); }
-  .sos-app .orb-zone { gap: 12px; padding: 4px 0 16px; }
+  .sos-app .global-header { padding-top: var(--safe-top); }
+  .sos-app .orb-zone { gap: 12px; padding: var(--s-1) 0 var(--s-3); }
   .sos-app .orb-shell { width: min(49vw, 25dvh, 200px); }
-  .sos-app .breathe-label { font-size: 21px; }
-  .sos-app .option-box { min-height: 84px; padding: 8px 3px; gap: 3px; }
+  .sos-app .breathe-label { font-size: var(--fs-h3); }
+  .sos-app .option-box { min-height: 84px; gap: 3px; padding: var(--s-2) 3px; }
   .sos-app .sos-strip { min-height: 48px; }
 }
-@media (orientation: landscape) and (max-height: 550px) {
-  html.sos-app body { grid-template-columns: 1fr 1fr; grid-template-rows: auto minmax(0, 1fr) auto; column-gap: 24px; }
-  .sos-app .global-header { grid-column: 1 / -1; width: 100%; min-height: calc(48px + var(--safe-top)); padding-top: var(--safe-top); }
-  .sos-app .orb-zone { grid-column: 1; grid-row: 2 / 4; gap: 10px; padding: 0 0 12px; }
+/* landscape phone, and the computer treated as the same phone turned sideways: orb left, tiles right, strip at the foot */
+@media (orientation: landscape) and (max-height: 550px), (orientation: landscape) and (min-width: 900px) {
+  .sos-app #app-main { width: min(100%, 760px); grid-template-columns: 1fr 1fr; grid-template-rows: 1fr auto; column-gap: var(--s-4); }
+  .sos-app .global-header { width: min(100%, 760px); padding-top: var(--safe-top); }
+  .sos-app .orb-zone { grid-column: 1; grid-row: 1 / 3; gap: 10px; padding: 0 0 12px; }
   .sos-app .orb-shell { width: min(38dvh, 200px); }
-  .sos-app .breathe-label { font-size: 19px; min-height: 2.7em; }
-  .sos-app .options-zone { grid-column: 2; grid-row: 2; align-self: center; gap: 6px; }
-  .sos-app .option-box { min-height: 83px; padding: 7px 2px; gap: 3px; }
-  .sos-app .sos-strip { grid-column: 2; grid-row: 3; min-height: 44px; }
+  .sos-app .breathe-label { min-height: 2.7em; font-size: var(--fs-h4); }
+  .sos-app .options-zone { grid-column: 2; grid-row: 1; align-self: center; gap: 6px; }
+  .sos-app .option-box { min-height: 83px; gap: 3px; padding: 7px 2px; }
+  .sos-app .sos-strip { grid-column: 2; grid-row: 2; min-height: 44px; }
+}
+/* computer: the same sideways phone, with the room a desktop has */
+@media (orientation: landscape) and (min-width: 900px) and (min-height: 551px) {
+  .sos-app #app-main { width: min(100%, 880px); column-gap: var(--s-6); }
+  .sos-app .global-header { width: min(100%, 880px); padding-top: calc(var(--s-2) + var(--safe-top)); }
+  .sos-app .orb-zone { gap: var(--s-3); padding: 0 0 var(--s-3); }
+  .sos-app .orb-shell { width: min(40dvh, 280px); }
+  .sos-app .breathe-label { font-size: var(--fs-h3); }
+  .sos-app .options-zone { gap: var(--s-2); }
+  .sos-app .option-box { min-height: 112px; gap: var(--s-1); padding: var(--s-3) var(--s-1); }
 }
 @media (prefers-reduced-motion: reduce) {
+  .sos-app .orb-stage.is-ready { animation: none; transform: scale(.9); will-change: auto; }
+  .sos-app .orb-stage.is-ready .orb-aura { animation: none; opacity: .6; }
   .sos-app .orb-fallback { animation: none; transform: scale(.9); }
-  .sos-app .orb-zone, .sos-app .option-box, .sos-app .btn-icon { transition: none; }
-  .sos-app .burger span, .sos-app .card-nav, .sos-app .nav-card, .sos-app .nav-controls { transition: none; }
+  .sos-app .orb-zone, .sos-app .option-box, .sos-app .btn-icon,
+  .sos-app .burger span, .sos-app .card-nav, .sos-app .nav-card, .sos-app .nav-controls, .sos-app .menu-overlay { transition: none; }
+  .sos-app .card-nav--open .nav-card, .sos-app .card-nav--open .nav-controls { opacity: 1; transform: none; }
 }

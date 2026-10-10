@@ -2,6 +2,8 @@
  * REPORT SOURCE — where the Relatório / Modo Médico pages read the episode from. Read-only, local, same origin:
  *   live: IndexedDB `sos-apollo/kv` ("state" + "journal", written by the app's live feed) and the
  *         BroadcastChannel "sos-apollo-live" (instant updates while the app is open in another tab);
+ *   tiles: localStorage `sos_tiles_journal` (written by app/tiles-journal.js when the tiles page runs without the engine)
+ *         + the `storage` event / BroadcastChannel "sos-apollo-tiles" for instant updates;
  *   lab:  app/lab/cenarios.json — golden scenarios replayed through the real engine at build time.
  * A snapshot older than the acute retention (12 h) is ignored, exactly like the app ignores it on boot.
  */
@@ -9,6 +11,7 @@ import type { SessionState } from "../core/domain/state";
 import type { Journal, JournalEvent } from "../core/journal/journal";
 import { partitionRecords } from "../runtime/continuity/journal-store";
 import { LIVE_CHANNEL, type LiveMessage } from "../runtime/live-feed";
+import { parseTiles, TILES_KEY, TILES_CHANNEL, type TilesEpisode } from "./tiles";
 
 export interface Snapshot { episodeId: string; events: JournalEvent[]; state: SessionState | null; now: number | null }
 export interface LabScenario { name: string; title: string; doc: string; episodeId: string; events: JournalEvent[]; state: SessionState; now: number }
@@ -66,6 +69,20 @@ export function subscribeLive(on: (s: Snapshot | "wiped") => void): () => void {
   const hello: LiveMessage = { v: 1, kind: "hello" };
   try { ch.postMessage(hello); } catch { /* no app open: IndexedDB covers it */ }
   return () => ch.close();
+}
+
+/** The tiles page (app/index.html without the engine) keeps its own journal: localStorage, same 12 h retention. */
+export function readTiles(retentionHours: number, now: number): TilesEpisode | null {
+  try { return parseTiles(localStorage.getItem(TILES_KEY), now, retentionHours); } catch { return null; }
+}
+
+/** Tiles journal changed in another tab (storage event) or the tiles page pinged (BroadcastChannel). */
+export function subscribeTiles(on: () => void): () => void {
+  const onStorage = (e: StorageEvent) => { if (e.key === TILES_KEY || e.key === null) on(); };
+  window.addEventListener("storage", onStorage);
+  const ch = typeof BroadcastChannel === "function" ? new BroadcastChannel(TILES_CHANNEL) : null;
+  if (ch) ch.onmessage = () => on();
+  return () => { window.removeEventListener("storage", onStorage); ch?.close(); };
 }
 
 export async function loadLab(url: string): Promise<LabScenario[]> {

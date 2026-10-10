@@ -3,6 +3,7 @@
 * { box-sizing: border-box; }
 html, body { margin: 0; }
 button { font: inherit; }
+i,svg{font-weight:100!important; stroke-width: 0!important;}
 .hidden { display: none !important; }
 :focus-visible { outline: 2px solid #5b8def; outline-offset: 2px; }
 
@@ -14,19 +15,224 @@ button { font: inherit; }
 .tb-status .dot { width: 8px; height: 8px; border-radius: 50%; background: #32d583; box-shadow: 0 0 0 4px rgba(50,213,131,.18); animation: live 2s ease-in-out infinite; }
 @keyframes live { 50% { box-shadow: 0 0 0 1px rgba(50,213,131,.1); } }
 .scenario { display: inline-flex; align-items: center; gap: 6px; color: #d0d5dd; font-size: 13px; }
-.scenario select { min-height: 36px; max-width: 60vw; border-radius: 8px; border: 1px solid #475467; background: #1d2939; color: #fff; font: inherit; }
+.scenario select { min-height: 18px; max-width: 60vw; border-radius: 8px; border: 1px solid #475467; background: #1d2939; color: #fff; font: inherit; }
 .channel { margin: 10px auto; max-width: 210mm; padding: 0 12px; font-size: 12px; color: #667085; text-align: center; }
 .waiting { max-width: 520px; margin: 40px auto; padding: 24px; display: grid; justify-items: center; gap: 14px; text-align: center; font-size: 15px; line-height: 1.5; }
 .waiting .pulse { width: 14px; height: 14px; border-radius: 50%; background: #5b8def; animation: live 1.6s ease-in-out infinite; }
 .empty { color: #667085; font-size: 9pt; margin: 1mm 0; }
 
-/* ═══ MODO MÉDICO — paper document ═══ */
-.page-medico { --ink: #101828; --muted: #667085; --soft: #f7f8fa; --line: #d7dde5; --line-2: #eaecf0; --paper: #fff; --screen: #e9edf2;
-  --red: #b42318; --red-bg: #fff1f0; --amber: #9a6700; --amber-bg: #fff8e6; --blue: #175cd3; --blue-bg: #eff6ff; --violet: #5925dc; --violet-bg: #f4f0ff;
-  background: var(--screen); color: var(--ink); font: 10pt/1.32 Arial, Helvetica, sans-serif; -webkit-font-smoothing: antialiased; }
-.page-medico .waiting { color: var(--ink); background: #fff; border-radius: 12px; }
-.document { padding: 18px 0 32px; }
-.sheet { position: relative; width: 210mm; min-height: 297mm; margin: 0 auto 14px; padding: 11mm 11mm 18mm; background: var(--paper); box-shadow: 0 8px 28px rgba(16,24,40,.12); overflow: hidden; }
+/* ═══ MODO MÉDICO — app screen (tokens do core.js) + paper print ═══
+   Nunca redeclara :root. Aliases clínicos só no escopo da página.
+   Von Restorff: um único acento na tela (Copiar resumo). Close fecha, nunca volta. */
+.page-medico {
+  --ink: var(--txt-heading, #101828);
+  --soft: var(--surface, #f7f8fa);
+  --line: rgba(var(--rgb-diff, 10, 10, 10), .12);
+  --line-2: rgba(var(--rgb-diff, 10, 10, 10), .06);
+  --paper: var(--card, #fff);
+  --screen: var(--bg, #f9f8f8);
+  --red: var(--alert-red, #b42318);
+  --red-bg: var(--alert-card, #fff1f0);
+  --amber: var(--orange-700, #9a6700);
+  --amber-bg: rgba(var(--rgb-accent, 255, 170, 51), .12);
+  --blue: var(--txt-heading, #175cd3);
+  --blue-bg: var(--surface, #eff6ff);
+  --violet: var(--txt-heading, #5925dc);
+  --violet-bg: var(--surface, #f4f0ff);
+  background: var(--bg);
+  color: var(--txt-color);
+  font-family: var(--ff-main, Arial, Helvetica, sans-serif);
+  font-size: var(--fs-p, 10pt);
+  line-height: 1.32;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+  padding-bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+}
+.page-medico #apollo-suporte-root,
+.page-medico #apollo-sb-x,
+.page-medico #apollo-sb-y { display: none !important; }
+
+.page-medico .toolbar.ax-top {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 9901;
+  height: auto;
+  min-height: 56px;
+  padding: calc(6px + var(--safe-top, env(safe-area-inset-top, 0px))) 10px 8px;
+  background: transparent;
+  border: 0;
+  flex-wrap: nowrap;
+  gap: 6px;
+}
+.page-medico .ax-top-l { min-width: 0; }
+.page-medico .ax-top-wm { font-size: calc(var(--fs-r, 1) * 15px); letter-spacing: -.01em; }
+.page-medico .ax-top-logo {
+  background: var(--black-1);
+  color: var(--bg);
+}
+.page-medico .tb-status {
+  flex: 1 1 auto; min-width: 0;
+  color: var(--muted);
+  font: 500 calc(var(--fs-r, 1) * 10px)/1.3 var(--ff-mono, ui-monospace, monospace);
+  letter-spacing: .06em; text-transform: uppercase;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.page-medico .tb-status .dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--accent); flex-shrink: 0;
+  box-shadow: 0 0 0 4px rgba(var(--rgb-accent, 255, 170, 51), .18);
+}
+.page-medico .scenario,
+.page-relatorio .scenario {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: min(100% - 28px, 480px);
+  margin: 8px auto 0;
+  color: var(--muted);
+  font: 500 calc(var(--fs-r, 1) * 10px)/1.3 var(--ff-mono, ui-monospace, monospace);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.page-medico .scenario.hidden,
+.page-relatorio .scenario.hidden { display: none !important; }
+.page-medico .scenario select,
+.page-relatorio .scenario select {
+  flex: 1;
+  min-height: 40px;
+  min-width: 0;
+  max-width: none;
+  border-radius: var(--r-sm, 12px);
+  border: 1px solid rgba(var(--rgb-diff), .04);
+  background: var(--surface);
+  color: var(--txt-heading);
+  font: inherit;
+  padding: 0 12px;
+  box-shadow: inset 0 1px 0 0 rgba(var(--rgb-theme), .9), inset 0 0 0 1px rgba(var(--rgb-theme), .4);
+}
+.page-medico .ax-ic,
+.page-relatorio .ax-ic {
+  width: 44px; height: 44px; min-width: 44px;
+  color: var(--txt-heading);
+  background: var(--surface);
+}
+.page-medico .ax-ic svg,
+.page-relatorio .ax-ic svg { display: block; }
+
+/* Von Restorff: dock. Só a CTA principal usa accent. */
+.page-medico .medico-dock,
+.page-relatorio .medico-dock {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  z-index: 9901;
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 6px;
+  padding: 8px 12px calc(10px + env(safe-area-inset-bottom, 0px));
+  background: linear-gradient(to top, rgba(var(--rgb-theme), 1) 58%, rgba(var(--rgb-theme), 0));
+}
+.page-medico .medico-dock .btn,
+.page-relatorio .medico-dock .btn { width: 100%; min-height: 48px; }
+.page-medico .medico-dock .btn-accent,
+.page-relatorio .medico-dock .btn-accent {
+  box-shadow: none;
+  isolation: isolate;
+}
+
+/* Relatório: ações só no topo (ícones). Sem dock inferior. */
+.page-relatorio .medico-dock,
+.page-relatorio .report-dock { display: none !important; }
+.page-relatorio .ax-top-r {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex: none;
+}
+.page-relatorio .ax-ic {
+  width: 18px; height: 18px; min-width: 18px;
+}
+.page-relatorio .ax-ic i,
+.page-medico .ax-ic i,
+.page-relatorio .ax-ic [class^="ri-"],
+.page-medico .ax-ic [class^="ri-"] {
+  font-size: 18px;
+  line-height: 1;
+  display: block;
+  font-weight: 100 !important;
+}
+.page-relatorio .ax-ic[aria-pressed="true"] {
+  background: var(--black-1);
+  color: var(--bg);
+}
+
+.page-medico .channel {
+  margin: 6px auto 0;
+  max-width: 480px;
+  padding: 0 16px;
+  font-family: var(--ff-mono, ui-monospace, monospace);
+  font-size: calc(var(--fs-r, 1) * 9px);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: center;
+  opacity: .78;
+}
+.page-medico .channel a { color: var(--txt-heading); text-decoration: underline; text-underline-offset: 3px; }
+.page-medico .waiting {
+  color: var(--txt-heading);
+  background: var(--card);
+  border-radius: var(--r, 20px);
+  box-shadow: inset 0 1px 0 0 rgba(var(--rgb-theme), .9), inset 0 0 0 1px rgba(var(--rgb-theme), .4);
+  border: 1px solid rgba(var(--rgb-diff), .04);
+}
+.document { padding: 8px 0 12px; }
+.sheet { position: relative; width: 210mm; min-height: 297mm; margin: 0 auto 14px; padding: 11mm 11mm 18mm; background: var(--paper); overflow: hidden; box-shadow: inset 0 1px 0 0 rgba(var(--rgb-theme, 249, 248, 248), .9), inset 0 0 0 1px rgba(var(--rgb-theme, 249, 248, 248), .4); border: 1px solid rgba(var(--rgb-diff, 10, 10, 10), .04); border-radius: var(--r, 20px); }
+.page-medico .document { padding: 2px 12px 28px; }
+@media screen {
+  .page-medico .sheet {
+    width: min(100%, 440px);
+    min-height: auto;
+    margin: 0 auto 10px;
+    padding: 20px 16px 26px;
+  }
+  .page-medico .brandline {
+    font-family: var(--ff-mono, ui-monospace, monospace);
+    font-size: calc(var(--fs-r, 1) * 9px);
+    letter-spacing: .14em;
+  }
+  .page-medico h1 {
+    font-family: var(--ff-heading, var(--ff-main), system-ui, sans-serif);
+    font-size: clamp(1.35rem, 5.2vw, 1.7rem);
+    line-height: 1.02;
+    letter-spacing: -.035em;
+    color: var(--txt-heading);
+  }
+  .page-medico .subtitle {
+    font-size: calc(var(--fs-r, 1) * 12px);
+    line-height: 1.45;
+  }
+  .page-medico .scan {
+    border-radius: var(--r-sm, 15px);
+    padding: 12px 12px 13px;
+    min-height: 0;
+    border: 1px solid rgba(var(--rgb-diff), .06);
+    box-shadow: inset 0 1px 0 0 rgba(var(--rgb-theme), .9), inset 0 0 0 1px rgba(var(--rgb-theme), .35);
+  }
+  .page-medico .scan .label {
+    font-family: var(--ff-mono, ui-monospace, monospace);
+    font-size: calc(var(--fs-r, 1) * 9px);
+  }
+  .page-medico .scan .value {
+    font-size: calc(var(--fs-r, 1) * 15px);
+    letter-spacing: -.02em;
+  }
+  .page-medico .section-title h2 {
+    font-family: var(--ff-heading, var(--ff-main), system-ui, sans-serif);
+    font-size: calc(var(--fs-r, 1) * 15px);
+    letter-spacing: -.02em;
+  }
+}
 .page-footer { position: absolute; left: 11mm; right: 11mm; bottom: 6mm; display: flex; justify-content: space-between; gap: 10px; padding-top: 2.4mm; border-top: .3mm solid var(--line-2); color: var(--muted); font-size: 7.5pt; }
 .doc-head { display: grid; grid-template-columns: 1fr auto; gap: 12mm; align-items: start; border-bottom: .55mm solid var(--ink); padding-bottom: 4mm; margin-bottom: 4mm; }
 .brandline { font-size: 8pt; letter-spacing: .12em; text-transform: uppercase; font-weight: 700; color: var(--muted); margin-bottom: 1.3mm; }
@@ -79,9 +285,21 @@ button { font: inherit; }
 .mix small { display: block; color: var(--amber); text-transform: uppercase; font-weight: 800; letter-spacing: .06em; font-size: 6.7pt; }
 .mix strong { display: block; margin-top: 1mm; font-size: 8.7pt; }
 .mix p { margin: .9mm 0 0; color: #5f4a16; font-size: 7.2pt; }
-.handoff-box { background: #101828; color: #fff; border-radius: 2.6mm; padding: 3.5mm 4mm; }
-.handoff-box .label { color: #98a2b3; font-size: 6.8pt; text-transform: uppercase; letter-spacing: .09em; font-weight: 800; }
+.handoff-box { background: var(--black-1, #101828); color: var(--bg, #fff); border-radius: var(--r-sm, 2.6mm); padding: 3.5mm 4mm; }
+.handoff-box .label { color: rgba(var(--rgb-theme, 249, 248, 248), .55); font-size: 6.8pt; text-transform: uppercase; letter-spacing: .09em; font-weight: 800; }
 .handoff-box p { margin: 1.3mm 0 0; font-size: 9pt; line-height: 1.38; }
+@media screen {
+  .page-medico .handoff-box {
+    background: var(--black-1);
+    color: var(--bg);
+    border-radius: var(--r);
+    padding: 16px 16px 18px;
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+  .page-medico .handoff-box .label { font-size: calc(var(--fs-r, 1) * 10px); color: rgba(var(--rgb-theme), .6); }
+  .page-medico .handoff-box p { font-size: calc(var(--fs-r, 1) * var(--fs-p2, 14px)); }
+}
 .meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2mm; }
 .meta { border: .3mm solid var(--line-2); background: var(--soft); border-radius: 2.2mm; padding: 2.5mm 3mm; }
 .meta .k { color: var(--muted); font-size: 6.8pt; text-transform: uppercase; letter-spacing: .06em; font-weight: 800; }
@@ -113,11 +331,11 @@ button { font: inherit; }
 .risk-card .scale { color: var(--muted); font-size: 6.3pt; }
 .guarantees { margin: 0; padding-left: 4mm; }
 .guarantees li { margin: 1mm 0; font-size: 7.6pt; }
-.page-medico .channel { color: #475467; }
 @page { size: A4 portrait; margin: 10mm 10mm 11mm; }
 @media print {
-  .page-medico, .page-medico html { background: #fff; }
-  .no-print, .toolbar { display: none !important; }
+  .page-medico, .page-medico html { background: #fff; color: #101828; }
+  .page-medico { --ink: #101828; --muted: #667085; --soft: #f7f8fa; --line: #d7dde5; --line-2: #eaecf0; --paper: #fff; --red: #b42318; --red-bg: #fff1f0; --amber: #9a6700; --amber-bg: #fff8e6; --blue: #175cd3; --blue-bg: #eff6ff; --violet: #5925dc; --violet-bg: #f4f0ff; padding-bottom: 0; }
+  .no-print, .toolbar, .medico-dock, .ax-top-blur { display: none !important; }
   .document { padding: 0; }
   .sheet { width: auto; min-height: auto; margin: 0; padding: 0 0 8mm; box-shadow: none; overflow: visible; break-after: page; }
   .sheet:last-child { break-after: auto; }
@@ -128,6 +346,7 @@ button { font: inherit; }
 }
 @media (max-width: 900px) {
   .sheet { width: calc(100% - 16px); min-height: auto; padding: 16px 14px 44px; }
+  .page-medico .sheet { width: min(100%, 480px); padding: 18px 16px 28px; }
   .doc-head { grid-template-columns: 1fr; gap: 10px; }
   .scan-grid, .scan-grid.flags { grid-template-columns: 1fr 1fr; }
   .mix-alerts, .care-grid, .meta-grid { grid-template-columns: 1fr; }
@@ -136,51 +355,542 @@ button { font: inherit; }
   .tl-state { grid-column: 2; text-align: left; }
   .exposure th:nth-child(3), .exposure td:nth-child(3) { display: none; }
 }
+@media screen and (max-width: 540px) {
+  .page-medico .tb-status { display: none; }
+  .page-medico .scan-grid,
+  .page-medico .scan-grid.flags,
+  .page-medico .risk-grid { grid-template-columns: 1fr; }
+  .page-medico .scan.tone-alert {
+    outline: 2px solid var(--alert-red);
+    outline-offset: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .page-medico .tb-status .dot,
+  .page-medico .ax-dot { animation: none !important; }
+}
 
-/* ═══ RELATÓRIO — the person's own calm view ═══ */
-.page-relatorio { background: #000; color: #c9c9ce; font: 16px/1.5 "Space Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
-.page-relatorio .toolbar { background: rgba(0,0,0,.92); border-bottom-color: rgba(255,255,255,.07); }
-.page-relatorio .tb-btn { background: #18181b; border-color: transparent; color: #d4d4da; }
-.page-relatorio .tb-btn.primary { background: rgba(225,225,225,.8); color: #0f0f0f; }
-.rel { max-width: 480px; margin: 0 auto; padding: 18px 16px 24px; }
-.rel-head h1 { margin: 2px 0 6px; font: 400 26px/1.25 "Bricolage Grotesque", "Space Grotesk", ui-sans-serif, system-ui, sans-serif; letter-spacing: -.02em; color: #d0d0d7; }
-.rel-brand { margin: 0; font: 400 11px/1.4 "SUSE Mono", ui-monospace, monospace; letter-spacing: .14em; text-transform: uppercase; color: rgba(225,225,225,.4); }
-.rel-sub { margin: 0; color: #8d8d97; font-size: 14px; }
-.rel-times { margin: 12px 0 0; display: flex; flex-wrap: wrap; gap: 6px 14px; color: #aaaab2; font-size: 13px; }
-.rel-elapsed { color: #e8c3a6; }
-.page-relatorio .p0-banner { margin: 16px 0 0; padding: 14px 16px; border-radius: 18px; background: color-mix(in srgb, #e5534b 12%, #101011); box-shadow: inset 0 0 0 1px rgba(229,83,75,.35); color: #f3d6d1; }
-.page-relatorio .p0-banner b { display: block; font-size: 11px; letter-spacing: .12em; color: #ff8f86; font-weight: 500; }
-.page-relatorio .p0-banner p { margin: 6px 0 0; font-size: 15px; }
-.rel-block { margin-top: 14px; padding: 18px 16px; border-radius: 24px; background: #101011; box-shadow: 0 -1px 0 rgba(255,255,255,.07); }
-.rel-block h2 { margin: 0 0 10px; font: 400 18px/1.3 "Bricolage Grotesque", "Space Grotesk", ui-sans-serif, system-ui, sans-serif; color: #d0d0d7; }
-.rel-now { display: grid; grid-template-columns: minmax(110px, 40%) 1fr; gap: 8px 12px; margin: 0; }
-.rel-now dt { color: #8d8d97; font-size: 13px; }
-.rel-now dd { margin: 0; color: #d4d4da; font-size: 15px; }
-.page-relatorio .care-grid { display: grid; gap: 6px; }
-.page-relatorio .care { padding: 10px 12px; border-radius: 14px; background: #18181b; }
-.page-relatorio .care-head { display: flex; justify-content: space-between; gap: 10px; }
-.page-relatorio .care strong { font-weight: 400; font-size: 15px; color: #d4d4da; }
-.page-relatorio .care p { margin: 2px 0 0; font-size: 12px; color: #8d8d97; }
-.page-relatorio .out { font-size: 11px; letter-spacing: .06em; font-weight: 500; }
-.page-relatorio .out-done { color: #93c8a9; } .page-relatorio .out-shown { color: #92a9d6; } .page-relatorio .out-failed { color: #e8c3a6; }
-.page-relatorio .timeline { list-style: none; margin: 0; padding: 0; }
-.page-relatorio .timeline li { display: grid; grid-template-columns: 64px 1fr; gap: 10px; padding: 9px 0; border-bottom: 1px solid rgba(255,255,255,.06); }
+/* ═══ RELATÓRIO — folhas A4 (hospital / médico). Sem 192. Von Restorff: 1 CTA. ═══ */
+.page-relatorio {
+  --ink: var(--txt-heading, #101828);
+  --soft: var(--surface, #f7f8fa);
+  --line: rgba(var(--rgb-diff, 10, 10, 10), .12);
+  --line-2: rgba(var(--rgb-diff, 10, 10, 10), .07);
+  --paper: #fff;
+  --red: var(--alert-red, #b42318);
+  --red-bg: var(--alert-card, #fff1f0);
+  --amber: var(--orange-700, #9a6700);
+  --a4-w: 210mm;
+  --a4-h: 297mm;
+  background: var(--bg);
+  color: var(--txt-color);
+  font-family: var(--ff-main, system-ui, sans-serif);
+  font-size: 10.5pt;
+  line-height: 1.38;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+  padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+}
+.page-relatorio.is-a4-expanded .a4-stage {
+  padding-inline: 8px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+.page-relatorio.is-a4-expanded .a4-pages {
+  align-items: center;
+  margin-inline: auto;
+}
+.page-relatorio #apollo-suporte-root,
+.page-relatorio #apollo-sb-x,
+.page-relatorio #apollo-sb-y { display: none !important; }
+
+.page-relatorio .toolbar.ax-top {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 9901;
+  height: auto;
+  min-height: 48px;
+  padding: calc(4px + var(--safe-top, env(safe-area-inset-top, 0px))) 10px 6px;
+  background: transparent;
+  border: 0;
+  flex-wrap: nowrap;
+  gap: 6px;
+}
+.page-relatorio .ax-top-l { min-width: 0; }
+.page-relatorio .ax-top-wm { font-size: calc(var(--fs-r, 1) * 14px); letter-spacing: -.01em; }
+.page-relatorio .ax-top-logo { background: var(--black-1); color: var(--bg); width: 18px; height: 18px; }
+.page-relatorio .tb-status {
+  flex: 1 1 auto; min-width: 0;
+  color: var(--muted);
+  font: 500 calc(var(--fs-r, 1) * 9px)/1.3 var(--ff-mono, ui-monospace, monospace);
+  letter-spacing: .06em; text-transform: uppercase;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.page-relatorio .tb-status .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); flex-shrink: 0;
+}
+.page-relatorio .a4-pagecount {
+  flex: none;
+  font: 600 calc(var(--fs-r, 1) * 9px)/1 var(--ff-mono, ui-monospace, monospace);
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 0 4px;
+}
+.page-relatorio .ax-ic {
+  width: 18px; height: 18px; min-width: 18px; margin: 0 5px;
+}
+
+/* Fonte oculta quando as folhas A4 estão montadas */
+.page-relatorio.is-a4 .a4-source {
+  position: absolute !important;
+  width: 1px !important; height: 1px !important;
+  margin: -1px !important; padding: 0 !important;
+  overflow: hidden !important; clip: rect(0,0,0,0) !important;
+  border: 0 !important; white-space: nowrap !important;
+}
+.page-relatorio .a4-stage {
+  width: 100%;
+  padding: 8px 12px 20px;
+}
+.page-relatorio .a4-pages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+}
+
+/* Folha A4 — tamanho real fixo (794×1123 @96dpi). Escala via transform no JS. */
+.page-relatorio .a4-page {
+  position: relative;
+  width: 794px;
+  height: 1123px;
+  flex: 0 0 auto;
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 2px;
+  box-shadow:
+    0 1px 10px rgba(0, 0, 0, .08),
+    0 0 0 1px rgba(0, 0, 0, .04);
+  overflow: hidden;
+  break-after: page;
+  page-break-after: always;
+  transform-origin: top center;
+}
+.page-relatorio .a4-page:last-child {
+  break-after: auto;
+  page-break-after: auto;
+}
+.page-relatorio .a4-page::before {
+  content: "";
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 3px;
+  background: var(--black-1);
+  z-index: 2;
+  pointer-events: none;
+}
+.page-relatorio .a4-page__body {
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.page-relatorio .a4-page__foot {
+  position: absolute;
+  left: 52px; right: 52px; bottom: 18px;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line-2);
+  font: 500 8pt/1.2 var(--ff-mono, ui-monospace, monospace);
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Fallback antes do paginator (sem JS / loading) */
+.page-relatorio:not(.is-a4) .rel,
+.page-relatorio:not(.is-a4) .document-pdf {
+  width: min(100% - 24px, 794px);
+  min-height: 1123px;
+  margin: 10px auto 16px;
+  padding: 48px 52px 56px;
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: 2px;
+  border: 1px solid rgba(var(--rgb-diff), .06);
+  box-shadow: 0 1px 10px rgba(0, 0, 0, .08);
+}
+.page-relatorio .waiting {
+  color: var(--txt-heading);
+  background: var(--card);
+  border-radius: var(--r-sm, 15px);
+  border: 1px solid rgba(var(--rgb-diff), .04);
+  padding: 20px;
+  text-align: center;
+}
+
+.page-relatorio .rel-head {
+  padding-bottom: 12px;
+  margin-bottom: 12px;
+  border-bottom: 1.5px solid var(--ink);
+}
+.page-relatorio .rel-brand {
+  margin: 0 0 6px;
+  font: 700 8pt/1.3 var(--ff-mono, ui-monospace, monospace);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.page-relatorio .rel-head h1 {
+  margin: 0;
+  font-family: var(--ff-heading, var(--ff-main), system-ui, sans-serif);
+  font-size: 18pt;
+  line-height: 1.05;
+  letter-spacing: -.035em;
+  font-weight: 700;
+  color: var(--txt-heading);
+}
+.page-relatorio .rel-sub {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 9.5pt;
+  line-height: 1.4;
+  max-width: 48ch;
+}
+.page-relatorio .rel-times {
+  margin: 12px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  font-family: var(--ff-mono, ui-monospace, monospace);
+  font-size: 8.5pt;
+  letter-spacing: .02em;
+  color: var(--txt-color);
+}
+.page-relatorio .rel-elapsed {
+  color: var(--txt-heading);
+  font-weight: 700;
+}
+
+/* Von Restorff: P0 é o único bloco que grita */
+.page-relatorio .p0-banner {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--red-bg);
+  border: 1.5px solid var(--red);
+  color: #7a271a;
+}
+.page-relatorio .p0-banner b {
+  display: block;
+  font-family: var(--ff-mono, ui-monospace, monospace);
+  font-size: 8pt;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--red);
+  font-weight: 800;
+}
+.page-relatorio .p0-banner p {
+  margin: 5px 0 0;
+  font-size: 11pt;
+  font-weight: 700;
+  line-height: 1.28;
+  color: #7a271a;
+}
+
+.page-relatorio .rel-block {
+  margin-top: 12px;
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border: 0;
+  border-radius: 0;
+}
+.page-relatorio .rel-block + .rel-block {
+  padding-top: 12px;
+  border-top: 1px solid var(--line-2);
+}
+.page-relatorio .rel-block h2 {
+  margin: 0 0 8px;
+  font-family: var(--ff-heading, var(--ff-main), system-ui, sans-serif);
+  font-size: 11pt;
+  letter-spacing: -.02em;
+  font-weight: 700;
+  color: var(--txt-heading);
+}
+
+.page-relatorio .rel-now {
+  display: grid;
+  grid-template-columns: minmax(100px, 34%) 1fr;
+  gap: 5px 10px;
+  margin: 0;
+}
+.page-relatorio .rel-now dt {
+  color: var(--muted);
+  font-family: var(--ff-mono, ui-monospace, monospace);
+  font-size: 7.5pt;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding-top: 2px;
+}
+.page-relatorio .rel-now dd {
+  margin: 0;
+  color: var(--txt-heading);
+  font-size: 10pt;
+  font-weight: 650;
+  letter-spacing: -.01em;
+}
+
+.page-relatorio .care-grid {
+  display: grid;
+  gap: 6px;
+  grid-template-columns: 1fr 1fr;
+}
+.page-relatorio .care {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--soft);
+  border: 1px solid rgba(var(--rgb-diff), .05);
+}
+.page-relatorio .care-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  align-items: start;
+}
+.page-relatorio .care strong {
+  font-weight: 650;
+  font-size: 9.5pt;
+  color: var(--txt-heading);
+}
+.page-relatorio .care p {
+  margin: 3px 0 0;
+  font-size: 8pt;
+  color: var(--muted);
+  line-height: 1.35;
+}
+.page-relatorio .out {
+  font-family: var(--ff-mono, ui-monospace, monospace);
+  font-size: 7.5pt;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.page-relatorio .out-done { color: #067647; }
+.page-relatorio .out-shown { color: var(--txt-heading); }
+.page-relatorio .out-failed { color: var(--amber); }
+
+.page-relatorio .timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.page-relatorio .timeline li {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: 8px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--line-2);
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
 .page-relatorio .timeline li:last-child { border-bottom: 0; }
-.page-relatorio .timeline .time { font: 400 12px/1.4 "SUSE Mono", ui-monospace, monospace; color: #aaaab2; }
-.page-relatorio .timeline .time small { display: block; color: #8d8d97; }
-.page-relatorio .tl-main strong { font-weight: 400; font-size: 15px; color: #d4d4da; }
-.page-relatorio .tl-state { grid-column: 2; font-size: 11px; color: #8d8d97; }
-.page-relatorio .timeline li.tone-alert .tl-main strong { color: #ff8f86; }
-.page-relatorio .timeline li.tone-attention .tl-main strong { color: #e8c3a6; }
-.page-relatorio .timeline li.tone-derived .tl-main strong { color: #aaaab2; }
-.page-relatorio .empty { color: #8d8d97; font-size: 14px; }
-.rel-privacy { margin: 16px 4px 0; font-size: 12px; color: #8d8d97; }
-.rel-sos { display: block; max-width: 448px; margin: 12px auto 0; padding: 12px 16px; border-radius: 999px; text-align: center; text-decoration: none; color: #f3cfc9; font-size: 14px; background: color-mix(in srgb, #e5534b 16%, #000); box-shadow: inset 0 0 0 1px rgba(229,83,75,.42); }
-.rel-sos strong { font-weight: 500; color: #fff; }
-.page-relatorio .channel { color: #8d8d97; }
+.page-relatorio .timeline .time {
+  font: 600 8pt/1.3 var(--ff-mono, ui-monospace, monospace);
+  color: var(--txt-heading);
+  font-variant-numeric: tabular-nums;
+}
+.page-relatorio .timeline .time small {
+  display: block;
+  font-weight: 400;
+  color: var(--muted);
+}
+.page-relatorio .tl-main strong {
+  font-weight: 650;
+  font-size: 9.5pt;
+  color: var(--txt-heading);
+}
+.page-relatorio .tl-state {
+  grid-column: 2;
+  font-family: var(--ff-mono, ui-monospace, monospace);
+  font-size: 7.5pt;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 1px;
+}
+.page-relatorio .timeline li.tone-alert .tl-main strong { color: var(--red); }
+.page-relatorio .timeline li.tone-attention .tl-main strong { color: var(--amber); }
+.page-relatorio .timeline li.tone-derived .tl-main strong { color: var(--muted); font-weight: 500; }
+.page-relatorio .empty {
+  color: var(--muted);
+  font-size: 9.5pt;
+  margin: 0;
+}
+
+.page-relatorio .rel-privacy {
+  margin: 14px 0 0;
+  padding-top: 10px;
+  border-top: 1px solid var(--line-2);
+  font-size: 8pt;
+  line-height: 1.45;
+  color: var(--muted);
+}
+
+.page-relatorio .rel-sos { display: none !important; }
+
+@media screen and (max-width: 540px) {
+  .page-relatorio .tb-status { display: none; }
+  .page-relatorio .care-grid { grid-template-columns: 1fr; }
+}
+
+@page {
+  size: A4 portrait;
+  margin: 12mm 14mm 14mm;
+}
+
 @media print {
-  .page-relatorio { background: #fff; color: #101828; }
-  .page-relatorio .rel-block { background: #fff; box-shadow: none; border: 1px solid #d7dde5; }
-  .page-relatorio .rel-head h1, .page-relatorio .rel-block h2, .page-relatorio .tl-main strong, .page-relatorio .care strong, .page-relatorio .rel-now dd { color: #101828; }
-  .rel-sos { display: none; }
+  .page-relatorio {
+    background: #fff !important;
+    color: #101828 !important;
+    padding: 0 !important;
+    --ink: #101828;
+    --muted: #667085;
+    --soft: #f7f8fa;
+    --line: #d7dde5;
+    --line-2: #eaecf0;
+    --paper: #fff;
+    --red: #b42318;
+    --red-bg: #fff1f0;
+    --amber: #9a6700;
+  }
+  .page-relatorio .no-print,
+  .page-relatorio .toolbar,
+  .page-relatorio .medico-dock,
+  .page-relatorio .ax-top-blur,
+  .page-relatorio .a4-stage,
+  .page-relatorio .scenario,
+  .page-relatorio .rel-sos { display: none !important; }
+
+  /* No print: usa a fonte semântica (#doc), tipografia de documento */
+  .page-relatorio.is-a4 .a4-source {
+    position: static !important;
+    width: auto !important; height: auto !important;
+    margin: 0 !important; padding: 0 !important;
+    overflow: visible !important; clip: auto !important;
+    white-space: normal !important;
+  }
+  .page-relatorio .rel,
+  .page-relatorio .document-pdf {
+    width: auto;
+    max-width: none;
+    min-height: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+    background: #fff;
+  }
+  .page-relatorio .rel-head,
+  .page-relatorio .rel-block,
+  .page-relatorio .timeline li,
+  .page-relatorio .care,
+  .page-relatorio .p0-banner {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .page-relatorio .rel-head h1,
+  .page-relatorio .rel-block h2,
+  .page-relatorio .tl-main strong,
+  .page-relatorio .care strong,
+  .page-relatorio .rel-now dd { color: #101828 !important; }
+  * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+}
+
+/* ═══ MODO MÉDICO · precision layer (screen) ═══════════════════════════════════════════════
+   One rule for every distance: an 8 px grid. One rule for every size: the golden ratio φ = 1.618
+   on a 14 px reading base → 8.65 (labels) · 14 (text) · 22.65 (title); spacing 8 · 13 · 21 · 34.
+   The eye reads, in this order: what is alarming → what is known → what is missing → how we know. */
+@media screen {
+  .page-medico {
+    --g1: 8px; --g2: 13px; --g3: 21px; --g4: 34px;               /* φ spacing */
+    --t-label: 8.65px; --t-small: 11px; --t-body: 14px; --t-lead: 17.8px; --t-title: 22.65px;
+    padding-bottom: calc(var(--g3) + env(safe-area-inset-bottom, 0px));
+  }
+  /* Top bar: brand left, three icon actions right — nothing else competes. */
+  .page-medico .toolbar.ax-top { padding: calc(var(--g1) + env(safe-area-inset-top, 0px)) 12px var(--g1); align-items: center; }
+  .page-medico .ax-top-r { display: flex; align-items: center; gap: 4px; flex: none; margin-left: auto; }
+  .page-medico .ax-ic { width: 40px; height: 40px; min-width: 40px; border-radius: 12px; display: grid; place-items: center; text-decoration: none; }
+  .page-medico .ax-ic[data-done] { color: var(--bg); background: var(--black-1); }
+  .page-medico .channel { margin: 2px auto var(--g1); }
+
+  /* Sheet: one column of 408 px max, 21 px inner margin (φ of 34). */
+  .page-medico .document { padding: 0 12px var(--g3); }
+  .page-medico .sheet { width: min(100%, 440px); padding: var(--g3) var(--g3) var(--g4); margin: 0 auto var(--g2); }
+
+  /* Head: title reads first; the episode box aligns to the same left edge, never floats half-empty. */
+  .page-medico .doc-head { grid-template-columns: 1fr; gap: var(--g2); padding-bottom: var(--g2); margin-bottom: var(--g3); }
+  .page-medico .brandline { font-size: var(--t-label); letter-spacing: .14em; margin-bottom: var(--g1); }
+  .page-medico h1 { font-size: var(--t-title); line-height: 1.12; letter-spacing: -.02em; }
+  .page-medico .subtitle { font-size: var(--t-small); line-height: 1.45; margin-top: var(--g1); }
+  .page-medico .episode-box { padding-left: var(--g2); }
+  .page-medico .episode-box .k { font-size: var(--t-label); }
+  .page-medico .episode-box .v { font-size: var(--t-body); margin-top: 4px; }
+  .page-medico .episode-box .sub { font-size: var(--t-small); margin-top: 2px; }
+
+  /* Origem dos dados: label ON TOP, text full width — no half-empty column. */
+  .page-medico .integrity { display: block; padding: var(--g2) var(--g2) var(--g2) calc(var(--g2) + 2px); margin-bottom: var(--g3); border-radius: 14px; }
+  .page-medico .integrity .badge { display: block; font-size: var(--t-label); letter-spacing: .12em; margin-bottom: var(--g1); }
+  .page-medico .integrity strong { display: block; font-size: var(--t-body); line-height: 1.4; }
+  .page-medico .integrity p { font-size: var(--t-small); line-height: 1.5; margin-top: 4px; }
+
+  .page-medico .p0-banner { padding: var(--g2); margin-bottom: var(--g3); border-radius: 14px; }
+
+  /* Sections: 34 px between, 13 px under the title rule. */
+  .page-medico .section { margin-top: var(--g4); }
+  .page-medico .section.first { margin-top: 0; }
+  .page-medico .section-title { display: grid; grid-template-columns: 1fr auto; align-items: end; gap: var(--g2); padding-bottom: var(--g1); margin-bottom: var(--g2); }
+  .page-medico .section-title h2 { font-size: var(--t-lead); line-height: 1.25; letter-spacing: -.01em; }
+  .page-medico .section-title span { font-size: var(--t-label); letter-spacing: .06em; text-transform: uppercase; max-width: 13ch; line-height: 1.35; }
+
+  /* Leitura rápida: two equal columns, fixed rhythm; what is known reads loud, what is missing reads quiet. */
+  .page-medico .scan-grid, .page-medico .scan-grid.flags { grid-template-columns: 1fr 1fr; gap: var(--g1); }
+  .page-medico .scan-grid.flags { margin-top: var(--g1); }
+  .page-medico .scan { min-height: 0; padding: var(--g2); border-radius: 14px; display: grid; grid-template-rows: auto auto 1fr; gap: 4px; }
+  .page-medico .scan .label { font-size: var(--t-label); letter-spacing: .1em; }
+  .page-medico .scan .value { margin: 0; font-size: 15px; line-height: 1.2; }
+  .page-medico .scan .note { margin: 0; font-size: 10px; line-height: 1.4; align-self: end; }
+  .page-medico .scan.tone-unknown { box-shadow: none; }
+  .page-medico .scan.tone-unknown .value { font-size: var(--t-small); letter-spacing: .06em; font-weight: 700; opacity: .7; }
+  .page-medico .scan.tone-unknown .note { opacity: .7; }
+  .page-medico .scan.tone-alert { grid-column: 1 / -1; }            /* an alert takes the full row: seen first */
+
+  /* Everything below keeps the same edges and the same 8 / 13 rhythm. */
+  .page-medico .exposure td, .page-medico .exposure th { padding: var(--g1) 6px; }
+  .page-medico .exposure td { font-size: 12px; line-height: 1.4; }
+  .page-medico .mix-alerts, .page-medico .care-grid, .page-medico .meta-grid { gap: var(--g1); margin-top: var(--g1); }
+  .page-medico .mix, .page-medico .care, .page-medico .meta { padding: var(--g2); border-radius: 12px; }
+  .page-medico .handoff-box { padding: var(--g3); }
+  .page-medico .handoff-box p { font-size: var(--t-body); line-height: 1.55; margin-top: var(--g1); }
+  .page-medico .timeline li { grid-template-columns: 64px 1fr; gap: var(--g1) var(--g2); padding: var(--g1) 0; }
+  .page-medico .timeline .time { font-size: 11px; }
+  .page-medico .tl-main strong { font-size: 13px; line-height: 1.4; }
+  .page-medico .tl-state { grid-column: 2; text-align: left; font-size: 10px; }
+  .page-medico .sensitive, .page-medico .statement, .page-medico .tech-banner { margin-top: var(--g3); padding: var(--g2); font-size: 11px; line-height: 1.5; }
+  .page-medico .page-footer { position: static; margin-top: var(--g3); padding-top: var(--g1); font-size: 10px; }
+}
+@media screen and (max-width: 340px) {
+  .page-medico .scan-grid, .page-medico .scan-grid.flags { grid-template-columns: 1fr; }
+}
+@media screen {
+  .page-medico .scan.tone-unknown .tag-print { display: none; }      /* the value already says NÃO INFORMADO */
+  .page-medico .section-title span { max-width: 20ch; }
+  .page-medico .toolbar.ax-top { background: color-mix(in srgb, var(--bg, #f7f7f7) 86%, transparent); -webkit-backdrop-filter: blur(14px) saturate(1.2); backdrop-filter: blur(14px) saturate(1.2); }
 }

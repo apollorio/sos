@@ -1,0 +1,810 @@
+
+
+######## FLOW torto | {"label":"Bateu Forte","icon":"ri-capsule-fill","accent":"#ff00ff"} | start=a1
+
+--- torto.a1 [choice] 
+Que bom que você abriu isso. ⏎ Tô aqui com você. ⏎  ⏎ O que tá acontecendo mais agora?
+   > Usei algo e tá muito pesado -> a2
+   > Bebi álcool e tô mal -> harm_alcohol
+   > Não usei nada, mas tô muito mal -> redirect_panico
+   > Não sei bem o que sinto -> a2_unclear
+
+--- torto.a2 [choice] 
+Entendi. O que você está sentindo mais agora?
+   > Coração acelerado, agitação, calor -> fast_stim
+   > Tudo parece distante ou irreal -> a3_psych
+   > Pânico puro, sem controle -> redirect_panico
+   > Sensação de estar sendo observado -> redirect_trava
+   > Usei por injeção / seringa -> harm_injection
+
+--- torto.a2_unclear [info] autoTo="m1"
+Não saber é tudo bem. ⏎  ⏎ Às vezes a gente só sente que precisa de apoio.. e isso já é o suficiente para estar aqui. Vou ficar do seu lado enquanto a gente descobre junto.
+
+--- torto.a3_stim [task] allDoneTo="fast_stim" doneText="joguei água fria"
+Estimulantes aceleram o coração e a mente.. isso **assusta**, mas o corpo está processando, não colapsando. ⏎  ⏎ **Agora**, antes de qualquer coisa:
+   [task t0] Água gelada no rosto, nuca ou punhos :: Joga água bem fria.. ou gelo. Isso ativa o reflexo de mergulho e **baixa o coração de verdade**. Faz agora, devagar.
+
+--- torto.a3_psych [info] autoTo="fast_psych"
+Psicodélicos e dissociativos alteram como você percebe a realidade.. mas não mudam o que é real. ⏎  ⏎ Você está aqui. O chão existe. Eu estou com você.
+
+--- torto.redirect_panico [redirect] suggestion="Quer ir para o suporte de Pânico?" redirectFlow="panico" stayTo="m1"
+O que você descreveu parece mais próximo de uma crise de ansiedade.. e temos um suporte específico para isso que ajuda mais.
+
+--- torto.redirect_trava [redirect] suggestion="Quer ir para o suporte de Travei?" redirectFlow="trava" stayTo="m1"
+Essa sensação de ser observado ou de estar travado tem um protocolo que ajuda mais do que esse aqui.
+
+--- torto.m1 [info] autoTo="m2"
+Você abriu este espaço.. isso já é um passo. ⏎  ⏎ Não precisa resolver nada agora. Só ficar aqui comigo, devagar.
+
+--- torto.m2 [task] allDoneTo="m3" doneText="feito isso."
+Antes de mais nada, vamos colocar o seu corpo num lugar mais seguro:
+   [task t1] Senta ou deita em algum lugar estável :: Se você estiver em pé, senta. O chão ou uma cadeira serve. Só precisa ser algo sólido e quieto.
+   [task t2] Vira o celular com a tela para baixo por um segundo :: Pega ele de volta quando quiser.. só um momento de pausa do estímulo visual.
+
+--- torto.m3 [task] allDoneTo="m4" doneText="água fria de novo"
+Se ainda não jogou água fria.. faz agora. Se já fez, repete mais uma vez:
+   [task t3] Água gelada no rosto ou nas mãos :: Reflexo de mergulho: baixa a frequência cardíaca de verdade. Gelo é ainda melhor.
+
+--- torto.m4 [task] allDoneTo="m5" doneText="feito."
+Agora o ambiente:
+   [task t4] Diminui o volume do que estiver tocando :: Música agitada piora tudo. Silêncio ou algo bem suave ajuda muito.
+   [task t5] Encontra um cantinho mais quieto se puder :: Não precisa sair de onde está.. só encontra um ângulo menos exposto.
+
+--- torto.m5 [choice] 
+Como você está em relação a antes de abrir isso?
+   > Um pouco melhor -> m6_better
+   > Mais ou menos igual -> m6_same
+   > Piorei, tô muito mal -> m6_worse
+
+--- torto.m6_better [info] autoTo="m7"
+O pico pode estar mudando.. ou não ainda. Os dois são normais. ⏎  ⏎ Continuo aqui.
+
+--- torto.m6_same [info] autoTo="m7"
+Normal. O pico ainda está rolando. O corpo precisa de tempo para processar.. e está processando, mesmo que você não sinta ainda. ⏎  ⏎ Continue comigo.
+
+--- torto.m6_worse [choice] 
+Obrigado por me contar. ⏎  ⏎ Se está piorando, você pode precisar de ajuda humana agora.
+   > Ligo para o SAMU (192) -> action_samu
+   > Continue tentando aqui comigo -> m7
+
+--- torto.action_samu [action] autoTo="m7"
+Liga agora.. continuo aqui com você:
+   [action] {"label":"SAMU  — 192","href":"tel:192","icon":"ri-heart-pulse-fill","cls":"danger"}
+   [action] {"label":"Bombeiros  — 193","href":"tel:193","icon":"ri-fire-fill","cls":"danger"}
+
+--- torto.m7 [info] autoTo="m8" evidenceHint="técnica usada em crises e recomendada por profissionais de saúde"
+Vamos respirar juntos agora: ⏎  ⏎ Inspira lenta e profundamente pelo nariz (**conta 4 segundos**), segure **1–2 segundos**, expira devagar pela boca (**conta 6 segundos**). Isso ativa o **sistema parassimpático** e ajuda a baixar o coração. **Repete 10 vezes.** Se sentir tontura, volta ao ritmo normal.
+
+--- torto.m8 [task] allDoneTo="m9" doneText="ancorado aqui."
+Trazendo você de volta para o presente:
+   [task t6] Nomeia 5 coisas que você vê :: Em voz alta ou mentalmente. Pode ser qualquer objeto que esteja ao redor agora.
+   [task t7] Toca em algo próximo :: Sente a textura. É fria ou quente? Lisa ou áspera? Fica nisso por alguns segundos.
+
+--- torto.m9 [task] allDoneTo="m10" doneText="feito."
+Duas coisas práticas agora:
+   [task t8] Afasta qualquer substância de perto de você :: Não precisa jogar fora.. só cria distância. Agora não é hora de mais nada.
+   [task t9] Hidratar (água ou suco) :: Se bebeu álcool: **1 copo (250 mL) por dose**. Caso contrário, qualquer líquido não alcoólico ajuda o corpo a processar.
+
+--- torto.m10 [info] autoTo="m11"
+O que você sente agora é intenso.. **não é permanente**, mesmo parecendo. ⏎  ⏎ A gente já passou por parte do caminho. Continue devagar.
+
+--- torto.m11 [choice] 
+Tem alguém de confiança que você pode contactar agora?
+   > Sim, tem alguém -> m11_yes
+   > Não tem ninguém disponível agora -> m11_no
+   > Prefiro ficar quieto por agora -> m12
+
+--- torto.m11_yes [info] autoTo="m12"
+Liga ou manda mensagem. Você não precisa explicar tudo.. só diz: ⏎  ⏎ _"Tô passando por algo difícil. Pode ficar na linha comigo?"_
+
+--- torto.m11_no [action] autoTo="m12"
+Tudo bem. Tem um serviço gratuito, anônimo e humano disponível agora:
+   [action] {"label":"CVV  — 188 (gratuito, 24h)","href":"tel:188","icon":"ri-phone-line"}
+
+--- torto.m12 [info] autoTo="m13"
+O efeito vai passando gradualmente.. às vezes sobe, às vezes baixa, mas a direção é sempre em direção ao fim. ⏎  ⏎ O tempo está do seu lado agora.
+
+--- torto.m13 [task] allDoneTo="m14" doneText="música ligada."
+Se quiser, tem uma coisa que ajuda o tempo a passar:
+   [task t10] Coloca uma música instrumental calma :: Lo-fi, piano, sons da natureza.. algo sem letra e sem batida forte. Só como fundo suave.
+
+--- torto.m14 [info] autoTo="m15"
+Você ficou aqui um tempo. Respirou. Fez o que deu. ⏎  ⏎ _Isso não apaga a dor.. mas o corpo começa a sair do pico._
+
+--- torto.m15 [info] autoTo="done" isDone=true
+Se ainda estiver pesado, **não precisa estar bem agora**. ⏎  ⏎ Este espaço fica aberto. CVV 188, 24h, de graça. ⏎  ⏎ Só o próximo minuto. Só a próxima respiração.
+
+--- torto.fast_stim [task] flowTitle="Acelerou demais" flowIcon="ri-flashlight-fill" flowAccent="#b8a07a" exactPhrase="Estou sob efeito de química. Isso vai passar. O barulho alto na mente é só o corpo processando." allDoneTo="m1" doneText="continuo aqui"
+Toque em cada tarefa conforme você for fazendo:
+   [task fs1] Choque térmico no rosto :: Jogue água muito gelada no rosto. Isso força os batimentos a baixarem imediatamente (Reflexo de Mergulho).
+   [task fs2] Reduzir estímulos :: Vá para um lugar mais escuro. Desligue música agitada. Ligue um ventilador direto em você.
+   [task fs3] Guardar tudo :: Afaste qualquer substância de perto. Não misture com calmantes por conta própria. Apenas espere. Use preservativo se houver relação.
+
+--- torto.harm_alcohol [task] flowTitle="Álcool.. redução de danos" flowIcon="ri-drop-fill" flowAccent="#7eb8d8" sequentialTasks=true evidenceHint="recomendado em orientações oficiais de saúde" allDoneTo="m1" doneText="feito"
+Álcool desidrata e acelera o coração. **Faça uma de cada vez:**
+   [task ha1] 1 copo de água (250 mL) por dose :: Bebe **um copo de água (250 mL)** para **cada dose** de álcool que tomou. Isso combate desidratação e ajuda coração e ressaca.
+   [task ha2] Comer proteína, fibra ou gordura boa :: Ovo, pão integral, banana com pasta de amendoim.. retarda absorção e reduz pico no sangue.
+   [task ha3] Não dirigir nem operar máquinas :: Espera ou pede carona. Preservativo se houver relação.. álcool reduz julgamento.
+   [task ha4] Pausa reflexiva (10 segundos) :: Antes de pegar mais qualquer coisa: **10 segundos**. Respire. **Pensar duas vezes** fortalece o controle.. técnica de reflexão cognitiva.
+
+--- torto.harm_injection [task] flowTitle="Injeção.. redução de danos" flowIcon="ri-syringe-line" flowAccent="#c89ca8" sequentialTasks=true allDoneTo="fast_stim" doneText="continuo aqui"
+Segurança física primeiro.. **uma de cada vez:**
+   [task hi1] Seringa estéril, uso único :: Nunca compartilhe agulhas. Seringa estéril reduz infecção e transmissão.
+   [task hi2] Kit de teste se tiver :: Testar substância reduz surpresas perigosas. Se não tiver, evite redose.
+   [task hi3] Não misturar depressores :: Misturar depressores do sistema nervoso (álcool, benzodiazepínicos, opioides) aumenta de verdade o risco de parar de respirar. Estatística distante não ajuda quando é o **seu** corpo.. se a respiração estiver lenta ou irregular, ligue **192**.
+   [task hi4] Respiração lenta se ansioso :: Inspira lenta e profundamente pelo nariz (**conta 4 segundos**), segure **1–2 segundos**, expira devagar pela boca (**conta 6 segundos**). Isso ativa o **sistema parassimpático** e ajuda a baixar o coração. **Repete 10 vezes.** Se sentir tontura, volta ao ritmo normal.
+
+--- torto.fast_psych [task] flowTitle="Onda psicodélica" flowIcon="ri-ghost-2-line" flowAccent="#a890cc" exactPhrase="Eu aceito me sentir estranho agora. É só o pico da onda. Isso sempre passa." sequentialTasks=true allDoneTo="m1" doneText="continuo aqui"
+Psicodélicos alteram percepção.. **não a realidade**. Uma coisa de cada vez:
+   [task fpk1] Trocar som / ruído marrom :: Música agitada piora. Silêncio, ruído marrom ou instrumental suave.
+   [task fpk2] Mudar cômodo ou luz :: Luz baixa, espaço conhecido. Movimento lento.. sem pressa.
+   [task fpk3] Doce na boca :: Açúcar estável ajuda quando o corpo está em alerta.
+   [task fpk4] Não lutar contra o estranho :: Aceitar 'tô estranho agora' reduz a luta interna. O pico **passa**.
+
+
+######## FLOW panico | {"label":"Pânico","icon":"svg-panico","accent":"#00ffff"} | start=a1
+
+--- panico.a1 [choice] 
+Tô aqui com você. ⏎ Me conta.. o que está acontecendo mais agora?
+   > Coração acelerado, falta de ar -> a3_moderate
+   > Usei algo que pode ter causado isso -> redirect_torto
+   > Sensação de perigo sem razão clara -> a2
+   > Não sei, só sei que tô muito mal -> a2_unclear
+
+--- panico.a2 [choice] 
+O que você está sentindo mais no corpo agora?
+   > Formigamento, tontura, mãos suando -> a3_severe
+   > Coração acelerado, agonia, aperto no peito -> a3_moderate
+   > Pensamentos em espiral, não consigo parar -> a3_moderate
+
+--- panico.a2_unclear [info] autoTo="m1"
+Não saber é tudo bem. ⏎  ⏎ Você está aqui.. e isso já é muito. Vamos juntos descobrir o que está rolando.
+
+--- panico.a3_moderate [task] allDoneTo="m1" doneText="joguei água fria"
+Isso é **pânico**.. o cérebro grita perigo quando não há. ⏎  ⏎ **Primeiro**, água fria.. antes de qualquer coisa:
+   [task t0] Água gelada no rosto, nuca ou punhos :: Joga água bem fria ou segure gelo. O choque térmico manda ao cérebro: você está aqui, vivo, seguro.
+
+--- panico.a3_severe [task] allDoneTo="m1" doneText="joguei água fria"
+Isso é muito desconfortável.. mas **seu corpo não está morrendo**. Está em alerta demais. ⏎  ⏎ **Agora**.. água fria:
+   [task t0] Água gelada no rosto, nuca ou punhos :: Reflexo de mergulho. Baixa o coração acelerado de verdade. Faz devagar, sem pressa.
+
+--- panico.redirect_torto [redirect] suggestion="Quer ir para o suporte de Bateu Forte?" redirectFlow="torto" stayTo="m1"
+Se você usou algo, temos um suporte mais específico para isso que pode ajudar mais.
+
+--- panico.m1 [info] autoTo="breath_46"
+**Você não está em perigo real.** ⏎  ⏎ O pânico é alarme falso.. coração acelerado **não significa** morte iminente. A respiração lenta ativa o **sistema parassimpático** e baixa a frequência cardíaca. ⏎  ⏎ Fique comigo. Devagar.
+
+--- panico.m3 [task] allDoneTo="draw_distract" doneText="senti a vibração."
+Agora o **Humming**.. vibração que acalma o nervo vago:
+   [task t2] Fecha a boca e faz um 'hmmmmm' contínuo :: Sente vibrar no peito e na garganta. Mantém por 15-20 segundos. Isso regula o sistema nervoso de verdade.
+
+--- panico.m4 [task] allDoneTo="box_breath_high" doneText="feito isso."
+Uma âncora física agora:
+   [task t3] Água gelada nas mãos, nuca ou rosto :: Ou pedra de gelo se tiver. Isso dá ao cérebro um sinal físico de presença: 'estou aqui, estou seguro'.
+
+--- panico.m5 [choice] 
+Como você está em relação a alguns minutos atrás?
+   > Um pouco melhor -> m6_better
+   > Igual ou ainda muito mal -> m6_same
+
+--- panico.m6_better [info] autoTo="m7"
+O pico pode estar baixando um pouco.. ou não ainda. Os dois são normais. ⏎  ⏎ Continue comigo. Sem pressa.
+
+--- panico.m6_same [info] autoTo="m7"
+O pânico tem pico.. e depois baixa. Mesmo parecendo eterno, **não é eterno**. ⏎  ⏎ Continue respirando. Fico aqui.
+
+--- panico.m7 [task] allDoneTo="m8" doneText="voltei para o presente." sequentialTasks=true
+Agora o **5-4-3-2-1**.. trazendo você para o presente:
+   [task t4] 5 coisas que você consegue VER :: Olha ao redor e nomeia 5 objetos. Em voz alta se puder.
+   [task t5] 4 coisas que você consegue TOCAR :: Sente 4 texturas ou superfícies. Fria, quente, lisa, áspera.
+   [task t6] 3 sons que você consegue OUVIR :: Fecha os olhos por um segundo e escuta o ambiente.
+   [task alt_n] Respiração alternada (5 min) :: Fecha uma narina, inspira; troca, expira. Devagar, 5 minutos se puder.
+
+--- panico.m8 [task] allDoneTo="m9" doneText="estou apoiado."
+Agora o corpo:
+   [task t7] Postura de segurança :: Senta com as costas encostadas em algo sólido. Pés firmes no chão. Esse sinal físico de apoio acalma o sistema nervoso.
+
+--- panico.m9 [info] autoTo="m10"
+**Continuo aqui com você.** ⏎  ⏎ O pânico não dura para sempre. Tem início, meio e fim.. e você está passando por isso agora.
+
+--- panico.m10 [info] autoTo="m11"
+O pânico acontece quando o alarme do cérebro dispara sem perigo real. ⏎  ⏎ _Não é fraqueza. É fisiologia._ E você pode aprender a regulá-lo.. e já está fazendo isso agora.
+
+--- panico.m11 [choice] 
+Você gostaria de chamar alguém para ficar com você?
+   > Sim, vou chamar alguém -> m11_yes
+   > Prefiro ficar quieto por agora -> m12
+
+--- panico.m11_yes [info] autoTo="m12"
+Manda mensagem para alguém de confiança: ⏎  ⏎ _"Tô com uma crise de ansiedade. Pode ficar na linha comigo?"_ ⏎  ⏎ Você não precisa explicar mais do que isso.
+
+--- panico.m12 [info] autoTo="m13"
+Respirar devagar ainda é a ferramenta mais poderosa que você tem agora. ⏎  ⏎ Continue respirando. O tempo está do seu lado.
+
+--- panico.m13 [action] autoTo="m14"
+Se quiser uma voz humana agora:
+   [action] {"label":"CVV  — 188 (gratuito, 24h)","href":"tel:188","icon":"ri-phone-line"}
+
+--- panico.m14 [info] autoTo="m15"
+Você ficou aqui. Não saiu no pior momento. ⏎  ⏎ _Isso não resolve tudo.. mas o corpo começa a sair do alarme._
+
+--- panico.m15 [info] autoTo="done" isDone=true
+Se ainda estiver mal, **tudo bem não estar bem**. ⏎  ⏎ CVV 188.. voz humana, 24h, de graça. ⏎  ⏎ Só o próximo minuto. Este espaço continua aberto.
+
+--- panico.fast_panic [task] flowTitle="Crise de Pânico" flowIcon="ri-windy-line" flowAccent="#8faec2" allDoneTo="m1" doneText="continuo aqui"
+O pânico engana o cérebro dizendo que há perigo imediato. **Vamos enviar o sinal físico de que você está a salvo.**
+   [task fp3] Segurar algo muito frio :: Segure uma pedra de gelo com força até derreter ou jogue água gelada na nuca.
+   [task fp_b46] Respiração 4-6 (10 vezes) :: Inspira lenta e profundamente pelo nariz (**conta 4 segundos**), segure **1–2 segundos**, expira devagar pela boca (**conta 6 segundos**). Isso ativa o **sistema parassimpático** e ajuda a baixar o coração. **Repete 10 vezes.** Se sentir tontura, volta ao ritmo normal.
+   [task fp1] Suspiro Duplo (faça 3x) :: Puxe o ar pelo nariz. Antes de soltar, dê mais uma puxada curta. Solte tudo pela boca num alívio.
+   [task fp2] Vibração suave (humming) :: Feche a boca e faça um som contínuo de "Hummmmm". Sinta vibrar no peito para regular o nervo vago.
+
+--- panico.breath_46 [task] evidenceHint="técnica recomendada em crises de ansiedade" allDoneTo="m2" doneText="respirei"
+Respiração diafragmática.. **a mais eficaz agora**:
+   [task b46] 4-6-10.. inspira, segura, expira :: Inspira lenta e profundamente pelo nariz (**conta 4 segundos**), segure **1–2 segundos**, expira devagar pela boca (**conta 6 segundos**). Isso ativa o **sistema parassimpático** e ajuda a baixar o coração. **Repete 10 vezes.** Se sentir tontura, volta ao ritmo normal.
+
+--- panico.mindfulness_5 [task] allDoneTo="m3" doneText="observei"
+Mindfulness breve (5 min).. observar sem julgar:
+   [task mf1] Observar o ar 5 minutos :: Sente o ar entrar e sair. Pensamentos vêm e vão.. você não precisa segui-los. Mesmo 2 minutos ajudam.
+
+--- panico.m2 [task] allDoneTo="mindfulness_5" doneText="feito as 3 vezes."
+Primeiro.. o **Suspiro Duplo**:
+   [task t1] Suspiro Duplo.. 3 vezes :: Puxe o ar pelo nariz até onde der. Antes de soltar, dá mais uma puxadinha rápida. Depois solte tudo de uma vez pela boca. Repete 3 vezes.
+
+--- panico.draw_distract [task] allDoneTo="m4" doneText="rabischei"
+Atividade leve.. ocupar as mãos:
+   [task dd1] Rabiscar ou escrever 5 minutos :: Papel, app de notas.. qualquer traço. Não precisa ser bonito. Só distrair o alarme.
+
+--- panico.box_breath_high [task] allDoneTo="m5" doneText="box feito"
+Se ainda intenso.. **box breathing** (4-4-4-4):
+   [task box4] Box 4×4.. 4 ciclos :: Inspira 4s, segure 4s, expira 4s, segure 4s. Repete 4 vezes.
+
+
+######## FLOW realidade | {"label":"Onde eu tô?","icon":"ri-treasure-map-fill","accent":"#a855f7"} | start=a1
+
+--- realidade.a1 [choice] 
+Tô aqui com você. ⏎  ⏎ Essa sensação de irrealidade pode ter causas diferentes.. me conta um pouco mais:
+   > As coisas parecem distantes ou como num sonho -> a2
+   > Eu mesmo pareço irreal ou distante de mim -> a2
+   > Usei algo que pode ter causado isso -> a2_substance
+   > Não sei explicar, está tudo estranho -> a3_anchor
+
+--- realidade.a2 [info] autoTo="m1"
+O que você está descrevendo se chama **despersonalização ou desrealização**.. é uma defesa natural da mente ao estresse intenso. ⏎  ⏎ Não é perigoso. E você **é real**.
+
+--- realidade.a2_substance [redirect] suggestion="Quer ir para o suporte de Bateu Forte?" redirectFlow="torto" stayTo="m1"
+Se você usou algo, temos um suporte mais específico que pode ajudar mais agora.
+
+--- realidade.a3_anchor [info] autoTo="m1"
+Tudo bem não conseguir explicar. ⏎  ⏎ O que eu sei é que você está aqui. O chão é real. Eu estou com você.
+
+--- realidade.redirect_panico [redirect] suggestion="Quer ir para o suporte de Pânico?" redirectFlow="panico" stayTo="m1"
+Se junto à irrealidade tem muito medo e coração acelerado, o suporte de pânico ajuda mais.
+
+--- realidade.m1 [info] autoTo="m2"
+Você é real. Esse momento é real. ⏎  ⏎ Vamos trazer você de volta para o corpo.. devagar, com cuidado.
+
+--- realidade.m2 [task] allDoneTo="m3" doneText="senti o real."
+A âncora mais poderosa é o toque físico:
+   [task t1] Toca no tecido da sua roupa :: Sente o atrito real da matéria. É frio ou quente? Liso ou áspero? Fica nisso por alguns segundos.
+   [task t2] Coloca a palma da mão no chão ou numa parede :: Pressiona com força. Sente o peso do seu braço. A resistência do material é real.. e você é real.
+
+--- realidade.m3 [task] allDoneTo="m4" doneText="nomeei as 3 coisas."
+Agora nomeando o que existe:
+   [task t3] Diz em voz alta o nome de 3 objetos que você vê :: Isso ancora a mente no presente imediato. Pode ser qualquer coisa.. a palavra em si já ajuda.
+
+--- realidade.m4 [task] allDoneTo="mindfulness_real" doneText="senti a temperatura."
+Temperatura como âncora:
+   [task t4] Água fria nas mãos ou no rosto :: A sensação de temperatura é processada diferente pelo cérebro.. ela corta o loop de irrealidade.
+
+--- realidade.m5 [choice] 
+A sensação de estranhamento está um pouco menor?
+   > Sim, um pouco -> m6
+   > Ainda está muito forte -> m6_hard
+
+--- realidade.m6 [info] autoTo="m7"
+Isso. Você está trazendo o seu sistema nervoso de volta. ⏎  ⏎ Continue comigo.
+
+--- realidade.m6_hard [info] autoTo="m7"
+Tudo bem. Às vezes o estado demora mais para passar. ⏎  ⏎ Isso **não é permanente**. Vamos continuar juntos.
+
+--- realidade.m7 [task] allDoneTo="m8" doneText="usei meus sentidos."
+Os 5 sentidos.. um de cada vez:
+   [task t5] Diz uma coisa que você VÊ agora :: Fica olhando para ela por alguns segundos.
+   [task t6] Diz um som que você OUVE :: Por mais sutil que seja.. um ventilador, a rua, a sua respiração.
+   [task t7] Cheira algo que esteja próximo :: A própria mão, uma roupa, qualquer cheiro. O olfato é o sentido mais direto ao sistema nervoso.
+
+--- realidade.m8 [info] autoTo="m9"
+Você está aqui comigo. ⏎  ⏎ A despersonalização é desconfortável mas **inofensiva**.. é o sistema nervoso tentando te proteger de sobrecarga. Você está seguro.
+
+--- realidade.m9 [task] allDoneTo="m10" doneText="me movi."
+Movimento leve.. um dos melhores redefinidores de presença:
+   [task t8] Aperta e solte os punhos lentamente :: Sente os músculos trabalhando. Repete 5 vezes. Você tem um corpo.. e ele está aqui.
+   [task t9] Mexe os dedos dos pés dentro do sapato :: Ou descalço no chão. Essa textura embaixo dos pés é muito boa para ancoragem.
+
+--- realidade.m10 [info] autoTo="m11"
+Você está aqui. No presente. Nesse espaço. ⏎  ⏎ O passado não está te puxando. O futuro não precisa da sua atenção agora. **Só esse momento.**
+
+--- realidade.m11 [choice] 
+Tem alguém que pode ficar com você por um tempo agora?
+   > Sim, posso chamar alguém -> m11_yes
+   > Não agora -> m11_no
+
+--- realidade.m11_yes [info] autoTo="m12"
+Chama. Uma presença humana ao lado.. mesmo em silêncio.. ajuda muito a ancorar. ⏎  ⏎ Você não precisa explicar. Só pede companhia.
+
+--- realidade.m11_no [action] autoTo="m12"
+Tudo bem. O CVV tem vozes humanas disponíveis agora:
+   [action] {"label":"CVV  — 188 (gratuito, 24h)","href":"tel:188","icon":"ri-phone-line"}
+
+--- realidade.m12 [info] autoTo="m13"
+Uma coisa que pode ajudar nas próximas horas: **evita telas, ruído excessivo e cafeína**. ⏎  ⏎ Dar um pouco de espaço para o sistema nervoso se recuperar acelera o processo.
+
+--- realidade.m13 [task] allDoneTo="m14" doneText="estou mais aquecido."
+Um gesto final de cuidado:
+   [task t10] Coloca algo suave ao redor de você :: Um cobertor, uma jaqueta, qualquer textura confortável. O toque físico contínuo ajuda o sistema nervoso a se estabilizar.
+
+--- realidade.m14 [info] autoTo="m15"
+Você ficou aqui um tempo. ⏎  ⏎ _Mesmo sentindo que tudo estava estranho, você não saiu._
+
+--- realidade.m15 [info] autoTo="done" isDone=true
+Você está aqui. Agora. ⏎  ⏎ Se ainda estiver estranho, **continue devagar**. Ligue 188 se precisar de voz humana (CVV.. escuta gratuita).
+
+--- realidade.fast_realidade [task] flowTitle="Onde eu tô?" flowIcon="ri-planet-fill" flowAccent="#a38cb8" allDoneTo="m1" doneText="ancorado aqui"
+As coisas parecem estranhas? **Isso é uma defesa natural da mente ao estresse.** Você é real. O chão é real.
+   [task fr1] Tocar na textura :: Toque no tecido da sua roupa ou no chão firme. Sinta o atrito real da matéria.
+   [task fr2] Nomear 3 coisas :: Olhe em volta e diga em voz alta o nome de 3 objetos físicos que você está vendo agora.
+   [task fr3] Água fria nas mãos ou rosto :: A sensação de temperatura corta o loop de irrealidade.
+
+--- realidade.mindfulness_real [task] allDoneTo="m5" doneText="observei"
+Mindfulness breve (5 min):
+   [task mfr] Observar respiração 5 min :: Ar entrando e saindo. Pensamentos passam como nuvens.
+
+
+######## FLOW trava | {"label":"Paranoia","icon":"ri-body-scan-fill","accent":"#3b82f6"} | start=a1
+
+--- trava.a1 [choice] 
+Tô aqui com você. ⏎  ⏎ Me conta.. o que está acontecendo?
+   > Travei, não consigo me mover -> a2
+   > Sinto que estão me olhando ou julgando -> a2
+   > Minha mente ficou em branco, sem reação -> a2_confirm
+   > Pânico que se parece com trava -> redirect_panico
+
+--- trava.a2 [choice] 
+O que está acontecendo mais agora?
+   > Sensação de perigo sem razão clara -> a3_paranoia
+   > Congelei de medo ou ansiedade -> a3_freeze
+   > Tudo parece irreal junto -> redirect_realidade
+
+--- trava.a2_confirm [info] autoTo="m1"
+O estado de trava.. ou 'freeze'.. é uma resposta automática do sistema nervoso. ⏎  ⏎ Não é falta de força. É o corpo tentando te proteger.
+
+--- trava.a3_paranoia [info] autoTo="m1"
+Essa sensação de ser observado ou julgado é muito real para você.. e também passa. ⏎  ⏎ **Ninguém está prestando atenção em você** do jeito que parece.
+
+--- trava.a3_freeze [info] autoTo="m1"
+Congelar é uma resposta de sobrevivência.. tão válida quanto correr ou lutar. ⏎  ⏎ O corpo vai sair desse estado. Vamos ajudá-lo.
+
+--- trava.redirect_panico [redirect] suggestion="Quer ir para o suporte de Pânico?" redirectFlow="panico" stayTo="m1"
+Se junto ao travar tem muito coração acelerado e falta de ar, o suporte de pânico pode ajudar mais.
+
+--- trava.redirect_realidade [redirect] suggestion="Quer ir para o suporte de Onde estou?" redirectFlow="realidade" stayTo="m1"
+Se junto ao travar tudo parece irreal ou distante, o suporte de irrealidade pode ajudar mais.
+
+--- trava.m1 [info] autoTo="m2"
+**Você está seguro aqui.** ⏎  ⏎ Ninguém ao redor sabe o que você está sentindo. Você tem espaço para fazer isso no seu tempo.
+
+--- trava.m2 [task] allDoneTo="m3" doneText="estou apoiado."
+Postura de segurança.. primeiro:
+   [task t1] Senta no chão encostado em uma parede sólida :: Se não puder, encosta onde estiver. A parede sólida nas costas sinaliza ao cérebro: 'estou protegido'.
+   [task t2] Abraça os próprios joelhos se puder :: Ou cruza os braços no peito. Comprimir o núcleo é uma postura de autorregulação que funciona.
+
+--- trava.m3 [task] allDoneTo="m4" doneText="reduzi o estímulo."
+Reduzindo o estímulo visual:
+   [task t3] Abaixa o olhar para o chão na frente de você :: Não precisa fechar os olhos.. só tira o campo de visão periférico que alimenta a paranoia.
+   [task t4] Coloca capuz, óculos ou qualquer barreira se puder :: Criar uma bolha visual reduz muito o processamento de ameaças do ambiente.
+
+--- trava.m4 [info] autoTo="m5"
+Respiração diafragmática: ⏎  ⏎ Inspira lenta e profundamente pelo nariz (**conta 4 segundos**), segure **1–2 segundos**, expira devagar pela boca (**conta 6 segundos**). Isso ativa o **sistema parassimpático** e ajuda a baixar o coração. **Repete 10 vezes.** Se sentir tontura, volta ao ritmo normal.
+
+--- trava.m5 [choice] 
+Como está o nível de agitação agora?
+   > Diminuiu um pouco -> m6
+   > Ainda intenso -> m6_high
+
+--- trava.m6 [info] autoTo="m7"
+O sistema nervoso pode estar desacelerando.. ou ainda não. Continuo aqui.
+
+--- trava.m6_high [info] autoTo="m7"
+Normal. Às vezes o estado de alerta demora mais para passar. ⏎  ⏎ Isso **vai baixar**. Continue respirando lentamente.
+
+--- trava.m7 [task] allDoneTo="m8" doneText="senti meu corpo."
+Ancoragem pelo toque:
+   [task t5] Aperta os próprios braços ou coxas com as mãos :: Com pressão média. Sente o calor e o peso. Você tem um corpo físico.. e ele está aqui, seguro.
+
+--- trava.m8 [choice] 
+Tem alguém de confiança perto de você ou que você possa contatar agora?
+   > Sim, tem alguém -> crt_before_sms
+   > Não tem ninguém agora -> m8_no
+
+--- trava.m8_yes [action] autoTo="m9"
+Manda uma mensagem rápida.. você não precisa explicar tudo:
+   [action] {"label":"Mandar SMS de apoio","href":"sms:?body=Ei%2C+tô+passando+por+algo+difícil+agora+e+precisaria+de+companhia.+Pode+vir+ou+ficar+na+linha?","icon":"ri-message-3-line"}
+
+--- trava.m8_no [action] autoTo="m9"
+Tudo bem. Tem um serviço humano disponível agora:
+   [action] {"label":"CVV  — 188 (gratuito, 24h)","href":"tel:188","icon":"ri-phone-line"}
+
+--- trava.m9 [task] allDoneTo="m10" doneText="contei os 10."
+Uma coisa prática que muda muito:
+   [task t6] Conta 10 objetos ao redor de você :: Em voz baixa ou mentalmente. Isso ocupa a parte do cérebro que está gerando o alarme.
+
+--- trava.m10 [info] autoTo="m11"
+A paranoia e o freeze são **respostas temporárias**. ⏎  ⏎ Elas servem para te proteger.. e quando o sistema nervoso entender que não há perigo real, vão embora.
+
+--- trava.m11 [info] autoTo="m12"
+Você está aqui. Respirou. Não saiu. ⏎  ⏎ _O corpo começa a sair da trava.. no seu tempo._
+
+--- trava.m12 [task] allDoneTo="m13" doneText="me movi."
+Um movimento leve para sair do freeze:
+   [task t7] Mexe os pés.. alternando esquerdo e direito :: Como uma marchinha pequena, sentado. Movimento bilateral ajuda o sistema nervoso a processar e sair do estado de trava.
+
+--- trava.m13 [info] autoTo="m14"
+Quando você sentir que pode se mover um pouco mais, **mudar de ambiente** ajuda muito.. outro cômodo, outra luz, outro ângulo. ⏎  ⏎ Não agora. Só quando estiver pronto.
+
+--- trava.m14 [info] autoTo="m15"
+Você ficou aqui. Respirou. Não saiu. ⏎  ⏎ _O corpo começa a sair da trava.. no seu tempo._
+
+--- trava.m15 [info] autoTo="done" isDone=true
+Se ainda estiver travado, **tudo bem**. ⏎  ⏎ Só o próximo minuto. CVV 188 se precisar.
+
+--- trava.fast_trava [task] flowTitle="Travei / Paranoia" flowIcon="ri-body-scan-fill" flowAccent="#b8a07a" allDoneTo="m1" doneText="continuo aqui"
+Se você paralisou achando que estão te olhando: **ninguém está focando em você. Você está num espaço seguro.**
+   [task ft1] Postura segura :: Sente-se no chão encostado numa parede sólida. Abrace seus joelhos. Proteja seu núcleo.
+   [task ft2] Bloquear a visão :: Coloque capuz, boné ou óculos escuros se estiver na rua. Crie uma barreira visual que acalma o cérebro.
+   [task ft3] SMS pedindo resgate amigo :: Manda mensagem para alguém de confiança.. você não precisa explicar tudo.
+
+--- trava.crt_before_sms [task] allDoneTo="m8_yes" doneText="ok"
+Pedir ajuda é válido. Antes de enviar.. pausa breve:
+   [task crt_sms] 10 segundos.. pensar duas vezes :: Respire. Pedir companhia não é fraqueza.
+
+
+######## FLOW falar | {"label":"Solidão","icon":"svg-falar","accent":"#34d399"} | start=a1
+
+--- falar.a1 [choice] 
+Que bom que você abriu isso. ⏎  ⏎ Estou aqui. Pode me contar?
+   > Tô me sentindo muito sozinho e sem saída -> a2
+   > Tô desesperado, com pensamentos muito pesados -> a2_crisis
+   > Pensamentos de me machucar -> cssrs_entry
+   > Usei algo e tô me sentindo muito mal emocionalmente -> redirect_torto
+   > Não sei explicar, só sei que tô muito mal -> a2
+
+--- falar.a2 [choice] 
+Obrigado por me contar. ⏎  ⏎ Agora preciso te perguntar uma coisa importante:
+   > Tô mal mas estou seguro onde estou -> m1
+   > Não tenho certeza se estou seguro -> a3_unsure
+
+--- falar.a2_crisis [action] autoTo="cssrs_entry"
+Obrigado por me contar. Isso é sério.. e você **não precisa enfrentar sozinho**. ⏎  ⏎ Tem gente treinada, de graça, agora:
+   [action] {"label":"CVV  — 188 (agora, de graça, 24h)","href":"tel:188","icon":"ri-phone-line"}
+
+--- falar.m_crisis_hold [task] allDoneTo="m_crisis_breath" doneText="fiz isso"
+Enquanto decide se liga ou não.. **só fica aqui**. Não precisa fazer nada grande:
+   [task tc1] Coloca os pés no chão e sente o peso :: Pressiona os pés. Você tem corpo. Você está em algum lugar físico agora.
+   [task tc2] Água fria no rosto ou punhos :: Choque térmico suave. Ajuda o cérebro a sair do loop por alguns segundos.
+
+--- falar.m_crisis_breath [info] autoTo="m1"
+Inspira lenta e profundamente pelo nariz (**conta 4 segundos**), segure **1–2 segundos**, expira devagar pela boca (**conta 6 segundos**). Isso ativa o **sistema parassimpático** e ajuda a baixar o coração. **Repete 10 vezes.** Se sentir tontura, volta ao ritmo normal. ⏎  ⏎ _Se os pensamentos pesados continuarem: **188**._
+
+--- falar.a3_safe [action] autoTo="m1"
+Que bom que você está seguro. ⏎  ⏎ O CVV tem pessoas reais, treinadas, esperando para ouvir você agora.. de graça e sem julgamento:
+   [action] {"label":"CVV  — 188 (agora, de graça)","href":"tel:188","icon":"ri-phone-line"}
+
+--- falar.a3_unsure [redirect] suggestion="Quer ir para o suporte de Resgate?" redirectFlow="samu" stayTo="m1"
+Se você não tem certeza se está seguro, o SAMU (192) está preparado para isso.. sem julgamento, focados em te ajudar.
+
+--- falar.redirect_torto [redirect] suggestion="Quer ir para o suporte de Bateu Forte?" redirectFlow="torto" stayTo="m1"
+Se você usou algo, temos um suporte específico para isso que pode ajudar mais agora.
+
+--- falar.m1 [info] autoTo="m2" exactPhrase="A dor parece insuportável e permanente agora, mas a intensidade abaixa. Dê tempo ao tempo."
+A dor que você está sentindo é **real**. ⏎  ⏎ Não é fraqueza. Não é drama. É dor.. e ela merece atenção e cuidado.
+
+--- falar.m2 [info] autoTo="m3"
+Quando a gente está nessa intensidade, o cérebro mente. ⏎  ⏎ Ele diz que _"isso vai durar para sempre"_.. mas não vai. A intensidade sempre diminui. Sempre diminuiu antes.
+
+--- falar.m3 [task] allDoneTo="m4" doneText="fiz isso."
+Primeiro: o corpo.
+   [task t1] Muda a temperatura do seu corpo :: Enrola num cobertor pesado ou toma um banho morno. O frio e o isolamento pioram o desespero.. o calor ajuda a regular o sistema nervoso.
+
+--- falar.m4 [task] allDoneTo="m5" doneText="continuo aqui"
+Uma distração ou um gesto de conexão.. escolha o que couber agora:
+   [task t_voice] Assistir THE-VOICE juntos? :: Conteúdo seguro da Apollo. Toque para abrir aqui.. começa em ~0,8s, com som suave.
+   [task t_friend] Escolher alguém da agenda :: Abre seus contatos para mandar uma mensagem pedindo companhia.. sem precisar explicar tudo.
+
+--- falar.m5 [choice] 
+Como você está em relação a alguns minutos atrás?
+   > Um pouco melhor -> m6_better
+   > Mais ou menos igual -> m6_same
+   > Ainda muito intenso -> m6_hard
+
+--- falar.m6_better [info] autoTo="walk_ground"
+Pode estar mudando um pouco.. ou ainda não. Os dois cabem aqui. ⏎  ⏎ Continuo com você.
+
+--- falar.m6_same [info] autoTo="walk_ground"
+Tudo bem. A dor emocional intensa às vezes não baixa de uma vez. ⏎  ⏎ Mas você está aqui, e isso importa muito.
+
+--- falar.m6_hard [action] autoTo="walk_ground"
+Quando a intensidade está muito alta, uma voz humana ajuda mais do que qualquer texto. ⏎  ⏎ O **CVV (188)** é escuta gratuita 24h. O **CAPS** no Rio acolhe presencialmente.. também gratuito pelo SUS.
+   [action] {"label":"Ligar CVV 188.. escuta emocional","href":"tel:188","icon":"ri-phone-line"}
+   [action] {"label":"Ver CAPS no Rio (24h · SUS)","href":"#caps","icon":"ri-hospital-line","variant":"caps_list"}
+
+--- falar.m7 [info] autoTo="m8"
+Respiração juntos: ⏎  ⏎ Inspira lenta e profundamente pelo nariz (**conta 4 segundos**), segure **1–2 segundos**, expira devagar pela boca (**conta 6 segundos**). Isso ativa o **sistema parassimpático** e ajuda a baixar o coração. **Repete 10 vezes.** Se sentir tontura, volta ao ritmo normal.
+
+--- falar.m8 [task] allDoneTo="m9" doneText="cuidei de mim."
+Um gesto de cuidado com você mesmo:
+   [task t3] Bebe água ou qualquer coisa quente :: Chá, café, chocolate quente.. um líquido quente nas mãos e no corpo é um gesto de cuidado físico com você.
+
+--- falar.m9 [info] autoTo="m10"
+Você merece apoio. ⏎  ⏎ Não porque você fez alguma coisa de especial.. mas porque você existe, e existir é suficiente.
+
+--- falar.m10 [info] autoTo="journaling_deep"
+Escrever organiza o caos interno.. vamos fazer devagar.
+
+--- falar.m11 [choice] 
+Tem alguém.. qualquer pessoa.. que você poderia contactar agora?
+   > Sim, tem alguém -> m11_yes
+   > Não tem ninguém agora -> m11_no
+
+--- falar.m11_yes [info] autoTo="wa_from_yes"
+Manda mensagem. Você não precisa explicar tudo: ⏎  ⏎ _"Ei, tô passando por uma crise emocional aguda e preciso de companhia. Pode ficar na linha comigo?"_ ⏎  ⏎ Ou use WhatsApp com texto pronto no próximo passo.
+
+--- falar.m11_no [action] autoTo="crt_pause_node"
+Quando não tem ninguém por perto, o **CVV (188)** existe para escuta.. e no Rio o **CAPS** recebe presencialmente, de graça, 24h.
+   [action] {"label":"Ligar CVV 188","href":"tel:188","icon":"ri-phone-line"}
+   [action] {"label":"CAPS Rio.. mapa e telefones","href":"#caps","icon":"ri-hospital-line","variant":"caps_list"}
+
+--- falar.m12 [info] autoTo="m13"
+A solidão mais doída é aquela que parece permanente. ⏎  ⏎ Mas ela **não é permanente**. Estados mudam. Contextos mudam. Você mudou antes.. e vai mudar de novo.
+
+--- falar.m13 [task] allDoneTo="m14" doneText="tenho um plano pequeno."
+Um plano só para as próximas horas:
+   [task t5] Define uma coisa pequena que você vai fazer agora :: Tomar banho, comer algo, ligar a TV, sair um pouco. Qualquer coisa pequena e alcançável. Não precisa ser amanhã.. só agora.
+
+--- falar.m14 [info] autoTo="sleep_routine"
+Você ficou aqui. Leu. Respirou o que deu. ⏎  ⏎ _Isso não apaga o que sente.. mas você não saiu no pior segundo._
+
+--- falar.m15 [info] autoTo="done" isDone=true
+Se ainda estiver pesado.. **não precisa estar bem agora**. ⏎  ⏎ [Ligar CVV 188](tel:188).. voz humana, 24h, de graça. ⏎  ⏎ Só o próximo minuto. Este espaço continua aberto.
+
+--- falar.fast_ground [task] flowTitle="Você não está sozinho" flowIcon="ri-user-smile-line" flowAccent="#7e9ab8" exactPhrase="A dor parece insuportável e permanente agora, mas a intensidade abaixa. Dê tempo ao tempo." crisis=true allDoneTo="m7" doneText="continuo aqui"
+Podemos fazer o essencial agora.. devagar:
+   [task fg1] Coloca os pés no chão e sente o peso :: Pressiona os pés. Você tem corpo. Você está em algum lugar físico agora.
+   [task fg2] Água fria no rosto ou punhos :: Choque térmico suave. Ajuda o cérebro a sair do loop por alguns segundos.
+   [task t_voice] Vamos assistir THE-VOICE juntos? :: Conteúdo seguro da Apollo. Pode assistir aqui ou em tela cheia.
+   [task fg4] CVV 188.. escuta emocional (24h) :: Centro de Valorização da Vida: voz humana treinada, gratuita, sem julgamento.. não é SAMU.
+
+--- falar.cssrs_entry [redirect] suggestion="Iniciar triagem (C-SSRS)?" redirectFlow="cssrs" stayTo="m_crisis_hold"
+Isso é sério.. vamos fazer uma triagem rápida de segurança, uma pergunta por vez.
+
+--- falar.walk_ground [task] evidenceHint="exercício regular ajuda humor; caminhada curta já conta" allDoneTo="m7" doneText="me movi"
+Movimento suave libera endorfina.. mesmo na crise. ⏎  ⏎ _Se estiver no Rio e a dor não baixar: o CAPS Franco Basaglia (Rua Francisco Bicalho, 1) acolhe 24h, de graça._
+   [task wg1] Caminhada 15–20 min (ou 2×10 min) :: Corredor, quintal, rua calma. Se não puder sair: alongamento suave sentado, pés no chão.
+
+--- falar.journaling_deep [task] sequentialTasks=true allDoneTo="cognitive_reframe" doneText="escrevi"
+Diário.. **uma etapa de cada vez**:
+   [task jd1] Escreve como você se sente agora :: Sem filtro. Pode ser uma frase ou uma página.
+   [task jd2] Lista 1–2 coisas positivas ou gratidão do dia :: Pequenas: café, sol, mensagem boa, respirar.
+   [task jd3] Guarda para reler em momentos de desânimo :: Foto do texto ou nota no celular. Reler em baixa ajuda lembrar que estados mudam.
+
+--- falar.cognitive_reframe [info] autoTo="m11"
+TCC rápida: que **evidência concreta** você tem **neste minuto** de que o pior vai acontecer? ⏎  ⏎ Muitas vezes o cérebro projeta.. não prova.
+
+--- falar.crt_pause_node [task] allDoneTo="m12" doneText="pausei"
+Antes de decidir algo grande ou impulsivo:
+   [task crt1] Pausa 10 segundos.. pensar duas vezes :: Respire. Conta até 10. Decisões em pico costumam ser piores.. pausa fortalece o pensamento reflexivo.
+
+--- falar.wa_from_yes [action] autoTo="crt_pause_node"
+WhatsApp com mensagem pronta (você aperta enviar):
+   [action] {"label":"WhatsApp.. pedir companhia","href":"https://wa.me/?text=PLACEHOLDER","icon":"ri-whatsapp-line","variant":"whatsapp","whatsappTemplate":"crisis_generic"}
+
+--- falar.sleep_routine [info] autoTo="m15"
+Próximas horas.. higiene do sono leve: luz baixa, tela longe se puder, líquido quente, horário parecido. Corpo precisa de rotina para regular humor.
+
+
+######## FLOW samu | {"label":"Resgate","icon":"svg-samu","accent":"#ef4444"} | start=instant_rescue
+
+--- samu.a1 [choice] 
+Tô aqui. Primeiro.. qual é a situação?
+   > Urgência médica.. preciso de socorro agora -> action_192
+   > Alguém ao meu redor está em perigo -> action_192
+   > Crise emocional grave, não é física -> a2_mental
+   > Não sei se é emergência -> a2_unsure
+
+--- samu.action_192 [action] autoTo="m1"
+**Liga agora.** O SAMU e Bombeiros são treinados para isso.. sem julgamento, focados em salvar vidas: ⏎  ⏎ _Uso de substâncias em socorros médicos não aciona polícia._
+   [action] {"label":"SAMU  — 192","href":"tel:192","icon":"ri-heart-pulse-fill","cls":"danger"}
+   [action] {"label":"Bombeiros  — 193","href":"tel:193","icon":"ri-fire-fill","cls":"danger"}
+
+--- samu.a2_mental [action] autoTo="m2_emotional"
+Para crise emocional severa.. o CVV atende 24h com pessoas reais e treinadas:
+   [action] {"label":"CVV  — 188 (gratuito, agora)","href":"tel:188","icon":"ri-phone-line"}
+
+--- samu.a2_unsure [info] autoTo="action_192"
+Se você está em dúvida se é emergência.. **ligue**. ⏎  ⏎ O SAMU é treinado para avaliar. Sempre melhor ligar sem precisar do que precisar sem ligar. Eles não se importam.
+
+--- samu.m1 [info] autoTo="m2"
+Você ligou. Isso importa. ⏎  ⏎ Agora.. **ficar calmo ao lado da pessoa** e não mover quem não deve ser movido é tudo que você precisa fazer enquanto o socorro não chega.
+
+--- samu.m2 [task] allDoneTo="m3" doneText="estou preparado."
+Enquanto aguarda.. ações essenciais:
+   [task t1] Fica ao lado da pessoa.. não a deixa sozinha :: Sua presença importa. Se ela estiver consciente, fala com ela com voz calma.
+   [task t2] Mantém o espaço desobstruído :: Remove objetos ao redor que possam atrapalhar os socorristas. Abre portas e janelas se possível.
+
+--- samu.m2_emotional [info] autoTo="m3_emotional"
+Você está seguro por enquanto.. e isso é o que importa agora. ⏎  ⏎ Vamos ficar juntos por um momento.
+
+--- samu.m3 [choice] 
+Qual é a situação da pessoa?
+   > Pode ter overdose ou intoxicação -> m3_overdose
+   > Caiu de altura ou teve acidente -> m3_fall
+   > Dificuldade respiratória ou parou -> m3_breathing
+   > Crise emocional ou tentativa -> m3_emotional
+
+--- samu.m3_overdose [info] autoTo="m4"
+**Posição de recuperação**.. crucial: ⏎  ⏎ Deita ela de lado (lado esquerdo se possível). Joelho de cima dobrado para ela não rolar. Isso evita asfixia se ela vomitar. ⏎  ⏎ _Não dá água. Não tenta acordar com violência._
+
+--- samu.m3_fall [info] autoTo="m4"
+**Não move a pessoa**. ⏎  ⏎ Suspita de lesão na coluna? Não mova de jeito nenhum. Estabiliza a cabeça só com as mãos se necessário. O SAMU vai orientar pelo telefone.
+
+--- samu.m3_breathing [info] autoTo="m4"
+Se ela parou de respirar e você sabe RCP.. **comece agora** enquanto chama o SAMU. ⏎  ⏎ O operador do SAMU pode te guiar ao telefone em tempo real. Pede isso.
+
+--- samu.m3_emotional [info] autoTo="m4"
+Fica com ela. Fala com calma e com presença. ⏎  ⏎ _"Estou aqui com você. Não vou a lugar nenhum."_ ⏎  ⏎ Não tenta resolver. Só fica.
+
+--- samu.m4 [task] allDoneTo="m5" doneText="tenho as informações."
+Informações para quando o socorro chegar:
+   [task t3] Anota ou lembra: nome e idade da pessoa :: Se souber, também qualquer medicamento ou substância que ela possa ter usado.
+   [task t4] Endereço exato ou ponto de referência bem claro :: Eles vão perguntar isso. Mais claro possível.
+
+--- samu.m5 [info] autoTo="m6"
+Você está aqui. Isso importa. ⏎  ⏎ Cuidar de alguém em crise é muito.. e você está presente.
+
+--- samu.m6 [info] autoTo="m7"
+Enquanto aguarda.. você também precisa respirar: ⏎  ⏎ Inspira lenta e profundamente pelo nariz (**conta 4 segundos**), segure **1–2 segundos**, expira devagar pela boca (**conta 6 segundos**). Isso ativa o **sistema parassimpático** e ajuda a baixar o coração. **Repete 10 vezes.** Se sentir tontura, volta ao ritmo normal. ⏎  ⏎ Continuo aqui.
+
+--- samu.m7 [info] autoTo="m8"
+**O SAMU pode ficar na linha com você** enquanto não chega. ⏎  ⏎ Pede isso ao ligar.. eles ficam guiando em tempo real.
+
+--- samu.m8 [task] allDoneTo="m9" doneText="pronto para receber."
+Preparando para receber o socorro:
+   [task t5] Vai até a entrada do local para esperar ou manda alguém :: Facilita muito o trabalho dos socorristas.. cada minuto conta.
+
+--- samu.m9 [info] autoTo="caps_link"
+Depois que o socorro chegar e a situação estiver sob controle.. você também vai precisar de cuidado. ⏎  ⏎ Cuidar de alguém em crise deixa marcas. Cuide de você depois.
+
+--- samu.m10 [action] autoTo="m11"
+Recursos adicionais se precisar de apoio depois:
+   [action] {"label":"CVV  — 188 (para você também)","href":"tel:188","icon":"ri-phone-line"}
+   [action] {"label":"CAPS III Rio (7 unidades 24h)","href":"#caps","icon":"ri-hospital-line","variant":"caps_list"}
+
+--- samu.m11 [info] autoTo="m12"
+Você não precisava estar aqui.. e escolheu estar. ⏎  ⏎ _Isso é amor._
+
+--- samu.m12 [info] autoTo="m13"
+Se essa situação acontece com frequência na sua vida.. com você ou com alguém próximo.. você merece apoio contínuo. ⏎  ⏎ O CAPS atende de graça pelo SUS.
+
+--- samu.m13 [task] allDoneTo="m14" doneText="respirei."
+Um gesto de cuidado com você agora:
+   [task t6] Respire 3 vezes bem devagar :: Inspira pelo nariz... segura... solte pela boca. Você passou por muito. Dá um momento para si mesmo.
+
+--- samu.m14 [info] autoTo="m15"
+Você esteve aqui quando precisava. ⏎  ⏎ Isso importa. _Você importa._
+
+--- samu.m15 [info] autoTo="done" isDone=true
+Este espaço estará aqui toda vez que você precisar. ⏎  ⏎ **Cuida de você. 💙**
+
+--- samu.instant_rescue [action] flowTitle="Resgate Imediato" flowIcon="ri-alarm-warning-fill" flowAccent="#b88a80" alertBox="**Preso no alto com crise?**\nSente-se no chão agora. Olhe para a parede de dentro. Não tenha medo de pedir resgate." autoTo="m1"
+O SAMU e Bombeiros são focados em **salvar a vida**. Eles prestam socorro humanizado e **não acionam a polícia por uso de drogas em socorros médicos.**
+   [action] {"label":"Ligar para o SAMU (192)","href":"tel:192","icon":"ri-heart-pulse-fill","cls":"danger"}
+   [action] {"label":"Ligar para os Bombeiros (193)","href":"tel:193","icon":"ri-fire-fill","cls":"danger"}
+
+--- samu.caps_link [action] autoTo="m11"
+Crise emocional após urgência médica.. CAPS III 24h:
+   [action] {"label":"Ver CAPS III Rio","href":"#caps","icon":"ri-hospital-line","variant":"caps_list"}
+   [action] {"label":"CVV  — 188","href":"tel:188","icon":"ri-phone-line"}
+
+
+######## FLOW cssrs | {"label":"Triagem de segurança","icon":"ri-shield-heart-line","accent":"#34d399"} | start=c1
+
+--- cssrs.c1 [choice] riskOnEnter="LOW"
+Preciso fazer algumas perguntas rápidas.. uma de cada vez. ⏎  ⏎ Nos **últimos 30 dias**, você desejou estar morto ou dormir sem acordar?
+   > Sim -> c1_yes [LOW]
+   > Não -> c2
+
+--- cssrs.c1_yes [task] allDoneTo="c2" doneText="continuo aqui"
+Obrigado por responder. Antes da próxima pergunta.. uma respiração curta:
+   [task c1b] Respiração 4-6 (3 vezes) :: Inspira pelo nariz (**conta 4 segundos**), segure **1–2 segundos**, expira pela boca (**conta 6 segundos**). **Repete 10 vezes.**
+
+--- cssrs.c2 [choice] 
+Você teve **pensamentos** de acabar com a vida?
+   > Sim -> c2_yes [MODERATE]
+   > Não -> coping_entry
+
+--- cssrs.c2_yes [info] autoTo="c3"
+Pensamentos pesados são sérios.. e você não precisa carregar sozinho. ⏎  ⏎ Respire devagar. **Uma pergunta por vez.**
+
+--- cssrs.c3 [choice] 
+Você pensou **como** faria isso?
+   > Sim -> c3_yes [MODERATE]
+   > Não -> c4
+
+--- cssrs.c3_yes [task] allDoneTo="c4" doneText="feito"
+Antes de continuar.. choque térmico suave:
+   [task c3w] Água fria no rosto :: Joga água gelada ou segure gelo no rosto 10–15 segundos. Ajuda o cérebro a sair do loop por um instante.
+
+--- cssrs.c4 [choice] 
+Você teve esses pensamentos **e intenção** de agir?
+   > Sim -> c4_yes [HIGH]
+   > Não -> c5
+
+--- cssrs.c4_yes [task] sequentialTasks=true allDoneTo="c5" doneText="respirei"
+Intenção ativa pede desacelerar o corpo agora.. **box breathing**:
+   [task c4box] Box breathing 4×4 (4 ciclos) :: Inspira 4s, segure 4s, expira 4s, segure 4s. Repete 4 vezes. Ativa calma física antes de decidir qualquer coisa.
+
+--- cssrs.c5 [choice] 
+Você tem um **plano elaborado** ou intenção de cumprir?
+   > Sim -> lethal_means [HIGH]
+   > Não -> c6
+
+--- cssrs.c6 [choice] 
+Nos **últimos 3 meses**, você fez ou preparou algo para se machucar?
+   > Sim, recentemente -> emergent_panel [EMERGENT]
+   > Sim, mas faz tempo -> c6_past [MODERATE]
+   > Não -> coping_entry
+
+--- cssrs.c6_past [action] autoTo="coping_entry"
+Histórico passado ainda importa. Reforço de apoio humano agora:
+   [action] {"label":"CVV  — 188 (gratuito, 24h)","href":"tel:188","icon":"ri-phone-line"}
+
+--- cssrs.emergent_panel [action] crisis=true locked=true autoTo="lethal_means"
+Isso é urgente. **Você merece ajuda humana agora**.. ligue ou peça para alguém ligar com você:
+   [action] {"label":"CVV  — 188 (agora)","href":"tel:188","icon":"ri-phone-line"}
+   [action] {"label":"SAMU  — 192","href":"tel:192","icon":"ri-heart-pulse-fill","cls":"danger"}
+
+--- cssrs.lethal_means [task] sequentialTasks=true riskOnEnter="HIGH" allDoneTo="caps_nearby" doneText="mais seguro"
+Segurança física **agora**.. meios letais precisam de distância:
+   [task lm1] Comprimidos / remédios :: Afaste todos os medicamentos para outro cômodo ou peça para alguém guardar. Não precisa jogar fora.. só **longe de você agora**.
+   [task lm2] Armas / objetos cortantes :: Tranca, esconde ou entrega a alguém de confiança. Distância física reduz impulso no pico.
+   [task lm3] Altura / locais de risco :: Afaste-se de janelas, varandas, pontes. Senta no chão se precisar. O pico passa.. o espaço seguro ajuda.
+
+--- cssrs.caps_nearby [action] autoTo="coping_entry"
+CAPS III no Rio.. atendimento 24h pelo SUS:
+   [action] {"label":"Ver CAPS III Rio (7 unidades)","href":"#caps","icon":"ri-hospital-line","variant":"caps_list"}
+   [action] {"label":"CVV  — 188","href":"tel:188","icon":"ri-phone-line"}
+
+--- cssrs.coping_entry [choice] 
+Continuo aqui. O que mais ajuda agora?
+   > Entender o que disparou isso -> triggers_map
+   > Ver fotos / razões para ficar -> hope_box
+   > Voltar ao fluxo de apoio -> redirect_falar
+
+--- cssrs.triggers_map [choice] 
+O que **disparou** ou intensificou isso agora?
+   > Imagem ou pensamento intrusivo -> redirect_falar
+   > Loop de pensamentos -> redirect_falar
+   > Perda ou luto -> redirect_falar
+   > Substância ou álcool -> redirect_torto
+   > Não sei -> redirect_falar
+
+--- cssrs.hope_box [task] sequentialTasks=true allDoneTo="redirect_falar" doneText="guardei"
+Caixa de esperança.. **uma coisa de cada vez**:
+   [task hb1] Abre 1–2 fotos que te acalmem :: Pessoas, lugares, momentos bons. Só olha.. sem precisar sentir alívio imediato.
+   [task hb2] Escreve 3 razões para ficar hoje :: Podem ser pequenas: um pet, uma série, alguém que se importa, curiosidade sobre amanhã.
+   [task hb3] Relê uma mensagem antiga boa :: WhatsApp, carta, bilhete.. prova de que você já foi visto antes.
+
+--- cssrs.redirect_falar [redirect] suggestion="Continuar no fluxo Tô sozinho?" redirectFlow="falar" stayTo="coping_entry"
+Vamos continuar o apoio emocional com passos práticos.
+
+--- cssrs.redirect_torto [redirect] suggestion="Ir para Bateu Forte?" redirectFlow="torto" stayTo="coping_entry"
+Substâncias podem intensificar pensamentos pesados.. temos suporte específico.

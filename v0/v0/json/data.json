@@ -1,0 +1,1068 @@
+{
+  "torto": {
+    "meta": { "label": "Bateu Forte", "icon": "ri-capsule-fill", "accent": "#e89aaa" },
+    "start": "a1",
+    "nodes": {
+      "a1": {
+        "type": "choice",
+        "text": "Que bom que você abriu isso.\nTô aqui com você.\n\nO que tá acontecendo mais agora?",
+        "choices": [
+          { "label": "Usei algo e tá muito pesado", "to": "a2", "delta": 0 },
+          { "label": "Não usei nada, mas tô muito mal", "to": "redirect_panico", "delta": 0 },
+          { "label": "Não sei bem o que sinto", "to": "a2_unclear", "delta": 5 }
+        ]
+      },
+      "a2": {
+        "type": "choice",
+        "text": "Entendi. O que você está sentindo mais agora?",
+        "choices": [
+          { "label": "Coração acelerado, agitação, calor", "to": "a3_stim", "delta": 0 },
+          { "label": "Tudo parece distante ou irreal", "to": "a3_psych", "delta": 0 },
+          { "label": "Pânico puro, sem controle", "to": "redirect_panico", "delta": 0 },
+          { "label": "Sensação de estar sendo observado", "to": "redirect_trava", "delta": 0 }
+        ]
+      },
+      "a2_unclear": {
+        "type": "info",
+        "text": "Não saber é tudo bem.\n\nÀs vezes a gente só sente que precisa de apoio — e isso já é o suficiente para estar aqui. Vou ficar do seu lado enquanto a gente descobre junto.",
+        "autoTo": "m1"
+      },
+      "a3_stim": {
+        "type": "info",
+        "text": "Estimulantes aceleram tudo — o coração, o pensamento, a percepção de ameaça.\n\nO seu corpo **não está em perigo**: está processando. Isso vai passar.",
+        "autoTo": "m1"
+      },
+      "a3_psych": {
+        "type": "info",
+        "text": "Psicodélicos e dissociativos alteram como você percebe a realidade — mas não mudam o que é real.\n\nVocê está aqui. O chão existe. Eu estou com você.",
+        "autoTo": "m1"
+      },
+      "redirect_panico": {
+        "type": "redirect",
+        "text": "O que você descreveu parece mais próximo de uma crise de ansiedade — e temos um suporte específico para isso que ajuda mais.",
+        "suggestion": "Quer ir para o suporte de Pânico?",
+        "redirectFlow": "panico",
+        "stayTo": "m1"
+      },
+      "redirect_trava": {
+        "type": "redirect",
+        "text": "Essa sensação de ser observado ou de estar travado tem um protocolo que ajuda mais do que esse aqui.",
+        "suggestion": "Quer ir para o suporte de Travei?",
+        "redirectFlow": "trava",
+        "stayTo": "m1"
+      },
+      "m1": {
+        "type": "info",
+        "text": "Primeiro: você fez bem em pedir apoio. Isso é muita coragem.\n\nVamos devagar. Nenhuma pressa.",
+        "autoTo": "m2"
+      },
+      "m2": {
+        "type": "task",
+        "text": "Antes de mais nada, vamos colocar o seu corpo num lugar mais seguro:",
+        "tasks": [
+          { "id": "t1", "label": "Senta ou deita em algum lugar estável", "desc": "Se você estiver em pé, senta. O chão ou uma cadeira serve. Só precisa ser algo sólido e quieto." },
+          { "id": "t2", "label": "Vira o celular com a tela para baixo por um segundo", "desc": "Pega ele de volta quando quiser — só um momento de pausa do estímulo visual." }
+        ],
+        "allDoneTo": "m3",
+        "doneText": "feito isso."
+      },
+      "m3": {
+        "type": "task",
+        "text": "Uma coisa simples que muda bastante:",
+        "tasks": [
+          { "id": "t3", "label": "Água gelada no rosto ou nas mãos", "desc": "Isso ativa o reflexo de mergulho e baixa a frequência cardíaca de verdade. Gelo, se tiver, é melhor ainda." }
+        ],
+        "allDoneTo": "m4",
+        "doneText": "feito isso."
+      },
+      "m4": {
+        "type": "task",
+        "text": "Agora o ambiente:",
+        "tasks": [
+          { "id": "t4", "label": "Diminui o volume do que estiver tocando", "desc": "Música agitada piora tudo. Silêncio ou algo bem suave ajuda muito." },
+          { "id": "t5", "label": "Encontra um cantinho mais quieto se puder", "desc": "Não precisa sair de onde está — só encontra um ângulo menos exposto." }
+        ],
+        "allDoneTo": "m5",
+        "doneText": "feito."
+      },
+      "m5": {
+        "type": "choice",
+        "text": "Como você está em relação a antes de abrir isso?",
+        "choices": [
+          { "label": "Um pouco melhor", "to": "m6_better", "delta": 10 },
+          { "label": "Mais ou menos igual", "to": "m6_same", "delta": 5 },
+          { "label": "Piorei, tô muito mal", "to": "m6_worse", "delta": 0 }
+        ]
+      },
+      "m6_better": {
+        "type": "info",
+        "text": "Isso. Você está fazendo o que consegue controlar — e isso importa muito.\n\nContinua comigo.",
+        "autoTo": "m7"
+      },
+      "m6_same": {
+        "type": "info",
+        "text": "Normal. O pico ainda está rolando. O corpo precisa de tempo para processar — e está processando, mesmo que você não sinta ainda.\n\nContinua comigo.",
+        "autoTo": "m7"
+      },
+      "m6_worse": {
+        "type": "choice",
+        "text": "Obrigado por me contar.\n\nSe está piorando, você pode precisar de ajuda humana agora.",
+        "choices": [
+          { "label": "Ligo para o SAMU (192)", "to": "action_samu", "delta": 0 },
+          { "label": "Continua tentando aqui comigo", "to": "m7", "delta": 0 }
+        ]
+      },
+      "action_samu": {
+        "type": "action",
+        "text": "Você fez a escolha certa. Liga agora:",
+        "actions": [
+          { "label": "SAMU — 192", "href": "tel:192", "icon": "ri-heart-pulse-fill", "cls": "danger" },
+          { "label": "Bombeiros — 193", "href": "tel:193", "icon": "ri-fire-fill", "cls": "danger" }
+        ],
+        "autoTo": "m7"
+      },
+      "m7": {
+        "type": "info",
+        "text": "Vamos respirar juntos agora. Só siga:\n\n_Inspira pelo nariz..._\n_Segura um instante..._\n_Solta pela boca, bem devagar._\n\nRepete isso enquanto lê as próximas mensagens.",
+        "autoTo": "m8"
+      },
+      "m8": {
+        "type": "task",
+        "text": "Trazendo você de volta para o presente:",
+        "tasks": [
+          { "id": "t6", "label": "Nomeia 5 coisas que você vê", "desc": "Em voz alta ou mentalmente. Pode ser qualquer objeto que esteja ao redor agora." },
+          { "id": "t7", "label": "Toca em algo próximo", "desc": "Sente a textura. É fria ou quente? Lisa ou áspera? Fica nisso por alguns segundos." }
+        ],
+        "allDoneTo": "m9",
+        "doneText": "ancorado aqui."
+      },
+      "m9": {
+        "type": "task",
+        "text": "Duas coisas práticas agora:",
+        "tasks": [
+          { "id": "t8", "label": "Afasta qualquer substância de perto de você", "desc": "Não precisa jogar fora — só cria distância. Agora não é hora de mais nada." },
+          { "id": "t9", "label": "Bebe água ou algo suave", "desc": "Hidratação ajuda o corpo a processar. Qualquer líquido não alcoólico serve." }
+        ],
+        "allDoneTo": "m10",
+        "doneText": "feito."
+      },
+      "m10": {
+        "type": "info",
+        "text": "Você está fazendo tudo certo.\n\nIsso que você sente — por mais intenso que pareça — **tem fim. Sempre tem.** E a gente já passou pelo meio do caminho.",
+        "autoTo": "m11"
+      },
+      "m11": {
+        "type": "choice",
+        "text": "Tem alguém de confiança que você pode contactar agora?",
+        "choices": [
+          { "label": "Sim, tem alguém", "to": "m11_yes", "delta": 8 },
+          { "label": "Não tem ninguém disponível agora", "to": "m11_no", "delta": 0 },
+          { "label": "Prefiro ficar quieto por agora", "to": "m12", "delta": 3 }
+        ]
+      },
+      "m11_yes": {
+        "type": "info",
+        "text": "Liga ou manda mensagem. Você não precisa explicar tudo — só diz:\n\n_\"Tô passando por algo difícil. Pode ficar na linha comigo?\"_",
+        "autoTo": "m12"
+      },
+      "m11_no": {
+        "type": "action",
+        "text": "Tudo bem. Tem um serviço gratuito, anônimo e humano disponível agora:",
+        "actions": [
+          { "label": "CVV — 188 (gratuito, 24h)", "href": "tel:188", "icon": "ri-phone-line" }
+        ],
+        "autoTo": "m12"
+      },
+      "m12": {
+        "type": "info",
+        "text": "O efeito vai passando gradualmente — às vezes sobe, às vezes baixa, mas a direção é sempre em direção ao fim.\n\nO tempo está do seu lado agora.",
+        "autoTo": "m13"
+      },
+      "m13": {
+        "type": "task",
+        "text": "Se quiser, tem uma coisa que ajuda o tempo a passar:",
+        "tasks": [
+          { "id": "t10", "label": "Coloca uma música instrumental calma", "desc": "Lo-fi, piano, sons da natureza — algo sem letra e sem batida forte. Só como fundo suave." }
+        ],
+        "allDoneTo": "m14",
+        "doneText": "música ligada."
+      },
+      "m14": {
+        "type": "info",
+        "text": "Você ficou aqui comigo. Respirou. Fez escolhas. Se ancou.\n\n_Isso exige muita coragem quando tudo está pesado._",
+        "autoTo": "m15"
+      },
+      "m15": {
+        "type": "info",
+        "text": "Quando isso passar — e vai passar — você vai lembrar que conseguiu.\n\nDa próxima vez que precisar, este espaço vai estar aqui. **Você importa. Cuida de você. 💙**",
+        "autoTo": "done",
+        "isDone": true
+      }
+    }
+  },
+
+  "panico": {
+    "meta": { "label": "Pânico", "icon": "ri-windy-fill", "accent": "#7eb8d8" },
+    "start": "a1",
+    "nodes": {
+      "a1": {
+        "type": "choice",
+        "text": "Tô aqui com você.\nMe conta — o que está acontecendo mais agora?",
+        "choices": [
+          { "label": "Coração acelerado, falta de ar", "to": "a2", "delta": 0 },
+          { "label": "Usei algo que pode ter causado isso", "to": "redirect_torto", "delta": 0 },
+          { "label": "Sensação de perigo sem razão clara", "to": "a2", "delta": 0 },
+          { "label": "Não sei, só sei que tô muito mal", "to": "a2_unclear", "delta": 5 }
+        ]
+      },
+      "a2": {
+        "type": "choice",
+        "text": "O que você está sentindo mais no corpo agora?",
+        "choices": [
+          { "label": "Formigamento, tontura, mãos suando", "to": "a3_severe", "delta": 0 },
+          { "label": "Coração acelerado, agonia, aperto no peito", "to": "a3_moderate", "delta": 0 },
+          { "label": "Pensamentos em espiral, não consigo parar", "to": "a3_moderate", "delta": 0 }
+        ]
+      },
+      "a2_unclear": {
+        "type": "info",
+        "text": "Não saber é tudo bem.\n\nVocê está aqui — e isso já é muito. Vamos juntos descobrir o que está rolando.",
+        "autoTo": "m1"
+      },
+      "a3_moderate": {
+        "type": "info",
+        "text": "O que você está sentindo é **pânico** — o cérebro entendeu que há perigo quando não há.\n\nVamos enviar o sinal contrário. Você consegue.",
+        "autoTo": "m1"
+      },
+      "a3_severe": {
+        "type": "info",
+        "text": "Isso é muito desconfortável — mas o seu corpo não está em perigo real. Está sobrecarregado de alertas.\n\nVamos mudar esse sinal agora.",
+        "autoTo": "m1"
+      },
+      "redirect_torto": {
+        "type": "redirect",
+        "text": "Se você usou algo, temos um suporte mais específico para isso que pode ajudar mais.",
+        "suggestion": "Quer ir para o suporte de Bateu Forte?",
+        "redirectFlow": "torto",
+        "stayTo": "m1"
+      },
+      "m1": {
+        "type": "info",
+        "text": "**Você não está em perigo real.**\n\nO pânico mente — diz que algo está errado quando não está. Vamos enviar ao cérebro o sinal de que você está seguro.",
+        "autoTo": "m2"
+      },
+      "m2": {
+        "type": "task",
+        "text": "Primeiro — o **Suspiro Duplo**:",
+        "tasks": [
+          { "id": "t1", "label": "Suspiro Duplo — 3 vezes", "desc": "Puxe o ar pelo nariz até onde der. Antes de soltar, dá mais uma puxadinha rápida. Depois solta tudo de uma vez pela boca. Repete 3 vezes." }
+        ],
+        "allDoneTo": "m3",
+        "doneText": "feito as 3 vezes."
+      },
+      "m3": {
+        "type": "task",
+        "text": "Agora o **Humming** — vibração que acalma o nervo vago:",
+        "tasks": [
+          { "id": "t2", "label": "Fecha a boca e faz um 'hmmmmm' contínuo", "desc": "Sente vibrar no peito e na garganta. Mantém por 15-20 segundos. Isso regula o sistema nervoso de verdade." }
+        ],
+        "allDoneTo": "m4",
+        "doneText": "senti a vibração."
+      },
+      "m4": {
+        "type": "task",
+        "text": "Uma âncora física agora:",
+        "tasks": [
+          { "id": "t3", "label": "Água gelada nas mãos, nuca ou rosto", "desc": "Ou pedra de gelo se tiver. Isso dá ao cérebro um sinal físico de presença: 'estou aqui, estou bem'." }
+        ],
+        "allDoneTo": "m5",
+        "doneText": "feito isso."
+      },
+      "m5": {
+        "type": "choice",
+        "text": "Como você está em relação a alguns minutos atrás?",
+        "choices": [
+          { "label": "Um pouco melhor", "to": "m6_better", "delta": 10 },
+          { "label": "Igual ou ainda muito mal", "to": "m6_same", "delta": 3 }
+        ]
+      },
+      "m6_better": {
+        "type": "info",
+        "text": "Isso mesmo. Você está controlando. O pico já passou.\n\nContinua comigo.",
+        "autoTo": "m7"
+      },
+      "m6_same": {
+        "type": "info",
+        "text": "O pânico tem um pico — e depois começa a baixar. **Sempre.** Mesmo parecendo que vai ficar assim para sempre, não vai.\n\nContinua comigo.",
+        "autoTo": "m7"
+      },
+      "m7": {
+        "type": "task",
+        "text": "Agora o **5-4-3-2-1** — trazendo você para o presente:",
+        "tasks": [
+          { "id": "t4", "label": "5 coisas que você consegue VER", "desc": "Olha ao redor e nomeia 5 objetos. Em voz alta se puder." },
+          { "id": "t5", "label": "4 coisas que você consegue TOCAR", "desc": "Sente 4 texturas ou superfícies. Fria, quente, lisa, áspera." },
+          { "id": "t6", "label": "3 sons que você consegue OUVIR", "desc": "Fecha os olhos por um segundo e escuta o ambiente." }
+        ],
+        "allDoneTo": "m8",
+        "doneText": "voltei para o presente."
+      },
+      "m8": {
+        "type": "task",
+        "text": "Agora o corpo:",
+        "tasks": [
+          { "id": "t7", "label": "Postura de segurança", "desc": "Senta com as costas encostadas em algo sólido. Pés firmes no chão. Esse sinal físico de apoio acalma o sistema nervoso." }
+        ],
+        "allDoneTo": "m9",
+        "doneText": "estou apoiado."
+      },
+      "m9": {
+        "type": "info",
+        "text": "**Você está fazendo exatamente o que precisa ser feito.**\n\nO pânico não dura para sempre. Tem início, meio e fim — e você está passando pelo fim.",
+        "autoTo": "m10"
+      },
+      "m10": {
+        "type": "info",
+        "text": "O pânico acontece quando o alarme do cérebro dispara sem perigo real.\n\n_Não é fraqueza. É fisiologia._ E você pode aprender a regulá-lo — e já está fazendo isso agora.",
+        "autoTo": "m11"
+      },
+      "m11": {
+        "type": "choice",
+        "text": "Você gostaria de chamar alguém para ficar com você?",
+        "choices": [
+          { "label": "Sim, vou chamar alguém", "to": "m11_yes", "delta": 8 },
+          { "label": "Prefiro ficar quieto por agora", "to": "m12", "delta": 3 }
+        ]
+      },
+      "m11_yes": {
+        "type": "info",
+        "text": "Manda mensagem para alguém de confiança:\n\n_\"Tô com uma crise de ansiedade. Pode ficar na linha comigo?\"_\n\nVocê não precisa explicar mais do que isso.",
+        "autoTo": "m12"
+      },
+      "m12": {
+        "type": "info",
+        "text": "Respirar devagar ainda é a ferramenta mais poderosa que você tem agora.\n\nContinua respirando. O tempo está do seu lado.",
+        "autoTo": "m13"
+      },
+      "m13": {
+        "type": "action",
+        "text": "Se quiser uma voz humana agora:",
+        "actions": [
+          { "label": "CVV — 188 (gratuito, 24h)", "href": "tel:188", "icon": "ri-phone-line" }
+        ],
+        "autoTo": "m14"
+      },
+      "m14": {
+        "type": "info",
+        "text": "Você passou por isso. Não desistiu. Ficou aqui.\n\n_Isso tem um nome: **resiliência**._",
+        "autoTo": "m15"
+      },
+      "m15": {
+        "type": "info",
+        "text": "Da próxima vez que o pânico aparecer, você vai lembrar: _já passei por isso. E vai passar de novo._\n\nCuida de você. **💙**",
+        "autoTo": "done",
+        "isDone": true
+      }
+    }
+  },
+
+  "realidade": {
+    "meta": { "label": "Onde estou?", "icon": "ri-planet-fill", "accent": "#a890cc" },
+    "start": "a1",
+    "nodes": {
+      "a1": {
+        "type": "choice",
+        "text": "Tô aqui com você.\n\nEssa sensação de irrealidade pode ter causas diferentes — me conta um pouco mais:",
+        "choices": [
+          { "label": "As coisas parecem distantes ou como num sonho", "to": "a2", "delta": 0 },
+          { "label": "Eu mesmo pareço irreal ou distante de mim", "to": "a2", "delta": 0 },
+          { "label": "Usei algo que pode ter causado isso", "to": "a2_substance", "delta": 0 },
+          { "label": "Não sei explicar, está tudo estranho", "to": "a3_anchor", "delta": 5 }
+        ]
+      },
+      "a2": {
+        "type": "info",
+        "text": "O que você está descrevendo se chama **despersonalização ou desrealização** — é uma defesa natural da mente ao estresse intenso.\n\nNão é perigoso. E você **é real**.",
+        "autoTo": "m1"
+      },
+      "a2_substance": {
+        "type": "redirect",
+        "text": "Se você usou algo, temos um suporte mais específico que pode ajudar mais agora.",
+        "suggestion": "Quer ir para o suporte de Bateu Forte?",
+        "redirectFlow": "torto",
+        "stayTo": "m1"
+      },
+      "a3_anchor": {
+        "type": "info",
+        "text": "Tudo bem não conseguir explicar.\n\nO que eu sei é que você está aqui. O chão é real. Eu estou com você.",
+        "autoTo": "m1"
+      },
+      "redirect_panico": {
+        "type": "redirect",
+        "text": "Se junto à irrealidade tem muito medo e coração acelerado, o suporte de pânico ajuda mais.",
+        "suggestion": "Quer ir para o suporte de Pânico?",
+        "redirectFlow": "panico",
+        "stayTo": "m1"
+      },
+      "m1": {
+        "type": "info",
+        "text": "Você é real. Esse momento é real.\n\nVamos trazer você de volta para o corpo — devagar, com cuidado.",
+        "autoTo": "m2"
+      },
+      "m2": {
+        "type": "task",
+        "text": "A âncora mais poderosa é o toque físico:",
+        "tasks": [
+          { "id": "t1", "label": "Toca no tecido da sua roupa", "desc": "Sente o atrito real da matéria. É frio ou quente? Liso ou áspero? Fica nisso por alguns segundos." },
+          { "id": "t2", "label": "Coloca a palma da mão no chão ou numa parede", "desc": "Pressiona com força. Sente o peso do seu braço. A resistência do material é real — e você é real." }
+        ],
+        "allDoneTo": "m3",
+        "doneText": "senti o real."
+      },
+      "m3": {
+        "type": "task",
+        "text": "Agora nomeando o que existe:",
+        "tasks": [
+          { "id": "t3", "label": "Diz em voz alta o nome de 3 objetos que você vê", "desc": "Isso ancora a mente no presente imediato. Pode ser qualquer coisa — a palavra em si já ajuda." }
+        ],
+        "allDoneTo": "m4",
+        "doneText": "nomeei as 3 coisas."
+      },
+      "m4": {
+        "type": "task",
+        "text": "Temperatura como âncora:",
+        "tasks": [
+          { "id": "t4", "label": "Água fria nas mãos ou no rosto", "desc": "A sensação de temperatura é processada diferente pelo cérebro — ela corta o loop de irrealidade." }
+        ],
+        "allDoneTo": "m5",
+        "doneText": "senti a temperatura."
+      },
+      "m5": {
+        "type": "choice",
+        "text": "A sensação de estranhamento está um pouco menor?",
+        "choices": [
+          { "label": "Sim, um pouco", "to": "m6", "delta": 10 },
+          { "label": "Ainda está muito forte", "to": "m6_hard", "delta": 3 }
+        ]
+      },
+      "m6": {
+        "type": "info",
+        "text": "Isso. Você está trazendo o seu sistema nervoso de volta.\n\nContinua comigo.",
+        "autoTo": "m7"
+      },
+      "m6_hard": {
+        "type": "info",
+        "text": "Tudo bem. Às vezes o estado demora mais para passar.\n\nIsso **não é permanente**. Vamos continuar juntos.",
+        "autoTo": "m7"
+      },
+      "m7": {
+        "type": "task",
+        "text": "Os 5 sentidos — um de cada vez:",
+        "tasks": [
+          { "id": "t5", "label": "Diz uma coisa que você VÊ agora", "desc": "Fica olhando para ela por alguns segundos." },
+          { "id": "t6", "label": "Diz um som que você OUVE", "desc": "Por mais sutil que seja — um ventilador, a rua, a sua respiração." },
+          { "id": "t7", "label": "Cheira algo que esteja próximo", "desc": "A própria mão, uma roupa, qualquer cheiro. O olfato é o sentido mais direto ao sistema nervoso." }
+        ],
+        "allDoneTo": "m8",
+        "doneText": "usei meus sentidos."
+      },
+      "m8": {
+        "type": "info",
+        "text": "Você está fazendo muito bem.\n\nA despersonalização é desconfortável mas **inofensiva** — é o sistema nervoso tentando te proteger de sobrecarga. Você está seguro.",
+        "autoTo": "m9"
+      },
+      "m9": {
+        "type": "task",
+        "text": "Movimento leve — um dos melhores redefinidores de presença:",
+        "tasks": [
+          { "id": "t8", "label": "Aperta e solta os punhos lentamente", "desc": "Sente os músculos trabalhando. Repete 5 vezes. Você tem um corpo — e ele está aqui." },
+          { "id": "t9", "label": "Mexe os dedos dos pés dentro do sapato", "desc": "Ou descalço no chão. Essa textura embaixo dos pés é muito boa para ancoragem." }
+        ],
+        "allDoneTo": "m10",
+        "doneText": "me movi."
+      },
+      "m10": {
+        "type": "info",
+        "text": "Você está aqui. No presente. Nesse espaço.\n\nO passado não está te puxando. O futuro não precisa da sua atenção agora. **Só esse momento.**",
+        "autoTo": "m11"
+      },
+      "m11": {
+        "type": "choice",
+        "text": "Tem alguém que pode ficar com você por um tempo agora?",
+        "choices": [
+          { "label": "Sim, posso chamar alguém", "to": "m11_yes", "delta": 8 },
+          { "label": "Não agora", "to": "m11_no", "delta": 0 }
+        ]
+      },
+      "m11_yes": {
+        "type": "info",
+        "text": "Chama. Uma presença humana ao lado — mesmo em silêncio — ajuda muito a ancorar.\n\nVocê não precisa explicar. Só pede companhia.",
+        "autoTo": "m12"
+      },
+      "m11_no": {
+        "type": "action",
+        "text": "Tudo bem. O CVV tem vozes humanas disponíveis agora:",
+        "actions": [
+          { "label": "CVV — 188 (gratuito, 24h)", "href": "tel:188", "icon": "ri-phone-line" }
+        ],
+        "autoTo": "m12"
+      },
+      "m12": {
+        "type": "info",
+        "text": "Uma coisa que pode ajudar nas próximas horas: **evita telas, ruído excessivo e cafeína**.\n\nDar um pouco de espaço para o sistema nervoso se recuperar acelera o processo.",
+        "autoTo": "m13"
+      },
+      "m13": {
+        "type": "task",
+        "text": "Um gesto final de cuidado:",
+        "tasks": [
+          { "id": "t10", "label": "Coloca algo suave ao redor de você", "desc": "Um cobertor, uma jaqueta, qualquer textura confortável. O toque físico contínuo ajuda o sistema nervoso a se estabilizar." }
+        ],
+        "allDoneTo": "m14",
+        "doneText": "estou mais aquecido."
+      },
+      "m14": {
+        "type": "info",
+        "text": "Você ficou aqui comigo por um tempo.\n\n_Mesmo sentindo que tudo estava estranho, você ficou._",
+        "autoTo": "m15"
+      },
+      "m15": {
+        "type": "info",
+        "text": "Você está aqui. Você é real. E isso foi corajoso.\n\n**Cuida de você. 💙**",
+        "autoTo": "done",
+        "isDone": true
+      }
+    }
+  },
+
+  "trava": {
+    "meta": { "label": "Travei", "icon": "ri-body-scan-fill", "accent": "#d4a868" },
+    "start": "a1",
+    "nodes": {
+      "a1": {
+        "type": "choice",
+        "text": "Tô aqui com você.\n\nMe conta — o que está acontecendo?",
+        "choices": [
+          { "label": "Travei, não consigo me mover", "to": "a2", "delta": 0 },
+          { "label": "Sinto que estão me olhando ou julgando", "to": "a2", "delta": 0 },
+          { "label": "Minha mente ficou em branco, sem reação", "to": "a2_confirm", "delta": 5 },
+          { "label": "Pânico que se parece com trava", "to": "redirect_panico", "delta": 0 }
+        ]
+      },
+      "a2": {
+        "type": "choice",
+        "text": "O que está acontecendo mais agora?",
+        "choices": [
+          { "label": "Sensação de perigo sem razão clara", "to": "a3_paranoia", "delta": 0 },
+          { "label": "Congelei de medo ou ansiedade", "to": "a3_freeze", "delta": 0 },
+          { "label": "Tudo parece irreal junto", "to": "redirect_realidade", "delta": 0 }
+        ]
+      },
+      "a2_confirm": {
+        "type": "info",
+        "text": "O estado de trava — ou 'freeze' — é uma resposta automática do sistema nervoso.\n\nNão é falta de força. É o corpo tentando te proteger.",
+        "autoTo": "m1"
+      },
+      "a3_paranoia": {
+        "type": "info",
+        "text": "Essa sensação de ser observado ou julgado é muito real para você — e também passa.\n\n**Ninguém está prestando atenção em você** do jeito que parece.",
+        "autoTo": "m1"
+      },
+      "a3_freeze": {
+        "type": "info",
+        "text": "Congelar é uma resposta de sobrevivência — tão válida quanto correr ou lutar.\n\nO corpo vai sair desse estado. Vamos ajudá-lo.",
+        "autoTo": "m1"
+      },
+      "redirect_panico": {
+        "type": "redirect",
+        "text": "Se junto ao travar tem muito coração acelerado e falta de ar, o suporte de pânico pode ajudar mais.",
+        "suggestion": "Quer ir para o suporte de Pânico?",
+        "redirectFlow": "panico",
+        "stayTo": "m1"
+      },
+      "redirect_realidade": {
+        "type": "redirect",
+        "text": "Se junto ao travar tudo parece irreal ou distante, o suporte de irrealidade pode ajudar mais.",
+        "suggestion": "Quer ir para o suporte de Onde estou?",
+        "redirectFlow": "realidade",
+        "stayTo": "m1"
+      },
+      "m1": {
+        "type": "info",
+        "text": "**Você está seguro aqui.**\n\nNinguém ao redor sabe o que você está sentindo. Você tem espaço para fazer isso no seu tempo.",
+        "autoTo": "m2"
+      },
+      "m2": {
+        "type": "task",
+        "text": "Postura de segurança — primeiro:",
+        "tasks": [
+          { "id": "t1", "label": "Senta no chão encostado em uma parede sólida", "desc": "Se não puder, encosta onde estiver. A parede sólida nas costas sinaliza ao cérebro: 'estou protegido'." },
+          { "id": "t2", "label": "Abraça os próprios joelhos se puder", "desc": "Ou cruza os braços no peito. Comprimir o núcleo é uma postura de autorregulação que funciona." }
+        ],
+        "allDoneTo": "m3",
+        "doneText": "estou apoiado."
+      },
+      "m3": {
+        "type": "task",
+        "text": "Reduzindo o estímulo visual:",
+        "tasks": [
+          { "id": "t3", "label": "Abaixa o olhar para o chão na frente de você", "desc": "Não precisa fechar os olhos — só tira o campo de visão periférico que alimenta a paranoia." },
+          { "id": "t4", "label": "Coloca capuz, óculos ou qualquer barreira se puder", "desc": "Criar uma bolha visual reduz muito o processamento de ameaças do ambiente." }
+        ],
+        "allDoneTo": "m4",
+        "doneText": "reduzi o estímulo."
+      },
+      "m4": {
+        "type": "info",
+        "text": "Respiração agora — lenta e controlada:\n\n_Inspira por 4 tempos... segura por 4... solta por 6..._\n\nRepete isso até sentir o coração começar a baixar.",
+        "autoTo": "m5"
+      },
+      "m5": {
+        "type": "choice",
+        "text": "Como está o nível de agitação agora?",
+        "choices": [
+          { "label": "Diminuiu um pouco", "to": "m6", "delta": 10 },
+          { "label": "Continua alto", "to": "m6_high", "delta": 3 }
+        ]
+      },
+      "m6": {
+        "type": "info",
+        "text": "Isso. O sistema nervoso está começando a desacelerar.\n\nContinua comigo.",
+        "autoTo": "m7"
+      },
+      "m6_high": {
+        "type": "info",
+        "text": "Normal. Às vezes o estado de alerta demora mais para passar.\n\nIsso **vai baixar**. Continue respirando lentamente.",
+        "autoTo": "m7"
+      },
+      "m7": {
+        "type": "task",
+        "text": "Ancoragem pelo toque:",
+        "tasks": [
+          { "id": "t5", "label": "Aperta os próprios braços ou coxas com as mãos", "desc": "Com pressão média. Sente o calor e o peso. Você tem um corpo físico — e ele está aqui, seguro." }
+        ],
+        "allDoneTo": "m8",
+        "doneText": "senti meu corpo."
+      },
+      "m8": {
+        "type": "choice",
+        "text": "Tem alguém de confiança perto de você ou que você possa contatar agora?",
+        "choices": [
+          { "label": "Sim, tem alguém", "to": "m8_yes", "delta": 10 },
+          { "label": "Não tem ninguém agora", "to": "m8_no", "delta": 0 }
+        ]
+      },
+      "m8_yes": {
+        "type": "action",
+        "text": "Manda uma mensagem rápida — você não precisa explicar tudo:",
+        "actions": [
+          { "label": "Mandar SMS de apoio", "href": "sms:?body=Ei%2C+tô+passando+por+algo+difícil+agora+e+precisaria+de+companhia.+Pode+vir+ou+ficar+na+linha?", "icon": "ri-message-3-line" }
+        ],
+        "autoTo": "m9"
+      },
+      "m8_no": {
+        "type": "action",
+        "text": "Tudo bem. Tem um serviço humano disponível agora:",
+        "actions": [
+          { "label": "CVV — 188 (gratuito, 24h)", "href": "tel:188", "icon": "ri-phone-line" }
+        ],
+        "autoTo": "m9"
+      },
+      "m9": {
+        "type": "task",
+        "text": "Uma coisa prática que muda muito:",
+        "tasks": [
+          { "id": "t6", "label": "Conta 10 objetos ao redor de você", "desc": "Em voz baixa ou mentalmente. Isso ocupa a parte do cérebro que está gerando o alarme." }
+        ],
+        "allDoneTo": "m10",
+        "doneText": "contei os 10."
+      },
+      "m10": {
+        "type": "info",
+        "text": "A paranoia e o freeze são **respostas temporárias**.\n\nElas servem para te proteger — e quando o sistema nervoso entender que não há perigo real, vão embora.",
+        "autoTo": "m11"
+      },
+      "m11": {
+        "type": "info",
+        "text": "Você está fazendo tudo certo.\n\n_Cada respiração lenta, cada momento de ficar aqui — é o sistema nervoso se recalibrando._",
+        "autoTo": "m12"
+      },
+      "m12": {
+        "type": "task",
+        "text": "Um movimento leve para sair do freeze:",
+        "tasks": [
+          { "id": "t7", "label": "Mexe os pés — alternando esquerdo e direito", "desc": "Como uma marchinha pequena, sentado. Movimento bilateral ajuda o sistema nervoso a processar e sair do estado de trava." }
+        ],
+        "allDoneTo": "m13",
+        "doneText": "me movi."
+      },
+      "m13": {
+        "type": "info",
+        "text": "Quando você sentir que pode se mover um pouco mais, **mudar de ambiente** ajuda muito — outro cômodo, outra luz, outro ângulo.\n\nNão agora. Só quando estiver pronto.",
+        "autoTo": "m14"
+      },
+      "m14": {
+        "type": "info",
+        "text": "Você ficou aqui comigo. Respirou. Não desistiu.\n\n_E isso é tudo o que precisava acontecer._",
+        "autoTo": "m15"
+      },
+      "m15": {
+        "type": "info",
+        "text": "Você está seguro. Sempre esteve.\n\n**Cuida de você. 💙**",
+        "autoTo": "done",
+        "isDone": true
+      }
+    }
+  },
+
+  "falar": {
+    "meta": { "label": "Tô sozinho", "icon": "ri-heart-2-fill", "accent": "#5a8fc8" },
+    "start": "a1",
+    "nodes": {
+      "a1": {
+        "type": "choice",
+        "text": "Que bom que você abriu isso.\n\nEstou aqui. Pode me contar?",
+        "choices": [
+          { "label": "Tô me sentindo muito sozinho e sem saída", "to": "a2", "delta": 0 },
+          { "label": "Tô desesperado, com pensamentos muito pesados", "to": "a2_crisis", "delta": 0 },
+          { "label": "Usei algo e tô me sentindo muito mal emocionalmente", "to": "redirect_torto", "delta": 0 },
+          { "label": "Não sei explicar, só sei que tô muito mal", "to": "a2", "delta": 5 }
+        ]
+      },
+      "a2": {
+        "type": "choice",
+        "text": "Obrigado por me contar.\n\nAgora preciso te perguntar uma coisa importante:",
+        "choices": [
+          { "label": "Tô mal mas estou seguro onde estou", "to": "m1", "delta": 5 },
+          { "label": "Não tenho certeza se estou seguro", "to": "a3_unsure", "delta": 0 }
+        ]
+      },
+      "a2_crisis": {
+        "type": "choice",
+        "text": "Obrigado por me contar isso. É importante.\n\nVocê está seguro agora?",
+        "choices": [
+          { "label": "Sim, estou seguro mas estou muito mal", "to": "a3_safe", "delta": 5 },
+          { "label": "Não tenho certeza se estou seguro", "to": "a3_unsure", "delta": 0 }
+        ]
+      },
+      "a3_safe": {
+        "type": "action",
+        "text": "Que bom que você está seguro.\n\nO CVV tem pessoas reais, treinadas, esperando para ouvir você agora — de graça e sem julgamento:",
+        "actions": [
+          { "label": "CVV — 188 (agora, de graça)", "href": "tel:188", "icon": "ri-phone-line" }
+        ],
+        "autoTo": "m1"
+      },
+      "a3_unsure": {
+        "type": "redirect",
+        "text": "Se você não tem certeza se está seguro, o SAMU (192) está preparado para isso — sem julgamento, focados em te ajudar.",
+        "suggestion": "Quer ir para o suporte de Resgate?",
+        "redirectFlow": "samu",
+        "stayTo": "m1"
+      },
+      "redirect_torto": {
+        "type": "redirect",
+        "text": "Se você usou algo, temos um suporte específico para isso que pode ajudar mais agora.",
+        "suggestion": "Quer ir para o suporte de Bateu Forte?",
+        "redirectFlow": "torto",
+        "stayTo": "m1"
+      },
+      "m1": {
+        "type": "info",
+        "text": "A dor que você está sentindo é **real**.\n\nNão é fraqueza. Não é drama. É dor — e ela merece atenção e cuidado.",
+        "autoTo": "m2"
+      },
+      "m2": {
+        "type": "info",
+        "text": "Quando a gente está nessa intensidade, o cérebro mente.\n\nEle diz que _\"isso vai durar para sempre\"_ — mas não vai. A intensidade sempre diminui. Sempre diminuiu antes.",
+        "autoTo": "m3"
+      },
+      "m3": {
+        "type": "task",
+        "text": "Primeiro: o corpo.",
+        "tasks": [
+          { "id": "t1", "label": "Muda a temperatura do seu corpo", "desc": "Enrola num cobertor pesado ou toma um banho morno. O frio e o isolamento pioram o desespero — o calor ajuda a regular o sistema nervoso." }
+        ],
+        "allDoneTo": "m4",
+        "doneText": "fiz isso."
+      },
+      "m4": {
+        "type": "task",
+        "text": "Uma distração que pode ajudar:",
+        "tasks": [
+          { "id": "t2", "label": "Abre algum vídeo ou série que você já conhece", "desc": "Algo familiar, sem muita tensão — não algo novo que exige atenção. O familiar reconforta quando a mente está pesada." }
+        ],
+        "allDoneTo": "m5",
+        "doneText": "liguei algo."
+      },
+      "m5": {
+        "type": "choice",
+        "text": "Como você está em relação a alguns minutos atrás?",
+        "choices": [
+          { "label": "Um pouco melhor", "to": "m6_better", "delta": 10 },
+          { "label": "Mais ou menos igual", "to": "m6_same", "delta": 5 },
+          { "label": "Ainda muito intenso", "to": "m6_hard", "delta": 0 }
+        ]
+      },
+      "m6_better": {
+        "type": "info",
+        "text": "Isso. Você está fazendo o que pode.\n\nContinua comigo.",
+        "autoTo": "m7"
+      },
+      "m6_same": {
+        "type": "info",
+        "text": "Tudo bem. A dor emocional intensa às vezes não baixa de uma vez.\n\nMas você está aqui, e isso importa muito.",
+        "autoTo": "m7"
+      },
+      "m6_hard": {
+        "type": "action",
+        "text": "Quando a intensidade está muito alta, uma voz humana ajuda mais do que qualquer texto. O CVV está disponível agora:",
+        "actions": [
+          { "label": "CVV — 188 (gratuito, 24h)", "href": "tel:188", "icon": "ri-phone-line" }
+        ],
+        "autoTo": "m7"
+      },
+      "m7": {
+        "type": "info",
+        "text": "Vamos respirar juntos por um momento:\n\n_Inspira pelo nariz... segura... solta pela boca, bem devagar._\n\nRepete isso enquanto lê as próximas mensagens.",
+        "autoTo": "m8"
+      },
+      "m8": {
+        "type": "task",
+        "text": "Um gesto de cuidado com você mesmo:",
+        "tasks": [
+          { "id": "t3", "label": "Bebe água ou qualquer coisa quente", "desc": "Chá, café, chocolate quente — um líquido quente nas mãos e no corpo é um gesto de cuidado físico com você." }
+        ],
+        "allDoneTo": "m9",
+        "doneText": "cuidei de mim."
+      },
+      "m9": {
+        "type": "info",
+        "text": "Você merece apoio.\n\nNão porque você fez alguma coisa de especial — mas porque você existe, e existir é suficiente.",
+        "autoTo": "m10"
+      },
+      "m10": {
+        "type": "task",
+        "text": "Uma coisa pequena mas poderosa:",
+        "tasks": [
+          { "id": "t4", "label": "Escreve uma coisa que você fez bem hoje", "desc": "Pode ser algo pequeninho — abriu esse app, pediu ajuda, respirou. Qualquer coisa conta." }
+        ],
+        "allDoneTo": "m11",
+        "doneText": "escrevi."
+      },
+      "m11": {
+        "type": "choice",
+        "text": "Tem alguém — qualquer pessoa — que você poderia contactar agora?",
+        "choices": [
+          { "label": "Sim, tem alguém", "to": "m11_yes", "delta": 10 },
+          { "label": "Não tem ninguém agora", "to": "m11_no", "delta": 0 }
+        ]
+      },
+      "m11_yes": {
+        "type": "info",
+        "text": "Manda mensagem. Você não precisa explicar nada — só diz:\n\n_\"Tô passando por algo difícil. Pode ficar comigo por um pouco?\"_\n\nAs pessoas que se importam com você querem saber.",
+        "autoTo": "m12"
+      },
+      "m11_no": {
+        "type": "action",
+        "text": "O CVV existe exatamente para esse momento — pessoas reais, treinadas, esperando:",
+        "actions": [
+          { "label": "CVV — 188 (gratuito, 24h)", "href": "tel:188", "icon": "ri-phone-line" }
+        ],
+        "autoTo": "m12"
+      },
+      "m12": {
+        "type": "info",
+        "text": "A solidão mais doída é aquela que parece permanente.\n\nMas ela **não é permanente**. Estados mudam. Contextos mudam. Você mudou antes — e vai mudar de novo.",
+        "autoTo": "m13"
+      },
+      "m13": {
+        "type": "task",
+        "text": "Um plano só para as próximas horas:",
+        "tasks": [
+          { "id": "t5", "label": "Define uma coisa pequena que você vai fazer agora", "desc": "Tomar banho, comer algo, ligar a TV, sair um pouco. Qualquer coisa pequena e alcançável. Não precisa ser amanhã — só agora." }
+        ],
+        "allDoneTo": "m14",
+        "doneText": "tenho um plano pequeno."
+      },
+      "m14": {
+        "type": "info",
+        "text": "Você ficou aqui comigo. Leu. Fez escolhas. Respirou.\n\n_Isso é muito, quando tudo parece impossível._",
+        "autoTo": "m15"
+      },
+      "m15": {
+        "type": "info",
+        "text": "Você importa. Não pelo que você faz — mas pelo que você é.\n\nEste espaço estará aqui toda vez que você precisar. **💙**",
+        "autoTo": "done",
+        "isDone": true
+      }
+    }
+  },
+
+  "samu": {
+    "meta": { "label": "Resgate", "icon": "ri-first-aid-kit-fill", "accent": "#c87060" },
+    "start": "a1",
+    "nodes": {
+      "a1": {
+        "type": "choice",
+        "text": "Tô aqui. Primeiro — qual é a situação?",
+        "choices": [
+          { "label": "Urgência médica — preciso de socorro agora", "to": "action_192", "delta": 0 },
+          { "label": "Alguém ao meu redor está em perigo", "to": "action_192", "delta": 0 },
+          { "label": "Crise emocional grave, não é física", "to": "a2_mental", "delta": 0 },
+          { "label": "Não sei se é emergência", "to": "a2_unsure", "delta": 5 }
+        ]
+      },
+      "action_192": {
+        "type": "action",
+        "text": "**Liga agora.** O SAMU e Bombeiros são treinados para isso — sem julgamento, focados em salvar vidas:\n\n_Uso de substâncias em socorros médicos não aciona polícia._",
+        "actions": [
+          { "label": "SAMU — 192", "href": "tel:192", "icon": "ri-heart-pulse-fill", "cls": "danger" },
+          { "label": "Bombeiros — 193", "href": "tel:193", "icon": "ri-fire-fill", "cls": "danger" }
+        ],
+        "autoTo": "m1"
+      },
+      "a2_mental": {
+        "type": "action",
+        "text": "Para crise emocional severa — o CVV atende 24h com pessoas reais e treinadas:",
+        "actions": [
+          { "label": "CVV — 188 (gratuito, agora)", "href": "tel:188", "icon": "ri-phone-line" }
+        ],
+        "autoTo": "m2_emotional"
+      },
+      "a2_unsure": {
+        "type": "info",
+        "text": "Se você está em dúvida se é emergência — **ligue**.\n\nO SAMU é treinado para avaliar. Sempre melhor ligar sem precisar do que precisar sem ligar. Eles não se importam.",
+        "autoTo": "action_192"
+      },
+      "m1": {
+        "type": "info",
+        "text": "Você fez a coisa certa.\n\nAgora — **ficar calmo ao lado da pessoa** e não mover quem não deve ser movido é tudo que você precisa fazer enquanto o socorro não chega.",
+        "autoTo": "m2"
+      },
+      "m2": {
+        "type": "task",
+        "text": "Enquanto aguarda — ações essenciais:",
+        "tasks": [
+          { "id": "t1", "label": "Fica ao lado da pessoa — não a deixa sozinha", "desc": "Sua presença importa. Se ela estiver consciente, fala com ela com voz calma." },
+          { "id": "t2", "label": "Mantém o espaço desobstruído", "desc": "Remove objetos ao redor que possam atrapalhar os socorristas. Abre portas e janelas se possível." }
+        ],
+        "allDoneTo": "m3",
+        "doneText": "estou preparado."
+      },
+      "m2_emotional": {
+        "type": "info",
+        "text": "Você está seguro por enquanto — e isso é o que importa agora.\n\nVamos ficar juntos por um momento.",
+        "autoTo": "m3_emotional"
+      },
+      "m3": {
+        "type": "choice",
+        "text": "Qual é a situação da pessoa?",
+        "choices": [
+          { "label": "Pode ter overdose ou intoxicação", "to": "m3_overdose", "delta": 0 },
+          { "label": "Caiu de altura ou teve acidente", "to": "m3_fall", "delta": 0 },
+          { "label": "Dificuldade respiratória ou parou", "to": "m3_breathing", "delta": 0 },
+          { "label": "Crise emocional ou tentativa", "to": "m3_emotional", "delta": 0 }
+        ]
+      },
+      "m3_overdose": {
+        "type": "info",
+        "text": "**Posição de recuperação** — crucial:\n\nDeita ela de lado (lado esquerdo se possível). Joelho de cima dobrado para ela não rolar. Isso evita asfixia se ela vomitar.\n\n_Não dá água. Não tenta acordar com violência._",
+        "autoTo": "m4"
+      },
+      "m3_fall": {
+        "type": "info",
+        "text": "**Não move a pessoa**.\n\nSuspita de lesão na coluna? Não mova de jeito nenhum. Estabiliza a cabeça só com as mãos se necessário. O SAMU vai orientar pelo telefone.",
+        "autoTo": "m4"
+      },
+      "m3_breathing": {
+        "type": "info",
+        "text": "Se ela parou de respirar e você sabe RCP — **comece agora** enquanto chama o SAMU.\n\nO operador do SAMU pode te guiar ao telefone em tempo real. Pede isso.",
+        "autoTo": "m4"
+      },
+      "m3_emotional": {
+        "type": "info",
+        "text": "Fica com ela. Fala com calma e com presença.\n\n_\"Estou aqui com você. Não vou a lugar nenhum.\"_\n\nNão tenta resolver. Só fica.",
+        "autoTo": "m4"
+      },
+      "m4": {
+        "type": "task",
+        "text": "Informações para quando o socorro chegar:",
+        "tasks": [
+          { "id": "t3", "label": "Anota ou lembra: nome e idade da pessoa", "desc": "Se souber, também qualquer medicamento ou substância que ela possa ter usado." },
+          { "id": "t4", "label": "Endereço exato ou ponto de referência bem claro", "desc": "Eles vão perguntar isso. Mais claro possível." }
+        ],
+        "allDoneTo": "m5",
+        "doneText": "tenho as informações."
+      },
+      "m5": {
+        "type": "info",
+        "text": "Você está fazendo tudo certo.\n\nCuidar de alguém em crise exige muita coragem — e você está aqui.",
+        "autoTo": "m6"
+      },
+      "m6": {
+        "type": "info",
+        "text": "Enquanto aguarda:\n\nSe você também estiver abalado — respira. _Inspira por 4... segura por 2... solta por 6._\n\nVocê precisa estar firme por ela agora. Você consegue.",
+        "autoTo": "m7"
+      },
+      "m7": {
+        "type": "info",
+        "text": "**O SAMU pode ficar na linha com você** enquanto não chega.\n\nPede isso ao ligar — eles ficam guiando em tempo real.",
+        "autoTo": "m8"
+      },
+      "m8": {
+        "type": "task",
+        "text": "Preparando para receber o socorro:",
+        "tasks": [
+          { "id": "t5", "label": "Vai até a entrada do local para esperar ou manda alguém", "desc": "Facilita muito o trabalho dos socorristas — cada minuto conta." }
+        ],
+        "allDoneTo": "m9",
+        "doneText": "pronto para receber."
+      },
+      "m9": {
+        "type": "info",
+        "text": "Depois que o socorro chegar e a situação estiver sob controle — você também vai precisar de cuidado.\n\nCuidar de alguém em crise deixa marcas. Cuide de você depois.",
+        "autoTo": "m10"
+      },
+      "m10": {
+        "type": "action",
+        "text": "Recursos adicionais se precisar de apoio depois:",
+        "actions": [
+          { "label": "CVV — 188 (para você também)", "href": "tel:188", "icon": "ri-phone-line" },
+          { "label": "CAPS (Centro de Apoio Psicossocial)", "href": "https://www.gov.br/saude/pt-br/composicao/saes/dsmrad/caps", "icon": "ri-hospital-line" }
+        ],
+        "autoTo": "m11"
+      },
+      "m11": {
+        "type": "info",
+        "text": "Você não precisava estar aqui — e escolheu estar.\n\n_Isso é amor._",
+        "autoTo": "m12"
+      },
+      "m12": {
+        "type": "info",
+        "text": "Se essa situação acontece com frequência na sua vida — com você ou com alguém próximo — você merece apoio contínuo.\n\nO CAPS atende de graça pelo SUS.",
+        "autoTo": "m13"
+      },
+      "m13": {
+        "type": "task",
+        "text": "Um gesto de cuidado com você agora:",
+        "tasks": [
+          { "id": "t6", "label": "Respira 3 vezes bem devagar", "desc": "Inspira pelo nariz... segura... solta pela boca. Você passou por muito. Dá um momento para si mesmo." }
+        ],
+        "allDoneTo": "m14",
+        "doneText": "respirei."
+      },
+      "m14": {
+        "type": "info",
+        "text": "Você esteve aqui quando precisava.\n\nIsso importa. _Você importa._",
+        "autoTo": "m15"
+      },
+      "m15": {
+        "type": "info",
+        "text": "Este espaço estará aqui toda vez que você precisar.\n\n**Cuida de você. 💙**",
+        "autoTo": "done",
+        "isDone": true
+      }
+    }
+  }
+}

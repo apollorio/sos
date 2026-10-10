@@ -87,12 +87,16 @@
   const audioEl = document.getElementById('relaxAudio');
   const iconZen = document.getElementById('icon-zen');
   const btnZen = document.getElementById('btn-zen');
-  const btnAudio = document.getElementById('btn-audio') || document.getElementById('burger');
+  const btnAudio = document.getElementById('btn-audio');
+  const audioStatus = document.getElementById('audio-status');
   const toastEl = document.getElementById('warm-toast');
 
   let isZen = false;
   let audioPlaying = false;
   let audioUnlocked = false;
+  let audioPending = null;
+  let audioInitialized = false;
+  let audioRequestId = 0;
   let volumeFadeTween = null;
   let pauseFadeTween = null;
   let audioIconState = false;
@@ -112,6 +116,8 @@
   const STORAGE_PROGRESS = 'sos_flow_progress';
   const CHOICE_DEBOUNCE_MS = 800;
   let sessionRisk = 'IDLE';
+  /* Relatório / Modo Médico: what this page observed goes to the tiles journal (tiles-journal.js). Never throws. */
+  const journal = (k, p) => { try { if (window.SOSJournal) window.SOSJournal.add(k, p); } catch (_) {} };
   let lastChoiceAt = 0;
 
   const FLOW_LABELS = {
@@ -275,36 +281,8 @@
   let lastBreathePhraseRaw = null;
   let breathePhrasePools = { inhale: [], hold: [], exhale: [] };
   let breathePoolIndex = { inhale: 0, hold: 0, exhale: 0 };
-  let breathGuideRaf = null;
   let breatheTxtTween = null;
   let breathePhraseShownAt = 0;
-  let orbGlowHooked = false;
-  let orbGlowLogAt = 0;
-
-  /** Halo breathes with the orb: 0 at exhale-rest, 1 at full inhale.
-      style.css turns --orb-halo into a soft candle/lavender bloom. */
-  let lastHalo = -1;
-  function applyOrbChromaGlow(scale) {
-    if (!orbStage) return;
-    const { min, max } = getOrbScales();
-    const t = Math.max(0, Math.min(1, (scale - min) / (max - min)));
-    const q = Math.round(t * 100) / 100;
-    if (q === lastHalo) return;
-    lastHalo = q;
-    orbStage.style.setProperty('--orb-halo', String(q));
-  }
-
-  function syncOrbVisuals() {
-    const scale = readOrbScale();
-    if (scale != null) applyOrbChromaGlow(scale);
-  }
-
-  function hookOrbGlowTicker() {
-    if (orbGlowHooked || typeof gsap === 'undefined') return;
-    orbGlowHooked = true;
-    gsap.ticker.add(syncOrbVisuals);
-  }
-
   function classifyBreathePhrase(raw) {
     const text = String(raw || '').toLowerCase();
     if (/(segure|segura|pausa|silêncio|silencio|firme|seguro|espera|fica no|fique no|só mais|so mais|sente o corpo)/.test(text)) return 'hold';
@@ -357,45 +335,18 @@
   function setOrbBreathPhase(phaseId) {
     if (!orb) return;
     orb.dataset.breath = phaseId;
-  }
-
-  function fadeOutBreatheText() {
-    if (!breatheTxt || typeof gsap === 'undefined') return;
-    if (breatheTxtTween) breatheTxtTween.kill();
-    breatheTxtTween = gsap.to(breatheTxt, {
-      opacity: 0,
-      duration: BREATHE_TEXT_FADE_SEC,
-      ease: 'power2.inOut'
-    });
+    const simplified = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const guidance = simplified
+      ? { inhale: 'inspire suavemente', hold: 'pause suavemente · sem forçar', exhale: 'expire devagar' }
+      : { inhale: 'inspire · a esfera se expande', hold: 'pause suavemente · sem forçar', exhale: 'expire · a esfera se contrai' };
+    if (breatheSub && orbActive) breatheSub.textContent = guidance[phaseId] + ' · toque para pausar';
   }
 
   function showBreatheTextForPhase(phaseId) {
+    if (!breatheTxt) return;
     const raw = nextBreathePhraseForPhase(phaseId);
-    const parsed = parseBreathePhrase(raw);
-    if (!breatheTxt || typeof gsap === 'undefined') return;
-    if (breatheTxtTween) breatheTxtTween.kill();
-    breatheTxt.innerHTML = renderBreathePhraseHtml(parsed);
-    gsap.set(breatheTxt, { opacity: 0 });
-    breatheTxtTween = gsap.to(breatheTxt, {
-      opacity: 0.78,
-      duration: BREATHE_TEXT_FADE_SEC,
-      ease: 'power2.out',
-      onComplete: () => { breathePhraseShownAt = performance.now(); }
-    });
-  }
-
-  function readOrbScale() {
-    const scaleEl = orbStage || orb;
-    if (!scaleEl || typeof gsap === 'undefined') return null;
-    const g = gsap.getProperty(scaleEl, 'scale');
-    if (typeof g === 'number' && g > 0) return Math.round(g * 1000) / 1000;
-    const m = getComputedStyle(scaleEl).transform;
-    if (!m || m === 'none') return null;
-    const parts = m.match(/matrix\(([^)]+)\)/);
-    if (!parts) return null;
-    const v = parts[1].split(',').map(s => parseFloat(s.trim()));
-    if (v.length >= 1) return Math.round(v[0] * 1000) / 1000;
-    return null;
+    breatheTxt.innerHTML = renderBreathePhraseHtml(parseBreathePhrase(raw));
+    breatheTxt.style.opacity = '1';
   }
 
   /** Parse <quick> + <br> breath phrase syntax */
@@ -465,6 +416,7 @@
     if (!level || !RISK_ORDER.includes(level)) return;
     if (riskIndex(level) > riskIndex(sessionRisk)) {
       sessionRisk = level;
+      journal('risk', { lvl: level });
       try { sessionStorage.setItem(STORAGE_RISK, sessionRisk); } catch (_) {}
       updateCrisisBarVisibility();
     }
@@ -526,17 +478,7 @@
   }
 
   /* ── BOOT: critical UI always runs ── */
-  function ensureOrbBoot(attempt) {
-    const n = attempt || 0;
-    if (typeof gsap === 'undefined') {
-      /* The iframe has its own gentle CSS breathing loop. Bind the pause
-         control immediately so the offline shell is still fully usable. */
-      if (n === 0) setupOrb();
-      if (n < 60) return setTimeout(() => ensureOrbBoot(n + 1), 100);
-      return;
-    }
-    setupOrb();
-  }
+  function ensureOrbBoot() { setupOrb(); }
 
   function boot() {
     loadPersistedState();
@@ -547,7 +489,6 @@
       enhanceOptionsFromData();
     }
     bindStaticOptions();
-    setupAudio();
     setupZen();
     setupOverlayClose();
     showWelcomeToast();
@@ -579,11 +520,6 @@
   function bindStaticOptions() {
     optionsZone.querySelectorAll('[data-flow]').forEach(box => {
       box.addEventListener('click', () => startFlow(box.dataset.flow));
-      box.addEventListener('keydown', event => {
-        if (event.key !== 'Enter' && event.key !== ' ') return;
-        event.preventDefault();
-        startFlow(box.dataset.flow);
-      });
     });
   }
 
@@ -635,153 +571,160 @@
     }
   }
 
-  function pauseAmbientAudio() {
-    if (!audioEl) return;
-    audioPlaying = false;
-    setAudioIconState(false);
-    killAudioVolumeTweens();
-    plogAudio('pauseAmbient-start', { runId: 'post-fix', ...audioSnapshot() }, 'E');
-    if (typeof gsap === 'undefined') {
-      audioEl.volume = 0;
-      audioEl.pause();
-      return;
+  function setAudioState(state) {
+    audioPlaying = state === 'playing';
+    if (btnAudio) {
+      btnAudio.dataset.state = state;
+      btnAudio.setAttribute('aria-busy', state === 'loading' ? 'true' : 'false');
+      btnAudio.setAttribute('aria-pressed', audioPlaying ? 'true' : 'false');
+      btnAudio.setAttribute('aria-label', state === 'loading' ? 'Cancelar carregamento do som' : audioPlaying ? 'Pausar som ambiente' : 'Tocar som ambiente');
+      btnAudio.classList.toggle('is-playing', audioPlaying);
     }
-    pauseFadeTween = gsap.to(audioEl, {
-      volume: 0,
-      duration: 2.2,
-      ease: 'power1.inOut',
-      onComplete: () => {
-        audioEl.pause();
-        pauseFadeTween = null;
-        plogAudio('pauseAmbient-done', { runId: 'post-fix', ...audioSnapshot() }, 'E');
-      }
-    });
+    if (audioStatus) {
+      audioStatus.dataset.state = state;
+      audioStatus.textContent = ({ playing: 'Som ambiente tocando', paused: 'Som pausado', loading: 'Carregando som…', ended: 'Som finalizado', error: 'Som indisponível. Toque em tocar para tentar novamente.' })[state];
+    }
   }
 
-  /* ── AMBIENT AUDIO: clocks.flac only · gesture · slow fade 0→85% ── */
-  function setupAudio() {
-    if (!audioEl) return;
-
-    audioEl.loop = true;
-    audioEl.volume = 0;
-    audioEl.muted = false;
-
-    audioEl.addEventListener('volumechange', () => {
-      if (!audioUnlocked && audioEl.volume > 0.001) audioEl.volume = 0;
-    });
-    audioEl.addEventListener('play', () => setAudioIconState(true));
-    audioEl.addEventListener('pause', () => {
-      if (!audioPlaying) setAudioIconState(false);
-    });
-
-    if (btnAudio) btnAudio.addEventListener('click', e => {
-      e.stopPropagation();
-      SOS.toggleAudio();
-    });
-
-    document.body.addEventListener('pointerdown', () => acquireWake(), { once: true, passive: true });
-    const unlock = () => startAmbientAudio(true);
-    document.body.addEventListener('pointerdown', unlock, { once: true, passive: true });
-    document.body.addEventListener('touchstart', unlock, { once: true, passive: true });
-
-    const orbZone = document.getElementById('orb-zone');
-    if (orbZone) {
-      orbZone.addEventListener('click', () => {
-        if (!audioUnlocked) startAmbientAudio(true);
+  /* Ambient fallback: the piano file lives on the asset host (assets.apollo.rio.br/audio/clocks.flac). When it cannot
+     play (missing on the host, offline, opened from the disk), a soft pad is synthesized on the device instead:
+     Web Audio, no file, no network. Its swell follows the 12 s breath cycle. Same button, same volume slider.
+     The context is unlocked inside the entry/button gesture so the later switch is allowed on every browser. */
+  const AMBIENT_GAIN = 0.2;
+  let fileFailed = false;
+  const pad = (() => {
+    let ctx = null, out = null, voices = null;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    function unlock() {
+      if (!AC) return false;
+      try {
+        if (!ctx) {
+          ctx = new AC();
+          out = ctx.createGain();
+          out.gain.value = 0;
+          out.connect(ctx.destination);
+        }
+        if (ctx.state === 'suspended') ctx.resume().catch(() => {});
+        return true;
+      } catch (_) { ctx = null; return false; }
+    }
+    function startVoices() {
+      if (voices) return;
+      const lp = ctx.createBiquadFilter();
+      lp.type = 'lowpass'; lp.frequency.value = 820; lp.Q.value = 0.4;
+      lp.connect(out);
+      voices = [];
+      /* open A chord, slightly detuned; each voice swells on its own slow cycle around the 12 s breath */
+      [[110, 'triangle', 0.34], [164.81, 'sine', 0.2], [220, 'sine', 0.2], [277.18, 'sine', 0.1], [329.63, 'sine', 0.08]].forEach(([f, type, level], i) => {
+        const osc = ctx.createOscillator(), amp = ctx.createGain(), lfo = ctx.createOscillator(), depth = ctx.createGain();
+        osc.type = type; osc.frequency.value = f; osc.detune.value = (i - 2) * 4;
+        amp.gain.value = level;
+        lfo.frequency.value = 1 / (BREATH_CYCLE_SEC + i * 1.6);
+        depth.gain.value = level * 0.55;
+        lfo.connect(depth); depth.connect(amp.gain);
+        osc.connect(amp); amp.connect(lp);
+        osc.start(); lfo.start();
+        voices.push(osc, lfo);
       });
     }
+    function ramp(to, sec) {
+      const t = ctx.currentTime;
+      out.gain.cancelScheduledValues(t);
+      out.gain.setValueAtTime(out.gain.value, t);
+      out.gain.linearRampToValueAtTime(to, t + sec);
+    }
+    return {
+      unlock,
+      on: () => !!(ctx && voices && out.gain.value > 0.0005 && ctx.state === 'running'),
+      play(vol) {
+        if (!unlock()) return Promise.resolve(false);
+        return ctx.resume().then(() => { startVoices(); ramp(vol * AMBIENT_GAIN, REDUCE_MOTION ? 0.3 : 4); return ctx.state === 'running'; }).catch(() => false);
+      },
+      pause() {
+        if (!ctx || !voices) return;
+        ramp(0, 0.5);
+        setTimeout(() => { if (ctx && out.gain.value < 0.0005) ctx.suspend().catch(() => {}); }, 650);
+      },
+      volume(v) { if (ctx && voices && ctx.state === 'running') ramp(v * AMBIENT_GAIN, 0.15); }
+    };
+  })();
+  let padPlaying = false;
 
-    setAudioIconState(false);
+  function playPad() {
+    return pad.play(targetVolume()).then(ok => {
+      padPlaying = ok;
+      setAudioState(ok ? 'playing' : 'error');
+      if (audioStatus && ok) audioStatus.textContent = 'Som ambiente tocando (gerado no aparelho)';
+      return ok;
+    });
+  }
+  SOS.onVolume = v => pad.volume(v);
+
+  function pauseAmbientAudio() {
+    if (!audioEl) return;
+    audioRequestId++;
+    audioPending = null;
+    killAudioVolumeTweens();
+    audioEl.pause();
+    if (padPlaying) { pad.pause(); padPlaying = false; }
+    setAudioState('paused');
+  }
+
+  function setupAudio() {
+    if (!audioEl || audioInitialized) return;
+    audioInitialized = true;
+    audioEl.muted = false;
+    audioEl.addEventListener('playing', () => {
+      if (!padPlaying && !audioEl.paused && !audioEl.ended) setAudioState('playing');
+    });
+    audioEl.addEventListener('pause', () => { if (!padPlaying) setAudioState(audioEl.error ? 'error' : audioEl.ended ? 'ended' : 'paused'); });
+    audioEl.addEventListener('ended', () => { if (!padPlaying) setAudioState('ended'); });
+    audioEl.addEventListener('waiting', () => { if (!padPlaying && !audioEl.paused) setAudioState('loading'); });
+    /* the file failed (play() rejects too): the next start goes straight to the synthesized pad */
+    audioEl.addEventListener('error', () => { fileFailed = true; });
+    if (btnAudio) btnAudio.addEventListener('click', e => { e.stopPropagation(); SOS.toggleAudio(); });
+    setAudioState('paused');
   }
 
   function startAmbientAudio(fromGesture) {
-    if (!audioEl) return;
-    const snap = audioSnapshot();
-    const earlyReturn = audioUnlocked && audioPlaying && !audioEl.paused && audioEl.volume >= targetVolume() * 0.85;
-    plogAudio('startAmbientAudio', { fromGesture, earlyReturn, runId: 'post-fix', ...snap }, 'A');
-    if (earlyReturn) return;
-
+    if (!audioEl) return Promise.resolve(false);
+    if (audioPending) return audioPending;
+    if (padPlaying || (!audioEl.paused && !audioEl.ended)) return Promise.resolve(true);
+    // Must run synchronously in the entry/button click, before awaiting anything.
+    pad.unlock();
+    if (fileFailed) return playPad();
+    const requestId = ++audioRequestId;
     audioUnlocked = true;
     killAudioVolumeTweens();
-
     audioEl.muted = false;
-
-    const beginFade = () => {
-      audioPlaying = true;
-      setAudioIconState(true);
-      audioEl.volume = 0;
-      plogAudio('beginFade', audioSnapshot(), 'C');
-      if (typeof gsap !== 'undefined') {
-        volumeFadeTween = gsap.to(audioEl, {
-          volume: targetVolume(),
-          duration: FADE_DURATION,
-          ease: 'power1.inOut',
-          onComplete: () => { volumeFadeTween = null; }
-        });
-      } else {
-        const steps = 60;
-        const stepVol = targetVolume() / steps;
-        let n = 0;
-        const iv = setInterval(() => {
-          n++;
-          audioEl.volume = Math.min(targetVolume(), stepVol * n);
-          if (n >= steps) clearInterval(iv);
-        }, (FADE_DURATION * 1000) / steps);
-      }
-    };
-
-    if (audioEl.paused) {
-      audioEl.play().then(() => {
-        plogAudio('play-resolved', audioSnapshot(), 'C');
-        beginFade();
-      }).catch(err => {
-        plogAudio('play-rejected', { err: String(err && err.message), ...audioSnapshot() }, 'C');
-        if (fromGesture) showToast('não consegui tocar o som. tenta de novo.', 2000);
+    audioEl.volume = targetVolume();
+    if (audioEl.error) audioEl.load();
+    setAudioState('loading');
+    let play;
+    try { play = audioEl.play(); } catch (error) { play = Promise.reject(error); }
+    audioPending = Promise.resolve(play).then(() => {
+      if (requestId !== audioRequestId) return false;
+      if (!audioEl.paused && !audioEl.ended && audioEl.readyState >= 3) setAudioState('playing');
+      return !audioEl.paused;
+    }).catch(() => {
+      if (requestId !== audioRequestId) return false;
+      fileFailed = true;
+      return padPlaying ? true : playPad().then(ok => {
+        if (!ok && fromGesture) showToast('Não consegui iniciar o som. Você pode continuar respirando aqui.', 2600);
+        return ok;
       });
-    } else {
-      plogAudio('already-playing', audioSnapshot(), 'C');
-      beginFade();
-    }
+    }).finally(() => { if (requestId === audioRequestId) audioPending = null; });
+    return audioPending;
   }
 
-  function setAudioIconState(playing) {
-    if (!btnAudio) return;
-    if (audioIconState === playing && !audioIconTween) {
-      plogAudio('setAudioIconState-skipped', { playing, ...audioSnapshot() }, 'D');
-      return;
-    }
-    plogAudio('setAudioIconState', { playing, ...audioSnapshot() }, 'D');
-
-    audioIconState = playing;
-    btnAudio.setAttribute('aria-pressed', playing ? 'true' : 'false');
-    btnAudio.setAttribute('aria-label', playing ? 'Pausar som ambiente' : 'Tocar som ambiente');
-
-    if (audioIconTween) audioIconTween.kill();
-
-    btnAudio.classList.toggle('is-playing', playing);
-    /* The two bars are the compact menu mark from the design system. Their
-       geometry changes into a quiet X while audio is on, so the control keeps
-       one visual language in both states. */
-    if (typeof gsap === 'undefined') return;
-    const bars = btnAudio.querySelectorAll('.audio-bar');
-    if (!bars.length) return;
-    if (audioIconTween) audioIconTween.kill();
-    audioIconTween = gsap.timeline({
-      defaults: { duration: 0.35, ease: 'sine.inOut' },
-      onComplete: () => { audioIconTween = null; }
-    });
-    audioIconTween.to(bars[0], { width: 20, y: playing ? 3.75 : 0, rotate: playing ? 45 : 0 }, 0)
-      .to(bars[1], { width: playing ? 20 : 12, y: playing ? -3.75 : 0, rotate: playing ? -45 : 0 }, 0);
+  function setAudioIconState() {
+    setAudioState(padPlaying || (audioEl && !audioEl.paused && !audioEl.ended && audioEl.readyState >= 3) ? 'playing' : 'paused');
   }
+  SOS.enterApp = () => { acquireWake(); return startAmbientAudio(true); };
   SOS.toggleAudio = () => {
-    if (!ambientMedia()) return;
-    const resumeBranch = !audioUnlocked || !audioPlaying;
-    plogAudio('toggleAudio', { resumeBranch, runId: 'post-fix', ...audioSnapshot() }, 'B');
-    if (resumeBranch) {
-      startAmbientAudio(true);
-      return;
-    }
-    pauseAmbientAudio();
+    if (!audioEl) return;
+    if (audioPending || padPlaying || !audioEl.paused) pauseAmbientAudio();
+    else startAmbientAudio(true);
   };
 
   /* ── MAGIC BALL: 4-2-6 clock · phase phrases · GSAP orb scale ── */
@@ -825,57 +768,35 @@
   }
 
   function buildBreatheTimeline() {
-    const scales = getOrbScales();
-    const min = REDUCE_MOTION ? 0.9 : scales.min;
-    const max = REDUCE_MOTION ? 0.9 : scales.max;
-    const inh = BREATH_PATTERN.inhale;
-    const hold = BREATH_PATTERN.hold;
-    const exh = BREATH_PATTERN.exhale;
-    const fade = BREATHE_TEXT_FADE_SEC;
-    const tInhaleEnd = inh;
-    const tHoldEnd = inh + hold;
-    const tCycleEnd = inh + hold + exh;
-
-    const scaleTarget = orbStage || orb;
-    gsap.killTweensOf(scaleTarget);
-    gsap.set(scaleTarget, {
-      scale: min,
-      transformOrigin: '50% 50%',
-      force3D: true
-    });
-    setOrbBreathPhase('exhale');
-    applyOrbChromaGlow(min);
-
-    const tl = gsap.timeline({
-      repeat: -1,
-      delay: BREATH_ORB_DELAY_SEC,
-      paused: false
-    });
-
-    tl.call(() => showBreatheTextForPhase('inhale'), null, 0)
-      .call(() => fadeOutBreatheText(), null, tHoldEnd - fade)
-      .to(scaleTarget, {
-        scale: max,
-        duration: inh,
-        ease: easeBreathCushion,
-        onStart: () => setOrbBreathPhase('inhale')
-      }, 0)
-      .call(() => showBreatheTextForPhase('exhale'), null, tHoldEnd)
-      .call(() => fadeOutBreatheText(), null, tCycleEnd - fade)
-      .to(scaleTarget, {
-        scale: max,
-        duration: hold,
-        ease: 'none',
-        onStart: () => setOrbBreathPhase('hold')
-      }, tInhaleEnd)
-      .to(scaleTarget, {
-        scale: min,
-        duration: exh,
-        ease: easeBreathCushion,
-        onStart: () => setOrbBreathPhase('exhale')
-      }, tHoldEnd);
-
-    return tl;
+    const phases = ['inhale', 'hold', 'exhale'];
+    let phase = -1, timer = 0, due = 0, remaining = BREATH_ORB_DELAY_SEC * 1000, paused = false;
+    const schedule = () => {
+      due = performance.now() + remaining;
+      timer = setTimeout(() => {
+        phase = (phase + 1) % phases.length;
+        const id = phases[phase];
+        setOrbBreathPhase(id);
+        showBreatheTextForPhase(id);
+        remaining = BREATH_PATTERN[id] * 1000;
+        schedule();
+      }, remaining);
+    };
+    schedule();
+    return {
+      paused: () => paused,
+      pause() {
+        if (paused) return;
+        paused = true; remaining = Math.max(0, due - performance.now()); clearTimeout(timer);
+        if (orbStage) orbStage.classList.add('is-paused');
+      },
+      resume() {
+        if (!paused) return;
+        paused = false;
+        if (orbStage) orbStage.classList.remove('is-paused');
+        if (phase >= 0) setOrbBreathPhase(phases[phase]);
+        schedule();
+      }
+    };
   }
 
   function orbIsoFrame() {
@@ -900,11 +821,10 @@
 
     syncBreathCssVars();
     buildBreathePhrasePools();
-    if (typeof gsap !== 'undefined') {
-      breatheTl = buildBreatheTimeline();
-      if (breatheTl.paused()) breatheTl.play();
-      hookOrbGlowTicker();
-    }
+    if (orbStage) orbStage.classList.add('is-ready');
+    breatheTl = buildBreatheTimeline();
+    const frame = orbIsoFrame();
+    if (frame) frame.addEventListener('load', () => setIsoFlowPaused(!orbActive || document.hidden || document.body.classList.contains('is-sheet-open')));
 
     orb.addEventListener('click', e => {
       e.stopPropagation();
@@ -913,10 +833,9 @@
         orb.classList.remove('paused');
         if (breatheTl) breatheTl.resume();
         setIsoFlowPaused(false);
-        breatheSub.textContent = 'respiração ativa';
+        setOrbBreathPhase(orb.dataset.breath || 'inhale');
         orb.setAttribute('aria-pressed', 'false');
         orb.setAttribute('aria-label', 'Pausar a esfera de respiração');
-        if (typeof gsap !== 'undefined') gsap.to(breatheSub, { opacity: 0.4, duration: 0.6 });
       } else {
         orb.classList.add('paused');
         if (breatheTl) breatheTl.pause();
@@ -924,13 +843,10 @@
         breatheSub.textContent = 'em pausa · toque para retomar';
         orb.setAttribute('aria-pressed', 'true');
         orb.setAttribute('aria-label', 'Retomar a esfera de respiração');
-        if (typeof gsap !== 'undefined') gsap.to(breatheSub, { opacity: 0.65, duration: 0.6 });
       }
     });
 
-    setTimeout(() => {
-      if (breatheSub && typeof gsap !== 'undefined') gsap.to(breatheSub, { opacity: 0.36, duration: 1.8 });
-    }, 4800);
+
   }
 
   function setupZen() {
@@ -983,6 +899,7 @@
     }
     isZen = !isZen;
     if (isZen) {
+      optionsZone.inert = true;
       if (typeof gsap !== 'undefined') {
         gsap.killTweensOf([optionsZone, header]);
         gsap.to(optionsZone, { opacity: 0, y: 16, duration: 0.7, ease: 'power2.inOut', onComplete: () => { optionsZone.style.pointerEvents = 'none'; } });
@@ -999,6 +916,7 @@
       enterFocusChrome();
       if (overlay.style.visibility === 'visible') closeFlow();
     } else {
+      optionsZone.inert = false;
       optionsZone.style.pointerEvents = 'auto';
       if (typeof gsap !== 'undefined') {
         gsap.killTweensOf([optionsZone, header]);
@@ -1037,6 +955,7 @@
   }
 
   function showOverlay() {
+    if (window.SOS.closeMenu) window.SOS.closeMenu();
     lastFocusBeforeSheet = document.activeElement;
     overlay.setAttribute('aria-hidden', 'false');
     overlay.style.visibility = 'visible';
@@ -1051,10 +970,11 @@
       gsap.fromTo(infoBox, { y: '100%' }, { y: 0, duration: MOTION.sheetIn, ease: MOTION.ease });
     }
     setTimeout(() => {
+      if (overlay.getAttribute('aria-hidden') === 'true') return;
       const first = nodeArea.querySelector('button, a[href]') || infoBox;
       if (first === infoBox) infoBox.setAttribute('tabindex', '-1');
       try { first.focus({ preventScroll: true }); } catch (_) {}
-    }, 420);
+    }, REDUCE_MOTION ? 0 : 420);
   }
 
   SOS.closeFlow = () => closeFlow();
@@ -1063,7 +983,6 @@
       showToast('recolher  fico por perto.', 2400);
     }
     if (breathGuideTimer) { clearInterval(breathGuideTimer); breathGuideTimer = null; }
-    if (breathGuideRaf) { cancelAnimationFrame(breathGuideRaf); breathGuideRaf = null; }
     saveFlowProgress();
     const finish = () => {
         overlay.style.visibility = 'hidden';
@@ -1100,11 +1019,10 @@
       return;
     }
     if (isZen) toggleZen();
-    startAmbientAudio(true);
-
     const saved = restoreFlowProgress();
     currentFlowKey = flowKey;
     currentFlow = data[flowKey];
+    journal('flow', { f: flowKey });
     taskDone = {};
     sequentialStep = {};
 
@@ -1156,7 +1074,7 @@
   function renderExactPhrase(text, accent) {
     if (!text) return '';
     const color = calmAccent(accent) || 'var(--text-soft)';
-    return `<div class="exact-phrase" style="border-color:${color}">${formatText(text)}</div>`;
+    return `<div class="exact-phrase" style="--quote:${color};border-color:${color}">${formatText(text)}</div>`;
   }
 
   function renderCrisisBar() {
@@ -1236,7 +1154,7 @@
       <div class="task-content">
         <div class="t-label">${escHtml(t.label)}</div>
         <div class="t-desc">${formatText(t.desc || '')}</div>
-        <div class="breath-guide" hidden>
+        <div class="breath-guide">
           <div class="breath-phase">preparar</div>
           <div class="breath-counter"></div>
           <div class="breath-cycle">ciclo 0 / ${cycles}</div>
@@ -1303,7 +1221,7 @@
       const cardAccent = calmAccent(accent) || 'var(--c-blue)';
       const playerBlock = t.mediaSrc ? `
         <div class="inline-voice-player" id="player-${escHtml(t.id)}" hidden>
-          <video playsinline webkit-playsinline muted preload="auto" src="${escHtml(t.mediaSrc)}"></video>
+          <video controls aria-label="Vídeo de apoio" playsinline preload="none" src="${escHtml(t.mediaSrc)}"></video>
           <div class="voice-controls">
             <button type="button" class="btn-soft primary voice-fullscreen" data-href="${escHtml(t.href || '')}">
               <i class="ri-fullscreen-line"></i> tela cheia
@@ -1311,23 +1229,23 @@
           </div>
         </div>` : '';
       return `
-        <div class="task-card task-card--media ${done ? 'completed' : ''}" data-tid="${escHtml(t.id)}" data-variant="media" style="border-color: color-mix(in srgb, ${cardAccent} 42%, transparent); background: color-mix(in srgb, ${cardAccent} 10%, transparent)">
-          <div class="task-check task-check--play">${TASK_PLAY_ICON}${TASK_CHECK_ICON}</div>
-          <div class="task-content">
-            <div class="t-label" style="color:${cardAccent}">${escHtml(t.label)}</div>
-            <div class="t-desc">${escHtml(t.desc || '')}</div>
-          </div>
-        </div>${playerBlock}`;
+        <button type="button" class="task-card task-card--media ${done ? 'completed' : ''}" data-tid="${escHtml(t.id)}" data-variant="media" style="border-color: color-mix(in srgb, ${cardAccent} 42%, transparent); background: color-mix(in srgb, ${cardAccent} 10%, transparent)" aria-pressed="${done}">
+          <span class="task-check task-check--play">${TASK_PLAY_ICON}${TASK_CHECK_ICON}</span>
+          <span class="task-content">
+            <span class="t-label" style="color:${cardAccent}">${escHtml(t.label)}</span>
+            <span class="t-desc">${escHtml(t.desc || '')}</span>
+          </span>
+      </button>${playerBlock}`;
     }
 
     return `
-      <div class="task-card ${done ? 'completed' : ''}" data-tid="${escHtml(t.id)}" data-variant="default">
-        <div class="task-check"><i class="ri-check-line"></i></div>
-        <div class="task-content">
-          <div class="t-label">${escHtml(t.label)}</div>
-          <div class="t-desc">${escHtml(t.desc || '')}</div>
-        </div>
-      </div>`;
+      <button type="button" class="task-card ${done ? 'completed' : ''}" data-tid="${escHtml(t.id)}" data-variant="default" aria-pressed="${done}">
+        <span class="task-check"><i class="ri-check-line"></i></span>
+        <span class="task-content">
+          <span class="t-label">${escHtml(t.label)}</span>
+          <span class="t-desc">${escHtml(t.desc || '')}</span>
+        </span>
+      </button>`;
   }
 
   function renderFastLane(nodeId, node) {
@@ -1365,13 +1283,7 @@
   }
 
   function pauseAmbientForMedia() {
-    if (!audioEl || !audioPlaying) return;
-    plogAudio('pauseAmbientForMedia', { runId: 'post-fix', ...audioSnapshot() }, 'A');
-    audioPlaying = false;
-    killAudioVolumeTweens();
-    audioEl.pause();
-    audioEl.volume = 0;
-    setAudioIconState(false);
+    if (audioEl && (audioPending || padPlaying || !audioEl.paused)) pauseAmbientAudio();
   }
 
   async function pickFriendContact(cardEl, nodeId, taskId, templateKey) {
@@ -1383,6 +1295,7 @@
         const tel = picked && picked[0] && picked[0].tel && picked[0].tel[0];
         if (tel) {
           const digits = String(tel).replace(/[^\d+]/g, '');
+          journal('tap', { ch: 'sms', to: 'contato' });
           window.location.href = `sms:${digits}?body=${encodeURIComponent(body)}`;
           markTask(cardEl, nodeId, taskId);
           return;
@@ -1390,6 +1303,7 @@
       } catch (_) { /* fallback */ }
     }
     const wa = buildWhatsAppHref(templateKey);
+    journal('tap', { ch: wa ? 'whatsapp' : 'sms', to: 'contato' });
     if (wa) window.location.href = wa;
     else window.location.href = `sms:?body=${encodeURIComponent(body)}`;
     markTask(cardEl, nodeId, taskId);
@@ -1398,34 +1312,12 @@
   function startInlineVideo(videoEl, onPlaying, onError) {
     if (!videoEl) return;
     pauseAmbientForMedia();
-    videoEl.muted = true;
-    videoEl.volume = 0;
-
-    setTimeout(() => {
-      const playPromise = videoEl.play();
-      if (!playPromise) {
-        if (onError) onError();
-        return;
-      }
-      playPromise.then(() => {
-        videoEl.muted = false;
-        videoEl.volume = 0;
-        if (typeof gsap !== 'undefined') {
-          gsap.to(videoEl, {
-            volume: MEDIA_TARGET_VOLUME,
-            duration: MEDIA_VOL_FADE_SEC,
-            ease: 'power1.inOut'
-          });
-        } else {
-          videoEl.volume = MEDIA_TARGET_VOLUME;
-        }
-        if (onPlaying) onPlaying();
-      }).catch(() => {
-        videoEl.muted = true;
-        if (onError) onError();
-        else showToast('não consegui tocar o vídeo aqui.', 2200);
-      });
-    }, MEDIA_PLAY_DELAY_SEC * 1000);
+    videoEl.muted = false;
+    videoEl.volume = MEDIA_TARGET_VOLUME;
+    videoEl.play().then(() => { if (onPlaying) onPlaying(); }).catch(() => {
+      if (onError) onError();
+      showToast('Não consegui tocar o vídeo aqui.', 2200);
+    });
   }
 
   function activateMediaTask(cardEl, nodeId, taskId) {
@@ -1471,7 +1363,6 @@
     guide.hidden = false;
 
     if (breathGuideTimer) { clearInterval(breathGuideTimer); breathGuideTimer = null; }
-    if (breathGuideRaf) cancelAnimationFrame(breathGuideRaf);
 
     let cycle = 0;
     let phaseIdx = 0;
@@ -1481,15 +1372,16 @@
     counterEl.textContent = phases[0].sec;
     cycleEl.textContent = `ciclo ${cycle} / ${totalCycles}`;
 
-    function tick(now) {
+    function tick() {
+      const now = performance.now();
       const phase = phases[phaseIdx];
       const msLeft = Math.max(0, phaseEndsAt - now);
       const secLeft = Math.max(1, Math.ceil(msLeft / 1000));
-      counterEl.textContent = secLeft;
-      phaseEl.textContent = phase.label;
+      if (counterEl.textContent !== String(secLeft)) counterEl.textContent = secLeft;
+      if (phaseEl.textContent !== phase.label) phaseEl.textContent = phase.label;
 
       if (now < phaseEndsAt) {
-        breathGuideRaf = requestAnimationFrame(tick);
+        breathGuideTimer = setTimeout(tick, Math.min(1000, phaseEndsAt - now));
         return;
       }
 
@@ -1499,7 +1391,7 @@
         cycle += 1;
         cycleEl.textContent = `ciclo ${cycle} / ${totalCycles}`;
         if (cycle >= totalCycles) {
-          breathGuideRaf = null;
+          breathGuideTimer = null;
           markTask(cardEl, nodeId, taskId);
           return;
         }
@@ -1507,10 +1399,12 @@
 
       const next = phases[phaseIdx];
       phaseEndsAt = now + next.sec * 1000;
-      breathGuideRaf = requestAnimationFrame(tick);
+      phaseEl.textContent = next.label;
+      counterEl.textContent = next.sec;
+      breathGuideTimer = setTimeout(tick, 1000);
     }
 
-    breathGuideRaf = requestAnimationFrame(tick);
+    breathGuideTimer = setTimeout(tick, 1000);
   }
 
   function runCrtPause(cardEl, nodeId, taskId) {
@@ -1521,11 +1415,13 @@
     cd.hidden = false;
     let n = 10;
     cd.textContent = n;
-    const iv = setInterval(() => {
+    if (breathGuideTimer) clearInterval(breathGuideTimer);
+    const iv = breathGuideTimer = setInterval(() => {
       n -= 1;
       cd.textContent = n;
       if (n <= 0) {
         clearInterval(iv);
+        breathGuideTimer = null;
         markTask(cardEl, nodeId, taskId);
       }
     }, 1000);
@@ -1557,11 +1453,6 @@
           runBreathGuide(card, nodeId, card.dataset.tid);
         });
       }
-      card.addEventListener('click', e => {
-        if (e.target.closest('.breath-start')) return;
-        const guide = card.querySelector('.breath-guide');
-        if (guide) guide.hidden = false;
-      });
     });
     nodeArea.querySelectorAll('.task-card--crt:not(.completed)').forEach(card => {
       const btn = card.querySelector('.crt-start');
@@ -1630,6 +1521,7 @@
       return;
     }
 
+    if (breathGuideTimer) { clearInterval(breathGuideTimer); breathGuideTimer = null; }
     const node = currentFlow.nodes[nodeId];
     const meta = currentFlow.meta || {};
     currentNodeId = nodeId;
@@ -1651,7 +1543,10 @@
         bodyHtml += `<button type="button" class="btn-soft" style="margin-top:12px" data-goto="${node.autoTo}">continuar devagar</button>`;
       }
     } else if (node.type === 'choice') {
-      bodyHtml = `<div class="node-text">${formatText(node.text)}</div><div class="choice-list">`;
+      const parts = splitQuestion(node.text);
+      bodyHtml = (parts.lead ? `<div class="node-text">${formatText(parts.lead)}</div>` : '')
+        + (parts.question ? `<p class="node-question">${formatText(parts.question)}</p>` : '')
+        + `<div class="choice-list">`;
       (node.choices || []).forEach(ch => {
         const riskAttr = ch.riskLevel ? ` data-risk="${escHtml(ch.riskLevel)}"` : '';
         bodyHtml += `<button type="button" class="choice-btn" data-goto="${ch.to}"${riskAttr}>${escHtml(ch.label)}</button>`;
@@ -1705,7 +1600,7 @@
 
     nodeArea.innerHTML = wrapNodeContent(node, meta, nodeId, bodyHtml);
     updateCrisisBarVisibility();
-    if (node.type === 'task') setTimeout(() => bindTaskHandlers(nodeId), 12);
+    if (node.type === 'task') bindTaskHandlers(nodeId);
     bindNodeActions();
     saveFlowProgress();
     infoBox.scrollTop = 0;
@@ -1726,6 +1621,7 @@
         const now = Date.now();
         if (riskIndex(sessionRisk) >= riskIndex('MODERATE') && now - lastChoiceAt < CHOICE_DEBOUNCE_MS) return;
         lastChoiceAt = now;
+        journal('choice', { f: currentFlowKey, t: btn.textContent });
         const risk = btn.dataset.risk;
         if (risk) registerRisk(risk);
         SOS.goTo(btn.dataset.goto);
@@ -1757,6 +1653,16 @@
       .replace(/\n/g, '<br>');
   }
 
+  /* Presentation only: the last paragraph of a choice node, when it is a question, is shown as the question
+     (support text above it stays quiet). The copy itself is untouched. */
+  function splitQuestion(text) {
+    const t = String(text || '').trim();
+    const paras = t.split(/\n\s*\n/);
+    const last = paras[paras.length - 1].trim();
+    if (!/\?\s*$/.test(last)) return { lead: t, question: '' };
+    return { lead: paras.slice(0, -1).join('\n\n').trim(), question: last };
+  }
+
   function calcProgress(nodeId) {
     if (!currentFlow || !currentFlow.nodes) return 12;
     const keys = Object.keys(currentFlow.nodes);
@@ -1772,7 +1678,10 @@
     if (!taskDone[nodeId]) taskDone[nodeId] = new Set();
     if (taskDone[nodeId].has(taskId)) return;
     taskDone[nodeId].add(taskId);
+    const doneTask = findTask(nodeId, taskId);
+    journal('task', { f: currentFlowKey, t: doneTask ? doneTask.label : '' });
     cardEl.classList.add('completed');
+    if (cardEl.tagName === 'BUTTON') cardEl.setAttribute('aria-pressed', 'true');
     if (navigator.vibrate) navigator.vibrate(4);
     if (typeof gsap !== 'undefined' && !REDUCE_MOTION) gsap.fromTo(cardEl, { scale: 0.985 }, { scale: 1, duration: 0.7, ease: 'elastic.out(1, 0.6)' });
     showToast('continuo aqui com você.', 1400);
@@ -1805,6 +1714,7 @@
     if (!data[newFlowKey]) return;
     currentFlowKey = newFlowKey;
     currentFlow = data[newFlowKey];
+    journal('flow', { f: newFlowKey });
     taskDone = {};
     sequentialStep = {};
     renderNode(currentFlow.start || Object.keys(currentFlow.nodes)[0]);
@@ -1826,8 +1736,15 @@
     setTimeout(() => showToast('Estamos contigo aqui.. Sem pressa, tá?', 2200), 1200);
   }
 
+  let toastTimer = 0;
   function showToast(msg, holdMs = 1650) {
-    if (!toastEl || typeof gsap === 'undefined') return;
+    if (!toastEl) return;
+    clearTimeout(toastTimer);
+    if (typeof gsap === 'undefined' || REDUCE_MOTION) {
+      toastEl.textContent = msg; toastEl.style.opacity = '1';
+      toastTimer = setTimeout(() => { toastEl.style.opacity = '0'; }, holdMs);
+      return;
+    }
     toastEl.textContent = msg;
     gsap.killTweensOf(toastEl);
     gsap.set(toastEl, { opacity: 0 });
@@ -1844,32 +1761,29 @@
   SOS.BREATH_PATTERN = BREATH_PATTERN;
   SOS.BREATH_CYCLE_SEC = BREATH_CYCLE_SEC;
 
-  function whenAppReady(fn) {
-    const run = () => { try { fn(); } catch (_) {} };
-    if (document.documentElement.classList.contains('preloading')) {
-      window.addEventListener('preloader:revealed', () => run(), { once: true });
-      setTimeout(() => {
-        if (document.documentElement.classList.contains('preloading')) {
-          document.documentElement.classList.remove('preloading');
-          run();
-        }
-      }, 90000);
-    } else {
-      run();
-    }
-  }
-
-  whenAppReady(boot);
+  // Bind the single audio element before the entry dialog can receive a gesture.
+  setupAudio();
+  let appBooted = false;
+  const bootOnce = () => { if (!appBooted) { appBooted = true; boot(); } };
+  if (document.documentElement.classList.contains('preloading')) window.addEventListener('preloader:revealed', bootOnce, { once: true });
+  else bootOnce();
+  document.addEventListener('visibilitychange', () => {
+    const quiet = document.hidden || !orbActive || document.body.classList.contains('is-sheet-open');
+    if (breatheTl) { if (quiet) breatheTl.pause(); else breatheTl.resume(); }
+    setIsoFlowPaused(quiet);
+  });
 
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape' && overlay.style.visibility === 'visible') closeFlow();
   });
 
-  let lastTouch = 0;
-  document.addEventListener('touchend', e => {
-    const now = Date.now();
-    if (now - lastTouch <= 280) e.preventDefault();
-    lastTouch = now;
-  }, { passive: false });
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Tab' || overlay.getAttribute('aria-hidden') === 'true') return;
+    const controls = Array.from(infoBox.querySelectorAll('button:not(:disabled), a[href], input:not(:disabled), summary, [tabindex="0"]')).filter(el => el.getClientRects().length && !el.closest('[hidden], [inert]'));
+    const first = controls[0], last = controls[controls.length - 1];
+    if (!first) { e.preventDefault(); infoBox.focus(); return; }
+    if (e.shiftKey && (document.activeElement === first || !infoBox.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && (document.activeElement === last || !infoBox.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+  });
 
 })();

@@ -1,0 +1,108 @@
+flowchart TD
+  START(["▶ Paranoia · Medo constante"]) --> trava_a1
+  trava_a1{"<b>a1</b><br/>Tô aqui com você. Me conta.. o que está acontecendo?"}
+  class trava_a1 choice
+  trava_a2{"<b>a2</b><br/>O que está acontecendo mais agora?"}
+  class trava_a2 choice
+  trava_a2_confirm("<b>a2_confirm</b><br/>O estado de trava.. ou 'freeze'.. é uma resposta automática do sistem…")
+  class trava_a2_confirm info
+  trava_a3_paranoia("<b>a3_paranoia</b><br/>Essa sensação de ser observado ou julgado é muito real para você.. e …")
+  class trava_a3_paranoia info
+  trava_a3_freeze("<b>a3_freeze</b><br/>Congelar é uma resposta de sobrevivência.. tão válida quanto correr o…")
+  class trava_a3_freeze info
+  trava_redirect_panico[/"<b>redirect_panico</b><br/>Se junto ao travar tem muito coração acelerado e falta de ar, o supor…<br/>↪ Quer ir para o suporte de Pânico?"/]
+  class trava_redirect_panico redirect
+  trava_redirect_realidade[/"<b>redirect_realidade</b><br/>Se junto ao travar tudo parece irreal ou distante, o suporte de irrea…<br/>↪ Quer ir para o suporte de Onde estou?"/]
+  class trava_redirect_realidade redirect
+  trava_m1("<b>m1</b><br/>Você está seguro aqui. Ninguém ao redor sabe o que você está sentindo…")
+  class trava_m1 info
+  trava_m2[["<b>m2</b><br/>Postura de segurança.. primeiro:<br/>☐ Senta no chão encostado em uma pa…<br/>☐ Abraça os próprios joelhos se pud…"]]
+  class trava_m2 task
+  trava_m3[["<b>m3</b><br/>Reduzindo o estímulo visual:<br/>☐ Abaixa o olhar para o chão na fre…<br/>☐ Coloca capuz, óculos ou qualquer …"]]
+  class trava_m3 task
+  trava_m4("<b>m4</b><br/>Respiração diafragmática: Inspira lenta e profundamente pelo nariz (c…")
+  class trava_m4 info
+  trava_m5{"<b>m5</b><br/>Como está o nível de agitação agora?"}
+  class trava_m5 choice
+  trava_m6("<b>m6</b><br/>O sistema nervoso pode estar desacelerando.. ou ainda não. Continuo a…")
+  class trava_m6 info
+  trava_m6_high("<b>m6_high</b><br/>Normal. Às vezes o estado de alerta demora mais para passar. Isso vai…")
+  class trava_m6_high info
+  trava_m7[["<b>m7</b><br/>Ancoragem pelo toque:<br/>☐ Aperta os próprios braços ou coxa…"]]
+  class trava_m7 task
+  trava_m8{"<b>m8</b><br/>Tem alguém de confiança perto de você ou que você possa contatar agor…"}
+  class trava_m8 choice
+  trava_m8_yes{{"<b>m8_yes</b><br/>Manda uma mensagem rápida.. você não precisa explicar tudo:<br/>📞 Mandar SMS de apoio"}}
+  class trava_m8_yes action
+  trava_m8_no{{"<b>m8_no</b><br/>Tudo bem. Tem um serviço humano disponível agora:<br/>📞 CVV — 188 (gratuito, 24h)"}}
+  class trava_m8_no action
+  trava_m9[["<b>m9</b><br/>Uma coisa prática que muda muito:<br/>☐ Conta 10 objetos ao redor de você"]]
+  class trava_m9 task
+  trava_m10("<b>m10</b><br/>A paranoia e o freeze são respostas temporárias. Elas servem para te …")
+  class trava_m10 info
+  trava_m11("<b>m11</b><br/>Você está aqui. Respirou. Não saiu. O corpo começa a sair da trava.. …")
+  class trava_m11 info
+  trava_m12[["<b>m12</b><br/>Um movimento leve para sair do freeze:<br/>☐ Mexe os pés.. alternando esquerdo…"]]
+  class trava_m12 task
+  trava_m13("<b>m13</b><br/>Quando você sentir que pode se mover um pouco mais, mudar de ambiente…")
+  class trava_m13 info
+  trava_m14("<b>m14</b><br/>Você ficou aqui. Respirou. Não saiu. O corpo começa a sair da trava..…")
+  class trava_m14 info
+  trava_m15(["<b>m15</b><br/>Se ainda estiver travado, tudo bem. Só o próximo minuto. CVV 188 se p…"])
+  class trava_m15 info,endn
+  trava_fast_trava[["<b>fast_trava</b><br/>Se você paralisou achando que estão te olhando: ninguém está focando …<br/>☐ Postura segura<br/>☐ Bloquear a visão<br/>☐ SMS pedindo resgate amigo ⟨sms⟩"]]
+  class trava_fast_trava task
+  trava_crt_before_sms[["<b>crt_before_sms</b><br/>Pedir ajuda é válido. Antes de enviar.. pausa breve:<br/>☐ 10 segundos.. pensar duas vezes ⟨crt_pause⟩"]]
+  class trava_crt_before_sms task
+  trava_a1 -->|"Travei, não consigo me mover"| trava_a2
+  trava_a1 -->|"Sinto que estão me olhando ou julgando"| trava_a2
+  trava_a1 -->|"Minha mente ficou em branco, sem reaç…"| trava_a2_confirm
+  trava_a1 -->|"Pânico que se parece com trava"| trava_redirect_panico
+  trava_a2 -->|"Sensação de perigo sem razão clara"| trava_a3_paranoia
+  trava_a2 -->|"Congelei de medo ou ansiedade"| trava_a3_freeze
+  trava_a2 -->|"Tudo parece irreal junto"| trava_redirect_realidade
+  trava_a2_confirm -.->|continuar| trava_m1
+  trava_a3_paranoia -.->|continuar| trava_m1
+  trava_a3_freeze -.->|continuar| trava_m1
+  trava_redirect_panico -->|ficar aqui| trava_m1
+  trava_redirect_panico -->|"ir para panico"| FLOW_panico
+  trava_redirect_realidade -->|ficar aqui| trava_m1
+  trava_redirect_realidade -->|"ir para realidade"| FLOW_realidade
+  trava_m1 -.->|continuar| trava_m2
+  trava_m2 ==>|"estou apoiado."| trava_m3
+  trava_m3 ==>|"reduzi o estímulo."| trava_m4
+  trava_m4 -.->|continuar| trava_m5
+  trava_m5 -->|"Diminuiu um pouco"| trava_m6
+  trava_m5 -->|"Ainda intenso"| trava_m6_high
+  trava_m6 -.->|continuar| trava_m7
+  trava_m6_high -.->|continuar| trava_m7
+  trava_m7 ==>|"senti meu corpo."| trava_m8
+  trava_m8 -->|"Sim, tem alguém"| trava_crt_before_sms
+  trava_m8 -->|"Não tem ninguém agora"| trava_m8_no
+  trava_m8_yes -.->|continuar| trava_m9
+  trava_m8_no -.->|continuar| trava_m9
+  trava_m9 ==>|"contei os 10."| trava_m10
+  trava_m10 -.->|continuar| trava_m11
+  trava_m11 -.->|continuar| trava_m12
+  trava_m12 ==>|"me movi."| trava_m13
+  trava_m13 -.->|continuar| trava_m14
+  trava_m14 -.->|continuar| trava_m15
+  trava_m15 -.->|continuar| EXIT
+  trava_fast_trava ==>|"continuo aqui"| trava_m1
+  trava_crt_before_sms ==>|"ok"| trava_m8_yes
+  trava_a1 -. "⚡ preciso de algo agora" .-> trava_fast_trava
+  FLOW_panico(["→ fluxo panico"])
+  class FLOW_panico ext
+  FLOW_realidade(["→ fluxo realidade"])
+  class FLOW_realidade ext
+  EXIT(["fecha · volta à Home"])
+  class EXIT ext
+  classDef choice fill:#1b1030,stroke:#a855f7,color:#eee
+  classDef info fill:#0f1a24,stroke:#38bdf8,color:#ddd
+  classDef task fill:#0f2419,stroke:#34d399,color:#ddd
+  classDef action fill:#2a0f12,stroke:#ef4444,color:#fff,stroke-width:2px
+  classDef redirect fill:#241a0a,stroke:#f59e0b,color:#eee
+  classDef endn fill:#111,stroke:#fff,color:#fff,stroke-width:3px
+  classDef orphan stroke-dasharray:6 4,opacity:0.55
+  classDef risk stroke:#ff0055,stroke-width:4px
+  classDef ext fill:#333,stroke:#999,color:#fff

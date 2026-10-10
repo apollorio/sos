@@ -1,0 +1,136 @@
+flowchart TD
+  START(["▶ Solidão · Desespero"]) --> falar_a1
+  falar_a1{"<b>a1</b><br/>Que bom que você abriu isso. Estou aqui. Pode me contar?"}
+  class falar_a1 choice
+  falar_a2{"<b>a2</b><br/>Obrigado por me contar. Agora preciso te perguntar uma coisa importan…"}
+  class falar_a2 choice
+  falar_a2_crisis{{"<b>a2_crisis</b><br/>Obrigado por me contar. Isso é sério.. e você não precisa enfrentar s…<br/>📞 CVV — 188 (agora, de graça, 24h)"}}
+  class falar_a2_crisis action
+  falar_m_crisis_hold[["<b>m_crisis_hold</b><br/>Enquanto decide se liga ou não.. só fica aqui. Não precisa fazer nada…<br/>☐ Coloca os pés no chão e sente o p…<br/>☐ Água fria no rosto ou punhos"]]
+  class falar_m_crisis_hold task
+  falar_m_crisis_breath("<b>m_crisis_breath</b><br/>Inspira lenta e profundamente pelo nariz (conta 4 segundos), segure 1…")
+  class falar_m_crisis_breath info
+  falar_a3_safe{{"<b>a3_safe</b><br/>Que bom que você está seguro. O CVV tem pessoas reais, treinadas, esp…<br/>📞 CVV — 188 (agora, de graça)"}}
+  class falar_a3_safe action,orphan
+  falar_a3_unsure[/"<b>a3_unsure</b><br/>Se você não tem certeza se está seguro, o SAMU (192) está preparado p…<br/>↪ Quer ir para o suporte de Resgate?"/]
+  class falar_a3_unsure redirect
+  falar_redirect_torto[/"<b>redirect_torto</b><br/>Se você usou algo, temos um suporte específico para isso que pode aju…<br/>↪ Quer ir para o suporte de Bateu Forte?"/]
+  class falar_redirect_torto redirect
+  falar_m1("<b>m1</b><br/>A dor que você está sentindo é real. Não é fraqueza. Não é drama. É d…")
+  class falar_m1 info
+  falar_m2("<b>m2</b><br/>Quando a gente está nessa intensidade, o cérebro mente. Ele diz que '…")
+  class falar_m2 info
+  falar_m3[["<b>m3</b><br/>Primeiro: o corpo.<br/>☐ Muda a temperatura do seu corpo"]]
+  class falar_m3 task
+  falar_m4[["<b>m4</b><br/>Uma distração ou um gesto de conexão.. escolha o que couber agora:<br/>☐ Assistir THE-VOICE juntos? ⟨media⟩<br/>☐ Escolher alguém da agenda ⟨contact_pick⟩"]]
+  class falar_m4 task
+  falar_m5{"<b>m5</b><br/>Como você está em relação a alguns minutos atrás?"}
+  class falar_m5 choice
+  falar_m6_better("<b>m6_better</b><br/>Pode estar mudando um pouco.. ou ainda não. Os dois cabem aqui. Conti…")
+  class falar_m6_better info
+  falar_m6_same("<b>m6_same</b><br/>Tudo bem. A dor emocional intensa às vezes não baixa de uma vez. Mas …")
+  class falar_m6_same info
+  falar_m6_hard{{"<b>m6_hard</b><br/>Quando a intensidade está muito alta, uma voz humana ajuda mais do qu…<br/>📞 Ligar CVV 188.. escuta emocional<br/>📞 Ver CAPS no Rio (24h · SUS)"}}
+  class falar_m6_hard action
+  falar_m7("<b>m7</b><br/>Respiração juntos: Inspira lenta e profundamente pelo nariz (conta 4 …")
+  class falar_m7 info
+  falar_m8[["<b>m8</b><br/>Um gesto de cuidado com você mesmo:<br/>☐ Bebe água ou qualquer coisa quente"]]
+  class falar_m8 task
+  falar_m9("<b>m9</b><br/>Você merece apoio. Não porque você fez alguma coisa de especial.. mas…")
+  class falar_m9 info
+  falar_m10("<b>m10</b><br/>Escrever organiza o caos interno.. vamos fazer devagar.")
+  class falar_m10 info
+  falar_m11{"<b>m11</b><br/>Tem alguém.. qualquer pessoa.. que você poderia contactar agora?"}
+  class falar_m11 choice
+  falar_m11_yes("<b>m11_yes</b><br/>Manda mensagem. Você não precisa explicar tudo: 'Ei, tô passando por …")
+  class falar_m11_yes info
+  falar_m11_no{{"<b>m11_no</b><br/>Quando não tem ninguém por perto, o CVV (188) existe para escuta.. e …<br/>📞 Ligar CVV 188<br/>📞 CAPS Rio.. mapa e telefones"}}
+  class falar_m11_no action
+  falar_m12("<b>m12</b><br/>A solidão mais doída é aquela que parece permanente. Mas ela não é pe…")
+  class falar_m12 info
+  falar_m13[["<b>m13</b><br/>Um plano só para as próximas horas:<br/>☐ Define uma coisa pequena que você…"]]
+  class falar_m13 task
+  falar_m14("<b>m14</b><br/>Você ficou aqui. Leu. Respirou o que deu. Isso não apaga o que sente.…")
+  class falar_m14 info
+  falar_m15(["<b>m15</b><br/>Se ainda estiver pesado.. não precisa estar bem agora. [Ligar CVV 188…"])
+  class falar_m15 info,endn
+  falar_fast_ground[["<b>fast_ground</b><br/>Podemos fazer o essencial agora.. devagar:<br/>☐ Coloca os pés no chão e sente o p…<br/>☐ Água fria no rosto ou punhos<br/>☐ Vamos assistir THE-VOICE juntos? ⟨media⟩<br/>☐ CVV 188.. escuta emocional (24h) ⟨call⟩"]]
+  class falar_fast_ground task
+  falar_cssrs_entry[/"<b>cssrs_entry</b><br/>Isso é sério.. vamos fazer uma triagem rápida de segurança, uma pergu…<br/>↪ Iniciar triagem (C-SSRS)?"/]
+  class falar_cssrs_entry redirect
+  falar_walk_ground[["<b>walk_ground</b><br/>Movimento suave libera endorfina.. mesmo na crise. Se estiver no Rio …<br/>☐ Caminhada 15–20 min (ou 2×10 min)"]]
+  class falar_walk_ground task
+  falar_journaling_deep[["<b>journaling_deep</b><br/>Diário.. uma etapa de cada vez:<br/>☐ Escreve como você se sente agora<br/>☐ Lista 1–2 coisas positivas ou gra…<br/>☐ Guarda para reler em momentos de …"]]
+  class falar_journaling_deep task
+  falar_cognitive_reframe("<b>cognitive_reframe</b><br/>TCC rápida: que evidência concreta você tem neste minuto de que o pio…")
+  class falar_cognitive_reframe info
+  falar_crt_pause_node[["<b>crt_pause_node</b><br/>Antes de decidir algo grande ou impulsivo:<br/>☐ Pausa 10 segundos.. pensar duas v… ⟨crt_pause⟩"]]
+  class falar_crt_pause_node task
+  falar_wa_from_yes{{"<b>wa_from_yes</b><br/>WhatsApp com mensagem pronta (você aperta enviar):<br/>📞 WhatsApp.. pedir companhia"}}
+  class falar_wa_from_yes action
+  falar_sleep_routine("<b>sleep_routine</b><br/>Próximas horas.. higiene do sono leve: luz baixa, tela longe se puder…")
+  class falar_sleep_routine info
+  falar_a1 -->|"Tô me sentindo muito sozinho e sem sa…"| falar_a2
+  falar_a1 -->|"Tô desesperado, com pensamentos muito…"| falar_a2_crisis
+  falar_a1 -->|"Pensamentos de me machucar"| falar_cssrs_entry
+  falar_a1 -->|"Usei algo e tô me sentindo muito mal …"| falar_redirect_torto
+  falar_a1 -->|"Não sei explicar, só sei que tô muito…"| falar_a2
+  falar_a2 -->|"Tô mal mas estou seguro onde estou"| falar_m1
+  falar_a2 -->|"Não tenho certeza se estou seguro"| falar_a3_unsure
+  falar_a2_crisis -.->|continuar| falar_cssrs_entry
+  falar_m_crisis_hold ==>|"fiz isso"| falar_m_crisis_breath
+  falar_m_crisis_breath -.->|continuar| falar_m1
+  falar_a3_safe -.->|continuar| falar_m1
+  falar_a3_unsure -->|ficar aqui| falar_m1
+  falar_a3_unsure -->|"ir para samu"| FLOW_samu
+  falar_redirect_torto -->|ficar aqui| falar_m1
+  falar_redirect_torto -->|"ir para torto"| FLOW_torto
+  falar_m1 -.->|continuar| falar_m2
+  falar_m2 -.->|continuar| falar_m3
+  falar_m3 ==>|"fiz isso."| falar_m4
+  falar_m4 ==>|"continuo aqui"| falar_m5
+  falar_m5 -->|"Um pouco melhor"| falar_m6_better
+  falar_m5 -->|"Mais ou menos igual"| falar_m6_same
+  falar_m5 -->|"Ainda muito intenso"| falar_m6_hard
+  falar_m6_better -.->|continuar| falar_walk_ground
+  falar_m6_same -.->|continuar| falar_walk_ground
+  falar_m6_hard -.->|continuar| falar_walk_ground
+  falar_m7 -.->|continuar| falar_m8
+  falar_m8 ==>|"cuidei de mim."| falar_m9
+  falar_m9 -.->|continuar| falar_m10
+  falar_m10 -.->|continuar| falar_journaling_deep
+  falar_m11 -->|"Sim, tem alguém"| falar_m11_yes
+  falar_m11 -->|"Não tem ninguém agora"| falar_m11_no
+  falar_m11_yes -.->|continuar| falar_wa_from_yes
+  falar_m11_no -.->|continuar| falar_crt_pause_node
+  falar_m12 -.->|continuar| falar_m13
+  falar_m13 ==>|"tenho um plano pequeno."| falar_m14
+  falar_m14 -.->|continuar| falar_sleep_routine
+  falar_m15 -.->|continuar| EXIT
+  falar_fast_ground ==>|"continuo aqui"| falar_m7
+  falar_cssrs_entry -->|ficar aqui| falar_m_crisis_hold
+  falar_cssrs_entry -->|"ir para cssrs"| FLOW_cssrs
+  falar_walk_ground ==>|"me movi"| falar_m7
+  falar_journaling_deep ==>|"escrevi"| falar_cognitive_reframe
+  falar_cognitive_reframe -.->|continuar| falar_m11
+  falar_crt_pause_node ==>|"pausei"| falar_m12
+  falar_wa_from_yes -.->|continuar| falar_crt_pause_node
+  falar_sleep_routine -.->|continuar| falar_m15
+  falar_a1 -. "⚡ preciso de algo agora" .-> falar_fast_ground
+  FLOW_samu(["→ fluxo samu"])
+  class FLOW_samu ext
+  FLOW_torto(["→ fluxo torto"])
+  class FLOW_torto ext
+  EXIT(["fecha · volta à Home"])
+  class EXIT ext
+  FLOW_cssrs(["→ fluxo cssrs"])
+  class FLOW_cssrs ext
+  classDef choice fill:#1b1030,stroke:#a855f7,color:#eee
+  classDef info fill:#0f1a24,stroke:#38bdf8,color:#ddd
+  classDef task fill:#0f2419,stroke:#34d399,color:#ddd
+  classDef action fill:#2a0f12,stroke:#ef4444,color:#fff,stroke-width:2px
+  classDef redirect fill:#241a0a,stroke:#f59e0b,color:#eee
+  classDef endn fill:#111,stroke:#fff,color:#fff,stroke-width:3px
+  classDef orphan stroke-dasharray:6 4,opacity:0.55
+  classDef risk stroke:#ff0055,stroke-width:4px
+  classDef ext fill:#333,stroke:#999,color:#fff

@@ -8,7 +8,8 @@ import { REG } from "../core/registry";
 import { LOCALES } from "../ui/locale";
 import { buildView, type Episode } from "./model";
 import { renderMedico, renderRelatorio, renderMessage, h } from "./render";
-import { readLive, subscribeLive, loadLab, type Snapshot, type LabScenario } from "./source";
+import { readLive, subscribeLive, loadLab, readTiles, subscribeTiles, type Snapshot, type LabScenario } from "./source";
+import { buildTilesView, type TilesEpisode } from "./tiles";
 
 const loc = LOCALES[REG.data.meta.defaultLocale]!;
 const R = loc.continuity.report;
@@ -20,6 +21,7 @@ const params = new URLSearchParams(location.search);
 const RETENTION_H = REG.data.storage.retentionHours;
 
 let live: Snapshot | null = null;
+let tiles: TilesEpisode | null = null;
 let wiped = false;
 let labList: LabScenario[] = [];
 let lab: LabScenario | null = null;
@@ -34,6 +36,7 @@ function draw(): void {
   if (live && wiped && humanSaid(live)) wiped = false;
   if (lab) ep = { episodeId: lab.episodeId, events: lab.events, state: lab.state, now: lab.now, tz: -180, source: "lab" };
   else if (live && !wiped) ep = { episodeId: live.episodeId, events: live.events, state: live.state, now: Date.now(), tz, source: "live" };
+  if (!ep && tiles && !lab) { drawTiles(tiles); return; }
   if (!ep) {
     renderMessage(host, wiped ? R["wiped"]! : R["waiting"]!);
     copyText = "";
@@ -50,8 +53,19 @@ function draw(): void {
   }
 }
 
+/** A session run on the tiles page (no engine): same document, only what that page observed. */
+function drawTiles(ep: TilesEpisode): void {
+  if (!host) return;
+  const v = buildTilesView(ep, Date.now(), tz, REG, loc);
+  if (page === "medico") { renderMedico(host, v.medico, R, R["tiles.sourceLabel"]!); copyText = v.medico.copyText; }
+  else { renderRelatorio(host, v.relatorio, R); copyText = v.relatorio.shareText; }
+  document.documentElement.classList.add("has-episode");
+  if (status) status.replaceChildren(h("span", "dot", ""), `${R["liveDot"]} · ${v.medico.header.updatedLine}`);
+}
+
 async function refreshLive(): Promise<void> {
   if (lab) return;
+  tiles = readTiles(RETENTION_H, Date.now());
   const s = await readLive(RETENTION_H, Date.now());
   if (s) live = s;
   else if (live && live.state && Date.now() - live.state.lastAt > RETENTION_H * 3_600_000) live = null;
@@ -59,6 +73,15 @@ async function refreshLive(): Promise<void> {
 }
 
 function flash(btn: HTMLElement, text: string): void {
+  // Icon-only buttons: swap the glyph for a check and say it in the label; never replace the icon with text.
+  const icon = btn.querySelector("i");
+  if (icon) {
+    const cls = icon.className, label = btn.getAttribute("aria-label") ?? "";
+    icon.className = "ri-check-line";
+    btn.setAttribute("aria-label", text); btn.setAttribute("title", text); btn.dataset["done"] = "";
+    setTimeout(() => { icon.className = cls; btn.setAttribute("aria-label", label); btn.setAttribute("title", label); delete btn.dataset["done"]; }, 1600);
+    return;
+  }
   const old = btn.textContent;
   btn.textContent = text;
   setTimeout(() => { btn.textContent = old; }, 1600);
@@ -110,6 +133,7 @@ async function main(): Promise<void> {
     else live = s;
     if (!lab) draw();
   });
+  subscribeTiles(() => { if (!lab) void refreshLive(); });
   // Fallback when BroadcastChannel is missing or the app is closed: re-read the local store while visible.
   setInterval(() => { if (!document.hidden && !lab) void refreshLive(); }, 5000);
   document.addEventListener("visibilitychange", () => { if (!document.hidden && !lab) void refreshLive(); });

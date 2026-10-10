@@ -1,0 +1,100 @@
+flowchart TD
+  START(["▶ Onde eu tô? · Irrealidade"]) --> realidade_a1
+  realidade_a1{"<b>a1</b><br/>Tô aqui com você. Essa sensação de irrealidade pode ter causas difere…"}
+  class realidade_a1 choice
+  realidade_a2("<b>a2</b><br/>O que você está descrevendo se chama despersonalização ou desrealizaç…")
+  class realidade_a2 info
+  realidade_a2_substance[/"<b>a2_substance</b><br/>Se você usou algo, temos um suporte mais específico que pode ajudar m…<br/>↪ Quer ir para o suporte de Bateu Forte?"/]
+  class realidade_a2_substance redirect
+  realidade_a3_anchor("<b>a3_anchor</b><br/>Tudo bem não conseguir explicar. O que eu sei é que você está aqui. O…")
+  class realidade_a3_anchor info
+  realidade_redirect_panico[/"<b>redirect_panico</b><br/>Se junto à irrealidade tem muito medo e coração acelerado, o suporte …<br/>↪ Quer ir para o suporte de Pânico?"/]
+  class realidade_redirect_panico redirect,orphan
+  realidade_m1("<b>m1</b><br/>Você é real. Esse momento é real. Vamos trazer você de volta para o c…")
+  class realidade_m1 info
+  realidade_m2[["<b>m2</b><br/>A âncora mais poderosa é o toque físico:<br/>☐ Toca no tecido da sua roupa<br/>☐ Coloca a palma da mão no chão ou …"]]
+  class realidade_m2 task
+  realidade_m3[["<b>m3</b><br/>Agora nomeando o que existe:<br/>☐ Diz em voz alta o nome de 3 objet…"]]
+  class realidade_m3 task
+  realidade_m4[["<b>m4</b><br/>Temperatura como âncora:<br/>☐ Água fria nas mãos ou no rosto"]]
+  class realidade_m4 task
+  realidade_m5{"<b>m5</b><br/>A sensação de estranhamento está um pouco menor?"}
+  class realidade_m5 choice
+  realidade_m6("<b>m6</b><br/>Isso. Você está trazendo o seu sistema nervoso de volta. Continue com…")
+  class realidade_m6 info
+  realidade_m6_hard("<b>m6_hard</b><br/>Tudo bem. Às vezes o estado demora mais para passar. Isso não é perma…")
+  class realidade_m6_hard info
+  realidade_m7[["<b>m7</b><br/>Os 5 sentidos.. um de cada vez:<br/>☐ Diz uma coisa que você VÊ agora<br/>☐ Diz um som que você OUVE<br/>☐ Cheira algo que esteja próximo"]]
+  class realidade_m7 task
+  realidade_m8("<b>m8</b><br/>Você está aqui comigo. A despersonalização é desconfortável mas inofe…")
+  class realidade_m8 info
+  realidade_m9[["<b>m9</b><br/>Movimento leve.. um dos melhores redefinidores de presença:<br/>☐ Aperta e solte os punhos lentamen…<br/>☐ Mexe os dedos dos pés dentro do s…"]]
+  class realidade_m9 task
+  realidade_m10("<b>m10</b><br/>Você está aqui. No presente. Nesse espaço. O passado não está te puxa…")
+  class realidade_m10 info
+  realidade_m11{"<b>m11</b><br/>Tem alguém que pode ficar com você por um tempo agora?"}
+  class realidade_m11 choice
+  realidade_m11_yes("<b>m11_yes</b><br/>Chama. Uma presença humana ao lado.. mesmo em silêncio.. ajuda muito …")
+  class realidade_m11_yes info
+  realidade_m11_no{{"<b>m11_no</b><br/>Tudo bem. O CVV tem vozes humanas disponíveis agora:<br/>📞 CVV — 188 (gratuito, 24h)"}}
+  class realidade_m11_no action
+  realidade_m12("<b>m12</b><br/>Uma coisa que pode ajudar nas próximas horas: evita telas, ruído exce…")
+  class realidade_m12 info
+  realidade_m13[["<b>m13</b><br/>Um gesto final de cuidado:<br/>☐ Coloca algo suave ao redor de você"]]
+  class realidade_m13 task
+  realidade_m14("<b>m14</b><br/>Você ficou aqui um tempo. Mesmo sentindo que tudo estava estranho, vo…")
+  class realidade_m14 info
+  realidade_m15(["<b>m15</b><br/>Você está aqui. Agora. Se ainda estiver estranho, continue devagar. L…"])
+  class realidade_m15 info,endn
+  realidade_fast_realidade[["<b>fast_realidade</b><br/>As coisas parecem estranhas? Isso é uma defesa natural da mente ao es…<br/>☐ Tocar na textura<br/>☐ Nomear 3 coisas<br/>☐ Água fria nas mãos ou rosto"]]
+  class realidade_fast_realidade task
+  realidade_mindfulness_real[["<b>mindfulness_real</b><br/>Mindfulness breve (5 min):<br/>☐ Observar respiração 5 min"]]
+  class realidade_mindfulness_real task
+  realidade_a1 -->|"As coisas parecem distantes ou como n…"| realidade_a2
+  realidade_a1 -->|"Eu mesmo pareço irreal ou distante de…"| realidade_a2
+  realidade_a1 -->|"Usei algo que pode ter causado isso"| realidade_a2_substance
+  realidade_a1 -->|"Não sei explicar, está tudo estranho"| realidade_a3_anchor
+  realidade_a2 -.->|continuar| realidade_m1
+  realidade_a2_substance -->|ficar aqui| realidade_m1
+  realidade_a2_substance -->|"ir para torto"| FLOW_torto
+  realidade_a3_anchor -.->|continuar| realidade_m1
+  realidade_redirect_panico -->|ficar aqui| realidade_m1
+  realidade_redirect_panico -->|"ir para panico"| FLOW_panico
+  realidade_m1 -.->|continuar| realidade_m2
+  realidade_m2 ==>|"senti o real."| realidade_m3
+  realidade_m3 ==>|"nomeei as 3 coisas."| realidade_m4
+  realidade_m4 ==>|"senti a temperatura."| realidade_mindfulness_real
+  realidade_m5 -->|"Sim, um pouco"| realidade_m6
+  realidade_m5 -->|"Ainda está muito forte"| realidade_m6_hard
+  realidade_m6 -.->|continuar| realidade_m7
+  realidade_m6_hard -.->|continuar| realidade_m7
+  realidade_m7 ==>|"usei meus sentidos."| realidade_m8
+  realidade_m8 -.->|continuar| realidade_m9
+  realidade_m9 ==>|"me movi."| realidade_m10
+  realidade_m10 -.->|continuar| realidade_m11
+  realidade_m11 -->|"Sim, posso chamar alguém"| realidade_m11_yes
+  realidade_m11 -->|"Não agora"| realidade_m11_no
+  realidade_m11_yes -.->|continuar| realidade_m12
+  realidade_m11_no -.->|continuar| realidade_m12
+  realidade_m12 -.->|continuar| realidade_m13
+  realidade_m13 ==>|"estou mais aquecido."| realidade_m14
+  realidade_m14 -.->|continuar| realidade_m15
+  realidade_m15 -.->|continuar| EXIT
+  realidade_fast_realidade ==>|"ancorado aqui"| realidade_m1
+  realidade_mindfulness_real ==>|"observei"| realidade_m5
+  realidade_a1 -. "⚡ preciso de algo agora" .-> realidade_fast_realidade
+  FLOW_torto(["→ fluxo torto"])
+  class FLOW_torto ext
+  FLOW_panico(["→ fluxo panico"])
+  class FLOW_panico ext
+  EXIT(["fecha · volta à Home"])
+  class EXIT ext
+  classDef choice fill:#1b1030,stroke:#a855f7,color:#eee
+  classDef info fill:#0f1a24,stroke:#38bdf8,color:#ddd
+  classDef task fill:#0f2419,stroke:#34d399,color:#ddd
+  classDef action fill:#2a0f12,stroke:#ef4444,color:#fff,stroke-width:2px
+  classDef redirect fill:#241a0a,stroke:#f59e0b,color:#eee
+  classDef endn fill:#111,stroke:#fff,color:#fff,stroke-width:3px
+  classDef orphan stroke-dasharray:6 4,opacity:0.55
+  classDef risk stroke:#ff0055,stroke-width:4px
+  classDef ext fill:#333,stroke:#999,color:#fff
